@@ -173,7 +173,7 @@
 
   <!-- ============ SIDEBAR ============ -->
   <div class="sidebar">
-  <div class="logo">🎮 GAME<span>HUB</span></div>
+  <div class="logo">🎮 LIFEIS<span>GAME</span><small style="color:#67e8f9;font-size:10px;letter-spacing:1px;margin-left:3px">TZ</small></div>
   <div class="menu">
     <a href="index.html">🏠 <span class="label">Home</span></a>
     <a href="shop.html">🎮 <span class="label">All Games</span></a>
@@ -224,6 +224,21 @@
         <p>Duka la gaming la Tanzania lenye games, digital products, tournaments, live football, Academy, youth opportunities na AI assistants — yote sehemu moja.</p>
         <div class="buttons"><a href="shop.html" class="btn primary">🎮 Explore Games</a><a href="academy.html" class="btn secondary">🎓 Gaming Academy</a><a href="live.html" class="btn secondary">📺 Watch Live</a></div>
         <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:18px"><span class="pill">⚡ Fast Digital Delivery</span><span class="pill">🛡️ Secure Payments</span><span class="pill">🤖 AI Support</span></div>
+      </div>
+    </section>
+
+    <!-- FEATURED TRAILERS / GAMES FROM ADMIN -->
+    <section class="trailer-zone" id="featuredTrailersSection">
+      <div class="trailer-heading">
+        <div>
+          <span class="section-kicker">LIFEISGAMETZ • FEATURED</span>
+          <h2>🔥 Tazama Game Kabla ya Kununua</h2>
+          <p>Admin akiweka trailer kwenye bidhaa, trailer itaonekana hapa pamoja na jina la game, picha na bei ile ile iliyowekwa dukani.</p>
+        </div>
+        <a href="shop.html" class="trailer-all">View Store →</a>
+      </div>
+      <div class="trailer-grid" id="featuredTrailers">
+        <div class="trailer-empty">Inapakia trailers...</div>
       </div>
     </section>
 
@@ -298,7 +313,7 @@
         <div class="pay-chip">✅ Halotel</div>
       </div>
       <p class="manual-pay">
-        Malipo automatic kupitia Flutterwave. Kama una tatizo la malipo automatic, tuma pesa moja kwa moja:
+        Malipo automatic kupitia AzamPay. Kama una tatizo la malipo automatic, tuma pesa moja kwa moja:
         <br><strong>0786 095 758 — Amina Mwinyi</strong>, kisha wasiliana WhatsApp na namba ya muamala (ref) kupata bidhaa yako.
       </p>
     </div>
@@ -385,6 +400,32 @@
     });
 
   </script>
+  <script>
+    // ============ FEATURED TRAILERS FROM ADMIN ============
+    (function () {
+      function ytId(url) {
+        const m = (url || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/);
+        return m ? m[1] : null;
+      }
+      function esc(x) { const d=document.createElement('div'); d.textContent=x==null?'':String(x); return d.innerHTML; }
+      function money(v) { return Number(v || 0).toLocaleString() + ' TZS'; }
+      function renderTrailers(products) {
+        const box=document.getElementById('featuredTrailers');
+        const items=(products||[]).filter(p=>p.trailerUrl && p.section !== 'steam' && p.section !== 'efootball');
+        if(!items.length){
+          box.innerHTML='<div class="trailer-empty"><span>🎬</span><strong>Trailers zitaonekana hapa</strong><small>Admin anaweza kuweka Trailer URL kwenye Admin → Bidhaa au Hero Studio.</small><a href="shop.html" class="btn primary">Browse Games</a></div>';
+          return;
+        }
+        box.innerHTML=items.map((p)=>{
+          const id=ytId(p.trailerUrl); const img=p.imageUrl||'';
+          const media=id ? `<div class="trailer-video"><iframe src="https://www.youtube.com/embed/${id}?autoplay=0&controls=1&rel=0&modestbranding=1&playsinline=1" title="${esc(p.name)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>` : `<div class="trailer-video trailer-direct"><video controls preload="metadata" playsinline poster="${esc(img)}"><source src="${esc(p.trailerUrl)}"></video></div>`;
+          return `<article class="trailer-card">${media}<div class="trailer-info"><div class="trailer-game-line"><div>${img?`<img src="${esc(img)}" alt="" onerror="this.style.display='none'">`:''}<div><span>${esc(p.category||p.type||'GAME')}</span><h3>${esc(p.name)}</h3></div></div><div class="trailer-price">${money(p.price)}</div></div><p>${esc(p.desc||'Digital game product • Ready to order')}</p><div class="trailer-actions"><a class="btn primary" href="product.html?id=${encodeURIComponent(p.id)}">🛒 Buy Now</a><a class="trailer-more" href="product.html?id=${encodeURIComponent(p.id)}">View Details →</a></div></div></article>`;
+        }).join('');
+      }
+      fetch('/api/products').then(r=>r.json()).then(d=>{if(d.success) renderTrailers(d.products);}).catch(()=>renderTrailers([]));
+    })();
+  </script>
+
 <script>
 (async()=>{try{const r=await fetch('/api/banners');const d=await r.json();const a=d.banners||[];if(!a.length)return;const wrap=document.getElementById('dynamicBanners');wrap.style.display='block';document.getElementById('bannerGrid').innerHTML=a.map(b=>`<div style="background:linear-gradient(135deg,#17102f,#0b1022);border:1px solid #5d2bb0;border-radius:16px;padding:18px"><span style="color:#a63cff;font-weight:700">📢 GAMEHUB UPDATE</span><h2 style="margin:8px 0">${escB(b.title)}</h2><p style="color:#c9c9e0">${escB(b.description)}</p><a class="btn primary" href="${escB(b.buttonUrl||'#')}">${escB(b.buttonText||'Angalia')}</a></div>`).join('')}catch(e){}})();function escB(x){const d=document.createElement('div');d.textContent=x||'';return d.innerHTML}
 </script>

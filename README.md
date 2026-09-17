@@ -126,3 +126,12 @@ alter table public.kv_store enable row level security;
 ```
 
 The GameHub server uses the service-role key server-side to read/write this table. Do not expose that key in frontend code.
+
+
+## UI Update — Professional Store + Hero Studio
+- Home hero imebakizwa kama clean gaming hero; trailer cards sasa ziko chini ya hero.
+- Kila product ya Shop yenye `trailerUrl` inaonekana kwenye Featured Trailers ikiwa na game name, image, Admin price na Buy Now.
+- Admin imepata Dashboard/Overview iliyorejeshwa, Command Center, na Hero Studio bila kuondoa modules za Orders, Customers, Products, Requests, Marketplace, Coupons, Security, Media & Live na AI.
+- Hero Studio inaruhusu kuchagua product na kuongeza/kuondoa YouTube, MP4 au WebM trailer. Bei inasomwa moja kwa moja kutoka product, hivyo ikibadilishwa Admin inabadilika Home.
+- Orders filters/export na dashboard functions zimeunganishwa kikamilifu; previous missing `loadOrders`, `loadCommandCenter`, `refreshAll`, `renderOrderFilters` na `exportOrdersCSV` zimerudishwa.
+- Global storefront styles zimepandishwa kuwa professional dark gaming UI yenye responsive mobile layout.
