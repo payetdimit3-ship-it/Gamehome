@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Requests — GameHub</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .sidebar { width:240px; height:100vh; background:#080912; border-right:1px solid #24243a; position:fixed; left:0; top:0; padding:25px 18px; overflow-y:auto; z-index:200; }
+    .sidebar .logo { font-size:22px; font-weight:bold; margin-bottom:35px; text-align:center; }
+    .sidebar .logo span { color:#9b35ff; }
+    .menu a { display:flex; align-items:center; gap:10px; color:#ddd; padding:14px 15px; margin:4px 0; border-radius:10px; transition:0.3s; font-size:14px; text-decoration:none; }
+    .menu a:hover { background:#7525d8; color:#fff; }
+    .menu a.active { background:linear-gradient(90deg,#7725d8,#9c35ff); color:#fff; }
+    .cart-badge { background:#ff3eb5; color:#fff; font-size:11px; font-weight:bold; border-radius:20px; padding:1px 7px; margin-left:auto; }
+    .main { margin-left:240px; }
+    .topbar { display:flex; justify-content:flex-end; align-items:center; padding:18px 30px 0; }
+    @media(max-width:700px) {
+      .sidebar { width:64px; padding:15px 6px; }
+      .sidebar .logo { font-size:0; }
+      .sidebar .logo::before { content:"🎮"; font-size:24px; }
+      .menu a span.label { display:none; }
+      .main { margin-left:64px; }
+      .topbar { padding:12px 15px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="logo">🎮 GAME<span>HUB</span></div>
+    <div class="menu">
+      <a href="index.html">🏠 <span class="label">Home</span></a>
+      <a href="shop.html">🎮 <span class="label">All Games</span></a>
+      <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
+      <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
+      <a href="rental.html">⏱️ <span class="label">GeForce Rental</span></a>
+      <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
+      <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
+      <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
+      <a href="myorders.html">📦 <span class="label">My Orders</span></a>
+      <a href="requests.html" class="active">🔍 <span class="label">Requests</span></a>
+      <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
+      <a href="contact.html">☎ <span class="label">Contact</span></a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <a href="login.html" class="btn-login">🔐 Login</a>
+    </div>
+
+
+  <section class="shop-banner">
+    <h1>🔍 Omba Game Yako</h1>
+    <p>Game haipo kwenye duka? Omba hapa — wengi wakiiomba, tunaiweka haraka!</p>
+  </section>
+
+  <section class="requests-page">
+    <div class="request-form">
+      <h2>📝 Omba Game Mpya</h2>
+      <div class="custom-row">
+        <input type="text" id="gameName" placeholder="Jina la game (mfano: Elden Ring)">
+        <button class="btn-primary" id="sendRequestBtn">📤 Tumia Ombi</button>
+      </div>
+      <p id="requestMsg" class="pay-status"></p>
+    </div>
+
+    <h2 style="margin-top:30px;">🗳️ Games Zinazoombwa</h2>
+    <p class="section-sub">Piga kura kwenye game unayoitaka — inayopata kura nyingi inaingia dukani kwanza!</p>
+
+    <div id="requestsList" class="requests-list">
+      <p style="color:#8f8faa; text-align:center;">Inapakia...</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <h3>🎮 GameHub</h3>
+        <p>Duka la gaming la Tanzania: game keys, top-ups, gift cards na rental.</p>
+      </div>
+      <div>
+        <h3>Links</h3>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="requests.html">Requests</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <p>📱 +255 700 000 000</p>
+        <p>📧 info@gamehub.co.tz</p>
+        <p>💬 <a href="https://wa.me/255700000000" target="_blank">WhatsApp Support</a></p>
+      </div>
+    </div>
+    <p class="copyright">© 2026 GameHub. Haki zote zimehifadhiwa.</p>
+  </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+  <script src="chat.js"></script>
+
+  <script>
+    const token = localStorage.getItem('gamehubToken');
+
+    document.getElementById('sendRequestBtn').addEventListener('click', async () => {
+      const name = document.getElementById('gameName').value.trim();
+      const msg = document.getElementById('requestMsg');
+      if (!name) { msg.textContent = '❌ Andika jina la game kwanza.'; return; }
+
+      if (!token) {
+        msg.textContent = '🔐 Ingia kwanza kuomba game.';
+        setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/requests', {
+          method: 'POST',
+          headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gameName: name })
+        });
+        const data = await res.json();
+        msg.textContent = data.message || (data.error || 'Hitilafu');
+        if (data.success) { document.getElementById('gameName').value = ''; loadRequests(); }
+      } catch (e) {
+        msg.textContent = '❌ Hitilafu ya mtandao. Jaribu tena.';
+      }
+    });
+
+    async function loadRequests() {
+      const box = document.getElementById('requestsList');
+      try {
+        const res = await fetch('/api/requests');
+        const data = await res.json();
+        if (!data.success || data.requests.length === 0) {
+          box.innerHTML = '<p style="color:#8f8faa; text-align:center;">Hakuna ombi bado. Kuwa wa kwanza kuomba game yako! 🎮</p>';
+          return;
+        }
+        box.innerHTML = data.requests.map((r, i) => `
+          <div class="request-row ${i === 0 ? 'top-request' : ''}">
+            <div class="request-rank">${i === 0 ? '🏆' : '#' + (i + 1)}</div>
+            <div class="request-info">
+              <h3>${r.name}</h3>
+              <p>Kura: <strong>${r.votes}</strong> ${r.votes > 1 ? 'wateja wanaitaka' : 'mteja anaitaka'}</p>
+            </div>
+            <button class="btn-vote" data-id="${r.id}">👍 Naitaka</button>
+          </div>`).join('');
+
+        document.querySelectorAll('.btn-vote').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            if (!token) {
+              alert('🔐 Ingia kwanza kupiga kura.');
+              window.location.href = 'login.html';
+              return;
+            }
+            const vRes = await fetch('/api/requests/' + btn.dataset.id + '/vote', {
+              method: 'POST',
+              headers: { 'Authorization': token }
+            });
+            const vData = await vRes.json();
+            alert(vData.message || 'Hitilafu');
+            loadRequests();
+          });
+        });
+      } catch (e) {
+        box.innerHTML = '<p style="color:#ff3d71; text-align:center;">Hitilafu ya mtandao.</p>';
+      }
+    }
+
+    loadRequests();
+  </script>
+
+</body>
+</html>

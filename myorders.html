@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders — GameHub</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .sidebar { width:240px; height:100vh; background:#080912; border-right:1px solid #24243a; position:fixed; left:0; top:0; padding:25px 18px; overflow-y:auto; z-index:200; }
+    .sidebar .logo { font-size:22px; font-weight:bold; margin-bottom:35px; text-align:center; }
+    .sidebar .logo span { color:#9b35ff; }
+    .menu a { display:flex; align-items:center; gap:10px; color:#ddd; padding:14px 15px; margin:4px 0; border-radius:10px; transition:0.3s; font-size:14px; text-decoration:none; }
+    .menu a:hover { background:#7525d8; color:#fff; }
+    .menu a.active { background:linear-gradient(90deg,#7725d8,#9c35ff); color:#fff; }
+    .cart-badge { background:#ff3eb5; color:#fff; font-size:11px; font-weight:bold; border-radius:20px; padding:1px 7px; margin-left:auto; }
+    .main { margin-left:240px; }
+    .topbar { display:flex; justify-content:flex-end; align-items:center; padding:18px 30px 0; }
+    @media(max-width:700px) {
+      .sidebar { width:64px; padding:15px 6px; }
+      .sidebar .logo { font-size:0; }
+      .sidebar .logo::before { content:"🎮"; font-size:24px; }
+      .menu a span.label { display:none; }
+      .main { margin-left:64px; }
+      .topbar { padding:12px 15px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="logo">🎮 GAME<span>HUB</span></div>
+    <div class="menu">
+      <a href="index.html">🏠 <span class="label">Home</span></a>
+      <a href="shop.html">🎮 <span class="label">All Games</span></a>
+      <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
+      <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
+      <a href="rental.html">⏱️ <span class="label">GeForce Rental</span></a>
+      <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
+      <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
+      <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
+      <a href="myorders.html" class="active">📦 <span class="label">My Orders</span></a>
+      <a href="requests.html">🔍 <span class="label">Requests</span></a>
+      <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
+      <a href="contact.html">☎ <span class="label">Contact</span></a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <a href="login.html" class="btn-login">🔐 Login</a>
+    </div>
+
+
+  <section class="cart-page">
+    <h1>📦 My Orders</h1>
+    <p class="section-sub">Bidhaa ulizonunua na hali ya malipo yako</p>
+    <div id="ordersList"><p style="color:#8f8faa; text-align:center;">Inapakia...</p></div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <h3>🎮 GameHub</h3>
+        <p>Duka la gaming la Tanzania: game keys, top-ups, gift cards na rental.</p>
+      </div>
+      <div>
+        <h3>Links</h3>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="myorders.html">My Orders</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <p>📱 +255 700 000 000</p>
+        <p>📧 info@gamehub.co.tz</p>
+        <p>💬 <a href="https://wa.me/255700000000" target="_blank">WhatsApp Support</a></p>
+      </div>
+    </div>
+    <p class="copyright">© 2026 GameHub. Haki zote zimehifadhiwa.</p>
+  </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+  <script src="chat.js"></script>
+
+  <script>
+    const token = localStorage.getItem('gamehubToken');
+    const box = document.getElementById('ordersList');
+
+    async function loadMyOrders() {
+      if (!token) {
+        box.innerHTML = '<div class="cart-empty"><p>🔐 Ingia kwanza kuona oda zako.</p><a href="login.html" class="btn-primary">Ingia</a></div>';
+        return;
+      }
+      try {
+        const res = await fetch('/api/my-orders', { headers: { 'Authorization': token } });
+        const data = await res.json();
+        if (!data.success) {
+          box.innerHTML = '<div class="cart-empty"><p>🔐 Session imeisha. Ingia tena.</p><a href="login.html" class="btn-primary">Ingia</a></div>';
+          return;
+        }
+        if (!data.orders.length) {
+          box.innerHTML = '<div class="cart-empty"><p>Hujawahi kununua bidhaa yoyote.</p><a href="shop.html" class="btn-primary">🛒 Nenda Dukani</a></div>';
+          return;
+        }
+
+        box.innerHTML = data.orders.map(o => {
+          const statusBadge = o.status === 'successful'
+            ? '<span style="color:#00ff88; font-weight:bold;">✅ Imethibitishwa</span>'
+            : o.status === 'pending_manual'
+              ? '<span style="color:#ffb020; font-weight:bold;">⏳ Inasubiri Uthibitisho (Manual)</span>'
+              : o.status === 'pending_clickpesa'
+                ? '<span style="color:#ffb020; font-weight:bold;">⏳ Inasubiri Malipo</span>'
+                : o.status === 'failed'
+                  ? '<span style="color:#ff3d71; font-weight:bold;">❌ Imeshindwa</span>'
+                  : o.status === 'amount_mismatch'
+                    ? '<span style="color:#ff3d71; font-weight:bold;">⚠️ Tatizo la Kiasi — Wasiliana Nasi</span>'
+                    : '<span style="color:#8f8faa;">' + o.status + '</span>';
+
+          const itemsHtml = (o.items || []).map(i => {
+            const showDownload = o.status === 'successful' && i.downloadLink;
+            const showAccount = o.status === 'successful' && i.accountUser;
+            return `
+              <div class="checkout-item" style="flex-direction:column; align-items:stretch;">
+                <div style="display:flex; justify-content:space-between;">
+                  <span>${i.emoji || '🎮'} ${i.name} × ${i.qty}</span>
+                  ${showDownload
+                    ? `<a href="${i.downloadLink}" target="_blank" class="btn-buy" style="width:auto; padding:6px 14px;">⬇️ Download</a>`
+                    : `<span>${(i.num * i.qty).toLocaleString()} TZS</span>`}
+                </div>
+                ${showAccount ? `
+                  <div style="background:#0a0a14; border:1px solid #2a2a4a; border-radius:8px; padding:10px; margin-top:8px; font-size:13px;">
+                    <div style="color:#00e5ff; font-weight:bold; margin-bottom:4px;">🔑 Taarifa za Account</div>
+                    <div>📧 Email/Username: <strong>${i.accountUser}</strong></div>
+                    <div>🔒 Password: <strong>${i.accountPassword || '—'}</strong></div>
+                  </div>` : ''}
+              </div>`;
+          }).join('');
+
+          return `
+            <div class="cart-item" style="flex-direction:column; align-items:stretch;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <strong>Order: ${o.tx_ref}</strong>
+                ${statusBadge}
+              </div>
+              <div style="color:#8f8faa; font-size:13px; margin-bottom:8px;">${new Date(o.date).toLocaleString()} • Jumla: ${Number(o.amount).toLocaleString()} TZS</div>
+              ${itemsHtml}
+              ${o.status === 'pending_manual' ? '<p style="color:#8f8faa; font-size:13px; margin-top:8px;">💡 Admin bado hajathibitisha malipo yako. Ukishalipa, subiri au wasiliana WhatsApp.</p>' : ''}
+              ${o.status === 'pending_clickpesa' ? '<p style="color:#8f8faa; font-size:13px; margin-top:8px;" id="check-' + o.tx_ref + '">💡 Tunathibitisha malipo yako...</p>' : ''}
+            </div>`;
+        }).join('');
+
+        // Self-heal: angalia hali ya malipo ya ClickPesa yanayosubiri
+        data.orders.filter(o => o.status === 'pending_clickpesa').forEach(async (o) => {
+          try {
+            const cRes = await fetch('/api/clickpesa-check/' + o.tx_ref, { headers: { 'Authorization': token } });
+            const cData = await cRes.json();
+            if (cData.success && cData.status === 'successful') {
+              loadMyOrders(); // pakia upya kuonyesha download link
+            }
+          } catch (e) {}
+        });
+      } catch (e) {
+        box.innerHTML = '<p style="color:#ff3d71; text-align:center;">Hitilafu ya mtandao.</p>';
+      }
+    }
+
+    loadMyOrders();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop — GameHub | Game Keys, Top-Up & Accounts</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ============ SIDEBAR LAYOUT (v2) ============ */
+    .sidebar { width:240px; height:100vh; background:#080912; border-right:1px solid #24243a; position:fixed; left:0; top:0; padding:25px 18px; overflow-y:auto; z-index:200; }
+    .sidebar .logo { font-size:22px; font-weight:bold; margin-bottom:35px; text-align:center; }
+    .sidebar .logo span { color:#9b35ff; }
+    .menu a { display:flex; align-items:center; gap:10px; color:#ddd; padding:14px 15px; margin:4px 0; border-radius:10px; transition:0.3s; font-size:14px; text-decoration:none; }
+    .menu a:hover { background:#7525d8; color:#fff; }
+    .menu a.active { background:linear-gradient(90deg,#7725d8,#9c35ff); color:#fff; }
+    .cart-badge { background:#ff3eb5; color:#fff; font-size:11px; font-weight:bold; border-radius:20px; padding:1px 7px; margin-left:auto; }
+    .main { margin-left:240px; }
+    .topbar { display:flex; justify-content:flex-end; align-items:center; padding:18px 30px 0; }
+    @media(max-width:700px) {
+      .sidebar { width:64px; padding:15px 6px; }
+      .sidebar .logo { font-size:0; }
+      .sidebar .logo::before { content:"🎮"; font-size:24px; }
+      .menu a span.label { display:none; }
+      .main { margin-left:64px; }
+      .topbar { padding:12px 15px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="logo">🎮 GAME<span>HUB</span></div>
+    <div class="menu">
+      <a href="index.html">🏠 <span class="label">Home</span></a>
+      <a href="shop.html" class="active">🎮 <span class="label">All Games</span></a>
+      <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
+      <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
+      <a href="rental.html">⏱️ <span class="label">GeForce Rental</span></a>
+      <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
+      <a href="myorders.html">📦 <span class="label">My Orders</span></a>
+      <a href="requests.html">🔍 <span class="label">Requests</span></a>
+      <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
+      <a href="contact.html">☎ <span class="label">Contact</span></a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <a href="login.html" class="btn-login">🔐 Login</a>
+    </div>
+
+  <section class="shop-banner">
+    <h1>🛒 DUKA LETU</h1>
+    <p>Game Keys • Top-Up • Gift Cards • Steam Accounts</p>
+  </section>
+
+  <section class="shop-controls">
+    <input type="text" id="searchBox" placeholder="🔍 Tafuta game... (mfano: FIFA)">
+    <div class="filters" id="filterButtons">
+      <button class="filter-btn active" data-cat="all">Zote</button>
+      <button class="filter-btn" data-cat="key">Game Keys</button>
+      <button class="filter-btn" data-cat="topup">Top-Up</button>
+      <button class="filter-btn" data-cat="gift">Gift Cards</button>
+      <button class="filter-btn" data-cat="account">Steam Accounts</button>
+    </div>
+  </section>
+
+  <section class="shop-grid" id="productGrid">
+
+    <div class="game-card" data-cat="key">
+      <div class="game-cover cover-fifa">⚽</div>
+      <h3>FIFA 25</h3>
+      <p class="game-type">Game Key • PC</p>
+      <p class="game-price">45,000 TZS</p>
+      <a href="product.html?id=fifa25" class="btn-buy">Nunua</a>
+    </div>
+
+    <div class="game-card" data-cat="key">
+      <div class="game-cover cover-gta">🚗</div>
+      <h3>GTA V</h3>
+      <p class="game-type">Game Key • PC</p>
+      <p class="game-price">35,000 TZS</p>
+      <a href="product.html?id=gta5" class="btn-buy">Nunua</a>
+    </div>
+
+    <div class="game-card" data-cat="key">
+      <div class="game-cover cover-mine">🧱</div>
+      <h3>Minecraft</h3>
+      <p class="game-type">Game Key • PC</p>
+      <p class="game-price">30,000 TZS</p>
+      <a href="product.html?id=minecraft" class="btn-buy">Nunua</a>
+    </div>
+
+    <div class="game-card" data-cat="key">
+      <div class="game-cover cover-cod">💥</div>
+      <h3>Call of Duty: MW3</h3>
+      <p class="game-type">Game Key • PC</p>
+      <p class="game-price">55,000 TZS</p>
+      <a href="product.html?id=codmw3" class="btn-buy">Nunua</a>
+    </div>
+
+    <div class="game-card" data-cat="topup">
+      <div class="game-cover cover-cod">🪙</div>
+      <h3>COD Points 1100</h3>
+      <p class="game-type">Top-Up • Call of Duty</p>
+      <p class="game-price">40,000 TZS</p>
+      <a href="product.html?id=codpoints" class="btn-buy">Nunua</a>
+    </div>
+
+    <div class="game-card" data-cat="topup">
+      <div class="game-cover cover-gta">💰</div>
+      <h3>GTA V — GTA$ 8M</h3>
+      <p class="game-type">Top-Up • GTA Online</p>
+      <p class="game-price">25,000 TZS</p>
+      <a href="product.html?id=gtamoney" class="btn-buy">Nunua</a>
+    </div>
+
+    <div class="game-card" data-cat="topup">
+      <div class="game-cover cover-fifa">⚡</div>
+      <h3>FIFA Ultimate Team 12K</h3>
+      <p class="game-type">Top-Up • FUT Points</p>
+      <p class="game-price">50,000 TZS</p>
+      <a href="product.html?id=futpoints" class="btn-buy">Nunua</a>
+    </div>
+
+    <div class="game-card" data-cat="gift">
+      <div class="game-cover cover-mine">🎁</div>
+      <h3>Steam Gift Card $10</h3>
+      <p class="game-type">Gift Card • Steam</p>
+      <p class="game-price">30,000 TZS</p>
+      <a href="product.html?id=steam10" class="btn-buy">Nunua</a>
+    </div>
+
+    <div class="game-card" data-cat="gift">
+      <div class="game-cover cover-gta">🎁</div>
+      <h3>Steam Gift Card $20</h3>
+      <p class="game-type">Gift Card • Steam</p>
+      <p class="game-price">58,000 TZS</p>
+      <a href="product.html?id=steam20" class="btn-buy">Nunua</a>
+    </div>
+
+    <div class="game-card" data-cat="gift">
+      <div class="game-cover cover-fifa">🎁</div>
+      <h3>PlayStation Card $10</h3>
+      <p class="game-type">Gift Card • PSN</p>
+      <p class="game-price">32,000 TZS</p>
+      <a href="product.html?id=psn10" class="btn-buy">Nunua</a>
+    </div>
+
+    <div class="game-card" data-cat="account">
+      <div class="game-cover cover-cod">👤</div>
+      <h3>Steam Account (FIFA 25)</h3>
+      <p class="game-type">Account • Full Access</p>
+      <p class="game-price">60,000 TZS</p>
+      <a href="product.html?id=accountfifa" class="btn-buy">Nunua</a>
+    </div>
+
+    <div class="game-card" data-cat="account">
+      <div class="game-cover cover-gta">👤</div>
+      <h3>Steam Account (GTA V)</h3>
+      <p class="game-type">Account • Full Access</p>
+      <p class="game-price">50,000 TZS</p>
+      <a href="product.html?id=accountgta" class="btn-buy">Nunua</a>
+    </div>
+
+  </section>
+
+  <section class="request">
+    <h2>🔍 Game Haipo Kwenye Duka?</h2>
+    <p>Omba game yako — wateja wengi wakiiomba, tunaiweka haraka!</p>
+    <a href="requests.html" class="btn-primary">📝 Omba Game Sasa</a>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <h3>🎮 GameHub</h3>
+        <p>Duka la gaming la Tanzania: game keys, top-ups, gift cards na rental.</p>
+      </div>
+      <div>
+        <h3>Links</h3>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="rental.html">Rental</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <p>📱 +255 700 000 000</p>
+        <p>📧 info@gamehub.co.tz</p>
+        <p>💬 <a href="https://wa.me/255700000000" target="_blank">WhatsApp Support</a></p>
+      </div>
+    </div>
+    <p class="copyright">© 2026 GameHub. Haki zote zimehifadhiwa.</p>
+  </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+  <script src="chat.js"></script>
+
+  <!-- ═══════════ JS: SEARCH + FILTER ═══════════ -->
+  <script>
+    const searchBox = document.getElementById('searchBox');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+
+    function applyFilters() {
+      const term = searchBox.value.toLowerCase();
+      const activeCat = document.querySelector('.filter-btn.active').dataset.cat;
+      document.querySelectorAll('.game-card').forEach(card => {
+        const name = card.querySelector('h3').textContent.toLowerCase();
+        const cat = card.dataset.cat;
+        const matchesSearch = name.includes(term);
+        const matchesCat = activeCat === 'all' || cat === activeCat;
+        card.style.display = (matchesSearch && matchesCat) ? 'block' : 'none';
+      });
+    }
+
+    searchBox.addEventListener('input', applyFilters);
+
+    // Kama kuna ?search= kwenye URL (kutoka Home), jaza search box moja kwa moja
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialSearch = urlParams.get('search');
+    if (initialSearch) { searchBox.value = initialSearch; applyFilters(); }
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
+      });
+    });
+
+    // ===== Pakua bidhaa zilizoongezwa na Admin (kutoka API) =====
+    fetch('/api/products')
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success || data.products.length === 0) return;
+        const grid = document.getElementById('productGrid');
+        data.products.filter(p => !p.section || p.section === 'shop').forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'game-card';
+          card.dataset.cat = 'key';
+          const cover = p.imageUrl
+            ? `<div class="game-cover" style="padding:0; overflow:hidden;"><img src="${p.imageUrl}" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML='${p.emoji}'"></div>`
+            : `<div class="game-cover cover-mine">${p.emoji}</div>`;
+          card.innerHTML = `
+            ${cover}
+            <h3>${p.name}</h3>
+            <p class="game-type">${p.type || 'Bidhaa'}</p>
+            <p class="game-price">${Number(p.price).toLocaleString()} TZS</p>
+            <a href="product.html?id=${p.id}&admin=1" class="btn-buy">Nunua</a>`;
+          grid.appendChild(card);
+        });
+      })
+      .catch(() => {});
+  </script>
+
+</body>
+</html>

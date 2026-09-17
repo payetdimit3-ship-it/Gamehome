@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rental — GameHub</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .sidebar { width:240px; height:100vh; background:#080912; border-right:1px solid #24243a; position:fixed; left:0; top:0; padding:25px 18px; overflow-y:auto; z-index:200; }
+    .sidebar .logo { font-size:22px; font-weight:bold; margin-bottom:35px; text-align:center; }
+    .sidebar .logo span { color:#9b35ff; }
+    .menu a { display:flex; align-items:center; gap:10px; color:#ddd; padding:14px 15px; margin:4px 0; border-radius:10px; transition:0.3s; font-size:14px; text-decoration:none; }
+    .menu a:hover { background:#7525d8; color:#fff; }
+    .menu a.active { background:linear-gradient(90deg,#7725d8,#9c35ff); color:#fff; }
+    .cart-badge { background:#ff3eb5; color:#fff; font-size:11px; font-weight:bold; border-radius:20px; padding:1px 7px; margin-left:auto; }
+    .main { margin-left:240px; }
+    .topbar { display:flex; justify-content:flex-end; align-items:center; padding:18px 30px 0; }
+    @media(max-width:700px) {
+      .sidebar { width:64px; padding:15px 6px; }
+      .sidebar .logo { font-size:0; }
+      .sidebar .logo::before { content:"🎮"; font-size:24px; }
+      .menu a span.label { display:none; }
+      .main { margin-left:64px; }
+      .topbar { padding:12px 15px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="logo">🎮 GAME<span>HUB</span></div>
+    <div class="menu">
+      <a href="index.html">🏠 <span class="label">Home</span></a>
+      <a href="shop.html">🎮 <span class="label">All Games</span></a>
+      <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
+      <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
+      <a href="rental.html" class="active">⏱️ <span class="label">GeForce Rental</span></a>
+      <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
+      <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
+      <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
+      <a href="myorders.html">📦 <span class="label">My Orders</span></a>
+      <a href="requests.html">🔍 <span class="label">Requests</span></a>
+      <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
+      <a href="contact.html">☎ <span class="label">Contact</span></a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <a href="login.html" class="btn-login">🔐 Login</a>
+    </div>
+
+
+  <section class="shop-banner">
+    <h1>⏱️ Kodisha Muda wa Kucheza</h1>
+    <p>Cheza kwenye GeForce NOW — malipo ya M-Pesa/Tigo/Airtel automatic, timer inaanza mara moja</p>
+  </section>
+
+  <section class="rental-page">
+    <h2>📦 Packages Zilizopo</h2>
+    <div class="rental-grid">
+      <div class="rental-card">
+        <h3>Dakika 20</h3>
+        <p class="rental-price">300 TZS</p>
+        <button class="btn-rent" onclick="addRental(20, 300)">➕ Ongeza</button>
+      </div>
+      <div class="rental-card">
+        <h3>Dakika 50</h3>
+        <p class="rental-price">500 TZS</p>
+        <button class="btn-rent" onclick="addRental(50, 500)">➕ Ongeza</button>
+      </div>
+      <div class="rental-card popular">
+        <h3>Masaa 2</h3>
+        <p class="rental-price">1,000 TZS</p>
+        <span class="tag">POPULAR</span>
+        <button class="btn-rent" onclick="addRental(120, 1000)">➕ Ongeza</button>
+      </div>
+    </div>
+
+    <div class="ai-pricing">
+      <h2>🤖 AI Pricing — Muda Zaidi?</h2>
+      <p class="section-sub">Chagua muda wowote — AI inakokotoa bei nafuu zaidi kwako</p>
+
+      <div class="custom-row">
+        <input type="number" id="customMinutes" min="1" placeholder="Dakika (mfano: 180)" oninput="calcPrice()">
+        <div class="price-box">
+          <span>Bei Yako:</span>
+          <strong id="customPrice">— TZS</strong>
+        </div>
+        <button class="btn-primary" id="addCustomBtn" onclick="addCustomRental()" disabled>➕ Ongeza Kwenye Kikapu</button>
+      </div>
+      <p class="rental-note">💡 Kadiri muda unavyoongezeka, bei kwa dakika inashuka. Siri ya wateja wa akili!</p>
+    </div>
+
+    <div class="cart-mini">
+      <h2>🛒 Kikapu Chako</h2>
+      <div id="miniCartItems"></div>
+      <p class="checkout-total">JUMLA: <span id="miniCartTotal">0 TZS</span></p>
+      <a href="cart.html" class="btn-primary" style="display:block; text-align:center;">💳 Enda Kulipa</a>
+    </div>
+
+    <p class="rental-note">🎮 Baada ya malipo, timer inaanza automatic — angalia <a href="mygames.html" style="color:#00e5ff;">My Games</a>.</p>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <h3>🎮 GameHub</h3>
+        <p>Duka la gaming la Tanzania: game keys, top-ups, gift cards na rental.</p>
+      </div>
+      <div>
+        <h3>Links</h3>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="rental.html">Rental</a>
+        <a href="mygames.html">My Games</a>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <p>📱 +255 700 000 000</p>
+        <p>📧 info@gamehub.co.tz</p>
+        <p>💬 <a href="https://wa.me/255700000000" target="_blank">WhatsApp Support</a></p>
+      </div>
+    </div>
+    <p class="copyright">© 2026 GameHub. Haki zote zimehifadhiwa.</p>
+  </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+  <script src="chat.js"></script>
+
+  <script>
+    function aiPrice(minutes) {
+      minutes = parseInt(minutes);
+      if (!minutes || minutes < 1) return 0;
+      const rate = minutes <= 20 ? 15 : minutes <= 50 ? 10 : 8;
+      const raw = minutes * rate;
+      return Math.round(raw / 100) * 100;
+    }
+
+    function calcPrice() {
+      const minutes = document.getElementById('customMinutes').value;
+      const price = aiPrice(minutes);
+      document.getElementById('customPrice').textContent = price ? price.toLocaleString() + ' TZS' : '— TZS';
+      document.getElementById('addCustomBtn').disabled = !price;
+    }
+
+    function addRental(minutes, price) {
+      addItem('rent' + minutes, 'Rental ' + label(minutes), '⏱️', price, minutes);
+    }
+
+    function addCustomRental() {
+      const minutes = parseInt(document.getElementById('customMinutes').value);
+      const price = aiPrice(minutes);
+      if (!price) return;
+      addItem('rentC' + minutes + '-' + Date.now(), 'Rental ' + label(minutes) + ' (Custom)', '⏱️', price, minutes);
+    }
+
+    function label(minutes) {
+      if (minutes < 60) return 'Dakika ' + minutes;
+      const h = Math.floor(minutes / 60);
+      const m = minutes % 60;
+      return (m ? h + ' Masaa ' + m + ' Dakika' : 'Masaa ' + h);
+    }
+
+    function addItem(id, name, emoji, num, rentalMinutes) {
+      let cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
+      if (cart[id]) { cart[id].qty += 1; }
+      else { cart[id] = { id, name, emoji, price: num.toLocaleString() + ' TZS', num, qty: 1, rentalMinutes }; }
+      localStorage.setItem('gamehubCart', JSON.stringify(cart));
+      renderMiniCart();
+      window.updateCartBadge();
+      alert('✅ Imeongezwa kwenye kikapu!');
+    }
+
+    function renderMiniCart() {
+      const cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
+      const items = Object.values(cart);
+      const box = document.getElementById('miniCartItems');
+      let total = 0;
+      box.innerHTML = '';
+      items.forEach(i => {
+        total += i.num * i.qty;
+        box.innerHTML += `<div class="checkout-item"><span>${i.emoji} ${i.name} × ${i.qty}</span><span>${(i.num*i.qty).toLocaleString()} TZS</span></div>`;
+      });
+      document.getElementById('miniCartTotal').textContent = total.toLocaleString() + ' TZS';
+    }
+
+    renderMiniCart();
+  </script>
+
+</body>
+</html>

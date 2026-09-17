@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketplace — GameHub</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .sidebar { width:240px; height:100vh; background:#080912; border-right:1px solid #24243a; position:fixed; left:0; top:0; padding:25px 18px; overflow-y:auto; z-index:200; }
+    .sidebar .logo { font-size:22px; font-weight:bold; margin-bottom:35px; text-align:center; }
+    .sidebar .logo span { color:#9b35ff; }
+    .menu a { display:flex; align-items:center; gap:10px; color:#ddd; padding:14px 15px; margin:4px 0; border-radius:10px; transition:0.3s; font-size:14px; text-decoration:none; }
+    .menu a:hover { background:#7525d8; color:#fff; }
+    .menu a.active { background:linear-gradient(90deg,#7725d8,#9c35ff); color:#fff; }
+    .cart-badge { background:#ff3eb5; color:#fff; font-size:11px; font-weight:bold; border-radius:20px; padding:1px 7px; margin-left:auto; }
+    .main { margin-left:240px; }
+    .topbar { display:flex; justify-content:flex-end; align-items:center; padding:18px 30px 0; }
+    .biz-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; padding:0 20px 30px; max-width:1100px; margin:0 auto; }
+    .biz-card { background:#15152a; border:1px solid #2a2a4a; border-radius:14px; overflow:hidden; }
+    .biz-cover { height:120px; background:linear-gradient(135deg,#1a1040,#7b2ff7); display:flex; align-items:center; justify-content:center; font-size:40px; }
+    .biz-cover img { width:100%; height:100%; object-fit:cover; }
+    .biz-body { padding:14px; }
+    .biz-body h3 { font-size:16px; margin-bottom:6px; }
+    .biz-body .cat { color:#00e5ff; font-size:11px; text-transform:uppercase; letter-spacing:1px; }
+    .biz-body p { color:#c9c9e0; font-size:13px; margin:8px 0; }
+    .biz-body a.contact { display:block; text-align:center; background:#7b2ff7; color:#fff; padding:9px; border-radius:8px; font-weight:bold; font-size:13px; margin-top:8px; }
+    @media(max-width:700px) {
+      .sidebar { width:64px; padding:15px 6px; }
+      .sidebar .logo { font-size:0; }
+      .sidebar .logo::before { content:"🎮"; font-size:24px; }
+      .menu a span.label { display:none; }
+      .main { margin-left:64px; }
+      .topbar { padding:12px 15px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="logo">🎮 GAME<span>HUB</span></div>
+    <div class="menu">
+      <a href="index.html">🏠 <span class="label">Home</span></a>
+      <a href="shop.html">🎮 <span class="label">All Games</span></a>
+      <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
+      <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
+      <a href="rental.html">⏱️ <span class="label">GeForce Rental</span></a>
+      <a href="marketplace.html" class="active">🏪 <span class="label">Marketplace</span></a>
+      <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
+      <a href="myorders.html">📦 <span class="label">My Orders</span></a>
+      <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
+      <a href="requests.html">🔍 <span class="label">Requests</span></a>
+      <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
+      <a href="contact.html">☎ <span class="label">Contact</span></a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <a href="login.html" class="btn-login">🔐 Login</a>
+    </div>
+
+    <section class="shop-banner">
+      <h1>🏪 Marketplace</h1>
+      <p>Biashara nyingine zinazoshirikiana na GameHub</p>
+    </section>
+
+    <div class="biz-grid" id="bizGrid">
+      <p style="color:#8f8faa; grid-column:1/-1; text-align:center;">Inapakia...</p>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-grid">
+        <div>
+          <h3>🎮 GameHub</h3>
+          <p>Duka la gaming la Tanzania: game keys, top-ups, gift cards na rental.</p>
+        </div>
+        <div>
+          <h3>Links</h3>
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="marketplace.html">Marketplace</a>
+          <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact</a>
+        </div>
+        <div>
+          <h3>Contact</h3>
+          <p>📱 +255 700 000 000</p>
+          <p>📧 info@gamehub.co.tz</p>
+          <p>💬 <a href="https://wa.me/255700000000" target="_blank">WhatsApp Support</a></p>
+        </div>
+      </div>
+      <p class="copyright">© 2026 GameHub. Haki zote zimehifadhiwa.</p>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+  <script src="chat.js"></script>
+
+  <script>
+    fetch('/api/marketplace')
+      .then(r => r.json())
+      .then(data => {
+        const grid = document.getElementById('bizGrid');
+        if (!data.success || !data.listings.length) {
+          grid.innerHTML = '<p style="color:#8f8faa; grid-column:1/-1; text-align:center;">Hakuna biashara zilizoorodheshwa bado.</p>';
+          return;
+        }
+        grid.innerHTML = data.listings.slice().reverse().map(b => `
+          <div class="biz-card">
+            <div class="biz-cover">${b.imageUrl ? `<img src="${b.imageUrl}" onerror="this.parentElement.textContent='🏪'">` : '🏪'}</div>
+            <div class="biz-body">
+              <span class="cat">${b.category}</span>
+              <h3>${b.businessName}</h3>
+              <p>${b.description || ''}</p>
+              <a class="contact" href="${b.contact.startsWith('http') ? b.contact : (b.contact.match(/^\+?\d/) ? 'https://wa.me/' + b.contact.replace(/[^\d]/g,'') : 'mailto:' + b.contact)}" target="_blank">📞 Wasiliana</a>
+            </div>
+          </div>`).join('');
+      })
+      .catch(() => {
+        document.getElementById('bizGrid').innerHTML = '<p style="color:#ff3d71; grid-column:1/-1; text-align:center;">Hitilafu ya mtandao.</p>';
+      });
+  </script>
+
+</body>
+</html>

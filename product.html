@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product — GameHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">🎮 <span>GAME</span>HUB</div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="rental.html">Rental</a>
+      <a href="mygames.html">My Games</a>
+      <a href="requests.html">Requests</a>
+      <a href="cart.html">🛒 Kikapu (<span id="cartCount">0</span>)</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <a href="login.html" class="btn-login">🔐 Login</a>
+  </header>
+
+  <section class="product-page" id="productContainer">
+    <h2>Inapakia...</h2>
+  </section>
+
+  <section class="product-page" style="padding-top:0;">
+    <div style="max-width:1000px; margin:0 auto; background:#15152a; border:1px solid #2a2a4a; border-radius:16px; padding:22px;">
+      <h2 style="font-size:20px; text-align:left; margin-bottom:14px;">⭐ Maoni ya Wateja</h2>
+      <div id="reviewSummary" style="margin-bottom:16px; color:#c9c9e0;">Inapakia...</div>
+
+      <div class="admin-form" style="margin-bottom:18px;">
+        <h3>Acha Maoni Yako</h3>
+        <select id="reviewRating">
+          <option value="5">⭐⭐⭐⭐⭐ Nzuri Sana</option>
+          <option value="4">⭐⭐⭐⭐ Nzuri</option>
+          <option value="3">⭐⭐⭐ Wastani</option>
+          <option value="2">⭐⭐ Si Nzuri</option>
+          <option value="1">⭐ Mbaya</option>
+        </select>
+        <input type="text" id="reviewComment" placeholder="Maoni yako (hiari)">
+        <button class="btn-primary" id="submitReviewBtn">📤 Tuma Maoni</button>
+        <p id="reviewMsg" class="pay-status"></p>
+      </div>
+
+      <div id="reviewsList"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <h3>🎮 GameHub</h3>
+        <p>Duka la gaming la Tanzania: game keys, top-ups, gift cards na rental.</p>
+      </div>
+      <div>
+        <h3>Links</h3>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="rental.html">Rental</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <p>📱 +255 700 000 000</p>
+        <p>📧 info@gamehub.co.tz</p>
+        <p>💬 <a href="https://wa.me/255700000000" target="_blank">WhatsApp Support</a></p>
+      </div>
+    </div>
+    <p class="copyright">© 2026 GameHub. Haki zote zimehifadhiwa.</p>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="chat.js"></script>
+
+  <!-- ═══════════ DATA + LOGIC YA BIDHAA ═══════════ -->
+  <script>
+    // ===== BIDHAA ZA DEFAULT (ongezwa kila unapoongeza game kwa mkono) =====
+    const PRODUCTS = {
+      fifa25: { name: 'FIFA 25', type: 'Game Key • PC', price: '45,000 TZS', emoji: '⚽',
+        desc: 'Game key halali ya FIFA 25 kwa PC. Inatumwa kwenye email yako mara tu malipo yanapofika. Inahitaji Steam account.',
+        features: ['Key halali ya Steam', 'Inatumwa kwa email automatic', 'Msaada wa AI 24/7'] },
+      gta5: { name: 'GTA V', type: 'Game Key • PC', price: '35,000 TZS', emoji: '🚗',
+        desc: 'Game key halali ya GTA V kwa PC. Pata GTA Online pamoja nayo. Inatumwa automatic baada ya malipo.',
+        features: ['Key halali ya Steam', 'Inajumuisha GTA Online', 'Delivery automatic'] },
+      minecraft: { name: 'Minecraft', type: 'Game Key • PC', price: '30,000 TZS', emoji: '🧱',
+        desc: 'Game key halali ya Minecraft Java Edition. Cheza single player au multiplayer na marafiki.',
+        features: ['Java Edition', 'Key halali ya Microsoft', 'Delivery automatic'] },
+      codmw3: { name: 'Call of Duty: MW3', type: 'Game Key • PC', price: '55,000 TZS', emoji: '💥',
+        desc: 'Game key halali ya Call of Duty: Modern Warfare 3 kwa PC. Campaign, multiplayer na zombies.',
+        features: ['Key halali', 'Campaign + Multiplayer', 'Delivery automatic'] },
+      codpoints: { name: 'COD Points 1100', type: 'Top-Up • Call of Duty', price: '40,000 TZS', emoji: '🪙',
+        desc: 'Jaza COD Points 1100 kwenye account yako ya Call of Duty. Tumia kununua battle pass, skins na zaidi.',
+        features: ['Points zinafika papo hapo', 'Inahitaji jina la mchezaji', 'Top-Up automatic'] },
+      gtamoney: { name: 'GTA V — GTA$ 8M', type: 'Top-Up • GTA Online', price: '25,000 TZS', emoji: '💰',
+        desc: 'Jaza GTA$ milioni 8 kwenye GTA Online account yako. Tumia kununua magari, nyumba na biashara.',
+        features: ['GTA$ 8,000,000', 'Inafika automatic', 'Salama na haraka'] },
+      futpoints: { name: 'FIFA Ultimate Team 12K', type: 'Top-Up • FUT Points', price: '50,000 TZS', emoji: '⚡',
+        desc: 'Jaza FUT Points 12,000 kwenye FIFA Ultimate Team. Fungua packs na jenga timu yako ya ndoto.',
+        features: ['FUT Points 12,000', 'Inafika automatic', 'Inahitaji jina la mchezaji'] },
+      steam10: { name: 'Steam Gift Card $10', type: 'Gift Card • Steam', price: '30,000 TZS', emoji: '🎁',
+        desc: 'Kadi ya zawadi ya Steam yenye thamani ya $10. Tumia kununua games zozote kwenye Steam.',
+        features: ['Thamani $10', 'Code inatumwa kwa email', 'Inafaa kama zawadi'] },
+      steam20: { name: 'Steam Gift Card $20', type: 'Gift Card • Steam', price: '58,000 TZS', emoji: '🎁',
+        desc: 'Kadi ya zawadi ya Steam yenye thamani ya $20. Tumia kununua games zozote kwenye Steam.',
+        features: ['Thamani $20', 'Code inatumwa kwa email', 'Inafaa kama zawadi'] },
+      psn10: { name: 'PlayStation Card $10', type: 'Gift Card • PSN', price: '32,000 TZS', emoji: '🎁',
+        desc: 'Kadi ya zawadi ya PlayStation yenye thamani ya $10. Tumia kununua games kwenye PSN.',
+        features: ['Thamani $10', 'Code inatumwa kwa email', 'Kwa PlayStation Network'] },
+      accountfifa: { name: 'Steam Account (FIFA 25)', type: 'Account • Full Access', price: '60,000 TZS', emoji: '👤',
+        desc: 'Steam account kamili yenye FIFA 25. Unapokea username na password automatic baada ya malipo.',
+        features: ['Account kamili', 'Username + Password kwa email', 'Msaada 24/7'] },
+      accountgta: { name: 'Steam Account (GTA V)', type: 'Account • Full Access', price: '50,000 TZS', emoji: '👤',
+        desc: 'Steam account kamili yenye GTA V. Unapokea username na password automatic baada ya malipo.',
+        features: ['Account kamili', 'Username + Password kwa email', 'Msaada 24/7'] }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id') || 'fifa25';
+    const isAdminProduct = params.get('admin') === '1';
+    const container = document.getElementById('productContainer');
+
+    function youTubeEmbedUrl(url) {
+      if (!url) return '';
+      const m = url.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=|youtube\.com\/embed\/)([\w-]{6,})/);
+      return m ? 'https://www.youtube.com/embed/' + m[1] : '';
+    }
+
+    function renderProduct(product) {
+      const coverHtml = product.imageUrl
+        ? `<img src="${product.imageUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:14px;" onerror="this.parentElement.textContent='${product.emoji}'">`
+        : product.emoji;
+
+      const embedUrl = youTubeEmbedUrl(product.trailerUrl);
+      const trailerHtml = embedUrl
+        ? `<div style="margin:20px 0; border-radius:14px; overflow:hidden; aspect-ratio:16/9;">
+             <iframe src="${embedUrl}" style="width:100%; height:100%; border:0;" allowfullscreen title="Trailer"></iframe>
+           </div>`
+        : '';
+
+      container.innerHTML = `
+        <div class="product-detail">
+          <div class="product-cover">${coverHtml}</div>
+          <div class="product-info">
+            <p class="product-cat">${product.type}</p>
+            <h1>${product.name}</h1>
+            <p class="product-price">${product.price}</p>
+            <p class="product-desc">${product.desc}</p>
+            <ul class="product-features">
+              ${(product.features || []).map(f => `<li>✅ ${f}</li>`).join('')}
+            </ul>
+            <div class="product-actions">
+              <a href="#" class="btn-primary" id="buyNowBtn" style="background:#00c853;">⚡ Nunua Sasa</a>
+              <a href="#" class="btn-secondary" id="addToCartBtn">🛒 Ongeza Kwenye Kikapu</a>
+              <button id="wishBtn" class="btn-secondary" style="cursor:pointer;">🤍 Wishlist</button>
+              <a href="shop.html" class="btn-secondary">← Rudi Dukani</a>
+            </div>
+          </div>
+        </div>
+        ${trailerHtml}
+      `;
+
+      const numPrice = typeof product.priceNumber === 'number'
+        ? product.priceNumber
+        : parseInt(String(product.price).replace(/[^\d]/g, ''));
+
+      document.getElementById('buyNowBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        const item = { id, name: product.name, emoji: product.emoji, price: product.price, num: numPrice, qty: 1, downloadLink: product.downloadLink || '', accountUser: product.accountUser || '', accountPassword: product.accountPassword || '' };
+        localStorage.setItem('gamehubQuickBuy', JSON.stringify(item));
+        window.location.href = 'checkout.html?quick=1';
+      });
+
+      document.getElementById('addToCartBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        let cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
+        if (cart[id]) { cart[id].qty += 1; }
+        else { cart[id] = { id, name: product.name, emoji: product.emoji, price: product.price, num: numPrice, qty: 1, downloadLink: product.downloadLink || '', accountUser: product.accountUser || '', accountPassword: product.accountPassword || '' }; }
+        localStorage.setItem('gamehubCart', JSON.stringify(cart));
+
+        const btn = document.getElementById('addToCartBtn');
+        btn.textContent = '✅ Imeongezwa!';
+        setTimeout(() => { btn.textContent = '🛒 Ongeza Kwenye Kikapu'; }, 1500);
+        window.updateCartBadge();
+      });
+
+      // 🤍 WISHLIST
+      const wishBtn = document.getElementById('wishBtn');
+      const isAdminProd = isAdminProduct || !PRODUCTS[id];
+      function refreshWishBtn() {
+        const wish = JSON.parse(localStorage.getItem('gamehubWishlist') || '{}');
+        wishBtn.textContent = wish[id] ? '❤️ Kwenye Wishlist' : '🤍 Wishlist';
+      }
+      wishBtn.addEventListener('click', () => {
+        const wish = JSON.parse(localStorage.getItem('gamehubWishlist') || '{}');
+        if (wish[id]) { delete wish[id]; }
+        else { wish[id] = { id, name: product.name, emoji: product.emoji, imageUrl: product.imageUrl || '', price: product.price, admin: isAdminProd }; }
+        localStorage.setItem('gamehubWishlist', JSON.stringify(wish));
+        refreshWishBtn();
+      });
+      refreshWishBtn();
+    }
+
+    function renderNotFound() {
+      container.innerHTML = `
+        <div style="text-align:center; padding:40px;">
+          <h2>😕 Bidhaa haipatikani</h2>
+          <a href="shop.html" class="btn-primary">← Rudi Dukani</a>
+        </div>
+      `;
+    }
+
+    if (PRODUCTS[id] && !isAdminProduct) {
+      renderProduct(PRODUCTS[id]);
+    } else {
+      // Tafuta kwenye bidhaa zilizoongezwa na Admin
+      fetch('/api/products')
+        .then(r => r.json())
+        .then(data => {
+          const found = data.success ? data.products.find(p => p.id === id) : null;
+          if (found) {
+            renderProduct({
+              name: found.name, type: found.type, emoji: found.emoji,
+              price: Number(found.price).toLocaleString() + ' TZS',
+              priceNumber: Number(found.price),
+              desc: found.desc || 'Bidhaa ya GameHub.',
+              downloadLink: found.downloadLink || '',
+              accountUser: found.accountUser || '',
+              accountPassword: found.accountPassword || '',
+              imageUrl: found.imageUrl || '',
+              trailerUrl: found.trailerUrl || '',
+              features: ['Delivery automatic', 'Msaada wa AI 24/7']
+            });
+          } else if (PRODUCTS[id]) {
+            renderProduct(PRODUCTS[id]);
+          } else {
+            renderNotFound();
+          }
+        })
+        .catch(renderNotFound);
+    }
+
+    // ⭐ REVIEWS
+    async function loadReviews() {
+      try {
+        const res = await fetch('/api/reviews/' + id);
+        const data = await res.json();
+        const summary = document.getElementById('reviewSummary');
+        const list = document.getElementById('reviewsList');
+        if (!data.count) {
+          summary.innerHTML = '<span style="color:#8f8faa;">Hakuna maoni bado — kuwa wa kwanza!</span>';
+          list.innerHTML = '';
+          return;
+        }
+        const stars = '⭐'.repeat(Math.round(data.average));
+        summary.innerHTML = `<strong style="color:#00e5ff; font-size:20px;">${data.average}</strong> ${stars} <span style="color:#8f8faa;">(maoni ${data.count})</span>`;
+        list.innerHTML = data.reviews.map(r => `
+          <div style="border-top:1px solid #2a2a4a; padding:12px 0;">
+            <strong>${r.name}</strong> <span style="color:#ffb020;">${'⭐'.repeat(r.rating)}</span>
+            <p style="color:#c9c9e0; font-size:13px; margin-top:4px;">${r.comment || ''}</p>
+            <small style="color:#5a5a75;">${new Date(r.date).toLocaleDateString()}</small>
+          </div>`).join('');
+      } catch (e) {}
+    }
+
+    document.getElementById('submitReviewBtn').addEventListener('click', async () => {
+      const token = localStorage.getItem('gamehubToken');
+      const msg = document.getElementById('reviewMsg');
+      if (!token) {
+        msg.textContent = '🔐 Ingia kwanza kuacha maoni.';
+        setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+        return;
+      }
+      try {
+        const res = await fetch('/api/reviews/' + id, {
+          method: 'POST',
+          headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rating: document.getElementById('reviewRating').value,
+            comment: document.getElementById('reviewComment').value.trim()
+          })
+        });
+        const data = await res.json();
+        msg.textContent = data.message || (data.error || 'Hitilafu');
+        if (data.success) { document.getElementById('reviewComment').value = ''; loadReviews(); }
+      } catch (e) { msg.textContent = '❌ Hitilafu ya mtandao.'; }
+    });
+
+    loadReviews();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wishlist — GameHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">🎮 <span>GAME</span>HUB</div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="wishlist.html">❤️ Wishlist</a>
+      <a href="cart.html">🛒 Kikapu (<span id="cartCount">0</span>)</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <a href="login.html" class="btn-login">🔐 Login</a>
+  </header>
+
+  <section class="shop-banner">
+    <h1>❤️ Wishlist Yangu</h1>
+    <p>Games ulizoweka kwa ajili ya baadaye</p>
+  </section>
+
+  <section class="shop-grid" id="wishGrid" style="padding:0 20px 30px;"></section>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div><h3>🎮 GameHub</h3><p>Duka la gaming la Tanzania.</p></div>
+      <div><h3>Links</h3><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="faq.html">FAQ</a></div>
+      <div><h3>Contact</h3><p>📱 +255 700 000 000</p><p>📧 info@gamehub.co.tz</p></div>
+    </div>
+    <p class="copyright">© 2026 GameHub. Haki zote zimehifadhiwa.</p>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="chat.js"></script>
+
+  <script>
+    function renderWishlist() {
+      const wish = JSON.parse(localStorage.getItem('gamehubWishlist') || '{}');
+      const grid = document.getElementById('wishGrid');
+      const items = Object.values(wish);
+      if (!items.length) {
+        grid.innerHTML = '<div class="cart-empty" style="grid-column:1/-1;"><p>Wishlist yako ni tupu.</p><a href="shop.html" class="btn-primary">🛒 Nenda Dukani</a></div>';
+        return;
+      }
+      grid.innerHTML = items.map(g => `
+        <div class="game-card">
+          <div class="game-cover ${g.imageUrl ? '' : 'cover-mine'}" style="${g.imageUrl ? 'padding:0; overflow:hidden;' : ''}">${g.imageUrl ? `<img src="${g.imageUrl}" style="width:100%; height:100%; object-fit:cover;">` : (g.emoji || '🎮')}</div>
+          <h3>${g.name}</h3>
+          <p class="game-price">${g.price}</p>
+          <a href="product.html?id=${g.id}${g.admin ? '&admin=1' : ''}" class="btn-buy">Angalia</a>
+          <button onclick="removeWish('${g.id}')" style="width:100%; margin-top:8px; background:transparent; border:1px solid #ff3d71; color:#ff3d71; padding:8px; border-radius:8px; cursor:pointer; font-size:13px;">💔 Ondoa</button>
+        </div>`).join('');
+    }
+    function removeWish(id) {
+      const wish = JSON.parse(localStorage.getItem('gamehubWishlist') || '{}');
+      delete wish[id];
+      localStorage.setItem('gamehubWishlist', JSON.stringify(wish));
+      renderWishlist();
+    }
+    renderWishlist();
+  </script>
+</body>
+</html>
