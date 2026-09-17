@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Movies — GameHub</title><link rel="stylesheet" href="style.css"><style>
+.page-shell{max-width:1200px;margin:0 auto;padding:24px 20px 50px}.page-hero{background:linear-gradient(135deg,#120b2d,#241052 55%,#11152b);border:1px solid #35206b;border-radius:22px;padding:34px 28px;margin-bottom:22px}.page-hero h1{font-size:clamp(26px,5vw,42px);margin-bottom:8px}.page-hero p{color:#b9b7cf;max-width:850px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}.card{background:#121323;border:1px solid #292844;border-radius:16px;padding:18px}.card:hover{border-color:#7b2ff7}.btn{display:inline-block;background:#7b2ff7;color:#fff;border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer}.btn.alt{background:#17203a;border:1px solid #3c4b78}.input{width:100%;background:#080914;color:#fff;border:1px solid #302d4a;border-radius:10px;padding:12px;margin:6px 0 12px;outline:none}.muted{color:#9b9ab2}.player{width:100%;aspect-ratio:16/9;background:#05050b;border-radius:14px;border:1px solid #302d4a;overflow:hidden}.player video,.player iframe{width:100%;height:100%;border:0;display:block}.badge{display:inline-block;font-size:11px;padding:4px 9px;border-radius:99px;background:#2a1a4e;color:#cdaaff}.ai-box{background:#0d0d1d;border:1px solid #35206b;border-radius:16px;padding:18px;margin-top:20px}.messages{min-height:150px;max-height:330px;overflow:auto;display:flex;flex-direction:column;gap:8px;margin:10px 0}.msg{padding:9px 12px;border-radius:12px;max-width:88%;white-space:pre-wrap}.user{align-self:flex-end;background:#7b2ff7}.bot{align-self:flex-start;background:#18182b;color:#e8e8f5}@media(max-width:700px){.page-shell{padding:16px 12px 40px}.page-hero{padding:25px 18px}}
+</style></head><body><div class="sidebar">
+<div class="logo">🎮 GAME<span>HUB</span></div>
+<div class="menu">
+<a href="index.html">🏠 <span class="label">Home</span></a>
+<a href="shop.html">🎮 <span class="label">All Games</span></a>
+<a href="categories.html">🗂️ <span class="label">Categories</span></a>
+<a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
+<a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
+<a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
+<a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
+<a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
+<a href="live.html">📺 <span class="label">Watch Live</span></a>
+<a href="livescores.html">📊 <span class="label">Live Scores</span></a>
+<a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
+<a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
+<a href="movies.html">🎬 <span class="label">Movies</span></a>
+<a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
+<a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
+<a href="mygames.html">🕹️ <span class="label">My Games</span></a>
+<a href="myorders.html">📦 <span class="label">My Orders</span></a>
+<a href="requests.html">🔍 <span class="label">Requests</span></a>
+<a href="profile.html">👤 <span class="label">Profile</span></a>
+<a href="health.html">🩺 <span class="label">Health AI</span></a>
+<a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
+<a href="contact.html">☎ <span class="label">Contact</span></a>
+</div></div><div class="main"><div class="topbar"><a href="login.html" class="btn-login" id="topLoginBtn">🔐 Login</a></div><div class="page-shell"><section class="page-hero"><h1>🎬 GameHub Movies</h1><p>Video library ya GameHub. Admin anaongeza video kupitia Admin Dashboard; wateja wanaweza kuangalia kwenye website.</p></section><div id="movies" class="grid"><div class="card">Inapakia movies...</div></div>
+<script>
+async function loadMovies(){const r=await fetch('/api/movies');const d=await r.json();const a=d.movies||[];document.getElementById('movies').innerHTML=a.length?a.map(m=>'<article class="card"><div class="player"><video controls playsinline preload="metadata" src="'+esc(m.videoUrl)+'"></video></div><h2 style="margin-top:10px">'+esc(m.title)+'</h2><p class="muted">'+esc(m.genre||'Movie')+' • '+esc(m.year||'')+'</p><p>'+esc(m.description||'')+'</p></article>').join(''):'<div class="card"><h3>🎬 Hakuna movie bado</h3><p class="muted">Admin hajapakia movie bado.</p></div>'}
+function esc(x){const d=document.createElement('div');d.textContent=x||'';return d.innerHTML}loadMovies().catch(()=>{});
+</script></div></div><script src="app.js"></script><script src="chat.js"></script></body></html>

@@ -65,6 +65,7 @@
       <button class="tab-btn" data-tab="marketplace">🏪 Marketplace</button>
       <button class="tab-btn" data-tab="coupons">🎟️ Coupons</button>
       <button class="tab-btn" data-tab="security">🛡️ Usalama</button>
+      <button class="tab-btn" data-tab="media">📺 Media & Live</button>
       <button class="tab-btn" data-tab="ai">🤖 AI</button>
     </div>
 
@@ -229,6 +230,58 @@
         <input type="text" id="aiCommand" placeholder="Andika amri yako hapa...">
         <button class="btn-primary" id="aiSendBtn">🚀 Tumia Amri</button>
         <div id="aiReply" class="ai-reply"></div>
+      </div>
+      <div class="admin-form" style="margin-top:18px;border-color:#7b2ff7;">
+        <h3>🧠 AI Web Developer & Manager — Claude 3.5 Sonnet</h3>
+        <p style="color:#8f8faa">Andika amri ya website kwa lugha ya kawaida. AI hutengeneza <b>JSON actions salama</b> na inaweza ku-update catalog, banner, movie, course video au live match kwenye data ya website. Haitekelezi raw JavaScript/SQL moja kwa moja.</p>
+        <textarea id="builderCommand" rows="5" placeholder="Mfano: Ongeza banner ya Tournament ya eFootball ya wiki hii kwenye Home Page yenye kitufe cha Kujiunga."></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-primary" id="builderPreview">👁️ Tengeneza Preview</button>
+          <button class="btn-primary" id="builderExecute">🚀 Tekeleza Mabadiliko</button>
+        </div>
+        <pre id="builderResult" style="white-space:pre-wrap;background:#080914;padding:14px;border-radius:10px;margin-top:12px;color:#d7d4e8;overflow:auto">Hakuna command bado.</pre>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-media" style="display:none;">
+      <h2>📺 Media, Live Matches, Courses & Movies</h2>
+      <p style="color:#8f8faa;margin-bottom:16px;">Hapa ndipo admin anaweka streams, movie uploads na video za kila course. Production inapendelea Supabase Storage; local fallback ni ya majaribio.</p>
+
+      <div class="admin-form">
+        <h3>⚽ Ongeza Live Match / Stream</h3>
+        <input id="liveTitle" placeholder="Jina la mechi">
+        <input id="liveLeague" placeholder="League (mfano NBC Premier League)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="homeTeam" placeholder="Home Team"><input id="awayTeam" placeholder="Away Team"></div>
+        <select id="liveStatus"><option>LIVE</option><option>UPCOMING</option><option>ENDED</option></select>
+        <input id="streamUrl" placeholder="Stream/Embed URL (YouTube embed, etc.)">
+        <input id="liveVideoUrl" placeholder="Au Video URL ya MP4/WebM">
+        <input id="startTime" placeholder="Muda/Tarehe">
+        <textarea id="liveDesc" rows="3" placeholder="Maelezo"></textarea>
+        <button class="btn-primary" id="addLiveBtn">➕ Weka Match</button>
+        <div id="liveList" style="margin-top:12px"></div>
+      </div>
+
+      <div class="admin-form" style="margin-top:18px">
+        <h3>🎬 Upload Movie</h3>
+        <input id="movieTitle" placeholder="Movie title">
+        <input id="movieGenre" placeholder="Genre">
+        <input id="movieYear" placeholder="Year">
+        <input id="moviePoster" placeholder="Poster URL (hiari)">
+        <textarea id="movieDesc" rows="3" placeholder="Maelezo ya movie"></textarea>
+        <input id="movieFile" type="file" accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov">
+        <button class="btn-primary" id="uploadMovieBtn">⬆️ Upload Movie</button>
+        <div id="movieList" style="margin-top:12px"></div>
+      </div>
+
+      <div class="admin-form" style="margin-top:18px">
+        <h3>🎓 Course Manager</h3>
+        <input id="courseName" placeholder="Jina la course">
+        <input id="courseLevel" placeholder="Level (Beginner/Intermediate/Advanced)">
+        <input id="coursePrice" type="number" placeholder="Bei TZS (0 = bure)">
+        <input id="courseThumb" placeholder="Thumbnail URL (hiari)">
+        <textarea id="courseDesc" rows="3" placeholder="Maelezo ya course"></textarea>
+        <button class="btn-primary" id="addCourseBtn">➕ Tengeneza Course</button>
+        <div id="courseList" style="margin-top:12px"></div>
       </div>
     </div>
   </section>
@@ -717,7 +770,7 @@
       const data = await res.json();
       msg.textContent = data.message || data.error || 'Hitilafu';
       document.getElementById('blockIpInput').value = '';
-      loadSecurityStats(); loadSecurityEvents();
+      loadSecurityStats(); loadSecurityEvents(); loadMediaData();
     });
 
     async function unblockIP(ip) {
@@ -761,6 +814,53 @@
       }
     });
 
+
+    // 🧠 INTERNAL AI WEB DEVELOPER & MANAGER
+    async function runBuilder(execute) {
+      const command=document.getElementById('builderCommand').value.trim();
+      const box=document.getElementById('builderResult');
+      if(!command){box.textContent='Andika amri kwanza.';return;}
+      box.textContent='⏳ Claude anapanga mabadiliko...';
+      try{
+        const r=await fetch('/api/admin/ai-builder',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify({command,execute})});
+        const d=await r.json();
+        if(!r.ok){box.textContent='❌ '+(d.error||'Hitilafu');return;}
+        box.textContent=JSON.stringify(d,null,2);
+        if(execute){loadProducts();loadStats();loadMediaData();}
+      }catch(e){box.textContent='❌ Hitilafu ya mtandao.';}
+    }
+    document.getElementById('builderPreview').addEventListener('click',()=>runBuilder(false));
+    document.getElementById('builderExecute').addEventListener('click',()=>{if(confirm('Tekeleza mabadiliko haya kwenye website data?'))runBuilder(true);});
+
+    async function loadMediaData(){
+      if(currentRole!=='admin')return;
+      try{
+        const [lr,mr,cr]=await Promise.all([fetch('/api/live-streams'),fetch('/api/movies'),fetch('/api/courses')]);
+        const l=await lr.json(),m=await mr.json(),c=await cr.json();
+        document.getElementById('liveList').innerHTML=(l.streams||[]).map(x=>`<div class="admin-row"><b>${x.title}</b><small>${x.homeTeam||''} vs ${x.awayTeam||''} • ${x.status}</small><button class="btn-vote" onclick="deleteLive('${x.id}')">🗑️</button></div>`).join('')||'<p style="color:#8f8faa">Hakuna live match.</p>';
+        document.getElementById('movieList').innerHTML=(m.movies||[]).map(x=>`<div class="admin-row"><b>🎬 ${x.title}</b><button class="btn-vote" onclick="deleteMovie('${x.id}')">🗑️</button></div>`).join('')||'<p style="color:#8f8faa">Hakuna movie.</p>';
+        document.getElementById('courseList').innerHTML=(c.courses||[]).map(x=>`<div class="admin-row"><div><b>🎓 ${x.name}</b><small>${(x.videos||[]).length} video(s)</small></div><label class="btn-vote" style="cursor:pointer">⬆️ Video<input type="file" accept="video/mp4,video/webm,video/quicktime" hidden onchange="uploadCourseVideo('${x.id}',this)"></label></div>`).join('')||'<p style="color:#8f8faa">Hakuna course.</p>';
+      }catch(e){}
+    }
+    async function deleteLive(id){if(!confirm('Futa match?'))return;await fetch('/api/admin/live-streams/'+id,{method:'DELETE',headers:{'Authorization':token}});loadMediaData();}
+    async function deleteMovie(id){if(!confirm('Futa movie?'))return;await fetch('/api/admin/movies/'+id,{method:'DELETE',headers:{'Authorization':token}});loadMediaData();}
+    document.getElementById('addLiveBtn').addEventListener('click',async()=>{
+      const body={title:liveTitle.value,league:liveLeague.value,homeTeam:homeTeam.value,awayTeam:awayTeam.value,status:liveStatus.value,streamUrl:streamUrl.value,videoUrl:liveVideoUrl.value,startTime:startTime.value,description:liveDesc.value};
+      const r=await fetch('/api/admin/live-streams',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)alert(d.error||'Hitilafu');else{alert('✅ Match imewekwa.');loadMediaData();}
+    });
+    document.getElementById('uploadMovieBtn').addEventListener('click',async()=>{
+      const f=movieFile.files[0];if(!f)return alert('Chagua video.');const fd=new FormData();fd.append('video',f);fd.append('title',movieTitle.value);fd.append('genre',movieGenre.value);fd.append('year',movieYear.value);fd.append('poster',moviePoster.value);fd.append('description',movieDesc.value);
+      const r=await fetch('/api/admin/movies/upload',{method:'POST',headers:{'Authorization':token},body:fd});const d=await r.json();alert(r.ok?'✅ Movie uploaded.':('❌ '+(d.error||'Hitilafu')));if(r.ok){movieFile.value='';loadMediaData();}
+    });
+    document.getElementById('addCourseBtn').addEventListener('click',async()=>{
+      const body={name:courseName.value,level:courseLevel.value,price:coursePrice.value,thumbnail:courseThumb.value,description:courseDesc.value};
+      const r=await fetch('/api/admin/courses',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();alert(r.ok?'✅ Course imeundwa.':('❌ '+(d.error||'Hitilafu')));if(r.ok){courseName.value='';courseDesc.value='';loadMediaData();}
+    });
+    async function uploadCourseVideo(courseId,input){
+      const f=input.files[0];if(!f)return;const fd=new FormData();fd.append('video',f);fd.append('title',f.name);
+      const r=await fetch('/api/admin/courses/'+courseId+'/videos/upload',{method:'POST',headers:{'Authorization':token},body:fd});const d=await r.json();alert(r.ok?'✅ Video ya course imepakiwa.':('❌ '+(d.error||'Hitilafu')));loadMediaData();
+    }
+
     // VICHUPO (TABS)
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -772,6 +872,7 @@
         if (btn.dataset.tab === 'marketplace') loadMarketplace();
         if (btn.dataset.tab === 'coupons') loadCoupons();
         if (btn.dataset.tab === 'security') { loadSecurityStats(); loadSecurityEvents(); }
+        if (btn.dataset.tab === 'media') loadMediaData();
       });
     });
 

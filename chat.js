@@ -12,7 +12,7 @@
       .ghUser { background:#7b2ff7; color:#fff; align-self:flex-end; }
       #ghChatInputRow { display:flex; border-top:1px solid #2a2a4a; }
       #ghChatInput { flex:1; background:#0a0a14; border:none; color:#fff; padding:12px; font-size:13px; outline:none; }
-      #ghChatSend { background:#7b2ff7; border:none; color:#fff; padding:0 16px; font-size:16px; cursor:pointer; }
+      #ghChatMic { background:#17203a;border:none;color:#fff;padding:0 12px;font-size:16px;cursor:pointer; }\n      #ghChatSend { background:#7b2ff7; border:none; color:#fff; padding:0 16px; font-size:16px; cursor:pointer; }
     </style>
     <button id="ghChatBtn">🤖 Msaidizi AI</button>
     <div id="ghChatBox">
@@ -20,7 +20,7 @@
       <div id="ghChatMsgs"><div class="ghMsg ghBot">Habari! Mimi ni AI wa GameHub. Naweza kukusaidia na bidhaa, bei, malipo na zaidi. Uliza chochote! 😊</div></div>
       <div id="ghChatInputRow">
         <input id="ghChatInput" type="text" placeholder="Andika ujumbe...">
-        <button id="ghChatSend">➤</button>
+        <button id="ghChatMic" title="Ongea">🎙️</button><button id="ghChatSend">➤</button>
       </div>
     </div>
   `);
@@ -31,6 +31,8 @@
   const msgs = document.getElementById('ghChatMsgs');
   const input = document.getElementById('ghChatInput');
   const send = document.getElementById('ghChatSend');
+  const mic = document.getElementById('ghChatMic');
+  let lastReply = '';
 
   let history = []; // {role: 'user'|'assistant', text: string}
 
@@ -58,7 +60,7 @@
       });
       const data = await res.json();
       const reply = data.reply || 'Samahani, jaribu tena.';
-      addMsg(reply, 'bot');
+      addMsg(reply, 'bot'); lastReply = reply; if ('speechSynthesis' in window) { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(reply)); }
       history.push({ role: 'user', text });
       history.push({ role: 'assistant', text: reply });
     } catch (e) {
@@ -68,4 +70,10 @@
 
   send.addEventListener('click', sendMsg);
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMsg(); });
+  mic.addEventListener('click', () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert('Browser yako haiungi mkono voice input. Tumia Chrome.'); return; }
+    const r = new SR(); r.lang='sw-TZ'; r.interimResults=false;
+    r.onresult = e => { input.value=e.results[0][0].transcript; sendMsg(); }; r.start();
+  });
 })();

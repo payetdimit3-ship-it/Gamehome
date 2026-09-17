@@ -4,10 +4,54 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
+const multer = require('multer');
 
 const app = express();
 app.use(express.json());
 app.use(express.static('.'));
+
+// 🎬 MEDIA STORAGE — Supabase Storage (production) au local uploads (fallback)
+const MEDIA_DIR = path.join(__dirname, 'uploads');
+const TMP_MEDIA_DIR = path.join(MEDIA_DIR, 'tmp');
+if (!fs.existsSync(MEDIA_DIR)) fs.mkdirSync(MEDIA_DIR, { recursive: true });
+if (!fs.existsSync(TMP_MEDIA_DIR)) fs.mkdirSync(TMP_MEDIA_DIR, { recursive: true });
+app.use('/uploads', express.static(MEDIA_DIR));
+const upload = multer({
+  dest: TMP_MEDIA_DIR,
+  limits: { fileSize: 1024 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ok = /^(video\/(mp4|webm|quicktime|x-m4v)|audio\/mpeg)$/.test(file.mimetype);
+    cb(ok ? null : new Error('Aina ya file hairuhusiwi. Tumia MP4, WebM au MOV.'), ok);
+  }
+});
+const MEDIA_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'gamehub-media';
+
+async function saveUploadedVideo(file, folder) {
+  if (!file) throw new Error('Chagua video kwanza.');
+  const ext = path.extname(file.originalname || '') || '.mp4';
+  const safeBase = (path.basename(file.originalname || 'video', ext).replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 80) || 'video');
+  const filename = Date.now() + '-' + crypto.randomBytes(4).toString('hex') + '-' + safeBase + ext.toLowerCase();
+  const objectPath = folder + '/' + filename;
+  const localPath = file.path;
+  try {
+    if (supabase) {
+      const buffer = fs.readFileSync(localPath);
+      const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(objectPath, buffer, { contentType: file.mimetype, upsert: false });
+      if (!error) {
+        const pub = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(objectPath);
+        return { url: pub.data.publicUrl, storage: 'supabase', path: objectPath, filename };
+      }
+      console.warn('Supabase Storage upload failed, using local fallback:', error.message);
+    }
+    const targetDir = path.join(MEDIA_DIR, folder);
+    fs.mkdirSync(targetDir, { recursive: true });
+    const target = path.join(targetDir, filename);
+    fs.renameSync(localPath, target);
+    return { url: '/uploads/' + folder + '/' + filename, storage: 'local', path: target, filename };
+  } finally {
+    try { if (fs.existsSync(localPath)) fs.unlinkSync(localPath); } catch (e) {}
+  }
+}
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -15,8 +59,8 @@ app.get('/', (req, res) => {
 
 // ☁️ SUPABASE — HIFADHI YA KUDUMU (Backup Automatic)
 let supabase = null;
-if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
-  supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+if (process.env.SUPABASE_URL && (process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)) {
+  supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY);
   console.log('☁️ Supabase imeunganishwa — data itahifadhiwa kudumu.');
 } else {
   console.log('⚠️ Supabase HAIJAWEKWA — data itapotea kila deploy mpya kwenye Render free tier!');
@@ -25,7 +69,7 @@ if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
 const TRACKED_FILES = [
   'users.json', 'sessions.json', 'products.json', 
   'orders.json', 'requests.json', 'security.json', 
-  'marketplace.json', 'coupons.json', 'reviews.json', 'matches.json', 'tournaments.json'
+  'marketplace.json', 'coupons.json', 'reviews.json', 'matches.json', 'tournaments.json', 'live_streams.json', 'courses.json', 'movies.json', 'media.json', 'ai_builder_runs.json', 'banners.json', 'settings.json'
 ];
 
 // 📁 HIFADHI YA DATA (.data folder)
@@ -1311,6 +1355,168 @@ app.post('/api/ai/admin', async (req, res) => {
 
   const reply = await askGemini(prompt);
   res.json({ reply });
+});
+
+
+app.get('/api/banners',(req,res)=>{res.json({success:true,banners:readJson('banners.json',[]).filter(x=>x.status!=='hidden').slice(-20).reverse()});});
+
+// ═══════════ LIVE MATCHES / STREAMS ═══════════
+app.get('/api/live-streams', (req, res) => {
+  const streams = readJson('live_streams.json', []);
+  res.json({ success: true, streams: streams.filter(x => x.status !== 'hidden').sort((a,b) => String(b.createdAt||'').localeCompare(String(a.createdAt||''))) });
+});
+
+app.post('/api/admin/live-streams', (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
+  const { title, league, homeTeam, awayTeam, status, streamUrl, videoUrl, startTime, description } = req.body || {};
+  if (!title) return res.status(400).json({ error: 'Weka jina la mechi.' });
+  const streams = readJson('live_streams.json', []);
+  const item = {
+    id: 'live_' + Date.now(),
+    title: String(title).slice(0,160), league: String(league||'Football').slice(0,100),
+    homeTeam: String(homeTeam||'').slice(0,80), awayTeam: String(awayTeam||'').slice(0,80),
+    status: String(status||'LIVE').slice(0,30), streamUrl: String(streamUrl||'').slice(0,2000),
+    videoUrl: String(videoUrl||'').slice(0,2000), startTime: String(startTime||'').slice(0,80),
+    description: String(description||'').slice(0,1000), createdAt: new Date().toISOString()
+  };
+  streams.push(item); writeJson('live_streams.json', streams);
+  res.json({ success:true, stream:item });
+});
+
+app.delete('/api/admin/live-streams/:id', (req,res) => {
+  const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
+  const data=readJson('live_streams.json',[]); writeJson('live_streams.json', data.filter(x=>x.id!==req.params.id)); res.json({success:true});
+});
+
+// ═══════════ COURSES + VIDEOS ═══════════
+app.get('/api/courses', (req,res) => {
+  const courses=readJson('courses.json',[]);
+  res.json({success:true,courses});
+});
+
+app.post('/api/admin/courses', (req,res) => {
+  const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
+  const {name,description,thumbnail,price,level}=req.body||{};
+  if(!name) return res.status(400).json({error:'Weka jina la course.'});
+  const courses=readJson('courses.json',[]);
+  const course={id:'course_'+Date.now(),name:String(name).slice(0,160),description:String(description||'').slice(0,1000),thumbnail:String(thumbnail||'').slice(0,1000),price:Number(price||0),level:String(level||'Beginner').slice(0,50),videos:[],createdAt:new Date().toISOString()};
+  courses.push(course); writeJson('courses.json',courses); res.json({success:true,course});
+});
+
+app.post('/api/admin/courses/:id/videos/upload', upload.single('video'), async (req,res) => {
+  const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
+  const courses=readJson('courses.json',[]); const course=courses.find(x=>x.id===req.params.id);
+  if(!course) return res.status(404).json({error:'Course haipatikani.'});
+  try {
+    const saved=await saveUploadedVideo(req.file,'courses');
+    const video={id:'cv_'+Date.now(),title:String(req.body.title||req.file.originalname).slice(0,160),description:String(req.body.description||'').slice(0,1000),url:saved.url,duration:String(req.body.duration||'').slice(0,30),createdAt:new Date().toISOString()};
+    course.videos=course.videos||[]; course.videos.push(video); writeJson('courses.json',courses);
+    res.json({success:true,course,video});
+  } catch(e){res.status(400).json({error:e.message});}
+});
+
+app.delete('/api/admin/courses/:id/videos/:videoId', (req,res)=>{
+  const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
+  const courses=readJson('courses.json',[]); const course=courses.find(x=>x.id===req.params.id);
+  if(!course) return res.status(404).json({error:'Course haipatikani.'});
+  course.videos=(course.videos||[]).filter(v=>v.id!==req.params.videoId); writeJson('courses.json',courses); res.json({success:true});
+});
+
+// ═══════════ MOVIES ═══════════
+app.get('/api/movies',(req,res)=>{
+  const movies=readJson('movies.json',[]);
+  res.json({success:true,movies:movies.filter(m=>m.status!=='hidden')});
+});
+
+app.post('/api/admin/movies/upload', upload.single('video'), async (req,res)=>{
+  const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
+  if(!req.file) return res.status(400).json({error:'Chagua movie/video kwanza.'});
+  try{
+    const saved=await saveUploadedVideo(req.file,'movies');
+    const movies=readJson('movies.json',[]);
+    const movie={id:'movie_'+Date.now(),title:String(req.body.title||req.file.originalname).slice(0,180),description:String(req.body.description||'').slice(0,1200),genre:String(req.body.genre||'General').slice(0,80),year:String(req.body.year||'2026').slice(0,10),poster:String(req.body.poster||'').slice(0,1000),videoUrl:saved.url,storage:saved.storage,createdAt:new Date().toISOString()};
+    movies.push(movie); writeJson('movies.json',movies); res.json({success:true,movie});
+  }catch(e){res.status(400).json({error:e.message});}
+});
+
+app.delete('/api/admin/movies/:id',(req,res)=>{
+  const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
+  const movies=readJson('movies.json',[]); writeJson('movies.json',movies.filter(x=>x.id!==req.params.id)); res.json({success:true});
+});
+
+app.post('/api/admin/media/upload', upload.single('video'), async (req,res)=>{
+  const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
+  try{
+    const saved=await saveUploadedVideo(req.file,'media');
+    const media=readJson('media.json',[]);
+    const item={id:'media_'+Date.now(),title:String(req.body.title||req.file.originalname).slice(0,180),type:String(req.body.type||'video').slice(0,40),url:saved.url,storage:saved.storage,createdAt:new Date().toISOString()};
+    media.push(item); writeJson('media.json',media); res.json({success:true,media:item});
+  }catch(e){res.status(400).json({error:e.message});}
+});
+
+// ═══════════ INTERNAL AI WEB DEVELOPER & MANAGER ═══════════
+function extractJson(text) {
+  const raw=String(text||'').trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+  try{return JSON.parse(raw);}catch(e){}
+  const a=raw.indexOf('{'), b=raw.lastIndexOf('}');
+  if(a>=0&&b>a){try{return JSON.parse(raw.slice(a,b+1));}catch(e){}}
+  return null;
+}
+async function askClaudeBuilder(command) {
+  const key=process.env.ANTHROPIC_API_KEY;
+  if(!key) throw new Error('Weka ANTHROPIC_API_KEY kwenye Render.');
+  const model=process.env.NEXUS_ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022';
+  const system=`Wewe ni AI Web Developer & Manager wa GameHub. Tengeneza JSON TU, bila markdown.
+Allowed actions pekee:
+1) add_product: {name,price,type,desc,section,image}
+2) add_banner: {title,description,buttonText,buttonUrl}
+3) add_movie: {title,description,genre,year,videoUrl,poster}
+4) add_course_video: {courseName,title,description,videoUrl}
+5) add_live_match: {title,league,homeTeam,awayTeam,status,streamUrl,videoUrl,startTime,description}
+6) update_settings: {key,value}
+Usiweke JavaScript/HTML/SQL/raw code inayotekelezwa moja kwa moja. Kwa video, tumia URL ikiwa admin hajatoa upload file.
+Jibu: {"summary":"...","actions":[...]}.
+`;
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model,max_tokens:1800,temperature:0.2,system,messages:[{role:'user',content:String(command).slice(0,6000)}]})});
+  const data=await r.json(); if(!r.ok) throw new Error(data?.error?.message||('Claude HTTP '+r.status));
+  return extractJson(data?.content?.map(x=>x.text||'').join(''));
+}
+app.post('/api/admin/ai-builder', async (req,res)=>{
+  const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
+  const {command,execute=true}=req.body||{}; if(!command||!String(command).trim()) return res.status(400).json({error:'Andika amri.'});
+  try{
+    const plan=await askClaudeBuilder(command); if(!plan||!Array.isArray(plan.actions)) return res.status(422).json({error:'Claude hakutoa JSON sahihi.',raw:plan});
+    const results=[];
+    if (!execute) return res.json({success:true,summary:plan.summary||'Plan imeandaliwa.',actions:plan.actions,results:[],executed:false});
+    for(const action of plan.actions.slice(0,10)){
+      const type=String(action.type||action.action||'');
+      if(type==='add_product'){
+        const products=readJson('products.json',{}), id='p'+Date.now()+crypto.randomBytes(2).toString('hex');
+        products[id]={id,name:String(action.name||'New Product').slice(0,160),type:String(action.typeName||action.section||'Game').slice(0,80),price:Number(action.price||0),desc:String(action.desc||'').slice(0,800),image:String(action.image||'').slice(0,1000),section:String(action.section||'shop').slice(0,30)};
+        writeJson('products.json',products); results.push('Bidhaa: '+products[id].name); continue;
+      }
+      if(type==='add_banner'){
+        const banners=readJson('banners.json',[]); const b={id:'banner_'+Date.now(),title:String(action.title||'').slice(0,180),description:String(action.description||'').slice(0,800),buttonText:String(action.buttonText||'Angalia').slice(0,60),buttonUrl:String(action.buttonUrl||'index.html').slice(0,500),createdAt:new Date().toISOString()}; banners.push(b); writeJson('banners.json',banners); results.push('Banner: '+b.title); continue;
+      }
+      if(type==='add_movie'){
+        const movies=readJson('movies.json',[]); const m={id:'movie_'+Date.now(),title:String(action.title||'').slice(0,180),description:String(action.description||'').slice(0,1200),genre:String(action.genre||'General').slice(0,80),year:String(action.year||'2026').slice(0,10),videoUrl:String(action.videoUrl||'').slice(0,2000),poster:String(action.poster||'').slice(0,1000),createdAt:new Date().toISOString()}; movies.push(m); writeJson('movies.json',movies); results.push('Movie: '+m.title); continue;
+      }
+      if(type==='add_live_match'){
+        const streams=readJson('live_streams.json',[]); const x={id:'live_'+Date.now(),title:String(action.title||'Live Match').slice(0,160),league:String(action.league||'Football').slice(0,100),homeTeam:String(action.homeTeam||'').slice(0,80),awayTeam:String(action.awayTeam||'').slice(0,80),status:String(action.status||'LIVE').slice(0,30),streamUrl:String(action.streamUrl||'').slice(0,2000),videoUrl:String(action.videoUrl||'').slice(0,2000),startTime:String(action.startTime||'').slice(0,80),description:String(action.description||'').slice(0,1000),createdAt:new Date().toISOString()}; streams.push(x); writeJson('live_streams.json',streams); results.push('Mechi: '+x.title); continue;
+      }
+      if(type==='add_course_video'){
+        const courses=readJson('courses.json',[]); let c=courses.find(x=>x.name.toLowerCase()===String(action.courseName||'').toLowerCase());
+        if(!c){c={id:'course_'+Date.now(),name:String(action.courseName||'New Course').slice(0,160),description:'Course iliyoundwa na AI Builder',price:0,level:'Beginner',videos:[],createdAt:new Date().toISOString()}; courses.push(c);}
+        c.videos=c.videos||[]; c.videos.push({id:'cv_'+Date.now(),title:String(action.title||'Video').slice(0,160),description:String(action.description||'').slice(0,1000),url:String(action.videoUrl||'').slice(0,2000),createdAt:new Date().toISOString()}); writeJson('courses.json',courses); results.push('Course video: '+action.title); continue;
+      }
+      if(type==='update_settings'){
+        const settings=readJson('settings.json',{}); settings[String(action.key||'').slice(0,80)]=String(action.value||'').slice(0,500); writeJson('settings.json',settings); results.push('Setting: '+action.key); continue;
+      }
+    }
+    const runs=readJson('ai_builder_runs.json',[]); const run={id:'run_'+Date.now(),command:String(command).slice(0,6000),plan,results,executed:Boolean(execute),createdAt:new Date().toISOString()}; runs.push(run); writeJson('ai_builder_runs.json',runs);
+    res.json({success:true,summary:plan.summary||'Mabadiliko yameandaliwa.',actions:plan.actions,results,executed:Boolean(execute)});
+  }catch(e){console.error('AI Builder:',e);res.status(500).json({error:e.message});}
 });
 
 // 🏆 TOURNAMENTS

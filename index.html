@@ -183,9 +183,11 @@
     <a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
     <a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
     <a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
+<a href="live.html">📺 <span class="label">Watch Live</span></a>
     <a href="livescores.html">📊 <span class="label">Live Scores</span></a>
     <a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
-    <a href="courses.html">🎓 <span class="label">Courses</span></a>
+    <a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
+<a href="movies.html">🎬 <span class="label">Movies</span></a>
     <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
     <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
     <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
@@ -224,6 +226,11 @@
         </div>
       </div>
       <div class="hero-dots" id="heroDots"></div>
+    </section>
+
+    <!-- 🤖 AI/DYNAMIC BANNERS -->
+    <section id="dynamicBanners" style="display:none;margin:20px 0;">
+      <div id="bannerGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;"></div>
     </section>
 
     <!-- FEATURES -->
@@ -411,6 +418,9 @@
         .catch(() => {});
     })();
   </script>
+<script>
+(async()=>{try{const r=await fetch('/api/banners');const d=await r.json();const a=d.banners||[];if(!a.length)return;const wrap=document.getElementById('dynamicBanners');wrap.style.display='block';document.getElementById('bannerGrid').innerHTML=a.map(b=>`<div style="background:linear-gradient(135deg,#17102f,#0b1022);border:1px solid #5d2bb0;border-radius:16px;padding:18px"><span style="color:#a63cff;font-weight:700">📢 GAMEHUB UPDATE</span><h2 style="margin:8px 0">${escB(b.title)}</h2><p style="color:#c9c9e0">${escB(b.description)}</p><a class="btn primary" href="${escB(b.buttonUrl||'#')}">${escB(b.buttonText||'Angalia')}</a></div>`).join('')}catch(e){}})();function escB(x){const d=document.createElement('div');d.textContent=x||'';return d.innerHTML}
+</script>
 
 </body>
 </html>

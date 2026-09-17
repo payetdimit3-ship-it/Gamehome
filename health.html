@@ -30,9 +30,11 @@
     <a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
     <a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
     <a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
+<a href="live.html">📺 <span class="label">Watch Live</span></a>
     <a href="livescores.html">📊 <span class="label">Live Scores</span></a>
     <a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
-    <a href="courses.html">🎓 <span class="label">Courses</span></a>
+    <a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
+<a href="movies.html">🎬 <span class="label">Movies</span></a>
     <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
     <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
     <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
@@ -48,13 +50,17 @@
 <div class="page-shell"><section class="page-hero"><h1>🩺 Health & Community Support</h1><p>Sehemu ya msaada wa taarifa za afya kwa jamii. AI hutoa taarifa za jumla na kuelekeza huduma inapohitajika.</p></section><div class="pro-card" style="margin-bottom:18px"><b>⚠️ Muhimu:</b> AI hii si daktari na haitoi diagnosis ya uhakika. Kwa dalili kali au dharura, tafuta huduma ya afya/dharura mara moja.</div>
 <div class="form-card" style="max-width:900px"><h2>🤖 Msaidizi wa Afya</h2><p class="muted">Uliza kuhusu taarifa za jumla za afya, lishe, kinga au jinsi ya kutafuta huduma.</p>
 <div id="healthMsgs" class="status" style="min-height:220px"></div>
-<textarea id="healthInput" placeholder="Andika swali lako hapa..."></textarea><button class="btn-purple" onclick="askHealth()">Tuma Swali</button></div>
+<textarea id="healthInput" placeholder="Andika swali lako hapa..."></textarea>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-purple" onclick="askHealth()">Tuma Swali</button><button class="btn-purple" onclick="startHealthVoice()">🎙️ Ongea</button><button class="btn-outline" onclick="speakLastHealth()">🔊 Sikiliza AI</button><button class="btn-outline" onclick="speechSynthesis.cancel()">⏹️ Stop</button></div>
+<p class="muted" id="voiceStatus" style="margin-top:8px"></p></div>
 <script>
-const hm=[]; const out=document.getElementById('healthMsgs');
+let lastHealthReply=''; const hm=[]; const out=document.getElementById('healthMsgs');
 function show(t,w){out.textContent+=(w==='u'?'\n\nWewe: ':'\n\nAI: ')+t;out.scrollTop=out.scrollHeight;}
 show('Habari! Naweza kutoa taarifa za jumla za afya. Nitaelekeza huduma ya kitaalamu pale inapohitajika.','a');
 async function askHealth(){const input=document.getElementById('healthInput'),q=input.value.trim();if(!q)return;input.value='';show(q,'u');hm.push({role:'user',text:q});
-try{const r=await fetch('/api/ai/health',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:hm.slice(-8)})});const d=await r.json();const ans=d.reply||d.error||'Samahani, jaribu tena.';show(ans,'a');hm.push({role:'assistant',text:ans});}catch(e){show('Hitilafu ya mtandao. Jaribu tena.','a');}}
+try{const r=await fetch('/api/ai/health',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:hm.slice(-8)})});const d=await r.json();const ans=d.reply||d.error||'Samahani, jaribu tena.';show(ans,'a'); lastHealthReply=ans; hm.push({role:'assistant',text:ans});}catch(e){show('Hitilafu ya mtandao. Jaribu tena.','a');}}
+function speakLastHealth(){if(lastHealthReply&&'speechSynthesis'in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(lastHealthReply));}}
+function startHealthVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('Browser yako haiungi mkono voice input. Tumia Chrome.');return}const r=new SR();r.lang='sw-TZ';r.interimResults=false;document.getElementById('voiceStatus').textContent='🎙️ Sikiliza...';r.onresult=e=>{document.getElementById('healthInput').value=e.results[0][0].transcript;document.getElementById('voiceStatus').textContent='Nimetambua sauti. Inatuma...';askHealth()};r.onerror=()=>document.getElementById('voiceStatus').textContent='Sauti haikupatikana. Jaribu tena.';r.onend=()=>{if(document.getElementById('voiceStatus').textContent.includes('Sikiliza'))document.getElementById('voiceStatus').textContent=''};r.start()}
 </script></div>
 <footer class="footer"><div class="footer-grid"><div><h3>🎮 GameHub</h3><p>Duka la gaming la Tanzania — games, digital products, community na huduma za gaming.</p></div>
 <div><h3>Quick Links</h3><a href="shop.html">Shop</a><a href="livescores.html">Live Scores</a><a href="tournaments.html">Tournaments</a><a href="courses.html">Courses</a></div>
