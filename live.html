@@ -28,12 +28,22 @@
 </div></div><div class="main"><div class="topbar"><a href="login.html" class="btn-login" id="topLoginBtn">🔐 Login</a></div><div class="page-shell"><section class="page-hero"><h1>📺 Watch Live Football</h1><p>Sehemu ya kuangalia matangazo ya live yaliyochapishwa na GameHub. Admin anaweka stream URL au video kutoka kwenye dashboard.</p></section>
 <div id="featured" class="card" style="margin-bottom:18px"><p class="muted">Inapakia live...</p></div>
 <h2 style="margin:22px 0 12px">⚽ Matches & Streams</h2><div id="streams" class="grid"></div>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
 <script>
+function normalizeYouTube(url){try{const u=new URL(url);let id='';if(u.hostname.includes('youtu.be')) id=u.pathname.slice(1);else if(u.searchParams.get('v')) id=u.searchParams.get('v');else {const m=u.pathname.match(/\/(?:live|shorts|embed)\/([^/?]+)/);if(m) id=m[1];}return id?'https://www.youtube.com/embed/'+id+'?autoplay=0&rel=0&modestbranding=1':url}catch(e){return url}}
 async function loadLive(){const r=await fetch('/api/live-streams');const d=await r.json();const arr=d.streams||[];const f=document.getElementById('featured');
 if(!arr.length){f.innerHTML='<h3>Hakuna match live kwa sasa</h3><p class="muted">Rudi baadaye au angalia Live Scores.</p>';return;}
 const x=arr[0];f.innerHTML=player(x)+'<h2 style="margin-top:14px">'+esc(x.title)+'</h2><p class="muted">'+esc(x.league||'Football')+' • '+esc(x.status||'LIVE')+'</p><p>'+esc(x.description||'')+'</p>';
 document.getElementById('streams').innerHTML=arr.map(x=>'<div class="card">'+player(x,false)+'<h3 style="margin-top:10px">'+esc(x.title)+'</h3><p class="muted">'+esc(x.homeTeam||'')+' vs '+esc(x.awayTeam||'')+'</p><span class="badge">'+esc(x.status||'LIVE')+'</span></div>').join('');}
 function esc(x){const d=document.createElement('div');d.textContent=x||'';return d.innerHTML}
-function player(x,large=true){if(x.videoUrl)return '<div class="player"><video controls playsinline preload="metadata" '+(large?'autoplay muted':'')+' src="'+esc(x.videoUrl)+'"></video></div>';if(x.streamUrl)return '<div class="player"><iframe src="'+esc(x.streamUrl)+'" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>';return '<div class="player" style="display:grid;place-items:center;color:#777">Stream haijawekwa</div>'}
+function player(x,large=true){
+  const url=String(x.videoUrl||x.streamUrl||'').trim();
+  if(!url)return '<div class="player" style="display:grid;place-items:center;color:#777">Stream haijawekwa</div>';
+  const yt=normalizeYouTube(url);
+  if(yt!==url || /youtube\.com|youtu\.be/i.test(url)) return '<div class="player"><iframe src="'+esc(yt)+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>';
+  if(/\.m3u8(?:$|\?)/i.test(url)) return '<div class="player"><video class="hls-player" controls playsinline '+(large?'autoplay muted':'')+'></video></div><script>setTimeout(function(){var v=document.currentScript.previousElementSibling?.querySelector?.("video")||document.querySelectorAll(".hls-player")[document.querySelectorAll(".hls-player").length-1];if(v&&window.Hls&&Hls.isSupported()){var h=new Hls();h.loadSource('+JSON.stringify(url)+');h.attachMedia(v);}else if(v){v.src='+JSON.stringify(url)+';}},0)</script>';
+  if(/\.(mp4|webm|mov|m4v)(?:$|\?)/i.test(url)) return '<div class="player"><video controls playsinline preload="metadata" '+(large?'autoplay muted':'')+' src="'+esc(url)+'"></video></div>';
+  return '<div class="player"><iframe src="'+esc(url)+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div><p class="muted" style="margin-top:8px">Ikiwa link ni website ya kawaida, inaweza kukataa ku-embed. Tumia YouTube Embed au Direct MP4/WebM.</p>';
+}
 loadLive().catch(()=>document.getElementById('featured').innerHTML='<p>Imeshindikana kupakia streams.</p>');
 </script></div></div><script src="app.js"></script><script src="chat.js"></script></body></html>

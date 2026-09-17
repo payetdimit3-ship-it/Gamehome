@@ -685,6 +685,15 @@ app.get('/api/admin/stats', (req, res) => {
   });
 });
 
+
+// 🧠 AI BUILDER HISTORY — Admin only
+app.get('/api/admin/ai-builder/runs', (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
+  const runs = readJson('ai_builder_runs.json', []);
+  res.json({ success: true, runs: runs.slice().reverse().slice(0, 100) });
+});
+
 // 🛡️ SECURITY ADMIN ENDPOINTS
 app.get('/api/security/events', (req, res) => {
   const user = getUserByToken(req);

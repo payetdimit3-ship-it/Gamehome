@@ -1,296 +1,276 @@
 <!DOCTYPE html>
-<html lang="sw">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel — GameHub</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
 
-  <header class="navbar">
-    <div class="logo">🎮 <span>GAME</span>HUB <span style="color:#ff3d71; font-size:12px;">ADMIN</span></div>
-    <nav class="nav-links">
-      <a href="index.html">← Home</a>
-    </nav>
-    <a href="#" class="btn-login" id="adminLogout">Toka</a>
-  </header>
-
-  <section class="admin-page">
-    <div class="dash-welcome">
-      <div>
-        <h1 id="welcomeText">👋 Karibu Tena, Admin</h1>
-        <p class="dash-sub">Hii ndiyo hali ya biashara yako leo</p>
-      </div>
-      <div class="dash-date" id="dashDate"></div>
-    </div>
-
-    <div class="dash-grid">
-      <div class="dash-hero-card">
-        <div class="dash-hero-top">
-          <span>💳 Jumla ya Mapato</span>
-          <span class="dash-pill">Yote</span>
-        </div>
-        <div class="dash-hero-amount" id="heroRevenue">0 TZS</div>
-        <div class="dash-hero-bottom">
-          <span id="heroOrdersCount">0 mauzo</span>
-          <span id="heroCustomersCount">0 wateja</span>
-        </div>
-      </div>
-
-      <div class="dash-mini-col">
-        <div class="dash-mini-card">
-          <div class="dash-mini-icon">📦</div>
-          <div><div class="dash-mini-num" id="miniOrders">0</div><div class="dash-mini-label">Mauzo (Orders)</div></div>
-        </div>
-        <div class="dash-mini-card">
-          <div class="dash-mini-icon">🎮</div>
-          <div><div class="dash-mini-num" id="miniProducts">0</div><div class="dash-mini-label">Bidhaa</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="admin-stats" id="adminStats" style="display:none;">
-      <div class="stat-card"><h3>0</h3><p>Mauzo (Orders)</p></div>
-      <div class="stat-card"><h3>0 TZS</h3><p>Jumla ya Mapato</p></div>
-      <div class="stat-card"><h3>0</h3><p>Wateja</p></div>
-      <div class="stat-card"><h3>0</h3><p>Bidhaa</p></div>
-    </div>
-
-    <div class="admin-tabs">
-      <button class="tab-btn active" data-tab="orders">📦 Mauzo</button>
-      <button class="tab-btn" data-tab="customers">👥 Wateja</button>
-      <button class="tab-btn" data-tab="products">🎮 Bidhaa</button>
-      <button class="tab-btn" data-tab="requests">🔍 Requests</button>
-      <button class="tab-btn" data-tab="marketplace">🏪 Marketplace</button>
-      <button class="tab-btn" data-tab="coupons">🎟️ Coupons</button>
-      <button class="tab-btn" data-tab="security">🛡️ Usalama</button>
-      <button class="tab-btn" data-tab="media">📺 Media & Live</button>
-      <button class="tab-btn" data-tab="ai">🤖 AI</button>
-    </div>
-
-    <div class="tab-content" id="tab-orders">
-      <h2>📦 Mauzo Yote</h2>
-
-      <div class="admin-form" style="margin-bottom:20px;">
-        <h3>📊 Mauzo — Siku 14 Zilizopita</h3>
-        <div id="salesChart" style="display:flex; align-items:flex-end; gap:4px; height:120px; margin:14px 0 6px;"></div>
-        <div id="topProducts" style="margin-top:10px; font-size:13px; color:#c9c9e0;"></div>
-        <a href="/api/admin/backup" id="backupLink" class="btn-secondary" style="display:inline-block; margin-top:14px; text-align:center;">💾 Pakua Backup ya Data Yote</a>
-      </div>
-
-      <div class="dash-recent-header">
-        <h3>🧾 Historia ya Malipo</h3>
-        <span id="recentCustomersStrip" class="dash-avatar-strip"></span>
-      </div>
-      <div id="ordersList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
-    </div>
-
-    <div class="tab-content" id="tab-customers" style="display:none;">
-      <h2>👥 Wateja Wote</h2>
-      <div id="customersList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
-    </div>
-
-    <div class="tab-content" id="tab-products" style="display:none;">
-      <h2>🎮 Bidhaa Zako</h2>
-
-      <div class="admin-form">
-        <h3 id="productFormTitle">➕ Ongeza Bidhaa Mpya</h3>
-        <input type="hidden" id="pId" value="">
-
-        <select id="pSection">
-          <option value="shop">Sehemu: Duka la Kawaida (Shop)</option>
-          <option value="steam">Sehemu: Steam Accounts</option>
-          <option value="efootball">Sehemu: eFootball Vikosi</option>
-        </select>
-
-        <input type="text" id="pName" placeholder="Jina la bidhaa (mfano: FIFA 26)">
-        <input type="number" id="pPrice" placeholder="Bei kwa TZS (mfano: 45000)">
-        <input type="text" id="pImage" placeholder="Image URL (link ya picha halisi - mfano kutoka imgbb.com)">
-
-        <!-- Fields za Shop pekee -->
-        <div id="fieldsShop">
-          <input type="text" id="pType" placeholder="Aina (mfano: Game Key • PC)">
-          <input type="text" id="pEmoji" placeholder="Emoji (mfano: ⚽)">
-          <input type="text" id="pDesc" placeholder="Maelezo mafupi">
-          <input type="text" id="pTrailer" placeholder="Trailer URL (link ya YouTube - hiari)">
-          <select id="pCategory">
-            <option value="Zote">Category: Zote</option>
-            <option value="Action">Action</option>
-            <option value="Adventure">Adventure</option>
-            <option value="Sports">Sports</option>
-            <option value="RPG">RPG</option>
-            <option value="Racing">Racing</option>
-            <option value="Shooter">Shooter</option>
-            <option value="Strategy">Strategy</option>
-          </select>
-          <input type="text" id="pDownload" placeholder="Link ya Kudownload (hiari - kwa games za kudownload, si GeForce)">
-        </div>
-
-        <!-- Fields za Steam Accounts -->
-        <div id="fieldsSteam" style="display:none;">
-          <input type="text" id="pAccUserSteam" placeholder="📧 Email ya Akaunti ya Steam">
-          <input type="text" id="pAccPassSteam" placeholder="🔑 Password ya Akaunti">
-        </div>
-
-        <!-- Fields za eFootball -->
-        <div id="fieldsEfootball" style="display:none;">
-          <input type="text" id="pAccUserEf" placeholder="👤 PSN ID / Username">
-          <input type="text" id="pAccPassEf" placeholder="🔑 Password">
-        </div>
-
-        <button class="btn-primary" id="addProductBtn">➕ Ongeza</button>
-        <button class="btn-secondary" id="cancelEditBtn" type="button" style="display:none;">✖ Ghairi Uhariri</button>
-        <p id="productMsg" class="pay-status"></p>
-      </div>
-
-      <h3 style="margin-top:20px;">Bidhaa Zilizopo</h3>
-      <div id="productsList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
-    </div>
-
-    <div class="tab-content" id="tab-requests" style="display:none;">
-      <h2>🔍 Game Requests</h2>
-      <p style="color:#8f8faa; margin-bottom:12px;">Games zinazoombwa na wateja — zilizopangwa kwa kura nyingi kwanza. Wengi wakiomba = mahitaji makubwa = ongeza dukani!</p>
-      <div id="adminRequestsList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
-    </div>
-
-    <div class="tab-content" id="tab-marketplace" style="display:none;">
-      <h2>🏪 Marketplace — Biashara Zingine</h2>
-      <div class="admin-form">
-        <h3>➕ Ongeza Biashara Mpya</h3>
-        <input type="text" id="bizName" placeholder="Jina la Biashara">
-        <input type="text" id="bizCategory" placeholder="Category (mfano: Simu, Nguo, Chakula)">
-        <input type="text" id="bizDesc" placeholder="Maelezo mafupi">
-        <input type="text" id="bizImage" placeholder="Image URL (hiari)">
-        <input type="text" id="bizContact" placeholder="Namba ya WhatsApp (mfano 255...) au email">
-        <button class="btn-primary" id="addBizBtn">➕ Ongeza Biashara</button>
-        <p id="bizMsg" class="pay-status"></p>
-      </div>
-      <h3 style="margin-top:20px;">Biashara Zilizopo</h3>
-      <div id="marketplaceList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
-    </div>
-
-    <div class="tab-content" id="tab-coupons" style="display:none;">
-      <h2>🎟️ Discount Codes</h2>
-      <div class="admin-form">
-        <h3>➕ Tengeneza Kodi Mpya</h3>
-        <input type="text" id="couponCode" placeholder="Kodi (mfano: KARIBU10)">
-        <input type="number" id="couponPercent" placeholder="Punguzo % (mfano: 10)">
-        <input type="number" id="couponMax" placeholder="Idadi ya matumizi (hiari, acha wazi = bila kikomo)">
-        <button class="btn-primary" id="addCouponBtn">➕ Tengeneza</button>
-        <p id="couponMsg" class="pay-status"></p>
-      </div>
-      <h3 style="margin-top:20px;">Kodi Zilizopo</h3>
-      <div id="couponsList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
-    </div>
-
-    <div class="tab-content" id="tab-security" style="display:none;">
-      <h2>🛡️ HackerAI — Usalama wa Website</h2>
-      <p style="color:#8f8faa; margin-bottom:12px;">Mlinzi wa website yako. Hapa unaona mashambulizi yaliyogunduliwa, IP zilizofungwa, na ripoti.</p>
-
-      <div class="admin-stats" id="securityStats">
-        <div class="stat-card"><h3>0</h3><p>Matukio Yote</p></div>
-        <div class="stat-card"><h3>0</h3><p>HIGH (Hatari)</p></div>
-        <div class="stat-card"><h3>0</h3><p>MEDIUM</p></div>
-        <div class="stat-card"><h3>0</h3><p>IP Zilizofungwa</p></div>
-      </div>
-
-      <div class="admin-form" style="margin-bottom:20px;">
-        <h3>🔒 Funga IP Kwa Mikono</h3>
-        <div class="custom-row">
-          <input type="text" id="blockIpInput" placeholder="IP (mfano: 123.45.67.89)">
-          <button class="btn-primary" id="blockIpBtn">🔒 Funga</button>
-        </div>
-        <p id="blockIpMsg" class="pay-status"></p>
-      </div>
-
-      <h3>🧾 Ripoti ya Usalama</h3>
-      <div class="admin-form" style="margin-bottom:20px;">
-        <button class="btn-primary" id="genReportBtn">📄 Tengeneza Ripoti</button>
-        <div id="securityReport" class="ai-reply">Bonyeza kutengeneza ripoti...</div>
-      </div>
-
-      <h3>🕵️ Matukio Yote (Log)</h3>
-      <div id="securityEvents" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
-
-      <h3 style="margin-top:20px;">🚫 IP Zilizofungwa</h3>
-      <div id="blockedList" class="admin-list"><p style="color:#8f8faa;">Hakuna IP zilizofungwa.</p></div>
-    </div>
-
-    <div class="tab-content" id="tab-ai" style="display:none;">
-      <h2>🤖 AI Msaidizi wa Admin</h2>
-      <p style="color:#8f8faa; margin-bottom:12px;">Niambie kwa maneno unachotaka kufanya. Mifano:<br>
-      • "ongeza game FIFA 26 bei 50000"<br>
-      • "futa bidhaa GTA"<br>
-      • "nionyeshe mauzo"<br>
-      • "wateja wangapi"<br>
-      • "bidhaa zote"<br>
+<html lang="sw"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>GameHub Admin Control Center</title><link href="style.css" rel="stylesheet"/></head>
+<body class="admin-shell">
+<div class="admin-layout">
+<aside class="admin-sidebar" id="adminSidebar">
+<div class="brand-block"><div class="brand-mark">🎮</div><div><strong>GAME<span>HUB</span></strong><small>ADMIN CONTROL</small></div></div>
+<div class="admin-profile"><div class="profile-avatar">K</div><div><b id="sideAdminName">Administrator</b><span>Owner / Admin</span></div><span class="online-indicator"></span></div>
+<nav class="side-nav">
+<div class="nav-label">OVERVIEW</div><button class="tab-btn active" data-tab="overview">▦ <span>Dashboard</span></button>
+<div class="nav-label">BUSINESS</div><button class="tab-btn" data-tab="orders">▣ <span>Orders &amp; Payments</span><em id="pendingNavBadge">0</em></button>
+<button class="tab-btn" data-tab="customers">♙ <span>Customers</span></button><button class="tab-btn" data-tab="products">🎮 <span>Game Catalog</span></button><button class="tab-btn" data-tab="coupons">🎟 <span>Coupons</span></button>
+<div class="nav-label">CONTENT</div><button class="tab-btn" data-tab="media">◉ <span>Media Studio</span></button><button class="tab-btn" data-tab="requests">⌕ <span>Game Requests</span></button><button class="tab-btn" data-tab="marketplace">⌂ <span>Marketplace</span></button>
+<div class="nav-label">INTELLIGENCE</div><button class="tab-btn" data-tab="ai">✦ <span>AI Manager</span><i class="ai-mini">AI</i></button><button class="tab-btn" data-tab="security">◈ <span>Security</span></button>
+</nav>
+<div class="sidebar-footer"><a href="index.html">← View website</a><button id="adminLogout">↪ Sign out</button></div>
+</aside>
+<main class="admin-main">
+<header class="admin-topbar"><button class="mobile-menu-btn" id="mobileMenuBtn">☰</button><div class="top-search"><span>⌕</span><input id="globalAdminSearch" placeholder="Search orders, customers, games..."/><kbd>Ctrl K</kbd></div><div class="top-actions"><button class="icon-action" id="topRefresh" title="Refresh">↻</button><button class="icon-action" title="Notifications">♢<i></i></button><div class="top-user"><div class="profile-avatar small">K</div><div><b id="topAdminName">Admin</b><span>Administrator</span></div></div></div></header>
+<div class="admin-content">
+<div class="welcome-bar"><div><span class="eyebrow">GAMEHUB CONTROL CENTER</span><h1 id="welcomeText">Good evening, Admin 👋</h1><p class="dash-sub">Simamia biashara, content na wateja wako kwa dashboard moja.</p></div><div class="dash-date" id="dashDate"></div></div>
+<section class="admin-tab tab-content active" id="tab-overview">
+<div class="page-heading">
+<div>
+<div class="eyebrow">CONTROL CENTER</div>
+<h1>Dashboard Overview</h1>
+<p>Fuatilia mauzo, wateja, content, live streams na mfumo wa AI kutoka sehemu moja.</p>
+</div>
+<div class="heading-actions">
+<button class="ghost-btn" id="refreshDashboard">↻ Refresh</button>
+<a class="primary-btn" href="/api/admin/backup" id="overviewBackup">↓ Backup</a>
+</div>
+</div>
+<div class="kpi-grid">
+<article class="kpi-card kpi-revenue"><div class="kpi-icon">💳</div><div><span>Revenue</span><strong id="ovRevenue">0 TZS</strong><small id="ovRevenueMeta">All recorded orders</small></div></article>
+<article class="kpi-card"><div class="kpi-icon">✓</div><div><span>Successful</span><strong id="ovSuccessful">0</strong><small>Malipo yaliyokamilika</small></div></article>
+<article class="kpi-card"><div class="kpi-icon">⏳</div><div><span>Pending</span><strong id="ovPending">0</strong><small>Yanahitaji attention</small></div></article>
+<article class="kpi-card"><div class="kpi-icon">👥</div><div><span>Customers</span><strong id="ovCustomers">0</strong><small>Registered users</small></div></article>
+<article class="kpi-card"><div class="kpi-icon">🎮</div><div><span>Products</span><strong id="ovProducts">0</strong><small>Games &amp; digital items</small></div></article>
+<article class="kpi-card"><div class="kpi-icon">📺</div><div><span>Live</span><strong id="ovLive">0</strong><small>Streams zilizowekwa</small></div></article>
+<article class="kpi-card"><div class="kpi-icon">🎬</div><div><span>Movies</span><strong id="ovMovies">0</strong><small>Video library</small></div></article>
+<article class="kpi-card"><div class="kpi-icon">🎓</div><div><span>Courses</span><strong id="ovCourses">0</strong><small>Learning content</small></div></article>
+</div>
+<div class="dashboard-two-col">
+<section class="panel-card">
+<div class="panel-head"><div><h2>Revenue Overview</h2><p>Siku 14 zilizopita</p></div><span class="status-badge live-dot">● LIVE DATA</span></div>
+<div class="modern-chart" id="overviewChart"></div>
+</section>
+<section class="panel-card">
+<div class="panel-head"><div><h2>Quick Actions</h2><p>Fanya kazi za kawaida haraka</p></div></div>
+<div class="quick-grid">
+<button class="quick-action tab-jump" data-target="products">🎮<b>Ongeza Game</b><span>Catalog</span></button>
+<button class="quick-action tab-jump" data-target="media">📺<b>Weka Live</b><span>Match stream</span></button>
+<button class="quick-action tab-jump" data-target="media">🎬<b>Upload Movie</b><span>Video library</span></button>
+<button class="quick-action tab-jump" data-target="media">🎓<b>Course Video</b><span>Upload lesson</span></button>
+<button class="quick-action tab-jump" data-target="ai">🤖<b>AI Builder</b><span>Manage website</span></button>
+<button class="quick-action tab-jump" data-target="coupons">🎟️<b>Coupon</b><span>Discount code</span></button>
+</div>
+</section>
+</div>
+<div class="dashboard-two-col lower">
+<section class="panel-card">
+<div class="panel-head"><div><h2>Recent Payments</h2><p>Historia ya miamala ya hivi karibuni</p></div><button class="text-btn tab-jump" data-target="orders">View all →</button></div>
+<div class="payment-list" id="overviewPayments"></div>
+</section>
+<section class="panel-card">
+<div class="panel-head"><div><h2>System Snapshot</h2><p>Hali ya modules muhimu</p></div></div>
+<div class="system-list">
+<div><span><i class="system-dot ok"></i> Store &amp; Catalog</span><b>ONLINE</b></div>
+<div><span><i class="system-dot ok"></i> Orders &amp; Payments</span><b>MONITORED</b></div>
+<div><span><i class="system-dot ok"></i> Live / Media</span><b>READY</b></div>
+<div><span><i class="system-dot ai"></i> AI Builder</span><b>SERVER SIDE</b></div>
+<div><span><i class="system-dot secure"></i> Security</span><b>PROTECTED</b></div>
+</div>
+</section>
+</div>
+</section>
+<div class="admin-tab tab-content" id="tab-orders">
+<h2>💳 Orders &amp; Payment History</h2>
+<div class="filter-toolbar">
+<div class="search-field"><span>⌕</span><input id="orderSearch" placeholder="Search customer, email, transaction, product..."/></div>
+<select id="orderStatusFilter"><option value="">All statuses</option><option value="successful">Successful</option><option value="pending">Pending</option><option value="pending_manual">Pending manual</option><option value="pending_azampay">Pending AzamPay</option><option value="failed">Failed</option></select>
+<button class="ghost-btn" id="exportOrdersBtn">↓ Export CSV</button>
+</div>
+<div class="admin-form" style="margin-bottom:20px;">
+<h3>📊 Mauzo — Siku 14 Zilizopita</h3>
+<div id="salesChart" style="display:flex; align-items:flex-end; gap:4px; height:120px; margin:14px 0 6px;"></div>
+<div id="topProducts" style="margin-top:10px; font-size:13px; color:#c9c9e0;"></div>
+<a class="btn-secondary" href="/api/admin/backup" id="backupLink" style="display:inline-block; margin-top:14px; text-align:center;">💾 Pakua Backup ya Data Yote</a>
+</div>
+<div class="dash-recent-header">
+<h3>🧾 Historia ya Malipo</h3>
+<span class="dash-avatar-strip" id="recentCustomersStrip"></span>
+</div>
+<div class="admin-list" id="ordersList"><p style="color:#8f8faa;">Inapakia...</p></div>
+</div><div class="admin-tab tab-content" id="tab-customers" style="display:none;">
+<h2>👥 Customer Management</h2><div class="filter-toolbar"><div class="search-field"><span>⌕</span><input id="customerSearch" placeholder="Tafuta jina, email au simu..."/></div></div>
+<div class="admin-list" id="customersList"><p style="color:#8f8faa;">Inapakia...</p></div>
+</div><div class="admin-tab tab-content" id="tab-products" style="display:none;">
+<h2>🎮 Bidhaa Zako</h2>
+<div class="admin-form">
+<h3 id="productFormTitle">➕ Ongeza Bidhaa Mpya</h3>
+<input id="pId" type="hidden" value=""/>
+<select id="pSection">
+<option value="shop">Sehemu: Duka la Kawaida (Shop)</option>
+<option value="steam">Sehemu: Steam Accounts</option>
+<option value="efootball">Sehemu: eFootball Vikosi</option>
+</select>
+<input id="pName" placeholder="Jina la bidhaa (mfano: FIFA 26)" type="text"/>
+<input id="pPrice" placeholder="Bei kwa TZS (mfano: 45000)" type="number"/>
+<input id="pImage" placeholder="Image URL (link ya picha halisi - mfano kutoka imgbb.com)" type="text"/>
+<!-- Fields za Shop pekee -->
+<div id="fieldsShop">
+<input id="pType" placeholder="Aina (mfano: Game Key • PC)" type="text"/>
+<input id="pEmoji" placeholder="Emoji (mfano: ⚽)" type="text"/>
+<input id="pDesc" placeholder="Maelezo mafupi" type="text"/>
+<input id="pTrailer" placeholder="Trailer URL (link ya YouTube - hiari)" type="text"/>
+<select id="pCategory">
+<option value="Zote">Category: Zote</option>
+<option value="Action">Action</option>
+<option value="Adventure">Adventure</option>
+<option value="Sports">Sports</option>
+<option value="RPG">RPG</option>
+<option value="Racing">Racing</option>
+<option value="Shooter">Shooter</option>
+<option value="Strategy">Strategy</option>
+</select>
+<input id="pDownload" placeholder="Link ya Kudownload (hiari - kwa games za kudownload, si GeForce)" type="text"/>
+</div>
+<!-- Fields za Steam Accounts -->
+<div id="fieldsSteam" style="display:none;">
+<input id="pAccUserSteam" placeholder="📧 Email ya Akaunti ya Steam" type="text"/>
+<input id="pAccPassSteam" placeholder="🔑 Password ya Akaunti" type="text"/>
+</div>
+<!-- Fields za eFootball -->
+<div id="fieldsEfootball" style="display:none;">
+<input id="pAccUserEf" placeholder="👤 PSN ID / Username" type="text"/>
+<input id="pAccPassEf" placeholder="🔑 Password" type="text"/>
+</div>
+<button class="btn-primary" id="addProductBtn">➕ Ongeza</button>
+<button class="btn-secondary" id="cancelEditBtn" style="display:none;" type="button">✖ Ghairi Uhariri</button>
+<p class="pay-status" id="productMsg"></p>
+</div>
+<h3 style="margin-top:20px;">Bidhaa Zilizopo</h3>
+<div class="admin-list" id="productsList"><p style="color:#8f8faa;">Inapakia...</p></div>
+</div><div class="admin-tab tab-content" id="tab-requests" style="display:none;">
+<h2>🔍 Game Requests</h2>
+<p style="color:#8f8faa; margin-bottom:12px;">Games zinazoombwa na wateja — zilizopangwa kwa kura nyingi kwanza. Wengi wakiomba = mahitaji makubwa = ongeza dukani!</p>
+<div class="admin-list" id="adminRequestsList"><p style="color:#8f8faa;">Inapakia...</p></div>
+</div><div class="admin-tab tab-content" id="tab-marketplace" style="display:none;">
+<h2>🏪 Marketplace — Biashara Zingine</h2>
+<div class="admin-form">
+<h3>➕ Ongeza Biashara Mpya</h3>
+<input id="bizName" placeholder="Jina la Biashara" type="text"/>
+<input id="bizCategory" placeholder="Category (mfano: Simu, Nguo, Chakula)" type="text"/>
+<input id="bizDesc" placeholder="Maelezo mafupi" type="text"/>
+<input id="bizImage" placeholder="Image URL (hiari)" type="text"/>
+<input id="bizContact" placeholder="Namba ya WhatsApp (mfano 255...) au email" type="text"/>
+<button class="btn-primary" id="addBizBtn">➕ Ongeza Biashara</button>
+<p class="pay-status" id="bizMsg"></p>
+</div>
+<h3 style="margin-top:20px;">Biashara Zilizopo</h3>
+<div class="admin-list" id="marketplaceList"><p style="color:#8f8faa;">Inapakia...</p></div>
+</div><div class="admin-tab tab-content" id="tab-coupons" style="display:none;">
+<h2>🎟️ Discount Codes</h2>
+<div class="admin-form">
+<h3>➕ Tengeneza Kodi Mpya</h3>
+<input id="couponCode" placeholder="Kodi (mfano: KARIBU10)" type="text"/>
+<input id="couponPercent" placeholder="Punguzo % (mfano: 10)" type="number"/>
+<input id="couponMax" placeholder="Idadi ya matumizi (hiari, acha wazi = bila kikomo)" type="number"/>
+<button class="btn-primary" id="addCouponBtn">➕ Tengeneza</button>
+<p class="pay-status" id="couponMsg"></p>
+</div>
+<h3 style="margin-top:20px;">Kodi Zilizopo</h3>
+<div class="admin-list" id="couponsList"><p style="color:#8f8faa;">Inapakia...</p></div>
+</div><div class="admin-tab tab-content" id="tab-security" style="display:none;">
+<h2>🛡️ HackerAI — Usalama wa Website</h2>
+<p style="color:#8f8faa; margin-bottom:12px;">Mlinzi wa website yako. Hapa unaona mashambulizi yaliyogunduliwa, IP zilizofungwa, na ripoti.</p>
+<div class="admin-stats" id="securityStats">
+<div class="stat-card"><h3>0</h3><p>Matukio Yote</p></div>
+<div class="stat-card"><h3>0</h3><p>HIGH (Hatari)</p></div>
+<div class="stat-card"><h3>0</h3><p>MEDIUM</p></div>
+<div class="stat-card"><h3>0</h3><p>IP Zilizofungwa</p></div>
+</div>
+<div class="admin-form" style="margin-bottom:20px;">
+<h3>🔒 Funga IP Kwa Mikono</h3>
+<div class="custom-row">
+<input id="blockIpInput" placeholder="IP (mfano: 123.45.67.89)" type="text"/>
+<button class="btn-primary" id="blockIpBtn">🔒 Funga</button>
+</div>
+<p class="pay-status" id="blockIpMsg"></p>
+</div>
+<h3>🧾 Ripoti ya Usalama</h3>
+<div class="admin-form" style="margin-bottom:20px;">
+<button class="btn-primary" id="genReportBtn">📄 Tengeneza Ripoti</button>
+<div class="ai-reply" id="securityReport">Bonyeza kutengeneza ripoti...</div>
+</div>
+<h3>🕵️ Matukio Yote (Log)</h3>
+<div class="admin-list" id="securityEvents"><p style="color:#8f8faa;">Inapakia...</p></div>
+<h3 style="margin-top:20px;">🚫 IP Zilizofungwa</h3>
+<div class="admin-list" id="blockedList"><p style="color:#8f8faa;">Hakuna IP zilizofungwa.</p></div>
+</div><div class="admin-tab tab-content" id="tab-ai" style="display:none;">
+<h2>🤖 AI Msaidizi wa Admin</h2>
+<p style="color:#8f8faa; margin-bottom:12px;">Niambie kwa maneno unachotaka kufanya. Mifano:<br/>
+      • "ongeza game FIFA 26 bei 50000"<br/>
+      • "futa bidhaa GTA"<br/>
+      • "nionyeshe mauzo"<br/>
+      • "wateja wangapi"<br/>
+      • "bidhaa zote"<br/>
       • "maombi ya games"</p>
-      <div class="admin-form">
-        <input type="text" id="aiCommand" placeholder="Andika amri yako hapa...">
-        <button class="btn-primary" id="aiSendBtn">🚀 Tumia Amri</button>
-        <div id="aiReply" class="ai-reply"></div>
-      </div>
-      <div class="admin-form" style="margin-top:18px;border-color:#7b2ff7;">
-        <h3>🧠 AI Web Developer & Manager — Claude 3.5 Sonnet</h3>
-        <p style="color:#8f8faa">Andika amri ya website kwa lugha ya kawaida. AI hutengeneza <b>JSON actions salama</b> na inaweza ku-update catalog, banner, movie, course video au live match kwenye data ya website. Haitekelezi raw JavaScript/SQL moja kwa moja.</p>
-        <textarea id="builderCommand" rows="5" placeholder="Mfano: Ongeza banner ya Tournament ya eFootball ya wiki hii kwenye Home Page yenye kitufe cha Kujiunga."></textarea>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn-primary" id="builderPreview">👁️ Tengeneza Preview</button>
-          <button class="btn-primary" id="builderExecute">🚀 Tekeleza Mabadiliko</button>
-        </div>
-        <pre id="builderResult" style="white-space:pre-wrap;background:#080914;padding:14px;border-radius:10px;margin-top:12px;color:#d7d4e8;overflow:auto">Hakuna command bado.</pre>
-      </div>
-    </div>
-
-    <div class="tab-content" id="tab-media" style="display:none;">
-      <h2>📺 Media, Live Matches, Courses & Movies</h2>
-      <p style="color:#8f8faa;margin-bottom:16px;">Hapa ndipo admin anaweka streams, movie uploads na video za kila course. Production inapendelea Supabase Storage; local fallback ni ya majaribio.</p>
-
-      <div class="admin-form">
-        <h3>⚽ Ongeza Live Match / Stream</h3>
-        <input id="liveTitle" placeholder="Jina la mechi">
-        <input id="liveLeague" placeholder="League (mfano NBC Premier League)">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="homeTeam" placeholder="Home Team"><input id="awayTeam" placeholder="Away Team"></div>
-        <select id="liveStatus"><option>LIVE</option><option>UPCOMING</option><option>ENDED</option></select>
-        <input id="streamUrl" placeholder="Stream/Embed URL (YouTube embed, etc.)">
-        <input id="liveVideoUrl" placeholder="Au Video URL ya MP4/WebM">
-        <input id="startTime" placeholder="Muda/Tarehe">
-        <textarea id="liveDesc" rows="3" placeholder="Maelezo"></textarea>
-        <button class="btn-primary" id="addLiveBtn">➕ Weka Match</button>
-        <div id="liveList" style="margin-top:12px"></div>
-      </div>
-
-      <div class="admin-form" style="margin-top:18px">
-        <h3>🎬 Upload Movie</h3>
-        <input id="movieTitle" placeholder="Movie title">
-        <input id="movieGenre" placeholder="Genre">
-        <input id="movieYear" placeholder="Year">
-        <input id="moviePoster" placeholder="Poster URL (hiari)">
-        <textarea id="movieDesc" rows="3" placeholder="Maelezo ya movie"></textarea>
-        <input id="movieFile" type="file" accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov">
-        <button class="btn-primary" id="uploadMovieBtn">⬆️ Upload Movie</button>
-        <div id="movieList" style="margin-top:12px"></div>
-      </div>
-
-      <div class="admin-form" style="margin-top:18px">
-        <h3>🎓 Course Manager</h3>
-        <input id="courseName" placeholder="Jina la course">
-        <input id="courseLevel" placeholder="Level (Beginner/Intermediate/Advanced)">
-        <input id="coursePrice" type="number" placeholder="Bei TZS (0 = bure)">
-        <input id="courseThumb" placeholder="Thumbnail URL (hiari)">
-        <textarea id="courseDesc" rows="3" placeholder="Maelezo ya course"></textarea>
-        <button class="btn-primary" id="addCourseBtn">➕ Tengeneza Course</button>
-        <div id="courseList" style="margin-top:12px"></div>
-      </div>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <p class="copyright">© 2026 GameHub — Admin Panel (Sehemu ya siri)</p>
-  </footer>
-
-  <script>
+<div class="admin-form">
+<input id="aiCommand" placeholder="Andika amri yako hapa..." type="text"/>
+<button class="btn-primary" id="aiSendBtn">🚀 Tumia Amri</button>
+<div class="ai-reply" id="aiReply"></div>
+</div>
+<div class="admin-form" style="margin-top:18px;border-color:#7b2ff7;">
+<h3>🧠 AI Web Developer &amp; Manager — Claude 3.5 Sonnet</h3>
+<p style="color:#8f8faa">Andika amri ya website kwa lugha ya kawaida. AI hutengeneza <b>JSON actions salama</b> na inaweza ku-update catalog, banner, movie, course video au live match kwenye data ya website. Haitekelezi raw JavaScript/SQL moja kwa moja.</p>
+<textarea id="builderCommand" placeholder="Mfano: Ongeza banner ya Tournament ya eFootball ya wiki hii kwenye Home Page yenye kitufe cha Kujiunga." rows="5"></textarea>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn-primary" id="builderPreview">👁️ Tengeneza Preview</button>
+<button class="btn-primary" id="builderExecute">🚀 Tekeleza Mabadiliko</button>
+</div>
+<pre id="builderResult" style="white-space:pre-wrap;background:#080914;padding:14px;border-radius:10px;margin-top:12px;color:#d7d4e8;overflow:auto">Hakuna command bado.</pre>
+</div>
+</div>
+<div class="panel-card ai-history-card">
+<div class="panel-head"><div><h2>🧾 AI Builder History</h2><p>Amri na mabadiliko yaliyotekelezwa na AI Web Developer &amp; Manager.</p></div><button class="ghost-btn" id="loadAiHistoryBtn">Refresh history</button></div>
+<div class="history-list" id="aiHistoryList"><p class="muted">Bonyeza refresh kuona history.</p></div>
+</div>
+<div class="admin-tab tab-content" id="tab-media" style="display:none;">
+<h2>📺 Media Studio — Live, Movies &amp; Courses</h2>
+<p style="color:#8f8faa;margin-bottom:16px;">Hapa ndipo admin anaweka streams, movie uploads na video za kila course. Production inapendelea Supabase Storage; local fallback ni ya majaribio.</p>
+<div class="admin-form">
+<h3>⚽ Ongeza Live Match / Stream</h3>
+<input id="liveTitle" placeholder="Jina la mechi"/>
+<input id="liveLeague" placeholder="League (mfano NBC Premier League)"/>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="homeTeam" placeholder="Home Team"/><input id="awayTeam" placeholder="Away Team"/></div>
+<select id="liveStatus"><option>LIVE</option><option>UPCOMING</option><option>ENDED</option></select>
+<input id="streamUrl" placeholder="Stream/Embed URL — YouTube link au embed URL (mfano https://www.youtube.com/watch?v=...)"/>
+<input id="liveVideoUrl" placeholder="Direct Video URL — MP4/WebM au .m3u8 (HLS)"/>
+<input id="startTime" placeholder="Muda/Tarehe"/>
+<textarea id="liveDesc" placeholder="Maelezo" rows="3"></textarea>
+<button class="btn-primary" id="addLiveBtn">➕ Weka Match</button>
+<div id="liveList" style="margin-top:12px"></div>
+</div>
+<div class="admin-form" style="margin-top:18px">
+<h3>🎬 Upload Movie</h3>
+<input id="movieTitle" placeholder="Movie title"/>
+<input id="movieGenre" placeholder="Genre"/>
+<input id="movieYear" placeholder="Year"/>
+<input id="moviePoster" placeholder="Poster URL (hiari)"/>
+<textarea id="movieDesc" placeholder="Maelezo ya movie" rows="3"></textarea>
+<input accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov" id="movieFile" type="file"/>
+<button class="btn-primary" id="uploadMovieBtn">⬆️ Upload Movie</button>
+<div id="movieList" style="margin-top:12px"></div>
+</div>
+<div class="admin-form" style="margin-top:18px">
+<h3>🎓 Course Manager</h3>
+<input id="courseName" placeholder="Jina la course"/>
+<input id="courseLevel" placeholder="Level (Beginner/Intermediate/Advanced)"/>
+<input id="coursePrice" placeholder="Bei TZS (0 = bure)" type="number"/>
+<input id="courseThumb" placeholder="Thumbnail URL (hiari)"/>
+<textarea id="courseDesc" placeholder="Maelezo ya course" rows="3"></textarea>
+<button class="btn-primary" id="addCourseBtn">➕ Tengeneza Course</button>
+<div id="courseList" style="margin-top:12px"></div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<div class="toast" id="adminToast"></div>
+<script>
     const token = localStorage.getItem('gamehubToken');
     let currentRole = 'admin'; // 'admin' | 'staff'
 
@@ -304,7 +284,10 @@
           return false;
         }
         currentRole = data.user.isAdmin ? 'admin' : 'staff';
-        document.getElementById('welcomeText').textContent = '👋 Karibu Tena, ' + (data.user.name || 'Admin');
+        const adminName = data.user.name || 'Admin';
+        document.getElementById('welcomeText').textContent = 'Good evening, ' + adminName + ' 👋';
+        const sn=document.getElementById('sideAdminName'); if(sn) sn.textContent=adminName;
+        const tn=document.getElementById('topAdminName'); if(tn) tn.textContent=adminName;
         if (currentRole === 'staff') applyStaffRestrictions();
         return true;
       } catch (e) { return false; }
@@ -315,7 +298,7 @@
       document.querySelectorAll('.tab-btn').forEach(btn => {
         if (!['products', 'requests'].includes(btn.dataset.tab)) btn.style.display = 'none';
       });
-      document.getElementById('adminStats').style.display = 'none';
+      document.getElementById('adminStats')?.style && (document.getElementById('adminStats').style.display = 'none');
       // Onyesha tab ya Bidhaa kwa default kwa Staff
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('[data-tab="products"]').classList.add('active');
@@ -324,7 +307,7 @@
       const banner = document.createElement('div');
       banner.style.cssText = 'background:#1a1040; border:1px solid #7b2ff7; border-radius:10px; padding:12px; margin-bottom:16px; color:#c9a3ff; font-size:13px;';
       banner.textContent = '👤 Umeingia kama Staff — unaweza kuongeza/kuhariri bidhaa na kusimamia Requests pekee.';
-      document.querySelector('.admin-page').insertBefore(banner, document.querySelector('.admin-tabs'));
+      document.querySelector('.admin-content').prepend(banner);
     }
 
     async function loadStats() {
@@ -333,11 +316,11 @@
       const data = await res.json();
       if (!data.success) return;
       const s = data.stats;
-      document.getElementById('heroRevenue').textContent = s.total.toLocaleString() + ' TZS';
-      document.getElementById('heroOrdersCount').textContent = s.orders + ' mauzo';
-      document.getElementById('heroCustomersCount').textContent = s.customers + ' wateja';
-      document.getElementById('miniOrders').textContent = s.orders;
-      document.getElementById('miniProducts').textContent = s.products;
+      const setStat=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+      setStat('heroRevenue',s.total.toLocaleString() + ' TZS'); setStat('heroOrdersCount',s.orders + ' mauzo'); setStat('heroCustomersCount',s.customers + ' wateja'); setStat('miniOrders',s.orders);
+      setStat('miniProducts',s.products);
+      const setOv=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+      setOv('ovRevenue',s.total.toLocaleString()+' TZS'); setOv('ovCustomers',s.customers); setOv('ovProducts',s.products);
     }
 
     function setDashDate() {
@@ -360,6 +343,8 @@
             <div style="width:100%; background:${d.total ? 'linear-gradient(180deg,#9a5bff,#7b2ff7)' : '#1a1a30'}; border-radius:4px 4px 0 0; height:${Math.max(3, (d.total / max) * 100)}%;"></div>
             <span style="font-size:9px; color:#8f8faa; margin-top:4px; writing-mode:vertical-rl;">${d.label}</span>
           </div>`).join('');
+        const ovChart=document.getElementById('overviewChart');
+        if(ovChart) ovChart.innerHTML=data.days.map(d=>`<div class="chart-bar" title="${d.label}: ${d.total.toLocaleString()} TZS"><span style="height:${Math.max(6,(d.total/max)*100)}%"></span><small>${d.label}</small></div>`).join('');
 
         const topBox = document.getElementById('topProducts');
         if (!data.topProducts.length) { topBox.innerHTML = '<span style="color:#8f8faa;">Hakuna mauzo bado.</span>'; return; }
@@ -372,37 +357,48 @@
       window.location.href = '/api/admin/backup?token=' + encodeURIComponent(token);
     });
 
+    
+    function esc(value) {
+      return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function orderStatusLabel(status){ return ({successful:'Successful',pending_manual:'Pending manual',pending_azampay:'Pending AzamPay',pending_clickpesa:'Pending',failed:'Failed',amount_mismatch:'Amount mismatch'})[status] || status || 'Unknown'; }
+    function isPendingStatus(status){ return String(status||'').toLowerCase().startsWith('pending'); }
+    function orderCustomer(o){ return o.customerName || o.customer || 'Mteja'; }
+
     async function loadOrders() {
       if (currentRole !== 'admin') return;
-      const res = await fetch('/api/admin/orders', { headers: { 'Authorization': token } });
-      const data = await res.json();
-      const box = document.getElementById('ordersList');
-      if (!data.success || data.orders.length === 0) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna mauzo bado.</p>'; return; }
-      const dotColor = { successful: '#00ff88', pending_manual: '#ffb020', pending_clickpesa: '#ffb020', failed: '#ff3d71', amount_mismatch: '#ff3d71' };
-      const statusLabel = { successful: 'Imekamilika', pending_manual: 'Inasubiri (Manual)', pending_clickpesa: 'Inasubiri', failed: 'Imeshindwa', amount_mismatch: 'Tatizo la Kiasi' };
-      box.innerHTML = data.orders.map(o => `
-        <div class="admin-row">
-          <div>
-            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${dotColor[o.status] || '#8f8faa'}; margin-right:6px;"></span>
-            <strong>${o.customer || 'Mteja'}</strong>
-            <span style="color:${dotColor[o.status] || '#8f8faa'}; font-size:12px;"> ${statusLabel[o.status] || o.status}</span>
-            <br>
-            <small>${new Date(o.date).toLocaleString()}</small><br>
-            <small>${(o.items || []).map(i => i.name + ' × ' + i.qty).join(', ') || '—'}</small>
-            ${o.manualTxRef ? '<br><small>Tx Ref ya mteja: <strong>' + o.manualTxRef + '</strong>' + (o.customerPhone ? ' • ' + o.customerPhone : '') + '</small>' : ''}
-          </div>
-          <div style="text-align:right;">
-            <div class="admin-amount">${Number(o.amount).toLocaleString()} TZS</div>
-            ${o.status === 'pending_manual' ? `
-              <div style="display:flex; gap:6px; margin-top:6px;">
-                <button class="btn-vote" onclick="confirmManualOrder('${o.tx_ref}')">✅ Thibitisha</button>
-                <button class="btn-remove" onclick="rejectManualOrder('${o.tx_ref}')">🗑️</button>
-              </div>` : ''}
-          </div>
-        </div>`).join('');
+      try {
+        const res = await fetch('/api/admin/orders', { headers: { 'Authorization': token } });
+        const data = await res.json(); if (!data.success) return;
+        window.__orders=data.orders||[];
+        const orders=window.__orders, successful=orders.filter(o=>o.status==='successful'), pending=orders.filter(o=>isPendingStatus(o.status));
+        const revenue=successful.reduce((sum,o)=>sum+Number(o.amount||0),0);
+        const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+        set('ovSuccessful',successful.length); set('ovPending',pending.length); set('ovRevenue',revenue.toLocaleString()+' TZS'); set('pendingNavBadge',pending.length);
+        const box=document.getElementById('ordersList'), recent=document.getElementById('overviewPayments');
+        if(!orders.length){box.innerHTML='<div class="empty-state">💳<h3>Hakuna payment history bado</h3><p>Malipo mapya yataonekana hapa.</p></div>';if(recent)recent.innerHTML='<div class="empty-state compact">Hakuna miamala bado.</div>';return;}
+        const cls={successful:'success',pending_manual:'pending',pending_azampay:'pending',pending_clickpesa:'pending',failed:'danger',amount_mismatch:'danger'};
+        box.innerHTML='<div class="data-table-wrap"><table class="data-table"><thead><tr><th>Customer</th><th>Transaction</th><th>Items</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody id="ordersTableBody"></tbody></table></div>';
+        renderOrdersTable();
+        if(recent) recent.innerHTML=orders.slice(0,6).map(o=>`<div class="payment-item"><div class="payment-avatar">${esc(orderCustomer(o).charAt(0).toUpperCase())}</div><div class="payment-main"><b>${esc(orderCustomer(o))}</b><span>${esc((o.items||[]).map(i=>i.name).join(', ')||'GameHub purchase')}</span></div><div class="payment-right"><strong>${Number(o.amount||0).toLocaleString()} TZS</strong><small class="status-pill ${cls[o.status]||''}">${esc(orderStatusLabel(o.status))}</small></div></div>`).join('');
+      }catch(e){const box=document.getElementById('ordersList');if(box)box.innerHTML='<div class="empty-state danger-text">Imeshindikana kupakia orders.</div>';}
+    }
+    function renderOrdersTable(){
+      const body=document.getElementById('ordersTableBody');if(!body)return;
+      const q=(document.getElementById('orderSearch')?.value||'').toLowerCase().trim(), sf=(document.getElementById('orderStatusFilter')?.value||'').toLowerCase();
+      const filtered=(window.__orders||[]).filter(o=>{
+        const hay=[orderCustomer(o),o.customer,o.customerPhone,o.tx_ref,o.manualTxRef,o.provider,...(o.items||[]).map(i=>i.name)].join(' ').toLowerCase();
+        return (!q||hay.includes(q)) && (!sf||(sf==='pending'?isPendingStatus(o.status):o.status===sf));
+      });
+      const cls={successful:'success',pending_manual:'pending',pending_azampay:'pending',pending_clickpesa:'pending',failed:'danger',amount_mismatch:'danger'};
+      body.innerHTML=filtered.map(o=>{
+        const items=(o.items||[]).map(i=>`${esc(i.name)} × ${esc(i.qty??1)}`).join('<br>')||'—';
+        const action=isPendingStatus(o.status)?`<button class="table-action approve" onclick="confirmManualOrder('${esc(o.tx_ref)}')">✓ Confirm</button><button class="table-action reject" onclick="rejectManualOrder('${esc(o.tx_ref)}')">×</button>`:'<span class="muted">—</span>';
+        return `<tr><td><div class="customer-cell"><div class="table-avatar">${esc(orderCustomer(o).charAt(0).toUpperCase())}</div><div><b>${esc(orderCustomer(o))}</b><small>${esc(o.customerPhone||o.customer||'')}</small></div></div></td><td><code>${esc(o.tx_ref||'—')}</code>${o.manualTxRef?`<small class="sub-ref">Manual: ${esc(o.manualTxRef)}</small>`:''}</td><td><span class="item-lines">${items}</span></td><td><strong>${Number(o.amount||0).toLocaleString()} TZS</strong></td><td>${esc(o.provider||'—')}</td><td><span class="status-pill ${cls[o.status]||''}">${esc(orderStatusLabel(o.status))}</span></td><td><small>${o.date?new Date(o.date).toLocaleString('sw-TZ'):'—'}</small></td><td>${action}</td></tr>`;
+      }).join('')||'<tr><td colspan="8"><div class="empty-state compact">Hakuna order inayolingana na filter.</div></td></tr>';
     }
 
-    async function confirmManualOrder(txRef) {
+async function confirmManualOrder(txRef) {
       if (!confirm('Umehakikisha umepokea pesa hii kweli? Hii itamruhusu mteja kupata download link.')) return;
       const res = await fetch('/api/admin/orders/confirm', {
         method: 'POST',
@@ -425,31 +421,18 @@
     }
 
     async function loadCustomers() {
-      if (currentRole !== 'admin') return;
-      const res = await fetch('/api/admin/users', { headers: { 'Authorization': token } });
-      const data = await res.json();
-      const box = document.getElementById('customersList');
-      if (!data.success || data.users.length === 0) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna wateja bado.</p>'; return; }
-      box.innerHTML = data.users.map(u => `
-        <div class="admin-row">
-          <div>
-            <strong>${u.name}</strong> ${u.isAdmin ? '<span style="color:#ff3d71;">👑 ADMIN</span>' : ''}${u.isStaff ? '<span style="color:#00e5ff;"> 👤 STAFF</span>' : ''}<br>
-            <small>${u.email} ${u.phone ? '• ' + u.phone : ''}</small>
-          </div>
-          ${!u.isAdmin ? `<button class="btn-vote" onclick="toggleStaff('${u.email}', ${!u.isStaff})">${u.isStaff ? '➖ Ondoa Staff' : '➕ Fanya Staff'}</button>` : ''}
-        </div>`).join('');
-
-      // Avatar strip ya wateja wa hivi karibuni (kwenye tab ya Mauzo)
-      const strip = document.getElementById('recentCustomersStrip');
-      if (strip) {
-        const recent = data.users.slice().reverse().slice(0, 5);
-        const colors = ['#7b2ff7','#00c853','#ff3eb5','#00e5ff','#ffb020'];
-        strip.innerHTML = recent.map((u, i) => `
-          <span class="dash-avatar" style="background:${colors[i % colors.length]};" title="${u.name}">${(u.name || '?').charAt(0).toUpperCase()}</span>`).join('');
-      }
+      if(currentRole!=='admin')return;
+      const res=await fetch('/api/admin/users',{headers:{'Authorization':token}}),data=await res.json();if(!data.success)return;
+      window.__customers=data.users||[];renderCustomers();
+      const strip=document.getElementById('recentCustomersStrip');if(strip){const recent=window.__customers.slice().reverse().slice(0,5);strip.innerHTML=recent.map(u=>`<span class="dash-avatar" title="${esc(u.name)}">${esc((u.name||'?').charAt(0).toUpperCase())}</span>`).join('');}
+    }
+    function renderCustomers(){
+      const box=document.getElementById('customersList');if(!box)return;const q=(document.getElementById('customerSearch')?.value||'').toLowerCase().trim();
+      const users=(window.__customers||[]).filter(u=>[u.name,u.email,u.phone].join(' ').toLowerCase().includes(q));
+      box.innerHTML=users.map(u=>`<div class="customer-row"><div class="customer-cell"><div class="table-avatar">${esc((u.name||'?').charAt(0).toUpperCase())}</div><div><b>${esc(u.name||'Unknown')}</b><small>${esc(u.email||'')}${u.phone?' • '+esc(u.phone):''}</small></div></div><div class="customer-meta">${u.isAdmin?'<span class="role-chip admin">ADMIN</span>':u.isStaff?'<span class="role-chip staff">STAFF</span>':'<span class="role-chip customer">CUSTOMER</span>'}</div>${!u.isAdmin?`<button class="table-action ${u.isStaff?'reject':'approve'}" onclick="toggleStaff('${esc(u.email)}', ${!u.isStaff})">${u.isStaff?'Remove Staff':'Make Staff'}</button>`:''}</div>`).join('')||'<div class="empty-state">Hakuna customer anayelingana na search.</div>';
     }
 
-    async function toggleStaff(email, makeStaff) {
+async function toggleStaff(email, makeStaff) {
       const res = await fetch('/api/admin/users/staff', {
         method: 'POST',
         headers: { 'Authorization': token, 'Content-Type': 'application/json' },
@@ -511,7 +494,7 @@
       document.getElementById('productFormTitle').textContent = '✏️ Hariri: ' + p.name;
       document.getElementById('addProductBtn').textContent = '💾 Sasisha Bidhaa';
       document.getElementById('cancelEditBtn').style.display = 'inline-block';
-      document.querySelector('.admin-form').scrollIntoView({ behavior: 'smooth' });
+      document.querySelector('#tab-products .admin-form').scrollIntoView({ behavior: 'smooth' });
     }
 
     function resetProductForm() {
@@ -861,22 +844,40 @@
       const r=await fetch('/api/admin/courses/'+courseId+'/videos/upload',{method:'POST',headers:{'Authorization':token},body:fd});const d=await r.json();alert(r.ok?'✅ Video ya course imepakiwa.':('❌ '+(d.error||'Hitilafu')));loadMediaData();
     }
 
-    // VICHUPO (TABS)
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-        document.getElementById('tab-' + btn.dataset.tab).style.display = 'block';
-        if (btn.dataset.tab === 'requests') loadAdminRequests();
-        if (btn.dataset.tab === 'marketplace') loadMarketplace();
-        if (btn.dataset.tab === 'coupons') loadCoupons();
-        if (btn.dataset.tab === 'security') { loadSecurityStats(); loadSecurityEvents(); }
-        if (btn.dataset.tab === 'media') loadMediaData();
-      });
-    });
 
-    document.getElementById('adminLogout').addEventListener('click', () => {
+    async function loadAiHistory(){
+      const box=document.getElementById('aiHistoryList');if(!box)return;box.innerHTML='<p class="muted">⏳ Inapakia AI history...</p>';
+      try{const r=await fetch('/api/admin/ai-builder/runs',{headers:{'Authorization':token}}),d=await r.json();if(!r.ok){box.innerHTML='<p class="danger-text">'+esc(d.error||'Hitilafu')+'</p>';return;}
+      box.innerHTML=(d.runs||[]).map(x=>`<div class="history-item"><div class="history-icon">✦</div><div><b>${esc(x.command)}</b><small>${x.executed?'✓ Executed':'Preview'} • ${x.createdAt?new Date(x.createdAt).toLocaleString('sw-TZ'):''}</small><p>${esc((x.results||[]).join(' • ')||x.plan?.summary||'No result')}</p></div></div>`).join('')||'<div class="empty-state compact">Hakuna AI Builder history bado.</div>';
+      }catch(e){box.innerHTML='<p class="danger-text">Network error.</p>';}
+    }
+    document.getElementById('loadAiHistoryBtn')?.addEventListener('click',loadAiHistory);
+    document.getElementById('orderSearch')?.addEventListener('input',renderOrdersTable);
+    document.getElementById('orderStatusFilter')?.addEventListener('change',renderOrdersTable);
+    document.getElementById('customerSearch')?.addEventListener('input',renderCustomers);
+    function exportOrdersCSV(){
+      const rows=window.__orders||[],head=['Date','Customer','Email/Phone','Transaction','Amount TZS','Provider','Status','Items'];
+      const csv=[head,...rows.map(o=>[o.date,orderCustomer(o),o.customerPhone||o.customer||'',o.tx_ref,o.amount,o.provider||'',o.status,(o.items||[]).map(i=>`${i.name} x${i.qty??1}`).join(' | ')])].map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gamehub-payment-history.csv';a.click();URL.revokeObjectURL(a.href);
+    }
+    document.getElementById('exportOrdersBtn')?.addEventListener('click',exportOrdersCSV);
+    document.getElementById('globalAdminSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter'){const q=e.target.value.trim();if(q){switchAdminTab('orders');const s=document.getElementById('orderSearch');if(s){s.value=q;renderOrdersTable();}}}});
+    document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();document.getElementById('globalAdminSearch')?.focus();}});
+    function refreshAll(){loadStats();loadOrders();loadCustomers();loadProducts();loadAnalytics();loadMediaData();}
+    document.getElementById('refreshDashboard')?.addEventListener('click',refreshAll);document.getElementById('topRefresh')?.addEventListener('click',refreshAll);
+    document.getElementById('mobileMenuBtn')?.addEventListener('click',()=>document.getElementById('adminSidebar').classList.toggle('open'));
+
+    function switchAdminTab(name){
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+      document.querySelectorAll('.admin-tab').forEach(t=>t.style.display='none');
+      const target=document.getElementById('tab-'+name);if(target)target.style.display='block';
+      if(name==='orders')loadOrders();if(name==='customers')loadCustomers();if(name==='products')loadProducts();if(name==='requests')loadAdminRequests();if(name==='marketplace')loadMarketplace();if(name==='coupons')loadCoupons();if(name==='security'){loadSecurityStats();loadSecurityEvents();}if(name==='media')loadMediaData();if(name==='ai')loadAiHistory();
+      document.getElementById('adminSidebar')?.classList.remove('open');window.scrollTo({top:0,behavior:'smooth'});
+    }
+    document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.tab)));
+    document.querySelectorAll('.tab-jump').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.target)));
+
+document.getElementById('adminLogout').addEventListener('click', () => {
       fetch('/api/auth/logout', { method: 'POST', headers: { 'Authorization': token } });
       localStorage.removeItem('gamehubToken');
       localStorage.removeItem('gamehubUser');
@@ -887,10 +888,9 @@
       const ok = await checkAdmin();
       if (!ok) return;
       setDashDate();
-      loadStats(); loadOrders(); loadCustomers(); loadProducts(); loadAdminRequests(); loadAnalytics();
-      loadSecurityStats(); loadSecurityEvents();
+      document.querySelectorAll('.admin-tab').forEach(t=>t.style.display='none');
+      document.getElementById('tab-overview').style.display='block';
+      loadStats(); loadOrders(); loadCustomers(); loadProducts(); loadAdminRequests(); loadAnalytics(); loadMediaData();
     })();
   </script>
-
-</body>
-</html>
+</body></html>

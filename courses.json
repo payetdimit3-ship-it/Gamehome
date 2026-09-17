@@ -1,0 +1,12 @@
+[
+  {
+    "id": "course_demo",
+    "name": "Web Development Starter",
+    "description": "HTML, CSS na JavaScript kwa wanaoanza.",
+    "thumbnail": "",
+    "price": 0,
+    "level": "Beginner",
+    "videos": [],
+    "createdAt": "2026-09-17T00:00:00.000Z"
+  }
+]

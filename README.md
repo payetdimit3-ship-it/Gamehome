@@ -89,3 +89,32 @@ Keep all AI/payment secrets only in Render environment variables, never in front
 
 ### Important
 Only upload/stream movies and sports content that you have the right/permission to distribute. The live page is a player for streams that the admin controls; it does not provide a source of copyrighted broadcasts.
+
+
+## Live stream links
+- YouTube watch/live links are automatically converted to YouTube embed URLs.
+- Direct MP4/WebM files play in the built-in video player.
+- HLS `.m3u8` streams use hls.js when supported.
+- A normal webpage URL cannot always be embedded because the source site may block iframe embedding (X-Frame-Options/CSP).
+
+
+## GAMEHUB ADMIN CONTROL CENTER — Professional Upgrade
+Admin dashboard imeboreshwa kwa muundo wa professional SaaS/game commerce:
+- Sidebar navigation + mobile drawer
+- Dashboard overview yenye KPI za Revenue, Successful/Pending, Customers, Products, Live, Movies na Courses
+- Revenue chart ya siku 14
+- Quick Actions za Game, Live, Movie, Course Video, AI Builder na Coupons
+- Recent Payments + full payment history table
+- Search/filter orders na customers
+- CSV export ya payment history
+- Pending payment badge na Confirm/Reject actions
+- AI Web Developer & Manager + AI Builder history
+- Media Studio kwa Live, Movies na Course videos
+- Security monitoring na staff restrictions
+- Responsive mobile-first admin UI
+- Server endpoint mpya: GET /api/admin/ai-builder/runs
+
+### Important
+- Supabase Storage inashauriwa kwa production media.
+- Usihifadhi API secrets ndani ya HTML/JavaScript.
+- Payment/live/movie content lazima iwe na ruhusa/licence inayofaa.
