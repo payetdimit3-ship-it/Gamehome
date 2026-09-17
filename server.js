@@ -59,8 +59,10 @@ app.get('/', (req, res) => {
 
 // ☁️ SUPABASE — HIFADHI YA KUDUMU (Backup Automatic)
 let supabase = null;
-if (process.env.SUPABASE_URL && (process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)) {
-  supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY);
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
+  supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
   console.log('☁️ Supabase imeunganishwa — data itahifadhiwa kudumu.');
 } else {
   console.log('⚠️ Supabase HAIJAWEKWA — data itapotea kila deploy mpya kwenye Render free tier!');
@@ -81,12 +83,16 @@ function readJson(file, fallback) {
   catch (e) { return fallback; }
 }
 
-function writeJson(file, data) {
+async function writeJson(file, data) {
   fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(data, null, 2));
-  if (supabase) {
-    supabase.from('kv_store').upsert({ file_name: file, data, updated_at: new Date().toISOString() })
-      .then(({ error }) => { if (error) console.error('☁️ Supabase backup error (' + file + '):', error.message); })
-      .catch(err => console.error('☁️ Supabase backup error (' + file + '):', err.message));
+  if (!supabase) return { local: true, cloud: false };
+  try {
+    const { error } = await supabase.from(process.env.SUPABASE_KV_TABLE || 'kv_store').upsert({ file_name: file, data, updated_at: new Date().toISOString() });
+    if (error) { console.error('☁️ Supabase backup error (' + file + '):', error.message); return { local: true, cloud: false, error: error.message }; }
+    return { local: true, cloud: true };
+  } catch (err) {
+    console.error('☁️ Supabase backup error (' + file + '):', err.message);
+    return { local: true, cloud: false, error: err.message };
   }
 }
 
@@ -95,7 +101,7 @@ async function restoreFromSupabase() {
   if (!supabase) return;
   for (const file of TRACKED_FILES) {
     try {
-      const { data, error } = await supabase.from('kv_store').select('data').eq('file_name', file).maybeSingle();
+      const { data, error } = await supabase.from(process.env.SUPABASE_KV_TABLE || 'kv_store').select('data').eq('file_name', file).maybeSingle();
       if (!error && data && data.data !== undefined) {
         fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(data.data, null, 2));
         console.log('☁️ Imerudishwa kutoka Supabase: ' + file);
@@ -397,7 +403,7 @@ app.get('/api/products', (req, res) => {
   res.json({ success: true, products: Object.values(products) });
 });
 
-app.post('/api/products', (req, res) => {
+app.post('/api/products', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || (!user.isAdmin && !user.isStaff)) return res.status(403).json({ error: 'Huna ruhusa' });
   const { name, type, price, emoji, desc, downloadLink, imageUrl, trailerUrl, category, section, accountUser, accountPassword } = req.body;
@@ -410,11 +416,11 @@ app.post('/api/products', (req, res) => {
     category: category || 'Zote', section: section || 'shop',
     accountUser: accountUser || '', accountPassword: accountPassword || ''
   };
-  writeJson('products.json', products);
-  res.json({ success: true, id });
+  const saved = await writeJson('products.json', products);
+  res.json({ success: true, id, persistent: saved.cloud !== false });
 });
 
-app.put('/api/products/:id', (req, res) => {
+app.put('/api/products/:id', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || (!user.isAdmin && !user.isStaff)) return res.status(403).json({ error: 'Huna ruhusa' });
   const products = readJson('products.json', {});
@@ -436,8 +442,8 @@ app.put('/api/products/:id', (req, res) => {
     accountUser: accountUser !== undefined ? accountUser : existing.accountUser,
     accountPassword: accountPassword !== undefined ? accountPassword : existing.accountPassword
   };
-  writeJson('products.json', products);
-  res.json({ success: true, product: products[req.params.id] });
+  const saved = await writeJson('products.json', products);
+  res.json({ success: true, product: products[req.params.id], persistent: saved.cloud !== false });
 });
 
 app.delete('/api/products/:id', (req, res) => {
@@ -661,11 +667,34 @@ app.get('/api/admin/orders', (req, res) => {
   res.json({ success: true, orders: orders.slice().reverse() });
 });
 
+app.get('/api/admin/overview', (req,res)=>{
+  const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
+  const orders=readJson('orders.json',[]); const products=Object.values(readJson('products.json',{})); const users=Object.values(readJson(usersFile,{}));
+  const paid=orders.filter(o=>o.status==='successful');
+  const pending=orders.filter(o=>String(o.status||'').startsWith('pending'));
+  const revenue=paid.reduce((n,o)=>n+Number(o.amount||0),0);
+  const byMethod={}; paid.forEach(o=>{const k=o.provider||'Other';byMethod[k]=(byMethod[k]||0)+Number(o.amount||0)});
+  const top={}; paid.forEach(o=>(o.items||[]).forEach(i=>{const k=i.name||'Bidhaa';top[k]=(top[k]||0)+(Number(i.quantity)||1)}));
+  res.json({success:true,revenue,paidOrders:paid.length,pendingOrders:pending.length,customers:users.filter(u=>!u.isAdmin).length,products:products.length,byMethod,topProducts:Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,8),recent:orders.slice().reverse().slice(0,20)});
+});
+
 app.get('/api/admin/users', (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
   const users = readJson(usersFile, {});
   res.json({ success: true, users: Object.values(users) });
+});
+
+app.get('/api/admin/storage-status', async (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
+  const table = process.env.SUPABASE_KV_TABLE || 'kv_store';
+  if (!supabase) return res.json({success:true,persistent:false,provider:'Local .data only',warning:'Weka SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL na SUPABASE_SERVICE_ROLE_KEY kwenye Render ili data isifutike baada ya restart/deploy.',kvTable:table});
+  try {
+    const { error } = await supabase.from(table).select('file_name').limit(1);
+    if (error) return res.json({success:true,persistent:false,provider:'Supabase configured but KV unavailable',warning:'Supabase imeunganishwa lakini table '+table+' haipatikani au RLS/permissions zimezuia server. Tengeneza/ruhusu table hii.',kvTable:table});
+    res.json({success:true,persistent:true,provider:'Supabase KV + local cache',warning:null,kvTable:table});
+  } catch(e) { res.json({success:true,persistent:false,provider:'Supabase error',warning:e.message,kvTable:table}); }
 });
 
 app.get('/api/admin/stats', (req, res) => {
@@ -683,15 +712,6 @@ app.get('/api/admin/stats', (req, res) => {
       products: Object.keys(readJson('products.json', {})).length
     }
   });
-});
-
-
-// 🧠 AI BUILDER HISTORY — Admin only
-app.get('/api/admin/ai-builder/runs', (req, res) => {
-  const user = getUserByToken(req);
-  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
-  const runs = readJson('ai_builder_runs.json', []);
-  res.json({ success: true, runs: runs.slice().reverse().slice(0, 100) });
 });
 
 // 🛡️ SECURITY ADMIN ENDPOINTS
@@ -821,7 +841,7 @@ app.get('/api/verify', async (req, res) => {
           status: 'successful',
           date: new Date().toISOString()
         });
-        writeJson('orders.json', orders);
+        await writeJson('orders.json', orders);
 
         logSecurity('PAYMENT_SUCCESS', 'Malipo yamefika: ' + (data.data.amount || 0) + ' TZS', 'LOW', getIP(req));
 
@@ -846,9 +866,9 @@ const AZAM_ENV = (process.env.AZAMPAY_ENV || 'sandbox').toLowerCase();
 const AZAM_AUTH_BASE = AZAM_ENV === 'production'
   ? 'https://authenticator.azampay.co.tz'
   : 'https://authenticator-sandbox.azampay.co.tz';
-const AZAM_API_BASE = AZAM_ENV === 'production'
-  ? 'https://checkout.azampay.co.tz'
-  : 'https://sandbox.azampay.co.tz';
+const AZAM_API_BASE = process.env.AZAMPAY_API_BASE || (AZAM_ENV === 'production'
+  ? 'https://api.azampay.co.tz'
+  : 'https://sandbox.azampay.co.tz');
 
 function azamConfigured() {
   return !!(process.env.AZAMPAY_APP_NAME && process.env.AZAMPAY_CLIENT_ID && process.env.AZAMPAY_CLIENT_SECRET);
@@ -932,7 +952,7 @@ app.post('/api/azampay-pay', async (req, res) => {
       status: 'pending_azampay',
       date: new Date().toISOString()
     });
-    writeJson('orders.json', orders);
+    await writeJson('orders.json', orders);
 
     const token = await getAzamPayToken();
     const payload = {
@@ -1018,7 +1038,7 @@ app.post('/api/azampay-callback', async (req, res) => {
         order.status = 'successful';
         order.confirmedAt = new Date().toISOString();
         order.azamTransactionId = body.transactionId || body.operatorreference || null;
-        writeJson('orders.json', orders);
+        await writeJson('orders.json', orders);
         logSecurity('AZAMPAY_PAYMENT_CONFIRMED', 'Malipo ya AzamPay yamethibitishwa: ' + orderReference, 'LOW', getIP(req));
       }
     } else if (orderReference && (status === 'failed' || status === 'cancelled')) {
@@ -1055,6 +1075,40 @@ app.get('/api/azampay-check/:ref', (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
+});
+
+// 🔁 COMPATIBILITY ALIASES — checkout ya zamani ilikuwa ikiita clickpesa endpoints.
+// Sasa inatumia AzamPay moja kwa moja. Hizi aliases zinasaidia versions za zamani za frontend.
+app.post('/api/clickpesa-pay', async (req, res) => {
+  req.url = '/api/azampay-pay';
+  // Re-run the same AzamPay handler by duplicating the essential flow.
+  const user = getUserByToken(req);
+  if (!user) return res.status(401).json({ error: 'Ingia kwanza kulipa' });
+  if (!azamConfigured()) return res.status(503).json({ error: 'AzamPay haijasanidiwa kwenye Render. Weka AZAMPAY_APP_NAME, AZAMPAY_CLIENT_ID na AZAMPAY_CLIENT_SECRET.' });
+  try {
+    const { items, total, phone, name } = req.body || {};
+    if (!items?.length || !total || !phone) return res.status(400).json({ error: 'Jaza taarifa za malipo.' });
+    let phoneFull = String(phone).replace(/\D/g, '');
+    if (!phoneFull.startsWith('255')) phoneFull = '255' + phoneFull.replace(/^0/, '');
+    const mno = detectAzamProvider(phoneFull);
+    if (!mno) return res.status(400).json({ error: 'Mtandao wa namba hii haukutambulika.' });
+    const orderReference = 'AZ' + Date.now() + crypto.randomBytes(3).toString('hex');
+    const orders = readJson('orders.json', []);
+    orders.push({ tx_ref: orderReference, customer: user.email, customerPhone: phoneFull, customerName: name || user.name, amount: Number(total), items, provider: mno, status: 'pending_azampay', date: new Date().toISOString() });
+    await writeJson('orders.json', orders);
+    const token = await getAzamPayToken();
+    const apiRes = await fetch(AZAM_API_BASE + '/azampay/mno/checkout', { method:'POST', headers:{'Authorization':token,'Content-Type':'application/json','X-API-Key':process.env.AZAMPAY_API_KEY||''}, body:JSON.stringify({accountNumber:phoneFull,amount:String(total),currency:'TZS',externalId:orderReference,provider:mno,additionalProperties:{customerEmail:user.email}}) });
+    const raw = await apiRes.text(); let d={}; try{d=JSON.parse(raw)}catch(e){}
+    if(!apiRes.ok || d.success===false){ const all=readJson('orders.json',[]); const o=all.find(x=>x.tx_ref===orderReference); if(o){o.status='failed_to_start'; await writeJson('orders.json',all);} return res.status(400).json({error:'AzamPay: '+(d.message||raw.slice(0,220)||'Malipo hayakuanza')}); }
+    res.json({success:true,tx_ref:orderReference,provider:mno,transactionId:d.transactionId||null});
+  } catch(e){ console.error('clickpesa compatibility:',e); res.status(500).json({error:e.message}); }
+});
+
+app.get('/api/clickpesa-check/:ref', (req,res) => {
+  const user=getUserByToken(req); if(!user) return res.status(401).json({error:'Ingia kwanza'});
+  const orders=readJson('orders.json',[]); const o=orders.find(x=>x.tx_ref===req.params.ref && x.customer===user.email);
+  if(!o) return res.status(404).json({error:'Order haipatikani'});
+  res.json({success:true,status:o.status==='successful'?'successful':(o.status==='failed'||o.status==='failed_to_start'?'failed':o.status==='amount_mismatch'?'amount_mismatch':'pending')});
 });
 
 // 💵 MALIPO YA MANUAL

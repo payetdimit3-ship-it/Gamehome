@@ -41,9 +41,10 @@ function player(x,large=true){
   if(!url)return '<div class="player" style="display:grid;place-items:center;color:#777">Stream haijawekwa</div>';
   const yt=normalizeYouTube(url);
   if(yt!==url || /youtube\.com|youtu\.be/i.test(url)) return '<div class="player"><iframe src="'+esc(yt)+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>';
-  if(/\.m3u8(?:$|\?)/i.test(url)) return '<div class="player"><video class="hls-player" controls playsinline '+(large?'autoplay muted':'')+'></video></div><script>setTimeout(function(){var v=document.currentScript.previousElementSibling?.querySelector?.("video")||document.querySelectorAll(".hls-player")[document.querySelectorAll(".hls-player").length-1];if(v&&window.Hls&&Hls.isSupported()){var h=new Hls();h.loadSource('+JSON.stringify(url)+');h.attachMedia(v);}else if(v){v.src='+JSON.stringify(url)+';}},0)</script>';
+  if(/\.m3u8(?:$|\?)/i.test(url)) return '<div class="player"><video class="hls-player" data-hls="'+esc(url)+'" controls playsinline '+(large?'autoplay muted':'')+'></video></div>';
   if(/\.(mp4|webm|mov|m4v)(?:$|\?)/i.test(url)) return '<div class="player"><video controls playsinline preload="metadata" '+(large?'autoplay muted':'')+' src="'+esc(url)+'"></video></div>';
   return '<div class="player"><iframe src="'+esc(url)+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div><p class="muted" style="margin-top:8px">Ikiwa link ni website ya kawaida, inaweza kukataa ku-embed. Tumia YouTube Embed au Direct MP4/WebM.</p>';
 }
-loadLive().catch(()=>document.getElementById('featured').innerHTML='<p>Imeshindikana kupakia streams.</p>');
+async function initHlsPlayers(){document.querySelectorAll('.hls-player[data-hls]').forEach(v=>{const url=v.getAttribute('data-hls');if(window.Hls&&Hls.isSupported()){const h=new Hls();h.loadSource(url);h.attachMedia(v);}else{v.src=url;}})}
+loadLive().then(initHlsPlayers).catch(()=>document.getElementById('featured').innerHTML='<p>Imeshindikana kupakia streams.</p>');
 </script></div></div><script src="app.js"></script><script src="chat.js"></script></body></html>

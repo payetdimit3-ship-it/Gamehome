@@ -98,23 +98,31 @@ Only upload/stream movies and sports content that you have the right/permission 
 - A normal webpage URL cannot always be embedded because the source site may block iframe embedding (X-Frame-Options/CSP).
 
 
-## GAMEHUB ADMIN CONTROL CENTER — Professional Upgrade
-Admin dashboard imeboreshwa kwa muundo wa professional SaaS/game commerce:
-- Sidebar navigation + mobile drawer
-- Dashboard overview yenye KPI za Revenue, Successful/Pending, Customers, Products, Live, Movies na Courses
-- Revenue chart ya siku 14
-- Quick Actions za Game, Live, Movie, Course Video, AI Builder na Coupons
-- Recent Payments + full payment history table
-- Search/filter orders na customers
-- CSV export ya payment history
-- Pending payment badge na Confirm/Reject actions
-- AI Web Developer & Manager + AI Builder history
-- Media Studio kwa Live, Movies na Course videos
-- Security monitoring na staff restrictions
-- Responsive mobile-first admin UI
-- Server endpoint mpya: GET /api/admin/ai-builder/runs
+## Production persistence & payments (important)
+Set these on Render before production use:
 
-### Important
-- Supabase Storage inashauriwa kwa production media.
-- Usihifadhi API secrets ndani ya HTML/JavaScript.
-- Payment/live/movie content lazima iwe na ruhusa/licence inayofaa.
+- `NEXT_PUBLIC_SUPABASE_URL` or `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY` (server only)
+- `SUPABASE_KV_TABLE=kv_store`
+- `AZAMPAY_ENVIRONMENT=sandbox` or `production`
+- `AZAMPAY_APP_NAME`, `AZAMPAY_CLIENT_ID`, `AZAMPAY_CLIENT_SECRET`
+- Optional `AZAMPAY_API_KEY` and `AZAMPAY_API_BASE` according to your current AzamPay merchant documentation.
+
+The checkout page now calls `/api/azampay-pay` and polls `/api/azampay-check/:ref`. The old `/api/clickpesa-*` routes are kept as compatibility aliases.
+
+If `SUPABASE_SERVICE_ROLE_KEY` is missing, Render's local filesystem is not a durable database and product/order data can disappear after a restart/redeploy. The Admin Command Center shows a storage warning in that case.
+
+### Supabase `kv_store` table (if missing)
+Run once in Supabase SQL Editor:
+
+```sql
+create table if not exists public.kv_store (
+  file_name text primary key,
+  data jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.kv_store enable row level security;
+```
+
+The GameHub server uses the service-role key server-side to read/write this table. Do not expose that key in frontend code.

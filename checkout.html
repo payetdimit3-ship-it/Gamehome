@@ -323,7 +323,7 @@
       payBtn.textContent = '⏳ Inaandaa malipo...';
 
       try {
-        const res = await fetch('/api/clickpesa-pay', {
+        const res = await fetch('/api/azampay-pay', {
           method: 'POST',
           headers: { 'Authorization': token, 'Content-Type': 'application/json' },
           body: JSON.stringify({ total, phone: phoneFull, name, items: getDiscountedItems() })
@@ -344,7 +344,7 @@
         const checkInterval = setInterval(async () => {
           attempts++;
           try {
-            const vRes = await fetch('/api/clickpesa-check/' + data.tx_ref, { headers: { 'Authorization': token } });
+            const vRes = await fetch('/api/azampay-check/' + data.tx_ref, { headers: { 'Authorization': token } });
             const vData = await vRes.json();
 
             if (vData.success && vData.status === 'successful') {

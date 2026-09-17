@@ -186,9 +186,15 @@
 <a href="live.html">📺 <span class="label">Watch Live</span></a>
     <a href="livescores.html">📊 <span class="label">Live Scores</span></a>
     <a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
-    <a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
+    <a href="academy.html">🎓 <span class="label">Academy</span></a>
+    <a href="courses.html">📚 <span class="label">Courses + AI</span></a>
+    <a href="opportunities.html">💼 <span class="label">Youth Opportunities</span></a>
 <a href="movies.html">🎬 <span class="label">Movies</span></a>
-    <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
+    <a href="marketplace.html">🏪 <span class="label">Creator Marketplace</span></a>
+    <a href="community.html">🤝 <span class="label">Community Help</span></a>
+    <a href="recovery.html">❤️ <span class="label">Recovery Support</span></a>
+    <a href="professionals.html">👨‍⚕️ <span class="label">Health Network</span></a>
+    <a href="community-fund.html">🏥 <span class="label">Community Fund</span></a>
     <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
     <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
     <a href="myorders.html">📦 <span class="label">My Orders</span></a>
@@ -208,24 +214,17 @@
       <a href="login.html" class="login-btn" id="topLoginBtn">👤 Login / Sign Up</a>
     </div>
 
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-video-bg" id="heroVideoBg"></div>
+    <!-- HERO — clean gaming-first, no trailer labels/text -->
+    <section class="hero" style="min-height:420px;">
       <div class="hero-overlay"></div>
       <div class="hero-content">
-        <div class="welcome">KARIBU</div>
-        <h1>GAME<span>HUB</span></h1>
-        <div class="slogan">CHEZA. FURAHIA. SHINDA.</div>
-        <p>
-          Duka la gaming la Tanzania — game keys, top-up, gift cards, Steam accounts,
-          na muda wa kukodi wa GeForce NOW. Malipo ya M-Pesa, Tigo Pesa na Airtel Money — automatic!
-        </p>
-        <div class="buttons">
-          <a href="shop.html" class="btn primary">Angalia Games Zote →</a>
-          <a href="rental.html" class="btn secondary">Kodisha Muda GeForce</a>
-        </div>
+        <div class="welcome">LIFEISGAMETZ • GAMEHUB</div>
+        <h1>CHEZA. <span>JIFUNZE.</span> SHINDA.</h1>
+        <div class="slogan">GAMING • DIGITAL ECONOMY • COMMUNITY</div>
+        <p>Duka la gaming la Tanzania lenye games, digital products, tournaments, live football, Academy, youth opportunities na AI assistants — yote sehemu moja.</p>
+        <div class="buttons"><a href="shop.html" class="btn primary">🎮 Explore Games</a><a href="academy.html" class="btn secondary">🎓 Gaming Academy</a><a href="live.html" class="btn secondary">📺 Watch Live</a></div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:18px"><span class="pill">⚡ Fast Digital Delivery</span><span class="pill">🛡️ Secure Payments</span><span class="pill">🤖 AI Support</span></div>
       </div>
-      <div class="hero-dots" id="heroDots"></div>
     </section>
 
     <!-- 🤖 AI/DYNAMIC BANNERS -->
@@ -278,6 +277,15 @@
         </div>
         <button class="btn primary" id="openAiBtn">🤖 Zungumza na AI Sasa</button>
       </div>
+    </div>
+
+    <!-- COMMUNITY + DIGITAL ECONOMY -->
+    <section class="section-title"><h2>🌍 Beyond Gaming</h2><a href="community.html">Explore Hub →</a></section>
+    <div class="features" style="grid-template-columns:repeat(4,1fr);">
+      <div class="feature"><div class="icon">🎓</div><h3>Academy</h3><p>Learn coding, design, AI, game dev na digital business.</p><a href="academy.html" style="color:#b33cff">Jifunze →</a></div>
+      <div class="feature"><div class="icon">💼</div><h3>Youth Opportunities</h3><p>Jobs, creator work, testing, tournaments na affiliate opportunities.</p><a href="opportunities.html" style="color:#b33cff">Tazama fursa →</a></div>
+      <div class="feature"><div class="icon">🏪</div><h3>Creator Marketplace</h3><p>Vijana wanaweza kuuza guides, graphics, templates na services.</p><a href="marketplace.html" style="color:#b33cff">Open marketplace →</a></div>
+      <div class="feature"><div class="icon">🤝</div><h3>Community Help</h3><p>Health education, online safety, digital literacy na youth guidance.</p><a href="community.html" style="color:#b33cff">Community →</a></div>
     </div>
 
     <!-- PAYMENT METHODS -->
@@ -376,47 +384,6 @@
       if (chatBtn) chatBtn.click();
     });
 
-    // ============ HERO TRAILER CAROUSEL (autoplay + slide) ============
-    (function () {
-      function ytId(url) {
-        const m = (url || '').match(/(?:youtu\.be\/|youtube\.com\/watch\?v=|youtube\.com\/embed\/)([\w-]{6,})/);
-        return m ? m[1] : null;
-      }
-
-      fetch('/api/products')
-        .then(r => r.json())
-        .then(data => {
-          if (!data.success) return;
-          const trailers = data.products
-            .map(p => ({ id: ytId(p.trailerUrl), name: p.name }))
-            .filter(t => t.id);
-          if (!trailers.length) return; // hakuna trailer - hero inabaki na gradient ya kawaida
-
-          const videoBg = document.getElementById('heroVideoBg');
-          const dotsBox = document.getElementById('heroDots');
-          let current = 0;
-
-          function showSlide(i) {
-            current = i;
-            const t = trailers[i];
-            videoBg.innerHTML = `<iframe src="https://www.youtube.com/embed/${t.id}?autoplay=1&mute=1&loop=1&playlist=${t.id}&controls=0&modestbranding=1&showinfo=0&rel=0&playsinline=1" allow="autoplay; encrypted-media" title="${t.name} trailer"></iframe>`;
-            dotsBox.querySelectorAll('.hero-dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
-          }
-
-          dotsBox.innerHTML = trailers.map((t, i) => `<button class="hero-dot" title="${t.name}"></button>`).join('');
-          dotsBox.querySelectorAll('.hero-dot').forEach((dot, i) => dot.addEventListener('click', () => { showSlide(i); resetTimer(); }));
-
-          let timer;
-          function resetTimer() {
-            clearInterval(timer);
-            timer = setInterval(() => { showSlide((current + 1) % trailers.length); }, 12000);
-          }
-
-          showSlide(0);
-          resetTimer();
-        })
-        .catch(() => {});
-    })();
   </script>
 <script>
 (async()=>{try{const r=await fetch('/api/banners');const d=await r.json();const a=d.banners||[];if(!a.length)return;const wrap=document.getElementById('dynamicBanners');wrap.style.display='block';document.getElementById('bannerGrid').innerHTML=a.map(b=>`<div style="background:linear-gradient(135deg,#17102f,#0b1022);border:1px solid #5d2bb0;border-radius:16px;padding:18px"><span style="color:#a63cff;font-weight:700">📢 GAMEHUB UPDATE</span><h2 style="margin:8px 0">${escB(b.title)}</h2><p style="color:#c9c9e0">${escB(b.description)}</p><a class="btn primary" href="${escB(b.buttonUrl||'#')}">${escB(b.buttonText||'Angalia')}</a></div>`).join('')}catch(e){}})();function escB(x){const d=document.createElement('div');d.textContent=x||'';return d.innerHTML}
