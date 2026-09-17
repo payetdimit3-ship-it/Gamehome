@@ -1313,11 +1313,6 @@ app.post('/api/ai/admin', async (req, res) => {
   res.json({ reply });
 });
 
-// START SERVER
-restoreFromSupabase()
-  .catch(err => console.error('☁️ Imeshindwa kurudisha data kutoka Supabase:', err.message))
-  .finally(() => {
-    const listener = 
 // 🏆 TOURNAMENTS
 app.get('/api/tournaments', (req, res) => {
   const data = readJson('tournaments.json', []);
@@ -1339,7 +1334,13 @@ app.post('/api/tournaments/register', (req, res) => {
 
 ensureTournamentSeed();
 
-app.listen(process.env.PORT || 3000, () => {
-      console.log('🎮 GameHub iko live kwenye port', listener.address().port);
+// START SERVER
+restoreFromSupabase()
+  .catch(err => console.error('☁️ Imeshindwa kurudisha data kutoka Supabase:', err.message))
+  .finally(() => {
+    const listener = app.listen(process.env.PORT || 3000, () => {
+      const address = listener.address();
+      const port = typeof address === 'object' && address ? address.port : (process.env.PORT || 3000);
+      console.log('🎮 GameHub iko live kwenye port', port);
     });
   });
