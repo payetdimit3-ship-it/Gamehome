@@ -25,7 +25,7 @@ if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
 const TRACKED_FILES = [
   'users.json', 'sessions.json', 'products.json', 
   'orders.json', 'requests.json', 'security.json', 
-  'marketplace.json', 'coupons.json', 'reviews.json', 'matches.json'
+  'marketplace.json', 'coupons.json', 'reviews.json', 'matches.json', 'tournaments.json'
 ];
 
 // 📁 HIFADHI YA DATA (.data folder)
@@ -59,6 +59,17 @@ async function restoreFromSupabase() {
     } catch (err) {
       console.error('☁️ Supabase restore error (' + file + '):', err.message);
     }
+  }
+}
+
+// 🏆 Default tournament catalog — created only when none exists
+function ensureTournamentSeed() {
+  const current = readJson('tournaments.json', null);
+  if (!Array.isArray(current)) {
+    writeJson('tournaments.json', [
+      { id: 't1', name: 'GameHub eFootball Cup', game: 'eFootball', date: 'Tarehe itawekwa', status: 'OPEN', description: 'Mashindano ya eFootball kwa community ya GameHub.', registrations: [] },
+      { id: 't2', name: 'GameHub FC Challenge', game: 'EA SPORTS FC', date: 'Tarehe itawekwa', status: 'OPEN', description: 'Challenge ya football gaming. Fuata matangazo ya GameHub.', registrations: [] }
+    ]);
   }
 }
 
@@ -1053,28 +1064,118 @@ app.get('/api/my-orders', (req, res) => {
 });
 
 // 🤖 GEMINI AI INTEGRATION
-async function askGemini(prompt) {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) return 'GEMINI_API_KEY haijawekwa kwenye .env. Weka kwanza.';
-  try {
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=' + key, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 600 }
-      })
-    });
-    const data = await response.json();
-    if (data.candidates && data.candidates[0]) {
-      return data.candidates[0].content.parts.map(p => p.text).join('');
+async function askAI(prompt, preferred) {
+  const providers = {
+    openai: {
+      key: process.env.OPENAI_API_KEY,
+      model: process.env.NEXUS_OPENAI_MODEL || 'gpt-4o-mini'
+    },
+    deepseek: {
+      key: process.env.DEEPSEEK_API_KEY,
+      model: process.env.NEXUS_DEEPSEEK_MODEL || 'deepseek-chat'
+    },
+    anthropic: {
+      key: process.env.ANTHROPIC_API_KEY,
+      model: process.env.NEXUS_ANTHROPIC_MODEL || 'claude-3-5-haiku-latest'
+    },
+    google: {
+      key: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY,
+      model: process.env.NEXUS_GOOGLE_MODEL || 'gemini-2.0-flash'
     }
-    if (data.error) return 'AI error: ' + data.error.message;
-    return 'Samahani, AI haikujibu. Jaribu tena.';
-  } catch (err) {
-    console.error(err);
-    return 'Hitilafu ya mtandao kwenye AI. Jaribu tena.';
+  };
+
+  const configured = Object.keys(providers).filter(p => providers[p].key);
+  if (!configured.length) {
+    return 'AI API key haijawekwa. Weka OPENAI_API_KEY, DEEPSEEK_API_KEY, ANTHROPIC_API_KEY au GOOGLE_GENERATIVE_AI_API_KEY kwenye Render.';
   }
+
+  const primary = preferred && providers[preferred] && providers[preferred].key
+    ? preferred
+    : (process.env.NEXUS_AI_PRIMARY && providers[process.env.NEXUS_AI_PRIMARY]?.key
+      ? process.env.NEXUS_AI_PRIMARY : configured[0]);
+
+  const fallbackEnv = process.env.NEXUS_AI_FALLBACK;
+  const order = [primary]
+    .concat(fallbackEnv && providers[fallbackEnv]?.key ? [fallbackEnv] : [])
+    .concat(configured.filter(p => p !== primary && p !== fallbackEnv));
+
+  const clean = (value) => String(value || '').slice(0, 12000);
+
+  for (const provider of order) {
+    try {
+      const cfg = providers[provider];
+      let text = '';
+
+      if (provider === 'openai' || provider === 'deepseek') {
+        const base = provider === 'deepseek' ? 'https://api.deepseek.com' : 'https://api.openai.com';
+        const response = await fetch(base + '/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + cfg.key
+          },
+          body: JSON.stringify({
+            model: cfg.model,
+            messages: [{ role: 'user', content: clean(prompt) }],
+            temperature: 0.7,
+            max_tokens: 700
+          })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data?.error?.message || ('HTTP ' + response.status));
+        text = data?.choices?.[0]?.message?.content || '';
+      }
+
+      if (provider === 'anthropic') {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': cfg.key,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: cfg.model,
+            max_tokens: 700,
+            temperature: 0.7,
+            messages: [{ role: 'user', content: clean(prompt) }]
+          })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data?.error?.message || ('HTTP ' + response.status));
+        text = data?.content?.map(x => x.text || '').join('') || '';
+      }
+
+      if (provider === 'google') {
+        const response = await fetch(
+          'https://generativelanguage.googleapis.com/v1beta/models/' +
+          encodeURIComponent(cfg.model) + ':generateContent?key=' + encodeURIComponent(cfg.key),
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: clean(prompt) }] }],
+              generationConfig: { temperature: 0.7, maxOutputTokens: 700 }
+            })
+          }
+        );
+        const data = await response.json();
+        if (!response.ok) throw new Error(data?.error?.message || ('HTTP ' + response.status));
+        text = data?.candidates?.[0]?.content?.parts?.map(x => x.text || '').join('') || '';
+      }
+
+      if (text.trim()) return text.trim();
+      throw new Error('Provider returned an empty response');
+    } catch (err) {
+      console.error('AI provider failed:', provider, err.message);
+    }
+  }
+
+  return 'Samahani, AI haikupatikana kwa sasa. Kagua API key, model, quota/billing kwenye Render.';
+}
+
+async function askGemini(prompt) {
+  return askAI(prompt, 'google');
 }
 
 app.post('/api/ai/chat', async (req, res) => {
@@ -1110,7 +1211,36 @@ app.post('/api/ai/chat', async (req, res) => {
     transcript +
     '\nJibu kwa ufupi, kirafiki na kwa lugha rahisi. Mteja anasema sasa: "' + message + '"';
 
-  const reply = await askGemini(prompt);
+  const reply = await askAI(prompt);
+  res.json({ reply });
+});
+
+app.post('/api/ai/recommendations', async (req, res) => {
+  const { message, games } = req.body;
+  const products = Object.values(readJson('products.json', {}));
+  const catalog = products.map(p => `${p.name} | ${p.type || 'Game'} | ${Number(p.price || 0).toLocaleString()} TZS`).join('\n');
+  const prompt = `Wewe ni AI Recommendation wa GameHub Tanzania.
+Msaidie mteja kuchagua bidhaa kutoka kwenye catalog halisi tu. Usibuni bidhaa au bei.
+Mteja: ${String(message || '').slice(0, 3000)}
+Catalog:
+${catalog || 'Hakuna bidhaa bado.'}
+Jibu kwa Kiswahili kwa ufupi, toa chaguo hadi 3 na sababu.`;
+  const reply = await askAI(prompt);
+  res.json({ reply });
+});
+
+app.post('/api/ai/health', async (req, res) => {
+  const { message, history } = req.body;
+  if (!message || !String(message).trim()) return res.status(400).json({ error: 'Andika swali' });
+  const transcript = Array.isArray(history) ? history.slice(-8).map(h => `${h.role}: ${h.text}`).join('\n') : '';
+  const prompt = `Wewe ni msaidizi wa taarifa za afya wa jamii ndani ya GameHub.
+Jibu kwa Kiswahili rahisi na kwa usalama. Toa taarifa za jumla tu; usijidai kuwa daktari, usifanye diagnosis ya uhakika, na usiagize dawa kwa mtu binafsi.
+Kama kuna dalili kali au dharura (kupumua kwa shida, maumivu makali ya kifua, kupoteza fahamu, kutokwa damu nyingi, degedege, au hatari ya kujiumiza), mshauri mtumiaji kutafuta huduma ya dharura mara moja.
+Usiombe taarifa nyeti zisizo muhimu.
+Mazungumzo:
+${transcript}
+Swali jipya: ${String(message).slice(0, 5000)}`;
+  const reply = await askAI(prompt, process.env.NEXUS_HEALTH_PROVIDER || 'google');
   res.json({ reply });
 });
 
@@ -1187,7 +1317,29 @@ app.post('/api/ai/admin', async (req, res) => {
 restoreFromSupabase()
   .catch(err => console.error('☁️ Imeshindwa kurudisha data kutoka Supabase:', err.message))
   .finally(() => {
-    const listener = app.listen(process.env.PORT || 3000, () => {
+    const listener = 
+// 🏆 TOURNAMENTS
+app.get('/api/tournaments', (req, res) => {
+  const data = readJson('tournaments.json', []);
+  res.json({ success: true, tournaments: data });
+});
+
+app.post('/api/tournaments/register', (req, res) => {
+  const { tournamentId, name, phone, game, userToken } = req.body;
+  if (!tournamentId || !name || !phone) return res.status(400).json({ error: 'Jaza jina, simu na tournament.' });
+  const tournaments = readJson('tournaments.json', []);
+  const t = tournaments.find(x => String(x.id) === String(tournamentId));
+  if (!t) return res.status(404).json({ error: 'Tournament haipatikani.' });
+  t.registrations = t.registrations || [];
+  if (t.registrations.some(x => x.phone === phone)) return res.status(409).json({ error: 'Namba hii tayari imesajiliwa.' });
+  t.registrations.push({ name: String(name).slice(0,100), phone: String(phone).slice(0,30), game: String(game || t.game || '').slice(0,100), userToken: userToken || null, createdAt: new Date().toISOString() });
+  writeJson('tournaments.json', tournaments);
+  res.json({ success: true, message: 'Umefanikiwa kusajiliwa kwenye tournament.' });
+});
+
+ensureTournamentSeed();
+
+app.listen(process.env.PORT || 3000, () => {
       console.log('🎮 GameHub iko live kwenye port', listener.address().port);
     });
   });

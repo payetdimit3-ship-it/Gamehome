@@ -152,6 +152,11 @@ function showError(msg, element) {
 document.addEventListener('DOMContentLoaded', () => {
   updateCartBadge();
   checkUserLoginState();
+  const current = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  document.querySelectorAll('.menu a').forEach(link => {
+    const href = (link.getAttribute('href') || '').split('?')[0].toLowerCase();
+    if (href === current) link.classList.add('active');
+  });
 
   const checkoutForm = document.getElementById('checkoutForm');
   if (checkoutForm) {
