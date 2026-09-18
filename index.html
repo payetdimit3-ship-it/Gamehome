@@ -68,6 +68,25 @@
   .primary { background:linear-gradient(90deg,#7926dc,#a93dff); color:#fff; }
   .secondary { border:1px solid #777; color:#fff; }
 
+  /* ============ PROFESSIONAL TRAILER HERO ============ */
+  .pro-hero-stage{position:relative;min-height:560px;border-radius:24px;overflow:hidden;background:#05060d;border:1px solid rgba(139,92,246,.24);box-shadow:0 30px 80px rgba(0,0,0,.42);}
+  .hero-stage-media{position:absolute;inset:0;}
+  .hero-stage-slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .55s ease;}
+  .hero-stage-slide.active{opacity:1;pointer-events:auto;}
+  .hero-stage-slide iframe,.hero-stage-slide video{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover;}
+  .hero-stage-slide:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,5,12,.86),rgba(4,5,12,.20) 55%,rgba(4,5,12,.58)),linear-gradient(0deg,rgba(4,5,12,.8),transparent 45%);pointer-events:none;}
+  .hero-stage-game{position:absolute;left:34px;right:34px;bottom:42px;z-index:3;display:flex;justify-content:space-between;align-items:end;gap:20px;}
+  .hero-stage-game span{font-size:10px;letter-spacing:2px;color:#67e8f9;font-weight:900;text-transform:uppercase;}
+  .hero-stage-game h2{font-size:clamp(28px,5vw,54px);margin:6px 0;letter-spacing:-1px;}
+  .hero-stage-game p{max-width:650px;color:#d5d8e8;font-size:13px;line-height:1.6;}
+  .hero-stage-price{font-size:22px;font-weight:900;white-space:nowrap;display:flex;align-items:center;gap:12px;flex-direction:column;align-items:flex-end;}
+  .hero-buy{display:inline-block;background:linear-gradient(135deg,#7c3aed,#c026d3);padding:12px 18px;border-radius:11px;font-size:13px;box-shadow:0 10px 30px rgba(124,58,237,.35);}
+  .hero-stage-controls{position:absolute;z-index:5;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:7px;}
+  .hero-stage-dot{width:9px;height:9px;border:0;border-radius:50%;background:rgba(255,255,255,.3);padding:0;cursor:pointer;}.hero-stage-dot.active{width:28px;border-radius:10px;background:#a855f7;}
+  .hero-stage-empty{height:100%;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;color:#aeb5cc;background:radial-gradient(circle at 50% 20%,rgba(124,58,237,.25),transparent 35%),#070912;}.hero-stage-empty span{font-size:58px}.hero-stage-empty strong{color:#fff;font-size:20px}.hero-stage-empty small{color:#7f88a8;}
+  .hero-copy-below{margin:18px 0 0;padding:30px 34px;border:1px solid rgba(139,92,246,.16);border-radius:20px;background:linear-gradient(135deg,#0e1120,#13102a);display:flex;justify-content:space-between;align-items:center;gap:24px;}.hero-copy-below h1{font-size:clamp(30px,5vw,48px);margin:7px 0;line-height:1.05;}.hero-copy-below h1 span{color:#a855f7}.hero-copy-below p{color:#aeb5cc;max-width:760px;line-height:1.7;font-size:14px}.hero-copy-trust{display:flex;flex-direction:column;gap:8px;min-width:190px}.hero-copy-trust span{padding:10px 12px;border:1px solid #252b43;border-radius:10px;background:#0a0d18;color:#cbd1e5;font-size:11px;}
+  @media(max-width:700px){.pro-hero-stage,.hero-stage-empty{min-height:420px}.hero-stage-game{left:18px;right:18px;bottom:28px;align-items:flex-start;flex-direction:column}.hero-stage-price{align-items:flex-start;font-size:18px}.hero-copy-below{padding:22px 18px;flex-direction:column;align-items:flex-start}.hero-copy-trust{width:100%;flex-direction:row;flex-wrap:wrap}.hero-copy-trust span{flex:1;min-width:130px}.hero-copy-below .buttons{margin-top:16px;}}
+
   /* ============ FEATURES ============ */
   .features { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:22px 0 35px; }
   .feature { background:#0b0d18; border:1px solid #24263a; padding:18px; border-radius:12px; }
@@ -202,6 +221,7 @@
     <a href="profile.html">👤 <span class="label">Profile</span></a>
     <a href="health.html">🩺 <span class="label">Health Support</span></a>
     <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
+    <a href="chat.html">💬 <span class="label">Public Chat</span></a>
     <a href="contact.html">☎ <span class="label">Contact</span></a>
   </div>
 </div>
@@ -214,32 +234,25 @@
       <a href="login.html" class="login-btn" id="topLoginBtn">👤 Login / Sign Up</a>
     </div>
 
-    <!-- HERO — clean gaming-first, no trailer labels/text -->
-    <section class="hero" style="min-height:420px;">
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <div class="welcome">LIFEISGAMETZ • GAMEHUB</div>
+    <!-- HERO TRAILER STAGE — content comes from Admin Dashboard -->
+    <section class="pro-hero-stage" id="heroTrailerStage">
+      <div class="hero-stage-media" id="heroStageMedia">
+        <div class="hero-stage-empty"><span>🎬</span><strong>Loading featured trailer…</strong></div>
+      </div>
+      <div class="hero-stage-shade"></div>
+      <div class="hero-stage-controls" id="heroStageDots"></div>
+    </section>
+
+    <!-- HERO COPY — placed UNDER the trailer so the video stays clean -->
+    <section class="hero-copy-below">
+      <div>
+        <span class="welcome">LIFEISGAMETZ • GAMEHUB</span>
         <h1>CHEZA. <span>JIFUNZE.</span> SHINDA.</h1>
         <div class="slogan">GAMING • DIGITAL ECONOMY • COMMUNITY</div>
         <p>Duka la gaming la Tanzania lenye games, digital products, tournaments, live football, Academy, youth opportunities na AI assistants — yote sehemu moja.</p>
         <div class="buttons"><a href="shop.html" class="btn primary">🎮 Explore Games</a><a href="academy.html" class="btn secondary">🎓 Gaming Academy</a><a href="live.html" class="btn secondary">📺 Watch Live</a></div>
-        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:18px"><span class="pill">⚡ Fast Digital Delivery</span><span class="pill">🛡️ Secure Payments</span><span class="pill">🤖 AI Support</span></div>
       </div>
-    </section>
-
-    <!-- FEATURED TRAILERS / GAMES FROM ADMIN -->
-    <section class="trailer-zone" id="featuredTrailersSection">
-      <div class="trailer-heading">
-        <div>
-          <span class="section-kicker">LIFEISGAMETZ • FEATURED</span>
-          <h2>🔥 Tazama Game Kabla ya Kununua</h2>
-          <p>Admin akiweka trailer kwenye bidhaa, trailer itaonekana hapa pamoja na jina la game, picha na bei ile ile iliyowekwa dukani.</p>
-        </div>
-        <a href="shop.html" class="trailer-all">View Store →</a>
-      </div>
-      <div class="trailer-grid" id="featuredTrailers">
-        <div class="trailer-empty">Inapakia trailers...</div>
-      </div>
+      <div class="hero-copy-trust"><span>⚡ Fast Delivery</span><span>🛡️ Secure Payments</span><span>🤖 AI Support</span></div>
     </section>
 
     <!-- 🤖 AI/DYNAMIC BANNERS -->
@@ -411,18 +424,38 @@
       function money(v) { return Number(v || 0).toLocaleString() + ' TZS'; }
       function renderTrailers(products) {
         const box=document.getElementById('featuredTrailers');
+        const stage=document.getElementById('heroStageMedia');
+        const dots=document.getElementById('heroStageDots');
         const items=(products||[]).filter(p=>p.trailerUrl && p.section !== 'steam' && p.section !== 'efootball');
         if(!items.length){
-          box.innerHTML='<div class="trailer-empty"><span>🎬</span><strong>Trailers zitaonekana hapa</strong><small>Admin anaweza kuweka Trailer URL kwenye Admin → Bidhaa au Hero Studio.</small><a href="shop.html" class="btn primary">Browse Games</a></div>';
+          const empty='<div class="trailer-empty"><span>🎬</span><strong>Hakuna trailer bado</strong><small>Admin → Hero Studio au Bidhaa → weka Trailer URL.</small><a href="shop.html" class="btn primary">Browse Games</a></div>';
+          if(box) box.innerHTML=empty;
+          if(stage) stage.innerHTML='<div class="hero-stage-empty"><span>🎬</span><strong>Featured trailers zitaonekana hapa</strong><small>Admin akiweka trailer kwenye game.</small></div>';
+          if(dots) dots.innerHTML='';
           return;
         }
-        box.innerHTML=items.map((p)=>{
+        let active=0;
+        function stageCard(p,i){
+          const id=ytId(p.trailerUrl); const img=p.imageUrl||'';
+          const media=id ? `<iframe src="https://www.youtube.com/embed/${id}?autoplay=${i===0?1:0}&mute=1&controls=1&rel=0&modestbranding=1&playsinline=1" title="${esc(p.name)} Trailer" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>` : `<video controls playsinline preload="metadata" poster="${esc(img)}" ${i===0?'autoplay muted':''}><source src="${esc(p.trailerUrl)}"></video>`;
+          return `<div class="hero-stage-slide ${i===0?'active':''}" data-index="${i}">${media}<div class="hero-stage-game"><div><span>${esc(p.category||p.type||'GAME')}</span><h2>${esc(p.name)}</h2><p>${esc(p.desc||'')}</p></div><div class="hero-stage-price">${money(p.price)}<a href="product.html?id=${encodeURIComponent(p.id)}" class="hero-buy">🛒 Buy Now</a></div></div></div>`;
+        }
+        if(stage){ stage.innerHTML=items.map(stageCard).join(''); }
+        if(dots){ dots.innerHTML=items.map((p,i)=>`<button class="hero-stage-dot ${i===0?'active':''}" data-index="${i}" aria-label="${esc(p.name)}"></button>`).join(''); dots.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{active=Number(b.dataset.index);show(active);})); }
+        function show(i){
+          if(!stage)return;
+          active=i;
+          stage.querySelectorAll('.hero-stage-slide').forEach((el,n)=>el.classList.toggle('active',n===i));
+          dots?.querySelectorAll('button').forEach((el,n)=>el.classList.toggle('active',n===i));
+        }
+        if(items.length>1) setInterval(()=>show((active+1)%items.length),9000);
+        if(box) box.innerHTML=items.map((p)=>{
           const id=ytId(p.trailerUrl); const img=p.imageUrl||'';
           const media=id ? `<div class="trailer-video"><iframe src="https://www.youtube.com/embed/${id}?autoplay=0&controls=1&rel=0&modestbranding=1&playsinline=1" title="${esc(p.name)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>` : `<div class="trailer-video trailer-direct"><video controls preload="metadata" playsinline poster="${esc(img)}"><source src="${esc(p.trailerUrl)}"></video></div>`;
-          return `<article class="trailer-card">${media}<div class="trailer-info"><div class="trailer-game-line"><div>${img?`<img src="${esc(img)}" alt="" onerror="this.style.display='none'">`:''}<div><span>${esc(p.category||p.type||'GAME')}</span><h3>${esc(p.name)}</h3></div></div><div class="trailer-price">${money(p.price)}</div></div><p>${esc(p.desc||'Digital game product • Ready to order')}</p><div class="trailer-actions"><a class="btn primary" href="product.html?id=${encodeURIComponent(p.id)}">🛒 Buy Now</a><a class="trailer-more" href="product.html?id=${encodeURIComponent(p.id)}">View Details →</a></div></div></article>`;
+          return `<article class="trailer-card">${media}<div class="trailer-info"><div class="trailer-game-line"><div>${img?`<img src="${esc(img)}" alt="" onerror="this.style.display='none'">`:''}<div><span>${esc(p.category||p.type||'GAME')}</span><h3>${esc(p.name)}</h3></div></div><div class="trailer-price">${money(p.price)}</div></div><p>${esc(p.desc||'Digital game • Ready to order')}</p><div class="trailer-actions"><a class="btn primary" href="product.html?id=${encodeURIComponent(p.id)}">🛒 Buy Now</a><a class="trailer-more" href="product.html?id=${encodeURIComponent(p.id)}">View Details →</a></div></div></article>`;
         }).join('');
       }
-      fetch('/api/products').then(r=>r.json()).then(d=>{if(d.success) renderTrailers(d.products);}).catch(()=>renderTrailers([]));
+      fetch('/api/products').then(r=>r.json()).then(d=>{renderTrailers(d.success?d.products:[]);}).catch(()=>renderTrailers([]));
     })();
   </script>
 

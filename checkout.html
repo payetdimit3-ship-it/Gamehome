@@ -23,6 +23,23 @@
       .main { margin-left:64px; }
       .topbar { padding:12px 15px 0; }
     }
+
+    .checkout-page{max-width:980px;padding:34px 24px 70px}
+    .checkout-page h1{font-size:clamp(30px,5vw,46px);letter-spacing:-1px;margin-bottom:24px;background:linear-gradient(90deg,#fff,#c4b5fd,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .checkout-cart,.payment-form{background:rgba(12,14,26,.78);border:1px solid rgba(139,92,246,.28);box-shadow:0 20px 60px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.04);backdrop-filter:blur(18px)}
+    .checkout-cart{padding:20px}
+    .checkout-item{padding:13px 4px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .checkout-item:last-child{border-bottom:0}
+    .checkout-total{font-size:26px;padding:18px 4px;color:#f4f4ff}
+    #checkoutTotal{color:#67e8f9;text-shadow:0 0 18px rgba(103,232,249,.25)}
+    .payment-form{max-width:720px;margin:0 auto;padding:26px}
+    .payment-form input,.payment-form select{background:rgba(4,5,10,.9);border-color:rgba(139,92,246,.32);min-height:48px}
+    .payment-form input:focus,.payment-form select:focus{border-color:#67e8f9;box-shadow:0 0 0 3px rgba(103,232,249,.08)}
+    #payBtn,#manualPayBtn{min-height:50px;font-size:15px;font-weight:800;border-radius:12px}
+    .checkout-page .admin-tabs{max-width:720px;margin-left:auto;margin-right:auto;display:flex;gap:8px;flex-wrap:wrap}
+    .checkout-page .tab-btn{flex:1;min-width:180px}
+    .checkout-page:before{content:"SECURE CHECKOUT";display:block;text-align:center;color:#7dd3fc;letter-spacing:4px;font-size:10px;font-weight:800;margin-bottom:8px;opacity:.8}
+    @media(max-width:700px){.checkout-page{padding:24px 14px 50px}.payment-form{padding:18px}.checkout-page .tab-btn{min-width:0}.checkout-item{font-size:13px}}
   </style>
 </head>
 <body>
@@ -81,7 +98,7 @@
 
     <form id="paymentForm" class="payment-form">
       <p style="color:#8f8faa; font-size:13px; text-align:center; margin-bottom:6px;">
-        Utapokea ombi la PIN moja kwa moja kwenye simu yako (M-Pesa/Tigo Pesa/Airtel Money/HaloPesa) — bila kuondoka kwenye website hii.
+        Ukichagua Automatic, mfumo utatuma ombi la malipo (PIN push) kwenye wallet yako kupitia AzamPay. Hii inahitaji credentials za merchant ziwe zimewekwa kwenye Render.
       </p>
 
       <label>👤 Jina Kamili</label>
@@ -92,6 +109,17 @@
 
       <label>📱 Namba ya Simu (255 + namba 9)</label>
       <input type="tel" id="phone" required placeholder="2557XXXXXXXX">
+
+      <label>📡 Mtandao wa Malipo</label>
+      <select id="provider" required style="background:#0b0d18;color:#fff;border:1px solid #2a2d45;border-radius:10px;padding:12px;">
+        <option value="">Chagua mtandao...</option>
+        <option value="Mpesa">M-Pesa</option>
+        <option value="Tigo">Mixx by Yas / Tigo</option>
+        <option value="Airtel">Airtel Money</option>
+        <option value="Halopesa">HaloPesa</option>
+        <option value="Azampesa">AzamPesa</option>
+      </select>
+      <small style="color:#7f88a8;display:block;margin:7px 0 2px;">Chagua mtandao unaolingana na namba uliyoweka ili push ya PIN itume kwenye wallet sahihi.</small>
 
       <button type="submit" class="btn-primary" id="payBtn">📲 Lipa Hapa</button>
       <p id="payStatus" class="pay-status"></p>
@@ -303,18 +331,23 @@
 
       const token = localStorage.getItem('gamehubToken');
       if (!token) {
-        payStatus.textContent = '🔐 Ingia kwanza kulipa.';
-        setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+        payStatus.textContent = '🔐 Ingia kwanza kulipa. Tunakurudisha kwenye login...';
+        setTimeout(() => { window.location.href = 'login.html?return=checkout.html'; }, 900);
         return;
       }
 
       const name = document.getElementById('fullname').value.trim();
       const email = document.getElementById('email').value.trim();
       const phone = document.getElementById('phone').value.trim();
+      const provider = document.getElementById('provider').value;
 
       let phoneFull = phone;
       if (!phoneFull.startsWith('255')) {
         phoneFull = '255' + phoneFull.replace(/^0/, '');
+      }
+      if (!provider) {
+        payStatus.textContent = '❌ Chagua mtandao wa malipo kwanza.';
+        return;
       }
 
       const total = getFinalTotal();
@@ -326,7 +359,7 @@
         const res = await fetch('/api/azampay-pay', {
           method: 'POST',
           headers: { 'Authorization': token, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ total, phone: phoneFull, name, items: getDiscountedItems() })
+          body: JSON.stringify({ total, phone: phoneFull, provider, name, items: getDiscountedItems() })
         });
         const data = await res.json();
 

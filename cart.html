@@ -116,58 +116,30 @@
     const cartEmpty = document.getElementById('cartEmpty');
     const cartTotal = document.getElementById('cartTotal');
 
-    function renderCart() {
-      const cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
-      const items = Object.values(cart);
-      cartItemsDiv.innerHTML = '';
-
-      if (items.length === 0) {
-        cartSummary.style.display = 'none';
-        cartEmpty.style.display = 'block';
-        return;
-      }
-
-      cartSummary.style.display = 'block';
-      cartEmpty.style.display = 'none';
-      let total = 0;
-
-      items.forEach(item => {
-        total += item.num * item.qty;
-        cartItemsDiv.innerHTML += `
-          <div class="cart-item">
-            <div class="cart-emoji">${item.emoji}</div>
-            <div class="cart-info">
-              <h3>${item.name}</h3>
-              <p>${item.price} × ${item.qty}</p>
-            </div>
-            <div class="cart-right">
-              <p class="cart-line-total">${(item.num * item.qty).toLocaleString()} TZS</p>
-              <button class="btn-remove" data-id="${item.id}">✖ Futa</button>
-            </div>
-          </div>
-        `;
-      });
-
-      cartTotal.textContent = total.toLocaleString() + ' TZS';
-
-      document.querySelectorAll('.btn-remove').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const cart2 = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
-          delete cart2[btn.dataset.id];
-          localStorage.setItem('gamehubCart', JSON.stringify(cart2));
-          renderCart();
-          window.updateCartBadge();
-        });
-      });
+    function readCartObject(){
+      try { const raw=JSON.parse(localStorage.getItem('gamehubCart')||'{}'); return Array.isArray(raw) ? Object.fromEntries(raw.map((x,i)=>[x.id||('cart-'+i),x])) : (raw||{}); }
+      catch(e){ return {}; }
     }
-
-    document.getElementById('clearCart').addEventListener('click', () => {
-      localStorage.removeItem('gamehubCart');
-      renderCart();
-      window.updateCartBadge();
-    });
-
-    renderCart();
+    function money(n){ return Number(n||0).toLocaleString()+' TZS'; }
+    function renderCart(){
+      const cart=readCartObject(), items=Object.values(cart);
+      cartItemsDiv.innerHTML='';
+      if(!items.length){ cartSummary.style.display='none'; cartEmpty.style.display='block'; return; }
+      cartSummary.style.display='block'; cartEmpty.style.display='none'; let total=0;
+      items.forEach(item=>{
+        const qty=Math.max(1,Number(item.qty??item.quantity??1)||1);
+        const num=Number(item.num??item.priceNumber??(typeof item.price==='number'?item.price:String(item.price||0).replace(/[^\d.]/g,'')))||0;
+        total+=num*qty;
+        const row=document.createElement('div'); row.className='cart-item';
+        row.innerHTML=`<div class="cart-emoji">${item.emoji||'🎮'}</div><div class="cart-info"><h3>${escapeHtml(item.name||'Bidhaa')}</h3><p>${money(num)} × ${qty}</p></div><div class="cart-right"><p class="cart-line-total">${money(num*qty)}</p><button class="btn-remove" data-id="${escapeHtml(item.id)}">✖ Futa</button></div>`;
+        cartItemsDiv.appendChild(row);
+      });
+      cartTotal.textContent=money(total);
+      cartItemsDiv.querySelectorAll('.btn-remove').forEach(btn=>btn.onclick=()=>{ const c=readCartObject(); delete c[btn.dataset.id]; localStorage.setItem('gamehubCart',JSON.stringify(c)); renderCart(); if(window.updateCartBadge) window.updateCartBadge(); });
+    }
+    function escapeHtml(v){const d=document.createElement('div');d.textContent=v??'';return d.innerHTML;}
+    document.getElementById('clearCart').onclick=()=>{localStorage.removeItem('gamehubCart');renderCart();if(window.updateCartBadge)window.updateCartBadge();};
+    window.addEventListener('storage',renderCart); renderCart();
   </script>
 
 </body>

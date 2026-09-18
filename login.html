@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ingia — GameHub</title>
+  <title>Ingia — LIFEISGAMETZ</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .sidebar { width:240px; height:100vh; background:#080912; border-right:1px solid #24243a; position:fixed; left:0; top:0; padding:25px 18px; overflow-y:auto; z-index:200; }
@@ -132,7 +132,7 @@
         }
         localStorage.setItem('gamehubToken', data.token);
         localStorage.setItem('gamehubUser', JSON.stringify(data.user));
-        window.location.href = 'index.html';
+        window.location.replace('index.html');
       } catch (err) {
         msg.textContent = '❌ Hitilafu ya mtandao. Jaribu tena.';
         btn.disabled = false;

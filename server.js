@@ -57,6 +57,45 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// 💬 PUBLIC COMMUNITY CHAT — haihitaji login
+const publicChatRate = new Map();
+function cleanPublicText(value, max) {
+  return String(value || '').replace(/[\u0000-\u001F\u007F]/g, ' ').replace(/<[^>]*>/g, '').trim().slice(0, max);
+}
+function publicChatAllowed(ip) {
+  const now = Date.now();
+  const last = publicChatRate.get(ip) || 0;
+  if (now - last < 3500) return false;
+  publicChatRate.set(ip, now);
+  return true;
+}
+app.get('/api/public-chat/messages', (req, res) => {
+  const messages = readJson('public_chat.json', []);
+  res.json({ success: true, messages: Array.isArray(messages) ? messages.slice(-100) : [] });
+});
+app.post('/api/public-chat/messages', async (req, res) => {
+  const ip = getIP(req);
+  if (!publicChatAllowed(ip)) return res.status(429).json({ error: 'Tafadhali subiri sekunde chache kabla ya kutuma ujumbe mwingine.' });
+  const name = cleanPublicText(req.body?.name, 32) || 'Mgeni';
+  const message = cleanPublicText(req.body?.message, 500);
+  if (!message) return res.status(400).json({ error: 'Andika ujumbe kwanza.' });
+  const messages = readJson('public_chat.json', []);
+  const row = { id: 'chat_' + Date.now() + '_' + crypto.randomBytes(3).toString('hex'), name, message, time: new Date().toISOString() };
+  messages.push(row);
+  const kept = messages.slice(-300);
+  await writeJson('public_chat.json', kept);
+  res.json({ success: true, message: row });
+});
+app.delete('/api/admin/public-chat/:id', async (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
+  const messages = readJson('public_chat.json', []);
+  const filtered = messages.filter(x => x.id !== req.params.id);
+  await writeJson('public_chat.json', filtered);
+  res.json({ success: true });
+});
+
+
 // ☁️ SUPABASE — HIFADHI YA KUDUMU (Backup Automatic)
 let supabase = null;
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -71,7 +110,7 @@ if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
 const TRACKED_FILES = [
   'users.json', 'sessions.json', 'products.json', 
   'orders.json', 'requests.json', 'security.json', 
-  'marketplace.json', 'coupons.json', 'reviews.json', 'matches.json', 'tournaments.json', 'live_streams.json', 'courses.json', 'movies.json', 'media.json', 'ai_builder_runs.json', 'banners.json', 'settings.json'
+  'marketplace.json', 'coupons.json', 'reviews.json', 'matches.json', 'tournaments.json', 'live_streams.json', 'courses.json', 'movies.json', 'media.json', 'ai_builder_runs.json', 'banners.json', 'settings.json', 'public_chat.json'
 ];
 
 // 📁 HIFADHI YA DATA (.data folder)
@@ -862,7 +901,7 @@ app.get('/api/verify', async (req, res) => {
 });
 
 // ⚡ AZAMPAY PAYMENTS
-const AZAM_ENV = (process.env.AZAMPAY_ENV || 'sandbox').toLowerCase();
+const AZAM_ENV = String(process.env.AZAMPAY_ENVIRONMENT || process.env.AZAMPAY_ENV || 'sandbox').toLowerCase();
 const AZAM_AUTH_BASE = AZAM_ENV === 'production'
   ? 'https://authenticator.azampay.co.tz'
   : 'https://authenticator-sandbox.azampay.co.tz';
@@ -918,6 +957,23 @@ function detectAzamProvider(phoneFull) {
 
 const AZAM_PROVIDERS = ['Mpesa', 'Tigo', 'Airtel', 'Halopesa', 'Azampesa'];
 
+app.get('/api/admin/payment-status', (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
+  const configured = azamConfigured();
+  res.json({
+    success: true,
+    configured,
+    environment: AZAM_ENV,
+    provider: 'AzamPay',
+    apiBaseConfigured: !!process.env.AZAMPAY_API_BASE,
+    apiKeyConfigured: !!process.env.AZAMPAY_API_KEY,
+    callbackTokenConfigured: !!(process.env.AZAMPAY_CALLBACK_TOKEN || process.env.AZAMPAY_WEBHOOK_SECRET),
+    callbackPath: '/api/azampay-callback',
+    message: configured ? 'AzamPay credentials are configured.' : 'Set AZAMPAY_APP_NAME, AZAMPAY_CLIENT_ID and AZAMPAY_CLIENT_SECRET.'
+  });
+});
+
 app.post('/api/azampay-pay', async (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza kulipa' });
@@ -935,7 +991,8 @@ app.post('/api/azampay-pay', async (req, res) => {
     if (!phoneFull.startsWith('255')) phoneFull = '255' + phoneFull.replace(/^0/, '');
     if (phoneFull.length !== 12) return res.status(400).json({ error: 'Namba ya simu si sahihi. Mfano: 0786095758' });
 
-    const mno = AZAM_PROVIDERS.includes(provider) ? provider : detectAzamProvider(phoneFull);
+    const requestedProvider = String(provider || '').trim();
+    const mno = AZAM_PROVIDERS.includes(requestedProvider) ? requestedProvider : detectAzamProvider(phoneFull);
     if (!mno) return res.status(400).json({ error: 'Hatujaweza kutambua mtandao wa namba hii. Chagua mtandao mwenyewe.' });
 
     const orderReference = 'AZ' + Date.now() + crypto.randomBytes(3).toString('hex');
@@ -1010,7 +1067,7 @@ function amountMatches(order, collectedAmount) {
 
 app.post('/api/azampay-callback', async (req, res) => {
   try {
-    const expected = process.env.AZAMPAY_CALLBACK_TOKEN;
+    const expected = process.env.AZAMPAY_CALLBACK_TOKEN || process.env.AZAMPAY_WEBHOOK_SECRET;
     if (expected) {
       const got = req.headers['authorization'] || req.headers['x-callback-token'] || '';
       const clean = String(got).replace(/^Bearer\s+/i, '');
@@ -1021,18 +1078,19 @@ app.post('/api/azampay-callback', async (req, res) => {
     }
 
     const body = req.body || {};
-    const orderReference = body.utilityref || body.externalId || body.reference;
-    const status = String(body.transactionstatus || body.transactionStatus || body.status || '').toLowerCase();
-    const collectedAmount = body.amount ?? body.collectedAmount;
+    const payload = (body.data && typeof body.data === 'object') ? body.data : body;
+    const orderReference = payload.utilityref || payload.utilityRef || payload.externalId || payload.reference || payload.referenceId || body.utilityref || body.externalId || body.reference;
+    const status = String(payload.transactionstatus || payload.transactionStatus || payload.status || body.transactionstatus || body.transactionStatus || body.status || '').toLowerCase();
+    const collectedAmount = payload.amount ?? payload.collectedAmount ?? body.amount ?? body.collectedAmount;
 
-    if (orderReference && (status === 'success' || status === 'settled' || status === 'completed')) {
+    if (orderReference && (status === 'success' || status === 'successful' || status === 'settled' || status === 'completed' || status === 'paid')) {
       const orders = readJson('orders.json', []);
       const order = orders.find(o => o.tx_ref === orderReference);
       if (order && order.status !== 'successful') {
         if (!amountMatches(order, collectedAmount)) {
           logSecurity('AMOUNT_MISMATCH', 'Kiasi kilicholipwa (' + collectedAmount + ') hakilingani na bei halisi (' + order.amount + ') kwa order ' + orderReference, 'HIGH', getIP(req));
           order.status = 'amount_mismatch';
-          writeJson('orders.json', orders);
+          await writeJson('orders.json', orders);
           return res.json({ success: false });
         }
         order.status = 'successful';
@@ -1041,12 +1099,12 @@ app.post('/api/azampay-callback', async (req, res) => {
         await writeJson('orders.json', orders);
         logSecurity('AZAMPAY_PAYMENT_CONFIRMED', 'Malipo ya AzamPay yamethibitishwa: ' + orderReference, 'LOW', getIP(req));
       }
-    } else if (orderReference && (status === 'failed' || status === 'cancelled')) {
+    } else if (orderReference && (status === 'failed' || status === 'cancelled' || status === 'canceled' || status === 'rejected')) {
       const orders = readJson('orders.json', []);
       const order = orders.find(o => o.tx_ref === orderReference);
       if (order && order.status !== 'successful') {
         order.status = 'failed';
-        writeJson('orders.json', orders);
+        await writeJson('orders.json', orders);
       }
     }
 
@@ -1112,7 +1170,7 @@ app.get('/api/clickpesa-check/:ref', (req,res) => {
 });
 
 // 💵 MALIPO YA MANUAL
-app.post('/api/manual-pay', (req, res) => {
+app.post('/api/manual-pay', async (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza kutuma ripoti ya malipo' });
 
@@ -1127,18 +1185,18 @@ app.post('/api/manual-pay', (req, res) => {
     customer: user.email,
     customerPhone: phone || '',
     manualTxRef: txRef.trim(),
-    amount: total,
+    amount: Number(total),
     items,
     status: 'pending_manual',
     date: new Date().toISOString()
   });
-  writeJson('orders.json', orders);
+  await writeJson('orders.json', orders);
   logSecurity('MANUAL_PAYMENT_SUBMITTED', 'Ripoti ya malipo manual kutoka ' + user.email, 'LOW', getIP(req));
 
   res.json({ success: true, message: '✅ Ripoti imepokelewa! Admin atathibitisha malipo yako hivi karibuni. Angalia "My Orders" baadaye.', tx_ref: orderRef });
 });
 
-app.post('/api/admin/orders/confirm', (req, res) => {
+app.post('/api/admin/orders/confirm', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
   const { tx_ref } = req.body;
@@ -1147,18 +1205,18 @@ app.post('/api/admin/orders/confirm', (req, res) => {
   if (!order) return res.status(404).json({ error: 'Order haipatikani' });
   order.status = 'successful';
   order.confirmedAt = new Date().toISOString();
-  writeJson('orders.json', orders);
+  await writeJson('orders.json', orders);
   logSecurity('MANUAL_PAYMENT_CONFIRMED', 'Admin amethibitisha malipo: ' + tx_ref, 'LOW', getIP(req));
   res.json({ success: true, message: '✅ Malipo yamethibitishwa. Mteja ataona bidhaa yake kwenye My Orders.' });
 });
 
-app.post('/api/admin/orders/reject', (req, res) => {
+app.post('/api/admin/orders/reject', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
   const { tx_ref } = req.body;
   const orders = readJson('orders.json', []);
   const filtered = orders.filter(o => o.tx_ref !== tx_ref);
-  writeJson('orders.json', filtered);
+  await writeJson('orders.json', filtered);
   res.json({ success: true });
 });
 
@@ -1574,7 +1632,7 @@ app.post('/api/admin/ai-builder', async (req,res)=>{
         c.videos=c.videos||[]; c.videos.push({id:'cv_'+Date.now(),title:String(action.title||'Video').slice(0,160),description:String(action.description||'').slice(0,1000),url:String(action.videoUrl||'').slice(0,2000),createdAt:new Date().toISOString()}); writeJson('courses.json',courses); results.push('Course video: '+action.title); continue;
       }
       if(type==='update_settings'){
-        const settings=readJson('settings.json',{}); settings[String(action.key||'').slice(0,80)]=String(action.value||'').slice(0,500); writeJson('settings.json',settings); results.push('Setting: '+action.key); continue;
+        const settings=readJson('settings.json', 'public_chat.json',{}); settings[String(action.key||'').slice(0,80)]=String(action.value||'').slice(0,500); writeJson('settings.json', 'public_chat.json',settings); results.push('Setting: '+action.key); continue;
       }
     }
     const runs=readJson('ai_builder_runs.json',[]); const run={id:'run_'+Date.now(),command:String(command).slice(0,6000),plan,results,executed:Boolean(execute),createdAt:new Date().toISOString()}; runs.push(run); writeJson('ai_builder_runs.json',runs);

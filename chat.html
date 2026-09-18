@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Public Chat — LIFEISGAMETZ</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body{background:#05060d;color:#fff}.chat-shell{max-width:1050px;margin:0 auto;padding:28px 18px 60px}.chat-hero{padding:28px;border:1px solid rgba(139,92,246,.2);border-radius:24px;background:radial-gradient(circle at 85% 20%,rgba(124,58,237,.28),transparent 32%),linear-gradient(135deg,#0d1020,#17112d);margin-bottom:16px}.eyebrow{font-size:10px;letter-spacing:2px;color:#67e8f9;font-weight:900}.chat-hero h1{font-size:clamp(30px,6vw,52px);margin:7px 0}.chat-hero p{color:#aeb5cc;max-width:760px;line-height:1.7}.chat-card{background:#0b0e1a;border:1px solid #242942;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}.chat-head{padding:14px 16px;border-bottom:1px solid #22263a;display:flex;justify-content:space-between;align-items:center;gap:10px}.online{color:#6ee7b7;font-size:11px}.messages{height:520px;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:10px;background:radial-gradient(circle at 50% 0,rgba(124,58,237,.08),transparent 40%)}.msg{max-width:82%;padding:10px 13px;border-radius:14px;background:#12162a;border:1px solid #252b43}.msg b{display:block;font-size:12px;color:#c4b5fd;margin-bottom:4px}.msg p{font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word}.msg time{display:block;color:#69718d;font-size:9px;margin-top:5px}.empty{margin:auto;color:#77809e;text-align:center}.compose{padding:14px;border-top:1px solid #22263a;background:#080a13}.compose-top{display:flex;gap:8px;margin-bottom:8px}.compose input,.compose textarea{width:100%;background:#05070e;color:#fff;border:1px solid #292e48;border-radius:11px;padding:11px;outline:none}.compose textarea{resize:vertical;min-height:70px}.compose-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}.hint{color:#68718e;font-size:11px}.send{border:0;background:linear-gradient(135deg,#7c3aed,#c026d3);color:#fff;padding:11px 18px;border-radius:11px;font-weight:800;cursor:pointer}.back{display:inline-block;margin-bottom:15px;color:#b9a4ff}.voice{border:1px solid #30364f;background:#101428;color:#fff;border-radius:10px;padding:9px 12px;cursor:pointer}@media(max-width:650px){.messages{height:60vh}.msg{max-width:92%}.compose-top{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="chat-shell">
+<a class="back" href="index.html">← Rudi LIFEISGAMETZ Home</a>
+<section class="chat-hero"><span class="eyebrow">LIFEISGAMETZ • COMMUNITY</span><h1>💬 Public Gaming Chat</h1><p>Ongea na gamers wengine kuhusu games, tournaments, Academy na community. Hii page ni public — hakuna login inayohitajika.</p></section>
+<section class="chat-card">
+  <div class="chat-head"><strong>🌐 GameHub Community Room</strong><span class="online">● PUBLIC</span></div>
+  <div class="messages" id="messages"><div class="empty">Inapakia chat…</div></div>
+  <div class="compose">
+    <div class="compose-top"><input id="name" maxlength="32" placeholder="Jina / nickname yako"></div>
+    <textarea id="message" maxlength="500" placeholder="Andika ujumbe kwa community…"></textarea>
+    <div class="compose-actions"><div><button class="voice" id="voiceBtn">🎙️ Voice</button> <span class="hint">Max 500 characters</span></div><button class="send" id="sendBtn">Tuma Ujumbe →</button></div>
+  </div>
+</section>
+</div>
+<script>
+const messages=document.getElementById('messages'),nameEl=document.getElementById('name'),msgEl=document.getElementById('message'),sendBtn=document.getElementById('sendBtn');
+function esc(x){const d=document.createElement('div');d.textContent=x??'';return d.innerHTML}
+function render(rows){if(!rows.length){messages.innerHTML='<div class="empty">Hakuna ujumbe bado. Kuwa wa kwanza kuanza mazungumzo. 🎮</div>';return}messages.innerHTML=rows.map(x=>`<article class="msg"><b>${esc(x.name)}</b><p>${esc(x.message)}</p><time>${new Date(x.time).toLocaleString()}</time></article>`).join('');messages.scrollTop=messages.scrollHeight}
+async function load(){try{const r=await fetch('/api/public-chat/messages');const d=await r.json();if(d.success)render(d.messages||[])}catch(e){messages.innerHTML='<div class="empty">Chat haijapatikana kwa sasa.</div>'}}
+async function send(){const name=(nameEl.value||'Mgeni').trim()||'Mgeni',message=msgEl.value.trim();if(!message)return;sendBtn.disabled=true;sendBtn.textContent='Inatuma…';try{const r=await fetch('/api/public-chat/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,message})});const d=await r.json();if(!r.ok){alert(d.error||'Imeshindikana');return}msgEl.value='';await load()}catch(e){alert('Hitilafu ya mtandao.')}finally{sendBtn.disabled=false;sendBtn.textContent='Tuma Ujumbe →'}}
+sendBtn.onclick=send;msgEl.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(SR)document.getElementById('voiceBtn').onclick=()=>{const r=new SR();r.lang='sw-TZ';r.interimResults=false;r.onresult=e=>msgEl.value=e.results[0][0].transcript;r.start()};else document.getElementById('voiceBtn').onclick=()=>alert('Voice input haijaungwa kwenye browser hii.');
+load();setInterval(load,7000);
+</script>
+</body></html>

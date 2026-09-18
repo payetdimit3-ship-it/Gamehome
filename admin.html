@@ -66,6 +66,8 @@
       <button class="tab-btn active" data-tab="overview">▦ Dashboard</button>
       <button class="tab-btn" data-tab="command">🧠 Command Center</button>
       <button class="tab-btn" data-tab="orders">📦 Mauzo</button>
+      <button class="tab-btn" data-tab="payments">💳 Payments</button>
+      <button class="tab-btn" data-tab="publicchat">💬 Public Chat</button>
       <button class="tab-btn" data-tab="customers">👥 Wateja</button>
       <button class="tab-btn" data-tab="products">🎮 Bidhaa</button>
       <button class="tab-btn" data-tab="hero">🎬 Hero Studio</button>
@@ -119,6 +121,20 @@
         <span id="recentCustomersStrip" class="dash-avatar-strip"></span>
       </div>
       <div class="order-toolbar"><input id="orderSearch" placeholder="🔎 Tafuta customer, TX ref au bidhaa..." oninput="renderOrderFilters()"><select id="orderStatus" onchange="renderOrderFilters()"><option value="all">Status zote</option><option value="successful">Successful</option><option value="pending_azampay">Pending Auto</option><option value="pending_manual">Pending Manual</option><option value="failed">Failed</option></select><button class="btn-secondary" onclick="exportOrdersCSV()">⬇️ Export CSV</button></div><div id="ordersList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
+    </div>
+
+    <div class="tab-content" id="tab-payments" style="display:none;">
+      <div class="hero-studio-head"><div><span class="eyebrow">PAYMENT CONTROL</span><h2>💳 Payment Center</h2><p>Angalia hali ya AzamPay, automatic checkout na manual payment. Hakuna secret key inayoonyeshwa hapa.</p></div><div class="studio-tip"><b id="paymentEnvBadge">CHECKING</b><br><small>Gateway environment</small></div></div>
+      <div class="overview-panels">
+        <div class="admin-form"><h3>⚡ Automatic Payments</h3><div id="paymentAutoStatus" class="storage-status">Inapima gateway...</div><div class="system-list" style="margin-top:12px"><div>Mobile Money Push <b id="paymentMnoStatus">CHECKING</b></div><div>Callback endpoint <b>READY</b></div><div>Manual fallback <b>ACTIVE</b></div></div></div>
+        <div class="admin-form"><h3>🧩 Render Environment</h3><p class="hint">Weka credentials hizi kwenye Render Environment Variables:</p><div class="system-list"><div>AZAMPAY_ENVIRONMENT <b>sandbox / production</b></div><div>AZAMPAY_APP_NAME <b>REQUIRED</b></div><div>AZAMPAY_CLIENT_ID <b>REQUIRED</b></div><div>AZAMPAY_CLIENT_SECRET <b>REQUIRED</b></div><div>AZAMPAY_API_KEY <b>IF PROVIDED</b></div><div>AZAMPAY_CALLBACK_TOKEN <b>OPTIONAL</b></div></div></div>
+      </div>
+      <div class="admin-form" style="margin-top:14px"><h3>📌 Flow ya Malipo</h3><p class="hint">Mteja anaweka namba + mtandao → AzamPay inaanzisha push → mteja anaingiza PIN → callback inathibitisha order → bidhaa inaonekana My Orders. Kama gateway haijasanidiwa, checkout inaonyesha Manual Payment badala ya kujifanya automatic imefanikiwa.</p><button class="btn-secondary" type="button" onclick="loadPaymentStatus()">↻ Check Gateway Again</button></div>
+    </div>
+
+    <div class="tab-content" id="tab-publicchat" style="display:none;">
+      <div class="hero-studio-head"><div><span class="eyebrow">COMMUNITY MODERATION</span><h2>💬 Public Chat</h2><p>Angalia ujumbe wa public community chat na ondoa spam/ujumbe usiofaa.</p></div><div class="studio-tip"><b>PUBLIC</b><br><small>Login haihitajiki kwa visitors</small></div></div>
+      <div class="admin-form"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3>Latest Messages</h3><button class="btn-secondary" type="button" onclick="loadPublicChatAdmin()">↻ Refresh</button></div><div id="publicChatAdminList" style="margin-top:12px"></div></div>
     </div>
 
     <div class="tab-content" id="tab-customers" style="display:none;">
@@ -506,7 +522,7 @@
       if(!list.length){box.innerHTML='<p class="hint">Hakuna orders zinazolingana na filter.</p>';return;}
       const label={successful:'Imekamilika',pending_manual:'Inasubiri Manual',pending_azampay:'Inasubiri Auto',pending_clickpesa:'Inasubiri Auto',failed:'Imeshindwa',amount_mismatch:'Tatizo la Kiasi'};
       const cls={successful:'success',pending_manual:'pending',pending_azampay:'pending',pending_clickpesa:'pending',failed:'failed',amount_mismatch:'failed'};
-      box.innerHTML=list.map(o=>`<div class="admin-row"><div><strong>${escAdmin(o.customer||'Mteja')}</strong> <span class="payment-status-pill ${cls[o.status]||'pending'}">${label[o.status]||escAdmin(o.status)}</span><br><small>${escAdmin(o.email||'')} ${o.customerPhone?'• '+escAdmin(o.customerPhone):''}</small><br><small>${new Date(o.date||Date.now()).toLocaleString()} • TX: ${escAdmin(o.tx_ref||'—')}</small><br><small>${escAdmin((o.items||[]).map(i=>i.name+' × '+(i.qty||i.quantity||1)).join(', ')||'—')}</small>${o.manualTxRef?'<br><small>Manual Ref: <b>'+escAdmin(o.manualTxRef)+'</b></small>':''}</div><div style="text-align:right"><div class="admin-amount">${Number(o.amount||0).toLocaleString()} TZS</div>${o.status==='pending_manual'?'<div style="display:flex;gap:6px;margin-top:7px"><button class="btn-vote" onclick="confirmOrder(\''+escAdmin(o.tx_ref||'')+'\')">✅ Thibitisha</button><button class="btn-remove" onclick="rejectOrder(\''+escAdmin(o.tx_ref||'')+'\')">✕</button></div>':''}</div></div>`).join('');
+      box.innerHTML=list.map(o=>`<div class="admin-row"><div><strong>${escAdmin(o.customer||'Mteja')}</strong> <span class="payment-status-pill ${cls[o.status]||'pending'}">${label[o.status]||escAdmin(o.status)}</span><br><small>${escAdmin(o.email||'')} ${o.customerPhone?'• '+escAdmin(o.customerPhone):''}</small><br><small>${new Date(o.date||Date.now()).toLocaleString()} • TX: ${escAdmin(o.tx_ref||'—')}</small><br><small>${escAdmin((o.items||[]).map(i=>i.name+' × '+(i.qty||i.quantity||1)).join(', ')||'—')}</small>${o.manualTxRef?'<br><small>Manual Ref: <b>'+escAdmin(o.manualTxRef)+'</b></small>':''}</div><div style="text-align:right"><div class="admin-amount">${Number(o.amount||0).toLocaleString()} TZS</div>${o.status==='pending_manual'?'<div style="display:flex;gap:6px;margin-top:7px"><button class="btn-vote" onclick="confirmManualOrder(\''+escAdmin(o.tx_ref||'')+'\')">✅ Thibitisha</button><button class="btn-remove" onclick="rejectManualOrder(\''+escAdmin(o.tx_ref||'')+'\')">✕</button></div>':''}</div></div>`).join('');
     }
     function exportOrdersCSV(){
       const rows=window.__orders||[]; const head=['date','customer','email','phone','tx_ref','status','amount','items'];
@@ -514,9 +530,26 @@
       const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out],{type:'text/csv'}));a.download='lifeisgametz-orders.csv';a.click();URL.revokeObjectURL(a.href);
     }
     async function refreshAll(){
-      await Promise.all([loadStats(),loadOrders(),loadCustomers(),loadProducts(),loadAdminRequests(),loadAnalytics(),loadCommandCenter(),loadMediaData(),loadHeroStudio()]);
+      await Promise.all([loadStats(),loadOrders(),loadCustomers(),loadProducts(),loadAdminRequests(),loadAnalytics(),loadCommandCenter(),loadMediaData(),loadHeroStudio(),loadPaymentStatus()]);
       const btn=document.querySelector('.admin-tabs .tab-btn.active'); if(btn&&btn.dataset.tab==='overview') loadCommandCenter();
     }
+
+    async function loadPaymentStatus(){
+      if(currentRole!=='admin')return;
+      try{const r=await fetch('/api/admin/payment-status',{headers:{'Authorization':token}});const d=await r.json();
+        const badge=document.getElementById('paymentEnvBadge'); if(badge) badge.textContent=d.environment||'UNKNOWN';
+        const box=document.getElementById('paymentAutoStatus'); const mno=document.getElementById('paymentMnoStatus');
+        if(box){box.className='storage-status '+(d.configured?'storage-ok':'storage-warn');box.innerHTML=d.configured?'✅ <b>AzamPay credentials zipo</b><br><small>Automatic checkout iko tayari kujaribiwa.</small>':'⚠️ <b>Automatic payment haijasanidiwa</b><br><small>Weka APP_NAME, CLIENT_ID na CLIENT_SECRET kwenye Render.</small>';}
+        if(mno)mno.textContent=d.configured?'READY':'SETUP';
+      }catch(e){const box=document.getElementById('paymentAutoStatus');if(box)box.innerHTML='⚠️ Imeshindwa kusoma payment status.';}
+    }
+
+    async function loadPublicChatAdmin(){
+      if(currentRole!=='admin')return;
+      const box=document.getElementById('publicChatAdminList');if(!box)return;
+      try{const r=await fetch('/api/public-chat/messages');const d=await r.json();const rows=d.messages||[];box.innerHTML=rows.length?rows.slice().reverse().map(x=>`<div class="admin-row"><div><b>${escAdmin(x.name)}</b><br><small>${escAdmin(x.message)}</small><br><small>${new Date(x.time).toLocaleString()}</small></div><button class="btn-remove" onclick="deletePublicChat('${escAdmin(x.id)}')">🗑️</button></div>`).join(''):'<p class="hint">Hakuna ujumbe.</p>';}catch(e){box.innerHTML='<p class="hint">Imeshindikana kupakia chat.</p>';}
+    }
+    async function deletePublicChat(id){if(!confirm('Ondoa ujumbe huu kwenye public chat?'))return;const r=await fetch('/api/admin/public-chat/'+encodeURIComponent(id),{method:'DELETE',headers:{'Authorization':token}});if(r.ok)loadPublicChatAdmin();}
 
     // ===== HERO STUDIO =====
     async function loadHeroStudio(){
@@ -888,7 +921,7 @@
       const data = await res.json();
       msg.textContent = data.message || data.error || 'Hitilafu';
       document.getElementById('blockIpInput').value = '';
-      loadSecurityStats(); loadSecurityEvents(); loadMediaData();
+      loadSecurityStats(); loadSecurityEvents(); loadPaymentStatus(); loadPublicChatAdmin(); loadMediaData();
     });
 
     async function unblockIP(ip) {
@@ -990,6 +1023,8 @@
         if (btn.dataset.tab === 'marketplace') loadMarketplace();
         if (btn.dataset.tab === 'coupons') loadCoupons();
         if (btn.dataset.tab === 'security') { loadSecurityStats(); loadSecurityEvents(); }
+        if (btn.dataset.tab === 'payments') loadPaymentStatus();
+        if (btn.dataset.tab === 'publicchat') loadPublicChatAdmin();
         if (btn.dataset.tab === 'media') loadMediaData();
         if (btn.dataset.tab === 'hero') loadHeroStudio();
         if (btn.dataset.tab === 'overview' || btn.dataset.tab === 'command') loadCommandCenter();
@@ -1012,11 +1047,9 @@
       document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
       document.querySelector('[data-tab="overview"]').classList.add('active');
       loadStats(); loadOrders(); loadCustomers(); loadProducts(); loadAdminRequests(); loadAnalytics(); loadCommandCenter(); loadHeroStudio();
-      loadSecurityStats(); loadSecurityEvents();
+      loadSecurityStats(); loadSecurityEvents(); loadPaymentStatus(); loadPublicChatAdmin();
     })();
   </script>
 
 </body>
 </html>
-    async function confirmOrder(txRef){ await confirmManualOrder(txRef); await loadOrders(); await loadCommandCenter(); await loadStats(); }
-    async function rejectOrder(txRef){ await rejectManualOrder(txRef); await loadOrders(); await loadCommandCenter(); await loadStats(); }

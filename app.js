@@ -2,7 +2,21 @@
 
 // 1. KUSIMAMIA CART (KIKAPU)
 function getCart() {
-  return JSON.parse(localStorage.getItem('gamehubCart') || '[]');
+  let raw = {};
+  try { raw = JSON.parse(localStorage.getItem('gamehubCart') || '{}'); } catch (e) { raw = {}; }
+  const list = Array.isArray(raw) ? raw : Object.values(raw || {});
+  return list.map((item, index) => ({
+    id: String(item.id ?? item.productId ?? ('cart-' + index)),
+    name: String(item.name || item.title || 'Bidhaa'),
+    emoji: item.emoji || '🎮',
+    price: item.price ?? item.num ?? 0,
+    num: Number(item.num ?? item.priceNumber ?? (typeof item.price === 'number' ? item.price : String(item.price || 0).replace(/[^\d.]/g,''))) || 0,
+    qty: Math.max(1, Number(item.qty ?? item.quantity ?? 1) || 1),
+    downloadLink: item.downloadLink || '',
+    accountUser: item.accountUser || '',
+    accountPassword: item.accountPassword || '',
+    rentalMinutes: item.rentalMinutes || null
+  }));
 }
 
 function saveCart(cart) {
@@ -14,7 +28,7 @@ function updateCartBadge() {
   const cart = getCart();
   const badge = document.getElementById('cartCount');
   if (badge) {
-    badge.textContent = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+    badge.textContent = cart.reduce((total, item) => total + Number(item.qty || item.quantity || 1), 0);
   }
 }
 
@@ -96,7 +110,9 @@ async function processAzamPayCheckout(event) {
     items = [{ name: window.currentProductName || 'GameHub Purchase', price: amount }];
   }
 
-  const provider = detectNetwork(phone);
+  const network = detectNetwork(phone);
+  const providerMap = { vodacom: 'Mpesa', tigo: 'Tigo', airtel: 'Airtel', halotel: 'Halopesa' };
+  const provider = providerMap[network] || 'Airtel';
 
   if (payBtn) {
     payBtn.disabled = true;
@@ -105,7 +121,7 @@ async function processAzamPayCheckout(event) {
   if (errorBox) errorBox.style.display = 'none';
 
   try {
-    const response = await fetch('/api/azampay/pay', {
+    const response = await fetch('/api/azampay-pay', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -159,12 +175,15 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const checkoutForm = document.getElementById('checkoutForm');
+  const paymentForm = document.getElementById('paymentForm');
   if (checkoutForm) {
     checkoutForm.addEventListener('submit', processAzamPayCheckout);
   }
 
+  // checkout.html ina handler yake ya paymentForm; usi-add click handler ya pili,
+  // vinginevyo ombi la AzamPay linaweza kutumwa mara mbili.
   const checkoutBtn = document.getElementById('payBtn');
-  if (checkoutBtn && !checkoutForm) {
+  if (checkoutBtn && !checkoutForm && !paymentForm) {
     checkoutBtn.addEventListener('click', processAzamPayCheckout);
   }
 });

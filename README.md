@@ -135,3 +135,24 @@ The GameHub server uses the service-role key server-side to read/write this tabl
 - Hero Studio inaruhusu kuchagua product na kuongeza/kuondoa YouTube, MP4 au WebM trailer. Bei inasomwa moja kwa moja kutoka product, hivyo ikibadilishwa Admin inabadilika Home.
 - Orders filters/export na dashboard functions zimeunganishwa kikamilifu; previous missing `loadOrders`, `loadCommandCenter`, `refreshAll`, `renderOrderFilters` na `exportOrdersCSV` zimerudishwa.
 - Global storefront styles zimepandishwa kuwa professional dark gaming UI yenye responsive mobile layout.
+
+## LIFEISGAMETZ Pro V3 — Hero, Public Chat & Payments
+
+### Hero / trailers
+- Admin → Hero Studio → chagua game → weka Trailer URL.
+- Home inaonyesha trailer kubwa juu, kisha Hero copy iko chini ya video.
+- Kila trailer inasoma `name`, `imageUrl` na `price` moja kwa moja kutoka product, na ina **Buy Now**.
+- Ukibadilisha bei kwenye Bidhaa, bei ya trailer inabadilika pia.
+
+### Public Chat
+- `chat.html` ni public na haihitaji login.
+- Messages zinahifadhiwa kwenye `public_chat.json` na zinaweza kubackup kupitia Supabase KV.
+- Admin → Public Chat inaweza kuondoa ujumbe.
+
+### AzamPay
+- Checkout sasa inaruhusu kuchagua provider: `Mpesa`, `Tigo`, `Airtel`, `Halopesa`, `Azampesa`.
+- Render env lazima itumie `AZAMPAY_ENVIRONMENT=sandbox` au `production`.
+- Weka `AZAMPAY_APP_NAME`, `AZAMPAY_CLIENT_ID`, `AZAMPAY_CLIENT_SECRET`; `AZAMPAY_API_KEY`/`AZAMPAY_API_BASE` hutumika pale merchant docs zako zinapohitaji.
+- Callback endpoint ya app ni `/api/azampay-callback`; merchant callback lazima isetiwe kwenye AzamPay merchant/developer configuration kwa URL ya Render ya app yako.
+- Admin → Payments inaonyesha kama credentials zimesanidiwa bila kuonyesha secrets.
+- Manual payment bado ipo kama fallback na sasa writes zake zinasubiriwa (`await`) ili data isiwe stale kabla ya response.
