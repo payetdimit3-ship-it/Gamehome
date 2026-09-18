@@ -79,10 +79,17 @@
   .hero-stage-game span{font-size:10px;letter-spacing:2px;color:#67e8f9;font-weight:900;text-transform:uppercase;}
   .hero-stage-game h2{font-size:clamp(28px,5vw,54px);margin:6px 0;letter-spacing:-1px;}
   .hero-stage-game p{max-width:650px;color:#d5d8e8;font-size:13px;line-height:1.6;}
-  .hero-stage-price{font-size:22px;font-weight:900;white-space:nowrap;display:flex;align-items:center;gap:12px;flex-direction:column;align-items:flex-end;}
-  .hero-buy{display:inline-block;background:linear-gradient(135deg,#7c3aed,#c026d3);padding:12px 18px;border-radius:11px;font-size:13px;box-shadow:0 10px 30px rgba(124,58,237,.35);}
-  .hero-stage-controls{position:absolute;z-index:5;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:7px;}
-  .hero-stage-dot{width:9px;height:9px;border:0;border-radius:50%;background:rgba(255,255,255,.3);padding:0;cursor:pointer;}.hero-stage-dot.active{width:28px;border-radius:10px;background:#a855f7;}
+  .hero-stage-price{display:flex;flex-direction:column;align-items:flex-end;gap:8px;white-space:nowrap}.hero-stage-price .hero-price-label{font-size:10px;letter-spacing:2px;color:#aeb5d0;text-transform:uppercase}.hero-stage-price .hero-price-value{font-size:clamp(22px,3vw,32px);font-weight:950;color:#fff;text-shadow:0 0 18px rgba(192,38,211,.35)}
+  .hero-buy{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#7c3aed,#c026d3);padding:13px 22px;border-radius:11px;font-size:13px;font-weight:900;box-shadow:0 10px 30px rgba(124,58,237,.35);border:1px solid rgba(255,255,255,.12);transition:.2s}.hero-buy:hover{transform:translateY(-2px);box-shadow:0 14px 35px rgba(192,38,211,.45)}
+  .hero-stage-controls{position:absolute;z-index:6;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:7px;align-items:center;}
+  .hero-stage-dot{width:9px;height:9px;border:0;border-radius:50%;background:rgba(255,255,255,.3);padding:0;cursor:pointer;transition:.25s}.hero-stage-dot.active{width:30px;border-radius:10px;background:#a855f7;}
+  .hero-stage-nav{position:absolute;z-index:7;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(5,5,12,.58);backdrop-filter:blur(10px);color:#fff;font-size:28px;cursor:pointer;display:grid;place-items:center;transition:.2s}
+  .hero-stage-nav:hover{transform:translateY(-50%) scale(1.08);background:rgba(168,85,247,.38);}
+  .hero-stage-prev{left:16px}.hero-stage-next{right:16px}
+  .hero-stage-progress{position:absolute;z-index:7;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.12);overflow:hidden}
+  .hero-stage-progress i{display:block;width:0;height:100%;background:linear-gradient(90deg,#67e8f9,#a855f7,#ec4899);box-shadow:0 0 14px #a855f7;transition:width .1s linear}
+  .hero-stage-badge{position:absolute;z-index:7;top:16px;left:16px;padding:8px 11px;border-radius:999px;background:rgba(5,5,12,.58);border:1px solid rgba(103,232,249,.25);backdrop-filter:blur(10px);font-size:11px;font-weight:900;letter-spacing:1px;color:#dffcff}
+  @media(max-width:700px){.hero-stage-nav{width:38px;height:38px;font-size:22px}.hero-stage-prev{left:8px}.hero-stage-next{right:8px}}
   .hero-stage-empty{height:100%;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;color:#aeb5cc;background:radial-gradient(circle at 50% 20%,rgba(124,58,237,.25),transparent 35%),#070912;}.hero-stage-empty span{font-size:58px}.hero-stage-empty strong{color:#fff;font-size:20px}.hero-stage-empty small{color:#7f88a8;}
   .hero-copy-below{margin:18px 0 0;padding:30px 34px;border:1px solid rgba(139,92,246,.16);border-radius:20px;background:linear-gradient(135deg,#0e1120,#13102a);display:flex;justify-content:space-between;align-items:center;gap:24px;}.hero-copy-below h1{font-size:clamp(30px,5vw,48px);margin:7px 0;line-height:1.05;}.hero-copy-below h1 span{color:#a855f7}.hero-copy-below p{color:#aeb5cc;max-width:760px;line-height:1.7;font-size:14px}.hero-copy-trust{display:flex;flex-direction:column;gap:8px;min-width:190px}.hero-copy-trust span{padding:10px 12px;border:1px solid #252b43;border-radius:10px;background:#0a0d18;color:#cbd1e5;font-size:11px;}
   @media(max-width:700px){.pro-hero-stage,.hero-stage-empty{min-height:420px}.hero-stage-game{left:18px;right:18px;bottom:28px;align-items:flex-start;flex-direction:column}.hero-stage-price{align-items:flex-start;font-size:18px}.hero-copy-below{padding:22px 18px;flex-direction:column;align-items:flex-start}.hero-copy-trust{width:100%;flex-direction:row;flex-wrap:wrap}.hero-copy-trust span{flex:1;min-width:130px}.hero-copy-below .buttons{margin-top:16px;}}
@@ -240,7 +247,7 @@
         <div class="hero-stage-empty"><span>🎬</span><strong>Loading featured trailer…</strong></div>
       </div>
       <div class="hero-stage-shade"></div>
-      <div class="hero-stage-controls" id="heroStageDots"></div>
+      <div class="hero-stage-badge">● AUTO PLAY • FEATURED</div><button class="hero-stage-nav hero-stage-prev" id="heroStagePrev" aria-label="Previous trailer">‹</button><button class="hero-stage-nav hero-stage-next" id="heroStageNext" aria-label="Next trailer">›</button><div class="hero-stage-controls" id="heroStageDots"></div><div class="hero-stage-progress"><i id="heroStageProgress"></i></div>
     </section>
 
     <!-- HERO COPY — placed UNDER the trailer so the video stays clean -->
@@ -426,29 +433,93 @@
         const box=document.getElementById('featuredTrailers');
         const stage=document.getElementById('heroStageMedia');
         const dots=document.getElementById('heroStageDots');
+        const prev=document.getElementById('heroStagePrev');
+        const next=document.getElementById('heroStageNext');
+        const progress=document.getElementById('heroStageProgress');
         const items=(products||[]).filter(p=>p.trailerUrl && p.section !== 'steam' && p.section !== 'efootball');
         if(!items.length){
           const empty='<div class="trailer-empty"><span>🎬</span><strong>Hakuna trailer bado</strong><small>Admin → Hero Studio au Bidhaa → weka Trailer URL.</small><a href="shop.html" class="btn primary">Browse Games</a></div>';
           if(box) box.innerHTML=empty;
           if(stage) stage.innerHTML='<div class="hero-stage-empty"><span>🎬</span><strong>Featured trailers zitaonekana hapa</strong><small>Admin akiweka trailer kwenye game.</small></div>';
           if(dots) dots.innerHTML='';
+          if(prev) prev.style.display='none'; if(next) next.style.display='none';
           return;
         }
+
         let active=0;
+        let timer=null, progressTimer=null;
+        const DURATION=10000;
+        let startedAt=0;
+        let paused=false;
+
         function stageCard(p,i){
           const id=ytId(p.trailerUrl); const img=p.imageUrl||'';
-          const media=id ? `<iframe src="https://www.youtube.com/embed/${id}?autoplay=${i===0?1:0}&mute=1&controls=1&rel=0&modestbranding=1&playsinline=1" title="${esc(p.name)} Trailer" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>` : `<video controls playsinline preload="metadata" poster="${esc(img)}" ${i===0?'autoplay muted':''}><source src="${esc(p.trailerUrl)}"></video>`;
-          return `<div class="hero-stage-slide ${i===0?'active':''}" data-index="${i}">${media}<div class="hero-stage-game"><div><span>${esc(p.category||p.type||'GAME')}</span><h2>${esc(p.name)}</h2><p>${esc(p.desc||'')}</p></div><div class="hero-stage-price">${money(p.price)}<a href="product.html?id=${encodeURIComponent(p.id)}" class="hero-buy">🛒 Buy Now</a></div></div></div>`;
+          const media=id
+            ? `<iframe data-yt="1" data-video-id="${id}" src="https://www.youtube.com/embed/${id}?autoplay=0&mute=1&controls=1&rel=0&modestbranding=1&playsinline=1" title="${esc(p.name)} Trailer" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>`
+            : `<video controls playsinline preload="metadata" poster="${esc(img)}"><source src="${esc(p.trailerUrl)}"></video>`;
+          return `<div class="hero-stage-slide ${i===0?'active':''}" data-index="${i}">${media}<div class="hero-stage-game"><div><span>${esc(p.category||p.type||'GAME')}</span><h2>${esc(p.name)}</h2><p>${esc(p.desc||'')}</p></div><div class="hero-stage-price"><span class="hero-price-label">Bei ya Game</span><span class="hero-price-value">${money(p.price)}</span><a href="product.html?id=${encodeURIComponent(p.id)}" class="hero-buy">🛒 Buy Now</a></div></div></div>`;
         }
-        if(stage){ stage.innerHTML=items.map(stageCard).join(''); }
-        if(dots){ dots.innerHTML=items.map((p,i)=>`<button class="hero-stage-dot ${i===0?'active':''}" data-index="${i}" aria-label="${esc(p.name)}"></button>`).join(''); dots.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{active=Number(b.dataset.index);show(active);})); }
-        function show(i){
+        if(stage) stage.innerHTML=items.map(stageCard).join('');
+        if(dots){
+          dots.innerHTML=items.map((p,i)=>`<button class="hero-stage-dot ${i===0?'active':''}" data-index="${i}" aria-label="${esc(p.name)}"></button>`).join('');
+          dots.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>show(Number(b.dataset.index),true)));
+        }
+        if(prev) prev.style.display=items.length>1?'grid':'none';
+        if(next) next.style.display=items.length>1?'grid':'none';
+        prev?.addEventListener('click',()=>show((active-1+items.length)%items.length,true));
+        next?.addEventListener('click',()=>show((active+1)%items.length,true));
+
+        function playActive(){
+          if(!stage) return;
+          const slides=stage.querySelectorAll('.hero-stage-slide');
+          slides.forEach((slide,n)=>{
+            const video=slide.querySelector('video');
+            const iframe=slide.querySelector('iframe');
+            if(n===active){
+              if(video){ video.muted=true; video.currentTime=0; video.play().catch(()=>{}); video.onended=()=>show((active+1)%items.length,false); }
+              if(iframe){
+                const id=iframe.dataset.videoId;
+                iframe.src=`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&playsinline=1`;
+              }
+            } else {
+              if(video){ video.pause(); video.currentTime=0; }
+              if(iframe){
+                const id=iframe.dataset.videoId;
+                iframe.src=`https://www.youtube.com/embed/${id}?autoplay=0&mute=1&controls=1&rel=0&modestbranding=1&playsinline=1`;
+              }
+            }
+          });
+        }
+        function resetProgress(){
+          startedAt=Date.now();
+          if(progress) progress.style.width='0%';
+          clearInterval(progressTimer);
+          progressTimer=setInterval(()=>{
+            if(paused)return;
+            const pct=Math.min(100,(Date.now()-startedAt)/DURATION*100);
+            if(progress) progress.style.width=pct+'%';
+          },100);
+        }
+        function schedule(){
+          clearTimeout(timer);
+          if(items.length>1 && !paused) timer=setTimeout(()=>show((active+1)%items.length,false),DURATION);
+        }
+        function show(i,userAction=false){
           if(!stage)return;
-          active=i;
-          stage.querySelectorAll('.hero-stage-slide').forEach((el,n)=>el.classList.toggle('active',n===i));
-          dots?.querySelectorAll('button').forEach((el,n)=>el.classList.toggle('active',n===i));
+          active=(i+items.length)%items.length;
+          stage.querySelectorAll('.hero-stage-slide').forEach((el,n)=>el.classList.toggle('active',n===active));
+          dots?.querySelectorAll('button').forEach((el,n)=>el.classList.toggle('active',n===active));
+          playActive(); resetProgress(); schedule();
         }
-        if(items.length>1) setInterval(()=>show((active+1)%items.length),9000);
+        const hero=stage?.parentElement;
+        hero?.addEventListener('mouseenter',()=>{paused=true; clearTimeout(timer);});
+        hero?.addEventListener('mouseleave',()=>{paused=false; resetProgress(); schedule();});
+        document.addEventListener('visibilitychange',()=>{
+          if(document.hidden){paused=true; clearTimeout(timer);} else {paused=false; resetProgress(); schedule(); playActive();}
+        });
+        playActive(); resetProgress(); schedule();
+
+        // Keep the lower trailer grid as a catalogue, while Hero remains the main autoplay experience.
         if(box) box.innerHTML=items.map((p)=>{
           const id=ytId(p.trailerUrl); const img=p.imageUrl||'';
           const media=id ? `<div class="trailer-video"><iframe src="https://www.youtube.com/embed/${id}?autoplay=0&controls=1&rel=0&modestbranding=1&playsinline=1" title="${esc(p.name)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>` : `<div class="trailer-video trailer-direct"><video controls preload="metadata" playsinline poster="${esc(img)}"><source src="${esc(p.trailerUrl)}"></video></div>`;
