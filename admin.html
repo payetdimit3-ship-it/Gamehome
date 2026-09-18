@@ -324,8 +324,10 @@
         <input id="movieYear" placeholder="Year">
         <input id="moviePoster" placeholder="Poster URL (hiari)">
         <textarea id="movieDesc" rows="3" placeholder="Maelezo ya movie"></textarea>
-        <input id="movieFile" type="file" accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov">
-        <button class="btn-primary" id="uploadMovieBtn">⬆️ Upload Movie</button>
+        <input id="movieFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v,.mp4,.webm,.mov,.m4v">
+        <input id="movieVideoUrl" placeholder="Au video URL (YouTube embed/direct MP4/WebM) — hiari, kama hutaki kupakia file">
+        <div id="movieUploadStatus" class="pay-status"></div>
+        <button class="btn-primary" id="uploadMovieBtn">⬆️ Upload / Save Movie</button>
         <div id="movieList" style="margin-top:12px"></div>
       </div>
 
@@ -1000,8 +1002,12 @@
       const r=await fetch('/api/admin/live-streams',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)alert(d.error||'Hitilafu');else{alert('✅ Match imewekwa.');loadMediaData();}
     });
     document.getElementById('uploadMovieBtn').addEventListener('click',async()=>{
-      const f=movieFile.files[0];if(!f)return alert('Chagua video.');const fd=new FormData();fd.append('video',f);fd.append('title',movieTitle.value);fd.append('genre',movieGenre.value);fd.append('year',movieYear.value);fd.append('poster',moviePoster.value);fd.append('description',movieDesc.value);
-      const r=await fetch('/api/admin/movies/upload',{method:'POST',headers:{'Authorization':token},body:fd});const d=await r.json();alert(r.ok?'✅ Movie uploaded.':('❌ '+(d.error||'Hitilafu')));if(r.ok){movieFile.value='';loadMediaData();}
+      const f=movieFile.files[0]; const remote=movieVideoUrl.value.trim();
+      if(!f && !remote)return alert('Chagua movie file au weka video URL.');
+      if(f && f.size > 1024*1024*1024)return alert('Video imezidi 1GB. Tumia video ndogo au weka Video URL.');
+      const status=document.getElementById('movieUploadStatus'); status.textContent='⏳ Inapakia movie...';
+      const fd=new FormData(); if(f)fd.append('video',f); if(remote)fd.append('videoUrl',remote); fd.append('title',movieTitle.value);fd.append('genre',movieGenre.value);fd.append('year',movieYear.value);fd.append('poster',moviePoster.value);fd.append('description',movieDesc.value);
+      try{const r=await fetch('/api/admin/movies/upload',{method:'POST',headers:{'Authorization':token},body:fd});const d=await r.json().catch(()=>({error:'Server haikutoa JSON'})); if(!r.ok)throw new Error(d.error||'Upload imekataa'); status.textContent='✅ Movie imehifadhiwa — '+(d.movie?.storage||'storage'); movieFile.value=''; movieVideoUrl.value=''; loadMediaData();}catch(e){status.textContent='❌ '+e.message;}
     });
     document.getElementById('addCourseBtn').addEventListener('click',async()=>{
       const body={name:courseName.value,level:courseLevel.value,price:coursePrice.value,thumbnail:courseThumb.value,description:courseDesc.value};

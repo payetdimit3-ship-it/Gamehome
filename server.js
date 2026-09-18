@@ -20,11 +20,33 @@ const upload = multer({
   dest: TMP_MEDIA_DIR,
   limits: { fileSize: 1024 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const ok = /^(video\/(mp4|webm|quicktime|x-m4v)|audio\/mpeg)$/.test(file.mimetype);
-    cb(ok ? null : new Error('Aina ya file hairuhusiwi. Tumia MP4, WebM au MOV.'), ok);
+    const mime = String(file.mimetype || '').toLowerCase();
+    const name = String(file.originalname || '').toLowerCase();
+    const ok = ['video/mp4','video/webm','video/quicktime','video/x-m4v','video/mov'].includes(mime)
+      || /\.(mp4|webm|mov|m4v)$/.test(name);
+    if (!ok) return cb(new Error('Aina ya file hairuhusiwi. Tumia MP4, WebM, MOV au M4V.'));
+    cb(null, true);
   }
 });
 const MEDIA_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'gamehub-media';
+
+async function ensureMediaBucket() {
+  if (!supabase) return false;
+  try {
+    const { data, error } = await supabase.storage.getBucket(MEDIA_BUCKET);
+    if (!error && data) return true;
+    const created = await supabase.storage.createBucket(MEDIA_BUCKET, { public: true });
+    if (created.error && !/already exists|duplicate/i.test(created.error.message || '')) {
+      console.warn('⚠️ Supabase Storage bucket:', created.error.message);
+      return false;
+    }
+    console.log('☁️ Supabase Storage bucket iko tayari: ' + MEDIA_BUCKET);
+    return true;
+  } catch (e) {
+    console.warn('⚠️ Storage bucket check:', e.message);
+    return false;
+  }
+}
 
 async function saveUploadedVideo(file, folder) {
   if (!file) throw new Error('Chagua video kwanza.');
@@ -35,13 +57,21 @@ async function saveUploadedVideo(file, folder) {
   const localPath = file.path;
   try {
     if (supabase) {
-      const buffer = fs.readFileSync(localPath);
-      const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(objectPath, buffer, { contentType: file.mimetype, upsert: false });
-      if (!error) {
-        const pub = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(objectPath);
-        return { url: pub.data.publicUrl, storage: 'supabase', path: objectPath, filename };
+      try {
+        const buffer = fs.readFileSync(localPath);
+        const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(objectPath, buffer, {
+          contentType: file.mimetype || 'video/mp4', upsert: false, cacheControl: '3600'
+        });
+        if (!error) {
+          const pub = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(objectPath);
+          return { url: pub.data.publicUrl, storage: 'supabase', path: objectPath, filename };
+        }
+        console.warn('⚠️ Supabase Storage upload failed:', error.message);
+        throw new Error('Supabase Storage imekataa upload: ' + error.message + '. Hakikisha bucket ' + MEDIA_BUCKET + ' ipo na ukubwa wa file unaruhusiwa.');
+      } catch (e) {
+        if (e.message && e.message.startsWith('Supabase Storage imekataa')) throw e;
+        throw new Error('Supabase Storage imekataa upload: ' + e.message);
       }
-      console.warn('Supabase Storage upload failed, using local fallback:', error.message);
     }
     const targetDir = path.join(MEDIA_DIR, folder);
     fs.mkdirSync(targetDir, { recursive: true });
@@ -1487,7 +1517,7 @@ app.get('/api/live-streams', (req, res) => {
   res.json({ success: true, streams: streams.filter(x => x.status !== 'hidden').sort((a,b) => String(b.createdAt||'').localeCompare(String(a.createdAt||''))) });
 });
 
-app.post('/api/admin/live-streams', (req, res) => {
+app.post('/api/admin/live-streams', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
   const { title, league, homeTeam, awayTeam, status, streamUrl, videoUrl, startTime, description } = req.body || {};
@@ -1501,7 +1531,7 @@ app.post('/api/admin/live-streams', (req, res) => {
     videoUrl: String(videoUrl||'').slice(0,2000), startTime: String(startTime||'').slice(0,80),
     description: String(description||'').slice(0,1000), createdAt: new Date().toISOString()
   };
-  streams.push(item); writeJson('live_streams.json', streams);
+  streams.push(item); await writeJson('live_streams.json', streams);
   res.json({ success:true, stream:item });
 });
 
@@ -1554,10 +1584,11 @@ app.post('/api/admin/movies/upload', upload.single('video'), async (req,res)=>{
   const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
   if(!req.file) return res.status(400).json({error:'Chagua movie/video kwanza.'});
   try{
-    const saved=await saveUploadedVideo(req.file,'movies');
+    const remoteUrl=String(req.body.videoUrl||'').trim();
+    const saved=remoteUrl ? {url:remoteUrl,storage:'remote',path:remoteUrl,filename:''} : await saveUploadedVideo(req.file,'movies');
     const movies=readJson('movies.json',[]);
-    const movie={id:'movie_'+Date.now(),title:String(req.body.title||req.file.originalname).slice(0,180),description:String(req.body.description||'').slice(0,1200),genre:String(req.body.genre||'General').slice(0,80),year:String(req.body.year||'2026').slice(0,10),poster:String(req.body.poster||'').slice(0,1000),videoUrl:saved.url,storage:saved.storage,createdAt:new Date().toISOString()};
-    movies.push(movie); writeJson('movies.json',movies); res.json({success:true,movie});
+    const movie={id:'movie_'+Date.now(),title:String(req.body.title||req.file?.originalname||'Movie').slice(0,180),description:String(req.body.description||'').slice(0,1200),genre:String(req.body.genre||'General').slice(0,80),year:String(req.body.year||'2026').slice(0,10),poster:String(req.body.poster||'').slice(0,1000),videoUrl:saved.url,storage:saved.storage,createdAt:new Date().toISOString()};
+    movies.push(movie); await writeJson('movies.json',movies); res.json({success:true,movie});
   }catch(e){res.status(400).json({error:e.message});}
 });
 
@@ -1661,8 +1692,23 @@ app.post('/api/tournaments/register', (req, res) => {
 
 ensureTournamentSeed();
 
+// 🛡️ Upload/API error handler — prevents browser from receiving an unreadable HTML error page
+app.use((err, req, res, next) => {
+  if (err) {
+    console.error('API error:', err.message);
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') return res.status(413).json({ error: 'Video ni kubwa sana. Kikomo cha upload ni 1GB.' });
+      return res.status(400).json({ error: 'Upload error: ' + err.message });
+    }
+    if (String(err.message || '').includes('Aina ya file hairuhusiwi')) return res.status(400).json({ error: err.message });
+    return res.status(500).json({ error: err.message || 'Server error' });
+  }
+  next();
+});
+
 // START SERVER
 restoreFromSupabase()
+  .then(() => ensureMediaBucket())
   .catch(err => console.error('☁️ Imeshindwa kurudisha data kutoka Supabase:', err.message))
   .finally(() => {
     const listener = app.listen(process.env.PORT || 3000, () => {
