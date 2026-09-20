@@ -1,0 +1,290 @@
+
+/* =========================================================
+   LIFEISGAMETZ — ZONEPLAY-INSPIRED MASTER THEME
+   Visual redesign only: preserves existing pages, IDs and JS.
+   ========================================================= */
+:root{
+  --zp-bg:#07080c;
+  --zp-panel:#0d1017;
+  --zp-panel2:#11151e;
+  --zp-line:#202633;
+  --zp-text:#f5f7fb;
+  --zp-muted:#8e96a8;
+  --zp-accent:#8b5cf6;
+  --zp-accent2:#a855f7;
+  --zp-cyan:#22d3ee;
+  --zp-green:#34d399;
+  --zp-danger:#fb7185;
+  --zp-radius:16px;
+  --zp-sidebar:252px;
+}
+html{background:var(--zp-bg)!important;scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(900px 500px at 80% -10%,rgba(139,92,246,.10),transparent 60%),
+    radial-gradient(700px 450px at 10% 20%,rgba(34,211,238,.035),transparent 60%),
+    var(--zp-bg)!important;
+  color:var(--zp-text)!important;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.025;background-image:linear-gradient(rgba(255,255,255,.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.8) 1px,transparent 1px);background-size:40px 40px;mask-image:linear-gradient(to bottom,#000,transparent 85%);z-index:-1}
+a{transition:color .18s ease,background .18s ease,border-color .18s ease,transform .18s ease}
+.sidebar{
+  width:var(--zp-sidebar)!important;
+  background:rgba(8,10,15,.96)!important;
+  border-right:1px solid var(--zp-line)!important;
+  box-shadow:12px 0 40px rgba(0,0,0,.25)!important;
+  padding:20px 14px!important;
+  backdrop-filter:blur(18px)!important;
+}
+.sidebar .logo,.logo{
+  color:#fff!important;
+  letter-spacing:-.5px;
+  font-weight:900!important;
+}
+.sidebar .logo{
+  text-align:left!important;
+  padding:8px 12px 18px!important;
+  margin-bottom:8px!important;
+  font-size:21px!important;
+}
+.sidebar .logo span{color:#a855f7!important}
+.sidebar .logo small{color:#22d3ee!important}
+.menu{display:flex;flex-direction:column;gap:3px}
+.menu a{
+  color:#9da5b5!important;
+  border:1px solid transparent!important;
+  border-radius:10px!important;
+  padding:10px 12px!important;
+  margin:0!important;
+  font-size:13px!important;
+  min-height:40px;
+}
+.menu a:hover{
+  color:#fff!important;
+  background:#141923!important;
+  border-color:#252c39!important;
+  transform:translateX(2px);
+}
+.menu a.active{
+  color:#fff!important;
+  background:linear-gradient(90deg,rgba(139,92,246,.24),rgba(139,92,246,.07))!important;
+  border-color:rgba(139,92,246,.32)!important;
+  box-shadow:inset 3px 0 0 var(--zp-accent)!important;
+}
+.cart-badge{
+  background:var(--zp-accent)!important;
+  border-radius:999px!important;
+  min-width:21px;
+  text-align:center;
+}
+.main{
+  margin-left:var(--zp-sidebar)!important;
+  padding:0 34px 55px!important;
+  max-width:none!important;
+}
+.topbar{
+  position:sticky!important;
+  top:0!important;
+  z-index:80!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  padding:14px 0!important;
+  margin:0 0 18px!important;
+  background:linear-gradient(180deg,rgba(7,8,12,.96),rgba(7,8,12,.78),transparent)!important;
+  backdrop-filter:blur(10px)!important;
+}
+.search,.topbar input{
+  background:#0d1118!important;
+  border:1px solid #242b38!important;
+  color:#fff!important;
+  border-radius:10px!important;
+  min-height:44px;
+  box-shadow:none!important;
+}
+.search:focus,.topbar input:focus{border-color:rgba(139,92,246,.7)!important;outline:none!important}
+.login-btn,.btn-login{
+  background:#121722!important;
+  border:1px solid #2b3341!important;
+  color:#fff!important;
+  border-radius:10px!important;
+  padding:11px 15px!important;
+  font-weight:700!important;
+}
+.login-btn:hover,.btn-login:hover{border-color:var(--zp-accent)!important;background:#171b28!important}
+
+/* Home hero */
+.pro-hero-stage{
+  border:1px solid #252c39!important;
+  border-radius:20px!important;
+  overflow:hidden!important;
+  box-shadow:0 28px 80px rgba(0,0,0,.42)!important;
+  background:#0a0d12!important;
+}
+.hero-stage-shade{background:linear-gradient(90deg,rgba(0,0,0,.62),transparent 60%),linear-gradient(0deg,rgba(0,0,0,.6),transparent 45%)!important}
+.hero-stage-badge{
+  background:rgba(10,12,18,.78)!important;
+  border:1px solid rgba(255,255,255,.13)!important;
+  backdrop-filter:blur(12px)!important;
+  border-radius:999px!important;
+}
+.hero-stage-nav{
+  background:rgba(9,11,16,.78)!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  border-radius:50%!important;
+  backdrop-filter:blur(10px)!important;
+}
+.hero-stage-progress{background:rgba(255,255,255,.13)!important}
+.hero-stage-progress i{background:linear-gradient(90deg,var(--zp-accent),var(--zp-cyan))!important}
+.hero-copy-below{
+  background:linear-gradient(180deg,#0d1017,#0b0e14)!important;
+  border:1px solid #202633!important;
+  border-radius:16px!important;
+  padding:25px!important;
+  margin-top:12px!important;
+}
+.hero-copy-below h1{letter-spacing:-1.5px!important}
+.welcome{color:#a78bfa!important}
+.hero-copy-trust span{color:#a5adbc!important}
+
+/* Store / cards */
+.shop-banner,.page-hero,.shop-banner{
+  background:linear-gradient(135deg,#10141d,#0d1119)!important;
+  border:1px solid #252c39!important;
+  border-radius:18px!important;
+  box-shadow:none!important;
+}
+.shop-banner h1,.page-hero h1{letter-spacing:-1px}
+.shop-grid,.games,.grid,.feature-grid,.card-grid{
+  gap:14px!important;
+}
+.game-card,.game,.card,.pro-card,.feature,.offer,.trailer-card{
+  background:linear-gradient(180deg,#11151e,#0d1118)!important;
+  border:1px solid #222a37!important;
+  border-radius:15px!important;
+  box-shadow:none!important;
+  transition:transform .2s,border-color .2s,box-shadow .2s!important;
+}
+.game-card:hover,.game:hover,.card:hover,.pro-card:hover,.feature:hover,.offer:hover,.trailer-card:hover{
+  transform:translateY(-3px)!important;
+  border-color:rgba(139,92,246,.55)!important;
+  box-shadow:0 16px 35px rgba(0,0,0,.28)!important;
+}
+.game-cover{border-radius:12px!important}
+.game-info{padding:14px!important}
+.game-type,.badge,.pay-chip{
+  background:#171d28!important;
+  border:1px solid #293241!important;
+  color:#aeb7c7!important;
+  border-radius:999px!important;
+}
+.game-price,.price,.hero-price-value,.trailer-price{color:#fff!important;font-weight:900!important}
+.btn-primary,.btn-purple,.btn.primary,.buy,.shop-now,.btn-buy{
+  background:linear-gradient(135deg,#8b5cf6,#7c3aed)!important;
+  border:1px solid #a78bfa!important;
+  color:#fff!important;
+  border-radius:10px!important;
+  box-shadow:0 8px 24px rgba(124,58,237,.18)!important;
+}
+.btn-primary:hover,.btn-purple:hover,.btn.primary:hover,.buy:hover,.shop-now:hover,.btn-buy:hover{transform:translateY(-1px)!important;filter:brightness(1.08)}
+.btn-secondary,.btn.secondary,.btn-outline{
+  background:#11161f!important;
+  border:1px solid #303846!important;
+  color:#e7eaf0!important;
+  border-radius:10px!important;
+}
+.filters,.shop-controls{
+  background:#0c1017!important;
+  border:1px solid #202733!important;
+  border-radius:12px!important;
+}
+.filter-btn{
+  background:transparent!important;
+  border:1px solid transparent!important;
+  color:#9ca6b6!important;
+  border-radius:8px!important;
+}
+.filter-btn.active,.filter-btn:hover{background:#171c27!important;color:#fff!important;border-color:#303847!important}
+
+/* Generic forms / panels */
+input,select,textarea{
+  background:#0b0f16!important;
+  border:1px solid #252d39!important;
+  color:#fff!important;
+  border-radius:10px!important;
+}
+input:focus,select:focus,textarea:focus{border-color:rgba(139,92,246,.65)!important;outline:none!important}
+table{border-color:#252d39!important}
+th{background:#11161f!important;color:#cdd3de!important}
+td{border-color:#202733!important}
+footer,.footer{
+  background:#090c11!important;
+  border-top:1px solid #202733!important;
+}
+.footer a{color:#929baa!important}.footer a:hover{color:#fff!important}
+
+/* Pages that use centered page-shell */
+.page-shell{max-width:1250px!important;padding:10px 0 55px!important}
+.product-page{max-width:1250px!important}
+.chat-shell{background:var(--zp-bg)!important}
+
+/* Top navbar pages: retain functionality, restyle as ZonePlay utility bar */
+.navbar{
+  background:rgba(8,10,15,.94)!important;
+  border-bottom:1px solid #202733!important;
+  box-shadow:0 8px 35px rgba(0,0,0,.22)!important;
+  backdrop-filter:blur(16px)!important;
+  padding:13px 24px!important;
+}
+.nav-links{color:#aeb5c2!important}
+.nav-links a:hover{color:#fff!important}
+
+/* Admin gets a premium command-center skin without changing its controls */
+.admin-page{
+  background:transparent!important;
+}
+.admin-page .admin-command-hero,.admin-page .dash-hero-card,.admin-page .dash-card,
+.admin-page .command-card,.admin-page .panel,.admin-page .admin-card{
+  background:linear-gradient(180deg,#11151e,#0d1118)!important;
+  border-color:#252d39!important;
+  border-radius:15px!important;
+  box-shadow:none!important;
+}
+.admin-page button,.admin-page .tab-btn,.admin-page .quick-admin-grid button{
+  border-radius:9px!important;
+}
+.admin-page .section-title,.admin-page h1,.admin-page h2,.admin-page h3{letter-spacing:-.4px}
+
+/* Mobile */
+@media(max-width:900px){
+  :root{--zp-sidebar:76px}
+  .sidebar{width:76px!important;padding:14px 7px!important}
+  .sidebar .logo{font-size:0!important;text-align:center!important;padding:8px 0 18px!important}
+  .sidebar .logo:before{content:"🎮";font-size:24px}
+  .sidebar .logo span,.sidebar .logo small{display:none!important}
+  .menu a{justify-content:center!important;padding:10px 6px!important;font-size:17px!important}
+  .menu a .label{display:none!important}
+  .menu a .cart-badge{display:block!important;font-size:9px!important;margin-left:-4px!important}
+  .main{margin-left:76px!important;padding:0 14px 45px!important}
+  .topbar{padding:10px 0!important}
+  .search{min-width:0!important;width:100%!important}
+  .login-btn,.btn-login{white-space:nowrap}
+}
+@media(max-width:560px){
+  :root{--zp-sidebar:62px}
+  .sidebar{width:62px!important}
+  .main{margin-left:62px!important;padding:0 9px 35px!important}
+  .topbar{gap:7px!important}
+  .login-btn,.btn-login{font-size:0!important;padding:11px!important;width:42px!important}
+  .login-btn:before,.btn-login:before{content:"👤";font-size:17px}
+  .pro-hero-stage{border-radius:13px!important}
+  .hero-copy-below{padding:17px!important}
+  .shop-grid,.games,.grid,.feature-grid,.card-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .game-card,.game,.card{min-width:0}
+}
+@media(max-width:390px){
+  .shop-grid,.games,.grid,.feature-grid,.card-grid{grid-template-columns:1fr!important}
+}
+
+.brand-tz{color:#22d3ee!important;font-size:10px!important;letter-spacing:1px!important;margin-left:3px!important}
