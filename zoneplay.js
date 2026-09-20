@@ -1,0 +1,55 @@
+(function(){
+const nav=[
+['Home','index.html','⌂','main'],['Store','shop.html','🎮','store'],['Games','categories.html','▣','games'],['PSP Gaming','categories.html?platform=PSP','🎮'],['PS2 Gaming','categories.html?platform=PS2','🎮'],['PS3 Gaming','categories.html?platform=PS3','🎮'],['Nintendo Switch','categories.html?platform=Switch','🎮'],['Android Gaming','categories.html?platform=Android','▣'],['PC Gaming','categories.html?platform=PC','▣'],['Movies','movies.html','🎬'],['Live TV / Sports','live.html','📺'],['Live Scores','livescores.html','⚽'],['Academy / Courses','academy.html','🎓'],['Cloud Gaming','cloudgaming.html','☁'],['eFootball & Top Up','efootball.html','⚽'],['Gift Cards','giftcards.html','🎁'],['Community / Chat','chat.html','💬'],['Health Assistant','health.html','♥'],['AI Assistant','recommendations.html','🤖'],['Marketplace','marketplace.html','▤'],['Wishlist','wishlist.html','♡'],['Cart','cart.html','🛒','cart'],['My Games / Library','mygames.html','▦'],['Profile','profile.html','◉']
+];
+function current(){return location.pathname.split('/').pop()||'index.html'}
+function active(href){return current()===href.split('?')[0]}
+function shell(){
+ if(document.querySelector('.zp-nav')) return;
+ if(current()==='admin.html'){adminShell();return;}
+ const navEl=document.createElement('aside');navEl.className='zp-nav';
+ navEl.innerHTML=`<div class="zp-nav-brand"><div class="zp-logo">🎮</div><div><span>LIFEIS<b>GAME</b>TZ</span><small>PLAY • LEARN • EARN</small></div></div><div class="zp-nav-links"></div>`;
+ const links=navEl.querySelector('.zp-nav-links');
+ let last='';nav.forEach(([name,href,ico,group])=>{if(['Movies','Live TV / Sports','Live Scores','Academy / Courses','Cloud Gaming'].includes(name)&&last!=='hub'){let s=document.createElement('div');s.className='zp-nav-section';s.textContent='DISCOVER';links.appendChild(s);last='hub'} if(name==='Wishlist'&&last!=='account'){let s=document.createElement('div');s.className='zp-nav-section';s.textContent='YOUR LIBRARY';links.appendChild(s);last='account'} const a=document.createElement('a');a.className='zp-link'+(active(href)?' active':'');a.href=href;a.innerHTML=`<span class="ico">${ico}</span><span>${name}</span>${group==='cart'?'<span class="badge" id="zpCartBadge">0</span>':''}`;links.appendChild(a)});
+ document.body.appendChild(navEl);
+ const top=document.createElement('div');top.className='zp-topbar';top.innerHTML=`<div class="zp-brand"><div class="zp-logo">🎮</div><strong>LIFEIS<span style="color:#20d9ff">GAME</span>TZ</strong></div><input class="zp-search" id="zpSearch" placeholder="Tafuta game, filamu, kozi, bidhaa..."><div class="zp-actions"><a class="zp-icon" href="chat.html">💬</a><a class="zp-icon" href="cart.html">🛒</a><a class="zp-wallet" href="topup.html">💳 <b>TSh</b></a><a class="zp-profile" href="profile.html"><span class="zp-avatar">K</span><span>Profile⌄</span></a></div>`;
+ const main=document.querySelector('.main')||document.body;main.insertBefore(top,main.firstChild);
+ const old=document.getElementById('searchBox');const ns=document.getElementById('zpSearch');if(old){ns.value=old.value||'';ns.addEventListener('input',()=>{old.value=ns.value;old.dispatchEvent(new Event('input',{bubbles:true}));})}
+ const mobile=document.createElement('nav');mobile.className='zp-mobile-nav';[['Home','index.html','⌂'],['Store','shop.html','🎮'],['Library','mygames.html','▦'],['Cart','cart.html','🛒'],['Profile','profile.html','◉']].forEach(x=>{const a=document.createElement('a');a.href=x[1];a.className=active(x[1])?'active':'';a.innerHTML=`<i>${x[2]}</i>${x[0]}`;mobile.appendChild(a)});document.body.appendChild(mobile);
+}
+function adminShell(){
+ document.body.classList.add('zoneplay-v2','zp-standalone','zp-admin-body');
+ const n=document.createElement('aside');n.className='zp-nav';n.innerHTML=`<div class="zp-nav-brand"><div class="zp-logo">⚙</div><div><span>LIFEIS<b>GAME</b>TZ</span><small>ADMIN COMMAND CENTER</small></div></div><div class="zp-nav-links">
+ <a class="zp-link active" href="#" data-at="overview"><span class="ico">⌂</span><span>Dashboard</span></a>
+ <a class="zp-link" href="#" data-at="orders"><span class="ico">📦</span><span>Orders & Payments</span></a>
+ <a class="zp-link" href="#" data-at="customers"><span class="ico">👥</span><span>Customers</span></a>
+ <a class="zp-link" href="#" data-at="products"><span class="ico">🎮</span><span>Products</span></a>
+ <a class="zp-link" href="#" data-at="media"><span class="ico">🎬</span><span>Media & Live</span></a>
+ <a class="zp-link" href="#" data-at="hero"><span class="ico">✨</span><span>Hero Studio</span></a>
+ <a class="zp-link" href="#" data-at="ai"><span class="ico">🤖</span><span>AI Team</span></a>
+ <a class="zp-link" href="#" data-at="security"><span class="ico">🛡️</span><span>Security</span></a>
+ <div class="zp-nav-section">SYSTEM</div><a class="zp-link" href="index.html"><span class="ico">↩</span><span>Back to Website</span></a></div>`;document.body.appendChild(n);
+ const top=document.createElement('div');top.className='zp-topbar';top.innerHTML=`<div class="zp-brand"><div class="zp-logo">⚙</div><strong>ADMIN <span style="color:#20d9ff">COMMAND CENTER</span></strong></div><div style="flex:1"></div><a class="zp-wallet" href="index.html">🌐 View Website</a><a class="zp-profile" href="#" id="zpAdminLogout"><span class="zp-avatar">A</span><span>Admin</span></a>`;document.body.appendChild(top);
+ n.querySelectorAll('[data-at]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const b=document.querySelector(`[data-tab="${a.dataset.at}"]`);if(b)b.click();n.querySelectorAll('.zp-link').forEach(x=>x.classList.remove('active'));a.classList.add('active')}));
+ const logout=document.getElementById('adminLogout'),zlo=document.getElementById('zpAdminLogout');if(zlo&&logout)zlo.onclick=e=>{e.preventDefault();logout.click()};
+}
+function styleOld(){document.querySelectorAll('.sidebar').forEach(x=>x.style.display='none');document.querySelectorAll('.main').forEach(x=>x.style.marginLeft='0');}
+function home(){
+ const main=document.querySelector('.main');if(!main||!document.getElementById('heroTrailerStage')||document.querySelector('.zp-home'))return;
+ const hero=document.getElementById('heroTrailerStage'), games=document.getElementById('featuredGames');
+ const home=document.createElement('div');home.className='zp-home';
+ const grid=document.createElement('div');grid.className='zp-hero-grid';
+ const hb=document.createElement('div');hb.className='zp-hero-box';hb.appendChild(hero);hb.insertAdjacentHTML('beforeend',`<div class="zp-hero-overlay"></div>`);
+ const ps=document.createElement('div');ps.className='zp-promo-stack';ps.innerHTML=`<div class="zp-promo"><h3>🎮 PlayStation</h3><p>PS5 & PS4 Games</p><a href="categories.html?platform=PS5">Explore Now →</a></div><div class="zp-promo purple"><h3>▣ Nintendo Switch</h3><p>Switch Games & Deals</p><a href="categories.html?platform=Switch">Explore Now →</a></div><div class="zp-promo"><h3>🖥 PC Gaming</h3><p>High Performance Games</p><a href="categories.html?platform=PC">Explore Now →</a></div>`;grid.append(hb,ps);home.appendChild(grid);
+ const shelf=document.createElement('section');shelf.className='zp-shelf';shelf.innerHTML=`<div class="zp-shelf-head"><h2>🔥 Trending Games</h2><a href="shop.html">Explore All →</a></div><div class="zp-trending" id="zpTrending"></div>`;home.appendChild(shelf);
+ const lower=document.createElement('div');lower.className='zp-lower';lower.innerHTML=`<section class="zp-shelf"><div class="zp-shelf-head"><h2>🎮 Browse By Categories</h2><a href="categories.html">Explore All →</a></div><div class="zp-category-grid"><a class="zp-category" href="categories.html?genre=Action">⚔ Action & Adventure</a><a class="zp-category" href="categories.html?genre=Racing">🏎 Racing</a><a class="zp-category" href="categories.html?genre=Sports">⚽ Sports</a><a class="zp-category" href="categories.html?genre=RPG">🧙 RPG</a><a class="zp-category" href="categories.html?genre=Strategy">♟ Strategy</a><a class="zp-category" href="categories.html?genre=Shooting">🎯 Shooting</a></div></section><div class="zp-side-stack"><section class="zp-mini-panel"><h3>🔥 Special Offers</h3><div class="zp-mini-row"><div class="zp-mini-thumb">🕷️</div><div><b>Marvel's Spider-Man 2</b><br><small>Discounts & featured deals</small></div></div></section><section class="zp-mini-panel"><h3>🕹 My Games</h3><div class="zp-mini-row"><div class="zp-mini-thumb">🎮</div><div><b>My Library</b><br><small>View purchased games & access</small></div><a href="mygames.html" style="margin-left:auto;color:#9d7bff">→</a></div></section><section class="zp-mini-panel"><h3>🎓 Popular Courses</h3><div class="zp-mini-row"><div class="zp-mini-thumb">💻</div><div><b>Web Development & AI</b><br><small>Learn & build</small></div><a href="courses.html" style="margin-left:auto;color:#9d7bff">→</a></div></section></div>`;home.appendChild(lower);
+ const services=document.createElement('div');services.className='zp-service-grid';[['⚽','Live Football','Watch matches','live.html'],['🎬','Movies','Video library','movies.html'],['🤖','AI Assistant','Get help','recommendations.html'],['💼','Opportunities','Play • Learn • Earn','opportunities.html']].forEach(x=>services.innerHTML+=`<a class="zp-service" href="${x[3]}" style="text-decoration:none"><b>${x[0]} ${x[1]}</b><span>${x[2]}</span></a>`);home.appendChild(services);
+ const oldHeroCopy=main.querySelector('.hero-copy-below'), features=main.querySelector('.features'), title=main.querySelector('.section-title'), rental=main.querySelector('.rental-promo'), ai=main.querySelector('.ai-showcase'), payment=main.querySelector('.payment-strip'), offer=main.querySelector('.offer');
+ [oldHeroCopy,features,title,games,rental,ai,payment,offer].forEach(x=>{if(x)x.style.display='none'});
+ main.insertBefore(home,main.children[1]||null);
+ const tg=document.getElementById('zpTrending');
+ const cloneGames=()=>{if(!games)return;tg.innerHTML='';[...games.children].filter(x=>x.tagName!=='P').slice(0,12).forEach((g,i)=>{const name=g.querySelector('h3')?.textContent||['Call of Duty: Modern Warfare II','Need for Speed: Most Wanted','Far Cry 5','EA SPORTS FC 24','Cyberpunk 2077','Grand Theft Auto V'][i%6];const price=g.querySelector('.price')?.textContent||'TSh —';const emoji=g.querySelector('.game-cover')?.textContent||'🎮';tg.insertAdjacentHTML('beforeend',`<div class="zp-trend-card"><div class="cover">${emoji}</div><div class="info"><h3>${name}</h3><small>🎮 PC • Console</small><div class="price">${price}</div><button class="add" onclick="location.href='${g.querySelector('a')?.getAttribute('href')||'shop.html'}'">Add to Cart</button></div></div>`)})};cloneGames();setTimeout(cloneGames,900);
+}
+function init(){shell();styleOld();if(current()==='index.html'||current()==='')home();document.body.classList.add('zoneplay-v2');if(!document.querySelector('.main')&&!document.querySelector('.admin-page'))document.body.classList.add('zp-standalone')}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
