@@ -168,3 +168,9 @@ One layout for every page (sidebar + topbar + mobile bottom navigation), dark mo
 - Platform pages use the product's `category` / `type` / `name` (e.g. "PSP", "PS2", "Nintendo Switch"); set the category in Admin → Products to place a game on a platform page.
 - Home hero shows admin product trailers/images and `/api/banners`; falls back to built-in slides.
 - Remaining pages keep their content and get the new layout + skin; they are redesigned module by module.
+
+### Live Scores
+`livescores.html` reads `/api/live-streams` (the matches admin adds under Media & Live). Admin can now set **home/away goals and minute** when adding a match, and update score/status from the list (💾) — new endpoint `POST /api/admin/live-streams/:id/score`.
+
+### Live TV / Sports
+`live.html` — one main player (YouTube, MP4/WebM, HLS `.m3u8`, or embed URL), a list of current matches and a card grid. Deep link: `live.html?id=<streamId>` (used by the Live Scores "Tazama" button). The 30s refresh only touches the player when the stream actually changes.

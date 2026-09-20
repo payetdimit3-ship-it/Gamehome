@@ -76,6 +76,28 @@
     return pending;
   };
 
+
+  /* ---------- Match helpers (Live TV + Live Scores) ---------- */
+  ZP.match = {
+    status: function(m){
+      var s=String(m.status||'').toUpperCase();
+      if (/LIVE|PLAY|INAENDELEA/.test(s)) return 'live';
+      if (/END|FT|FINISH|IMEISHA|KWISHA/.test(s)) return 'ended';
+      return 'upcoming';
+    },
+    teams: function(m){
+      var h=(m.homeTeam||'').trim(), a=(m.awayTeam||'').trim();
+      if (!h && !a){
+        var p=String(m.title||'').split(/\s+(?:vs\.?|v|-|–)\s+/i);
+        if (p.length===2){ h=p[0].trim(); a=p[1].trim(); } else h=String(m.title||'Mechi');
+      }
+      return [h,a];
+    },
+    initials: function(n){ var w=String(n||'?').trim().split(/\s+/); return ((w[0]||'?').charAt(0)+(w.length>1?w[1].charAt(0):'')).toUpperCase(); },
+    badge: function(n){ return n ? '<i class="ls-badge" style="--art:'+ZP.art(n)+'">'+esc(ZP.match.initials(n))+'</i>' : ''; },
+    hasScore: function(m){ return m.homeScore!=null && m.homeScore!=='' && m.awayScore!=null && m.awayScore!==''; }
+  };
+
   ZP.money = function(n){ return Number(n||0).toLocaleString('en-US'); };
   ZP.href = function(p){ return 'product.html?id='+encodeURIComponent(p.id)+(p.admin?'&admin=1':''); };
   ZP.platformOf = function(key){ return ZP.PLATFORMS.filter(function(x){return x.key===key;})[0]; };

@@ -37,23 +37,7 @@
   var TABS = [['all','Zote'],['live','Live'],['upcoming','Ratiba'],['ended','Zimekwisha']];
   var tab='all', league='', matches=[], loaded=false, failed=false;
 
-  function statusOf(m){
-    var s=String(m.status||'').toUpperCase();
-    if (/LIVE|PLAY|INAENDELEA/.test(s)) return 'live';
-    if (/END|FT|FINISH|IMEISHA|KWISHA/.test(s)) return 'ended';
-    return 'upcoming';
-  }
-  function teams(m){
-    var h=(m.homeTeam||'').trim(), a=(m.awayTeam||'').trim();
-    if (!h && !a){
-      var p=String(m.title||'').split(/\s+(?:vs\.?|v|-|–)\s+/i);
-      if (p.length===2){ h=p[0].trim(); a=p[1].trim(); } else h=String(m.title||'Mechi');
-    }
-    return [h,a];
-  }
-  function initials(n){ var w=String(n||'?').trim().split(/\s+/); return ((w[0]||'?').charAt(0)+(w.length>1?w[1].charAt(0):'')).toUpperCase(); }
-  function badge(n){ return n ? '<i class="ls-badge" style="--art:'+ZP.art(n)+'">'+esc(initials(n))+'</i>' : ''; }
-  function hasScore(m){ return m.homeScore!=null && m.homeScore!=='' && m.awayScore!=null && m.awayScore!==''; }
+  var statusOf=ZP.match.status, teams=ZP.match.teams, badge=ZP.match.badge, hasScore=ZP.match.hasScore;
 
   function row(m){
     var st=statusOf(m), t=teams(m), live=st==='live';
@@ -63,7 +47,7 @@
     var score = (live||st==='ended') && hasScore(m)
       ? '<div class="ls-score"><span>'+esc(m.homeScore)+'</span><em>–</em><span>'+esc(m.awayScore)+'</span></div>'
       : '<div class="ls-score pending">'+'vs'+'</div>';
-    var watch = (m.streamUrl||m.videoUrl) && st!=='ended' ? '<a class="zp-btn sm" href="live.html">'+ZP.icon('play')+'<span class="lbl">Tazama</span></a>' : '';
+    var watch = (m.streamUrl||m.videoUrl) && st!=='ended' ? '<a class="zp-btn sm" href="live.html?id='+encodeURIComponent(m.id)+'">'+ZP.icon('play')+'<span class="lbl">Tazama</span></a>' : '';
     return '<div class="ls-row'+(live?' is-live':'')+'">'+
       '<div class="ls-status">'+status+'</div>'+
       '<div class="ls-team home">'+(t[1]?'<span>'+esc(t[0])+'</span>'+badge(t[0]):'<span>'+esc(t[0])+'</span>')+'</div>'+
