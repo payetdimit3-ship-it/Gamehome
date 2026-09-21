@@ -1,41 +1,145 @@
-<!DOCTYPE html><html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Courses — GameHub</title><link rel="stylesheet" href="style.css"><style>
-.page-shell{max-width:1200px;margin:0 auto;padding:24px 20px 50px}.page-hero{background:linear-gradient(135deg,#120b2d,#241052 55%,#11152b);border:1px solid #35206b;border-radius:22px;padding:34px 28px;margin-bottom:22px}.page-hero h1{font-size:clamp(26px,5vw,42px);margin-bottom:8px}.page-hero p{color:#b9b7cf;max-width:850px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}.card{background:#121323;border:1px solid #292844;border-radius:16px;padding:18px}.card:hover{border-color:#7b2ff7}.btn{display:inline-block;background:#7b2ff7;color:#fff;border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer}.btn.alt{background:#17203a;border:1px solid #3c4b78}.input{width:100%;background:#080914;color:#fff;border:1px solid #302d4a;border-radius:10px;padding:12px;margin:6px 0 12px;outline:none}.muted{color:#9b9ab2}.player{width:100%;aspect-ratio:16/9;background:#05050b;border-radius:14px;border:1px solid #302d4a;overflow:hidden}.player video,.player iframe{width:100%;height:100%;border:0;display:block}.badge{display:inline-block;font-size:11px;padding:4px 9px;border-radius:99px;background:#2a1a4e;color:#cdaaff}.ai-box{background:#0d0d1d;border:1px solid #35206b;border-radius:16px;padding:18px;margin-top:20px}.messages{min-height:150px;max-height:330px;overflow:auto;display:flex;flex-direction:column;gap:8px;margin:10px 0}.msg{padding:9px 12px;border-radius:12px;max-width:88%;white-space:pre-wrap}.user{align-self:flex-end;background:#7b2ff7}.bot{align-self:flex-start;background:#18182b;color:#e8e8f5}@media(max-width:700px){.page-shell{padding:16px 12px 40px}.page-hero{padding:25px 18px}}
-</style>  <link rel="stylesheet" href="zoneplay.css">
-</head><body><div class="sidebar">
-<div class="logo">🎮 GAME<span>HUB</span></div>
-<div class="menu">
-<a href="index.html">🏠 <span class="label">Home</span></a>
-<a href="shop.html">🎮 <span class="label">All Games</span></a>
-<a href="categories.html">🗂️ <span class="label">Categories</span></a>
-<a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
-<a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
-<a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
-<a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
-<a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
-<a href="live.html">📺 <span class="label">Watch Live</span></a>
-<a href="livescores.html">📊 <span class="label">Live Scores</span></a>
-<a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
-<a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
-<a href="movies.html">🎬 <span class="label">Movies</span></a>
-<a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
-<a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
-<a href="mygames.html">🕹️ <span class="label">My Games</span></a>
-<a href="myorders.html">📦 <span class="label">My Orders</span></a>
-<a href="requests.html">🔍 <span class="label">Requests</span></a>
-<a href="profile.html">👤 <span class="label">Profile</span></a>
-<a href="health.html">🩺 <span class="label">Health AI</span></a>
-<a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
-<a href="contact.html">☎ <span class="label">Contact</span></a>
-</div></div><div class="main"><div class="topbar"><a href="login.html" class="btn-login" id="topLoginBtn">🔐 Login</a></div><div class="page-shell"><section class="page-hero"><span class="badge">ACADEMY</span><h1>🎓 Courses + AI Tutor</h1><p>Admin anaweza kuweka video kwa kila course. Wanafunzi wanaangalia hapa na kutumia AI Tutor kwa maandishi au sauti.</p><div style="margin-top:14px"><a class="btn alt" href="academy.html">🏫 Fungua Academy Home</a></div></section><div id="courses" class="grid"><div class="card">Inapakia courses...</div></div>
-<div class="ai-box"><h2>🤖 AI Course Tutor</h2><p class="muted">Uliza kuhusu lesson, code, assignment au concept. Bonyeza 🎙️ kuongea.</p><div id="msgs" class="messages"><div class="msg bot">Habari! Mimi ni AI Tutor wa Course. Unaweza kuandika au kuongea.</div></div><div style="display:flex;gap:8px"><input id="q" class="input" placeholder="Uliza swali kuhusu course..." style="margin:0"><button class="btn" id="mic">🎙️</button><button class="btn" id="send">➤</button></div><div style="margin-top:8px"><button class="btn alt" id="speak">🔊 Soma jibu la mwisho</button><button class="btn alt" id="stop">⏹️ Stop</button></div></div>
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Courses + AI Tutor — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-full.css">
+</head>
+<body>
+<div class="main">
+
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="cap"></div>
+    <div><h1>Courses + AI Tutor</h1><p>Angalia video za somo, kisha uliza AI Tutor kwa maandishi au sauti.</p></div>
+    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="academy.html"><span data-ic="grid"></span>Academy Home</a></div>
+  </header>
+
+  <nav class="zp-tabs" id="courseTabs" aria-label="Kozi" hidden></nav>
+
+  <div class="cr-layout">
+    <div>
+      <div class="cr-stage" id="stage"><div class="cr-none"><h3>Inapakia...</h3></div></div>
+      <div class="cr-info" id="info" hidden></div>
+    </div>
+    <aside class="cr-list" id="listBox" hidden>
+      <header><h3 id="listTitle">Masomo</h3><small id="listCount"></small></header>
+      <div class="cr-vids" id="vids"></div>
+    </aside>
+  </div>
+
+  <section class="cr-tutor" id="tutor">
+    <header>
+      <div class="zp-ph-ic" data-ic="bot"></div>
+      <div><h2>AI Course Tutor</h2><p>Uliza kuhusu lesson, code, assignment au concept. Bonyeza kipaza sauti kuongea.</p></div>
+    </header>
+    <div class="cr-msgs" id="msgs" aria-live="polite"><div class="cr-msg bot">Habari! Mimi ni AI Tutor wa Course. Unaweza kuandika au kuongea.</div></div>
+    <div class="cr-input">
+      <input id="q" placeholder="Uliza swali kuhusu course..." aria-label="Swali lako" autocomplete="off">
+      <button class="zp-btn ghost" id="mic" type="button" aria-label="Ongea"></button>
+      <button class="zp-btn" id="send" type="button" aria-label="Tuma"></button>
+    </div>
+    <div class="cr-tools">
+      <button class="zp-btn ghost sm" id="speak" type="button"></button>
+      <button class="zp-btn ghost sm" id="stop" type="button">Stop</button>
+    </div>
+  </section>
+</div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
 <script>
-let lastReply='';const msgs=document.getElementById('msgs');function add(t,c){const d=document.createElement('div');d.className='msg '+c;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight}
-async function ask(){const q=document.getElementById('q').value.trim();if(!q)return;add(q,'user');document.getElementById('q').value='';try{const r=await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Course Tutor: '+q})});const d=await r.json();lastReply=d.reply||d.error||'Samahani, jaribu tena.';add(lastReply,'bot');}catch(e){add('Hitilafu ya mtandao.','bot')}}
-document.getElementById('send').onclick=ask;document.getElementById('q').onkeydown=e=>{if(e.key==='Enter')ask()};
-document.getElementById('speak').onclick=()=>{if(lastReply&&'speechSynthesis'in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(lastReply))}};
-document.getElementById('stop').onclick=()=>speechSynthesis.cancel();
-document.getElementById('mic').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('Browser yako haiungi mkono voice input. Tumia Chrome.');return}const r=new SR();r.lang='sw-TZ';r.interimResults=false;r.onresult=e=>{document.getElementById('q').value=e.results[0][0].transcript;ask()};r.start()};
-async function load(){const r=await fetch('/api/courses');const d=await r.json();const a=d.courses||[];document.getElementById('courses').innerHTML=a.length?a.map(c=>'<article class="card"><h2>'+esc(c.name)+'</h2><p class="muted">'+esc(c.level||'Beginner')+(c.price?' • '+Number(c.price).toLocaleString()+' TZS':'')+'</p><p>'+esc(c.description||'')+'</p>'+(c.videos||[]).map(v=>'<div style="margin-top:15px"><h3>▶️ '+esc(v.title)+'</h3><div class="player"><video controls playsinline preload="metadata" src="'+esc(v.url)+'"></video></div><p class="muted">'+esc(v.description||'')+'</p></div>').join('')+' </article>').join(''):'<div class="card"><h3>Hakuna course video bado</h3><p class="muted">Admin anaweza kuongeza course na videos kwenye dashboard.</p></div>'}
-function esc(x){const d=document.createElement('div');d.textContent=x||'';return d.innerHTML}load().catch(()=>{});
-</script></div></div><script src="app.js"></script><script src="chat.js"></script>  <script src="zoneplay-shell.js"></script>
-</body></html>
+(function(){
+  var esc=ZP.esc;
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  document.getElementById('mic').textContent='🎙️';
+  document.getElementById('send').innerHTML=ZP.icon('arrow');
+  document.getElementById('speak').innerHTML='🔊 Soma jibu la mwisho';
+
+  var params=new URLSearchParams(location.search);
+  var courses=[], cid=params.get('id')||'', vid=params.get('v')||'';
+
+  function course(){ return courses.filter(function(c){ return c.id===cid; })[0] || courses[0] || null; }
+  function video(c){ var v=(c&&c.videos)||[]; return v.filter(function(x){ return x.id===vid; })[0] || v[0] || null; }
+  function setUrl(){ var u=new URL(location.href); u.searchParams.set('id',cid); if(vid) u.searchParams.set('v',vid); history.replaceState(null,'',u.pathname+u.search+u.hash); }
+
+  function renderTabs(c){
+    var t=document.getElementById('courseTabs');
+    t.hidden=courses.length<2;
+    t.innerHTML=courses.map(function(x){ return '<button type="button" class="zp-chip'+(c&&x.id===c.id?' active':'')+'" data-c="'+esc(x.id)+'">'+esc(x.name)+'</button>'; }).join('');
+  }
+  function renderStage(c,v,play){
+    var stage=document.getElementById('stage'), info=document.getElementById('info');
+    if (!c){
+      stage.innerHTML='<div class="cr-none">'+ZP.icon('cap')+'<h3>Hakuna kozi bado</h3><p>Admin akiongeza kozi na video zitaonekana hapa. Kwa sasa unaweza kuuliza AI Tutor hapa chini.</p></div>';
+      info.hidden=true; return;
+    }
+    if (!v){
+      stage.innerHTML='<div class="cr-none">'+ZP.icon('play')+'<h3>Video bado hazijawekwa</h3><p>Kozi hii inaandaliwa. Rudi hivi karibuni.</p></div>';
+    } else {
+      stage.innerHTML='<video controls playsinline preload="metadata" src="'+esc(v.url)+'"'+(play?' autoplay':'')+'></video>';
+      var el=stage.querySelector('video');
+      el.addEventListener('ended',function(){
+        var list=c.videos||[], i=list.indexOf(v);
+        if (i>-1 && i<list.length-1) pick(list[i+1].id,true);
+      });
+    }
+    info.hidden=false;
+    var n=(c.videos||[]).length;
+    info.innerHTML='<div class="cr-meta"><span class="ls-pill">'+esc((c.level||'Beginner').toUpperCase())+'</span><span class="ls-pill">'+n+' VIDEO</span><span class="ls-pill">'+(Number(c.price)>0?ZP.money(c.price)+' TZS':'BURE')+'</span></div>'+
+      '<h2>'+esc(v?v.title:c.name)+'</h2>'+(v&&v.description?'<p>'+esc(v.description)+'</p>':'')+(v?'<p style="color:var(--dim);font-size:12.5px">Kozi: '+esc(c.name)+'</p>':'')+(c.description&&!(v&&v.description)?'<p>'+esc(c.description)+'</p>':'');
+  }
+  function renderList(c,v){
+    var box=document.getElementById('listBox'), n=c?(c.videos||[]).length:0;
+    box.hidden=!c || !n;
+    if (!c||!n) return;
+    document.getElementById('listTitle').textContent=c.name;
+    document.getElementById('listCount').textContent=n+(n===1?' somo':' masomo');
+    document.getElementById('vids').innerHTML=c.videos.map(function(x,i){
+      return '<button type="button" class="cr-vid'+(v&&x.id===v.id?' on':'')+'" data-v="'+esc(x.id)+'"><i>'+(i+1)+'</i><span><b>'+esc(x.title)+'</b>'+(x.description?'<small>'+esc(x.description.slice(0,70))+'</small>':'')+'</span><small>'+esc(x.duration||'')+'</small></button>';
+    }).join('');
+  }
+  function render(play){ var c=course(), v=video(c); if(c){ cid=c.id; } renderTabs(c); renderStage(c,v,play); renderList(c,v); }
+  function pick(id,play){ vid=id; setUrl(); render(!!play); }
+
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('#courseTabs [data-c]'); if(t){ cid=t.dataset.c; vid=''; setUrl(); render(false); return; }
+    var b=e.target.closest('#vids [data-v]'); if(b){ pick(b.dataset.v,true); var s=document.getElementById('stage'); s.scrollIntoView&&s.scrollIntoView({behavior:'smooth',block:'center'}); }
+  });
+
+  fetch('/api/courses').then(function(r){ return r.json(); }).then(function(d){ courses=(d&&d.courses)||[]; render(false); })
+    .catch(function(){ document.getElementById('stage').innerHTML='<div class="cr-none"><h3>Imeshindikana kupakia kozi</h3><p>Angalia mtandao kisha jaribu tena.</p><button class="zp-btn sm" type="button" onclick="location.reload()">Jaribu tena</button></div>'; });
+
+  /* ---------- AI Tutor ---------- */
+  var lastReply='', msgs=document.getElementById('msgs'), input=document.getElementById('q'), busy=false;
+  function add(t,c){ var d=document.createElement('div'); d.className='cr-msg '+c; d.textContent=t; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; return d; }
+  function ask(){
+    var q=input.value.trim(); if(!q||busy) return;
+    add(q,'user'); input.value=''; busy=true;
+    var wait=add('Ninafikiria...','bot wait');
+    var c=course(), v=video(c);
+    var ctx=c?(' ['+c.name+(v?' — '+v.title:'')+']'):'';
+    fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Course Tutor'+ctx+': '+q})})
+      .then(function(r){ return r.json(); })
+      .then(function(d){ lastReply=d.reply||d.error||'Samahani, jaribu tena.'; wait.className='cr-msg bot'; wait.textContent=lastReply; })
+      .catch(function(){ wait.className='cr-msg bot'; wait.textContent='Hitilafu ya mtandao. Jaribu tena.'; })
+      .then(function(){ busy=false; msgs.scrollTop=msgs.scrollHeight; });
+  }
+  document.getElementById('send').addEventListener('click',ask);
+  input.addEventListener('keydown',function(e){ if(e.key==='Enter') ask(); });
+  document.getElementById('speak').addEventListener('click',function(){ if(lastReply&&'speechSynthesis' in window){ speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(lastReply)); } });
+  document.getElementById('stop').addEventListener('click',function(){ if('speechSynthesis' in window) speechSynthesis.cancel(); });
+  document.getElementById('mic').addEventListener('click',function(){
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){ add('Browser yako haiungi mkono voice input. Tumia Chrome.','bot'); return; }
+    var r=new SR(); r.lang='sw-TZ'; r.interimResults=false;
+    r.onresult=function(e){ input.value=e.results[0][0].transcript; ask(); };
+    r.start();
+  });
+  if (location.hash==='#tutor') setTimeout(function(){ var t=document.getElementById('tutor'); t&&t.scrollIntoView({behavior:'smooth'}); input.focus(); },400);
+})();
+</script>
+</body>
+</html>

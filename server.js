@@ -1512,6 +1512,7 @@ app.post('/api/ai/admin', async (req, res) => {
 app.get('/api/banners',(req,res)=>{res.json({success:true,banners:readJson('banners.json',[]).filter(x=>x.status!=='hidden').slice(-20).reverse()});});
 
 // ═══════════ LIVE MATCHES / STREAMS ═══════════
+const cleanScore = v => (v === '' || v == null || isNaN(Number(v))) ? null : Math.max(0, Math.min(99, Math.floor(Number(v))));
 app.get('/api/live-streams', (req, res) => {
   const streams = readJson('live_streams.json', []);
   res.json({ success: true, streams: streams.filter(x => x.status !== 'hidden').sort((a,b) => String(b.createdAt||'').localeCompare(String(a.createdAt||''))) });
@@ -1520,7 +1521,7 @@ app.get('/api/live-streams', (req, res) => {
 app.post('/api/admin/live-streams', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
-  const { title, league, homeTeam, awayTeam, status, streamUrl, videoUrl, startTime, description } = req.body || {};
+  const { title, league, homeTeam, awayTeam, status, streamUrl, videoUrl, startTime, description, homeScore, awayScore, minute } = req.body || {};
   if (!title) return res.status(400).json({ error: 'Weka jina la mechi.' });
   const streams = readJson('live_streams.json', []);
   const item = {
@@ -1529,10 +1530,28 @@ app.post('/api/admin/live-streams', async (req, res) => {
     homeTeam: String(homeTeam||'').slice(0,80), awayTeam: String(awayTeam||'').slice(0,80),
     status: String(status||'LIVE').slice(0,30), streamUrl: String(streamUrl||'').slice(0,2000),
     videoUrl: String(videoUrl||'').slice(0,2000), startTime: String(startTime||'').slice(0,80),
-    description: String(description||'').slice(0,1000), createdAt: new Date().toISOString()
+    description: String(description||'').slice(0,1000), createdAt: new Date().toISOString(),
+    homeScore: cleanScore(homeScore), awayScore: cleanScore(awayScore), minute: String(minute||'').slice(0,10)
   };
   streams.push(item); await writeJson('live_streams.json', streams);
   res.json({ success:true, stream:item });
+});
+
+// Update score / status / minute of an existing live match (admin only)
+app.post('/api/admin/live-streams/:id/score', async (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
+  const streams = readJson('live_streams.json', []);
+  const s = streams.find(x => x.id === req.params.id);
+  if (!s) return res.status(404).json({ error: 'Match haipatikani.' });
+  const { homeScore, awayScore, minute, status } = req.body || {};
+  if (homeScore !== undefined) s.homeScore = cleanScore(homeScore);
+  if (awayScore !== undefined) s.awayScore = cleanScore(awayScore);
+  if (minute !== undefined) s.minute = String(minute || '').slice(0, 10);
+  if (status !== undefined && ['LIVE', 'UPCOMING', 'ENDED'].includes(String(status).toUpperCase())) s.status = String(status).toUpperCase();
+  s.updatedAt = new Date().toISOString();
+  await writeJson('live_streams.json', streams);
+  res.json({ success: true, stream: s });
 });
 
 app.delete('/api/admin/live-streams/:id', (req,res) => {

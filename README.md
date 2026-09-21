@@ -156,3 +156,54 @@ The GameHub server uses the service-role key server-side to read/write this tabl
 - Callback endpoint ya app ni `/api/azampay-callback`; merchant callback lazima isetiwe kwenye AzamPay merchant/developer configuration kwa URL ya Render ya app yako.
 - Admin → Payments inaonyesha kama credentials zimesanidiwa bila kuonyesha secrets.
 - Manual payment bado ipo kama fallback na sasa writes zake zinasubiriwa (`await`) ili data isiwe stale kabla ya response.
+
+## 🎨 ZONEPLAY REDESIGN (V6)
+
+One layout for every page (sidebar + topbar + mobile bottom navigation), dark mode.
+
+- `zoneplay-full.css` — design system (tokens, shell, poster cards, hero, tiles, legacy-page skin)
+- `zoneplay-shell.js` — builds the sidebar / topbar / bottom nav on **every** page that includes it, marks the active item, shows the logged-in user, cart badge and admin link
+- `zp-catalog.js` — shared product loader (`/api/products` + seeded defaults), platform detection and poster cards
+- Rebuilt pages: `index.html` (Home), `shop.html` (Store + PSP/PS2/PS3/Switch/Android/PC via `?cat=`), `categories.html` (Games)
+- Platform pages use the product's `category` / `type` / `name` (e.g. "PSP", "PS2", "Nintendo Switch"); set the category in Admin → Products to place a game on a platform page.
+- Home hero shows admin product trailers/images and `/api/banners`; falls back to built-in slides.
+- Remaining pages keep their content and get the new layout + skin; they are redesigned module by module.
+
+### Live Scores
+`livescores.html` reads `/api/live-streams` (the matches admin adds under Media & Live). Admin can now set **home/away goals and minute** when adding a match, and update score/status from the list (💾) — new endpoint `POST /api/admin/live-streams/:id/score`.
+
+### Live TV / Sports
+`live.html` — one main player (YouTube, MP4/WebM, HLS `.m3u8`, or embed URL), a list of current matches and a card grid. Deep link: `live.html?id=<streamId>` (used by the Live Scores "Tazama" button). The 30s refresh only touches the player when the stream actually changes.
+
+### Gift Cards
+`giftcards.html` — brand tiles (Steam, PlayStation, Xbox, Nintendo, Google Play, Apple, Roblox; only brands that have products are shown) + card-faced products with search and sort. Products come from the store catalogue (kind = gift card). Brands are text wordmarks, no logos.
+
+### Academy
+`academy.html` — hero with live course/video counts, real courses from `/api/courses` (card → `courses.html?id=`), learning-path tiles, AI Mentor. `courses.html` — one player + lesson playlist (auto-plays next lesson), course tabs, AI Course Tutor (text, mic, read-aloud) via `/api/ai/chat`. Deep links: `courses.html?id=<courseId>&v=<videoId>`, `courses.html#tutor`.
+
+### Cloud Gaming
+`cloudgaming.html` — hero, 4-step flow, rental packages and pre-flight notes. Package values come from `ZP.RENTAL` in `zp-catalog.js` (same numbers as `rental.html`); all buttons lead to `rental.html`, which still has the original layout.
+
+### Rental
+`rental.html` — packages, custom-time calculator (max 24h) and live cart summary. Packages/prices come from `ZP.RENTAL`, and the custom price rule from `ZP.rentalPrice()` in `zp-catalog.js` (also used by `cloudgaming.html`). Cart items keep the original shape (`rent<min>` / `rentC<min>-<ts>`, `rentalMinutes`).
+
+### Movies
+`movies.html` — featured (newest) banner, search + genre chips + sort, poster grid (uses the movie `poster` URL when set, otherwise a generated cover) and a player modal (YouTube or direct/uploaded video; playback stops on close). Deep link: `movies.html?id=<movieId>`. Data: `/api/movies`.
+
+### Community / Chat
+`chat.html` — public room (`/api/public-chat/messages`, unchanged API): grouped messages with day separators, your own messages on the right (ids kept only in this browser's localStorage), nickname remembered, inline errors (incl. the server's rate-limit message), quick emoji, optional voice input, polling every 7s that never moves the scroll position unless you are at the bottom. `community.html` (Community Help) is a different page and keeps its old layout for now.
+
+### Health Assistant
+`health.html` — prominent (non-dismissible) medical disclaimer, chat with the health AI (`POST /api/ai/health` with `{message, history[last 8]}`, unchanged), suggested questions, voice input (auto-sends), read-aloud, reset button, and links to Health Network / Recovery / Community Fund / Community Help. Nothing from the conversation is stored in the browser.
+
+### eFootball
+`efootball.html` — hero, tabs to Coins & Top-Up / Tournaments, squad poster grid (products with `section:'efootball'`, loaded with `ZP.loadSection('efootball')`), search + sort, wishlist hearts, links to related pages. `topup.html` (Coins) keeps its old layout for now.
+
+### Coins & Top-Up
+`topup.html` — top-up packages from the catalogue (any admin section, kind = top-up/coins/points, plus the built-in defaults), filter by game, search, sort; falls back to the defaults if the API is unreachable. Contact details live in `ZP.CONTACT` (`zp-catalog.js`): WhatsApp 0786 095 758, lifeisgametz@gmail.com. Old placeholder numbers/emails in page footers were replaced site-wide.
+
+### AI Assistant
+`ai.html` (sidebar → AI Assistant) — full-page version of the site chat: suggested questions, conversation with the last 10 turns sent as `history` to `POST /api/ai/chat` (unchanged), voice input, read-aloud on demand (no auto-speak), reset, and WhatsApp/email handoff. The floating chat bubble is hidden on this page; the header AI button focuses the input here.
+
+### Marketplace
+`marketplace.html` — partner businesses from `/api/marketplace` (admin-posted): search, category chips, sort, cards with WhatsApp / email / website button built from the listing's `contact` (local numbers like 0712… are converted to wa.me/255712…; anything else is shown as plain text). "Orodhesha Biashara" opens WhatsApp with a prefilled message.

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>AI Assistant — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-full.css">
+</head>
+<body class="ai-page">
+<div class="main">
+
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="bot"></div>
+    <div><h1>AI Assistant</h1><p>Uliza kuhusu bidhaa, bei, malipo, rental na oda zako — kwa Kiswahili au Kiingereza.</p></div>
+  </header>
+
+  <div class="cm-layout">
+    <section class="cm-card" aria-label="AI Assistant">
+      <div class="cm-head"><span class="hl-avatar ai-avatar" data-ic="bot"></span><h2>Msaidizi wa GameHub</h2><button class="zp-btn ghost sm" id="resetBtn" type="button" hidden>Anza upya</button></div>
+
+      <div id="welcome">
+        <div class="ai-welcome">
+          <div class="zp-ai-orb" data-ic="bot"></div>
+          <h2>Naweza kukusaidia vipi leo?</h2>
+          <p>Mimi ni AI wa GameHub. Naweza kukusaidia na bidhaa, bei, malipo na zaidi. Chagua swali hapa chini au andika lako.</p>
+        </div>
+        <div class="ai-prompts" id="prompts"></div>
+      </div>
+
+      <div class="ai-feed" id="feed" role="log" aria-live="polite" aria-label="Mazungumzo" hidden></div>
+
+      <div class="cm-compose">
+        <textarea id="aiInput" maxlength="1000" placeholder="Andika ujumbe…" aria-label="Ujumbe wako" style="min-height:52px"></textarea>
+        <div class="cm-actions">
+          <button class="zp-btn ghost sm cm-mic" id="voiceBtn" type="button" aria-pressed="false" hidden></button>
+          <button class="zp-btn ghost sm" id="speakBtn" type="button">🔊 Sikiliza jibu</button>
+          <button class="zp-btn ghost sm" id="stopBtn" type="button">⏹️ Stop</button>
+          <button class="zp-btn" id="sendBtn" type="button" style="margin-left:auto"></button>
+        </div>
+        <p class="cm-status" id="status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <aside class="cm-side">
+      <div class="cm-box"><h3>Naweza Kusaidia Na</h3>
+        <div class="cm-links">
+          <a href="shop.html"><span data-ic="bag"></span>Bidhaa na bei</a>
+          <a href="rental.html"><span data-ic="cloud"></span>Kukodi muda wa kucheza</a>
+          <a href="cart.html"><span data-ic="wallet"></span>Malipo</a>
+          <a href="myorders.html"><span data-ic="box"></span>Oda zako</a>
+        </div>
+      </div>
+      <div class="cm-box"><h3>Unahitaji Binadamu?</h3>
+        <p style="margin-bottom:12px">Kwa tatizo la malipo au oda ambalo AI haliwezi kulitatua, wasiliana nasi moja kwa moja.</p>
+        <div class="cm-links">
+          <a id="waLink" target="_blank" rel="noopener"></a>
+          <a id="mailLink"></a>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  var feed=document.getElementById('feed'), welcome=document.getElementById('welcome'), input=document.getElementById('aiInput'),
+      sendBtn=document.getElementById('sendBtn'), statusEl=document.getElementById('status'), resetBtn=document.getElementById('resetBtn');
+  sendBtn.innerHTML=ZP.icon('arrow')+'Tuma';
+
+  var wa=document.getElementById('waLink'); wa.href=ZP.waLink('Habari, nahitaji msaada'); wa.innerHTML=ZP.icon('chat')+'WhatsApp '+ZP.esc(ZP.CONTACT.phone);
+  var ml=document.getElementById('mailLink'); ml.href='mailto:'+ZP.CONTACT.email; ml.innerHTML=ZP.icon('mail')+ZP.esc(ZP.CONTACT.email);
+
+  var hist=[], lastReply='', busy=false;
+  function say(m,ok){ statusEl.textContent=m||''; statusEl.className='cm-status'+(ok?' ok':''); }
+  function add(text,who,cls){
+    var row=document.createElement('div'); row.className='hl-row '+who;
+    if (who==='bot'){ var a=document.createElement('span'); a.className='hl-avatar ai-avatar'; a.innerHTML=ZP.icon('bot'); row.appendChild(a); }
+    var b=document.createElement('div'); b.className='cr-msg '+who+(cls?' '+cls:''); b.textContent=text; row.appendChild(b);
+    feed.appendChild(row); feed.scrollTop=feed.scrollHeight; return b;
+  }
+  function start(){ welcome.hidden=true; feed.hidden=false; resetBtn.hidden=false; }
+  function reset(){ feed.innerHTML=''; feed.hidden=true; welcome.hidden=false; resetBtn.hidden=true; hist=[]; lastReply=''; say(''); if('speechSynthesis' in window) speechSynthesis.cancel(); }
+
+  function ask(text){
+    var q=(text!=null?text:input.value).trim(); if(!q||busy) return;
+    busy=true; sendBtn.disabled=true; say(''); start();
+    input.value=''; add(q,'user');
+    var wait=add('Ninafikiria…','bot','wait');
+    fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:hist.slice(-10)})})
+      .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+      .then(function(x){
+        var ans=(x.d&&x.d.reply)||(x.d&&x.d.error)||'Samahani, jaribu tena.';
+        wait.className='cr-msg bot'; wait.textContent=ans;
+        if (x.ok && x.d.reply){ lastReply=ans; hist.push({role:'user',text:q}); hist.push({role:'assistant',text:ans}); }
+      })
+      .catch(function(){ wait.className='cr-msg bot'; wait.textContent='Hitilafu ya mtandao. Jaribu tena.'; })
+      .then(function(){ busy=false; sendBtn.disabled=false; feed.scrollTop=feed.scrollHeight; input.focus({preventScroll:true}); });
+  }
+  sendBtn.addEventListener('click',function(){ ask(); });
+  input.addEventListener('keydown',function(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); ask(); } });
+  resetBtn.addEventListener('click',reset);
+  document.getElementById('speakBtn').addEventListener('click',function(){ if(lastReply&&'speechSynthesis' in window){ speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(lastReply)); } });
+  document.getElementById('stopBtn').addEventListener('click',function(){ if('speechSynthesis' in window) speechSynthesis.cancel(); });
+
+  var P=[['bag','FIFA 25 bei gani?'],['cloud','Naomba muda wa masaa 3 wa GeForce, bei ni ngapi?'],['wallet','Nalipaje kwa M-Pesa?'],['box','Sijapata bidhaa yangu'],['gamepad','Nataka kucheza game bila kudownload, nifanyeje?'],['file','Nawezaje kuomba game isiyopo dukani?']];
+  var pr=document.getElementById('prompts');
+  pr.innerHTML=P.map(function(p,i){ return '<button type="button" data-i="'+i+'">'+ZP.icon(p[0])+'<span></span></button>'; }).join('');
+  pr.querySelectorAll('button').forEach(function(b){ b.querySelector('span').textContent=P[b.dataset.i][1]; });
+  pr.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b) ask(P[b.dataset.i][1]); });
+
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition, mic=document.getElementById('voiceBtn');
+  if (SR){
+    mic.hidden=false; mic.innerHTML='🎙️ Ongea';
+    mic.addEventListener('click',function(){
+      if (mic.getAttribute('aria-pressed')==='true') return;
+      var r=new SR(); r.lang='sw-TZ'; r.interimResults=false;
+      r.onstart=function(){ mic.setAttribute('aria-pressed','true'); say('🎙️ Sikiliza… ongea sasa.',true); };
+      r.onresult=function(e){ say('Nimetambua sauti. Inatuma…',true); ask(e.results[0][0].transcript); };
+      r.onerror=function(){ say('Sauti haikupatikana. Jaribu tena.'); };
+      r.onend=function(){ mic.setAttribute('aria-pressed','false'); if(statusEl.textContent.indexOf('Sikiliza')>-1) say(''); };
+      try{ r.start(); }catch(e){ say('Voice haikuweza kuanza.'); }
+    });
+  }
+  if (location.hash==='#ask') input.focus();
+})();
+</script>
+</body>
+</html>

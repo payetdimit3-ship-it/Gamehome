@@ -1,37 +1,157 @@
 <!DOCTYPE html>
 <html lang="sw">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Public Chat — LIFEISGAMETZ</title>
-<link rel="stylesheet" href="style.css">
-<style>
-body{background:#05060d;color:#fff}.chat-shell{max-width:1050px;margin:0 auto;padding:28px 18px 60px}.chat-hero{padding:28px;border:1px solid rgba(139,92,246,.2);border-radius:24px;background:radial-gradient(circle at 85% 20%,rgba(124,58,237,.28),transparent 32%),linear-gradient(135deg,#0d1020,#17112d);margin-bottom:16px}.eyebrow{font-size:10px;letter-spacing:2px;color:#67e8f9;font-weight:900}.chat-hero h1{font-size:clamp(30px,6vw,52px);margin:7px 0}.chat-hero p{color:#aeb5cc;max-width:760px;line-height:1.7}.chat-card{background:#0b0e1a;border:1px solid #242942;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}.chat-head{padding:14px 16px;border-bottom:1px solid #22263a;display:flex;justify-content:space-between;align-items:center;gap:10px}.online{color:#6ee7b7;font-size:11px}.messages{height:520px;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:10px;background:radial-gradient(circle at 50% 0,rgba(124,58,237,.08),transparent 40%)}.msg{max-width:82%;padding:10px 13px;border-radius:14px;background:#12162a;border:1px solid #252b43}.msg b{display:block;font-size:12px;color:#c4b5fd;margin-bottom:4px}.msg p{font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word}.msg time{display:block;color:#69718d;font-size:9px;margin-top:5px}.empty{margin:auto;color:#77809e;text-align:center}.compose{padding:14px;border-top:1px solid #22263a;background:#080a13}.compose-top{display:flex;gap:8px;margin-bottom:8px}.compose input,.compose textarea{width:100%;background:#05070e;color:#fff;border:1px solid #292e48;border-radius:11px;padding:11px;outline:none}.compose textarea{resize:vertical;min-height:70px}.compose-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}.hint{color:#68718e;font-size:11px}.send{border:0;background:linear-gradient(135deg,#7c3aed,#c026d3);color:#fff;padding:11px 18px;border-radius:11px;font-weight:800;cursor:pointer}.back{display:inline-block;margin-bottom:15px;color:#b9a4ff}.voice{border:1px solid #30364f;background:#101428;color:#fff;border-radius:10px;padding:9px 12px;cursor:pointer}@media(max-width:650px){.messages{height:60vh}.msg{max-width:92%}.compose-top{flex-direction:column}}
-</style>
-  <link rel="stylesheet" href="zoneplay.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Community Chat — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-full.css">
 </head>
 <body>
-<div class="chat-shell">
-<a class="back" href="index.html">← Rudi LIFEISGAMETZ Home</a>
-<section class="chat-hero"><span class="eyebrow">LIFEISGAMETZ • COMMUNITY</span><h1>💬 Public Gaming Chat</h1><p>Ongea na gamers wengine kuhusu games, tournaments, Academy na community. Hii page ni public — hakuna login inayohitajika.</p></section>
-<section class="chat-card">
-  <div class="chat-head"><strong>🌐 GameHub Community Room</strong><span class="online">● PUBLIC</span></div>
-  <div class="messages" id="messages"><div class="empty">Inapakia chat…</div></div>
-  <div class="compose">
-    <div class="compose-top"><input id="name" maxlength="32" placeholder="Jina / nickname yako"></div>
-    <textarea id="message" maxlength="500" placeholder="Andika ujumbe kwa community…"></textarea>
-    <div class="compose-actions"><div><button class="voice" id="voiceBtn">🎙️ Voice</button> <span class="hint">Max 500 characters</span></div><button class="send" id="sendBtn">Tuma Ujumbe →</button></div>
+<div class="main">
+
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="chat"></div>
+    <div><h1>Community Chat</h1><p>Ongea na gamers wengine kuhusu games, tournaments, Academy na community. Ni public — hakuna login inayohitajika.</p></div>
+  </header>
+
+  <div class="cm-layout">
+    <section class="cm-card" aria-label="Chat ya community">
+      <div class="cm-head"><span data-ic="users" style="font-size:20px;color:#a583ff"></span><h2>GameHub Community Room</h2><span class="cm-pub">PUBLIC</span></div>
+      <div class="cm-feed" id="feed" role="log" aria-live="polite" aria-label="Ujumbe"><div class="cm-empty">Inapakia chat…</div></div>
+      <div class="cm-compose">
+        <input class="cm-name" id="name" maxlength="32" placeholder="Jina / nickname yako" aria-label="Jina lako" autocomplete="nickname">
+        <textarea id="message" maxlength="500" placeholder="Andika ujumbe kwa community…" aria-label="Ujumbe wako"></textarea>
+        <div class="cm-actions">
+          <div class="cm-emoji" id="emoji" aria-label="Emoji"></div>
+          <button class="zp-btn ghost sm cm-mic" id="voiceBtn" type="button" aria-pressed="false" hidden></button>
+          <span class="cm-count" id="count">0/500</span>
+          <button class="zp-btn" id="sendBtn" type="button"></button>
+        </div>
+        <p class="cm-status" id="status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <aside class="cm-side">
+      <div class="cm-box"><h3>Kumbuka</h3><p>Chat hii ni ya wazi kwa kila mtu. Usiweke namba ya simu, password wala taarifa binafsi. Subiri sekunde chache kati ya ujumbe mmoja na mwingine.</p></div>
+      <div class="cm-box"><h3>Nenda Kwenye</h3>
+        <div class="cm-links">
+          <a href="tournaments.html"><span data-ic="trophy"></span>Tournaments</a>
+          <a href="livescores.html"><span data-ic="ball"></span>Live Scores</a>
+          <a href="academy.html"><span data-ic="cap"></span>Academy</a>
+          <a href="community.html"><span data-ic="users"></span>Community Help</a>
+        </div>
+      </div>
+    </aside>
   </div>
-</section>
 </div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
 <script>
-const messages=document.getElementById('messages'),nameEl=document.getElementById('name'),msgEl=document.getElementById('message'),sendBtn=document.getElementById('sendBtn');
-function esc(x){const d=document.createElement('div');d.textContent=x??'';return d.innerHTML}
-function render(rows){if(!rows.length){messages.innerHTML='<div class="empty">Hakuna ujumbe bado. Kuwa wa kwanza kuanza mazungumzo. 🎮</div>';return}messages.innerHTML=rows.map(x=>`<article class="msg"><b>${esc(x.name)}</b><p>${esc(x.message)}</p><time>${new Date(x.time).toLocaleString()}</time></article>`).join('');messages.scrollTop=messages.scrollHeight}
-async function load(){try{const r=await fetch('/api/public-chat/messages');const d=await r.json();if(d.success)render(d.messages||[])}catch(e){messages.innerHTML='<div class="empty">Chat haijapatikana kwa sasa.</div>'}}
-async function send(){const name=(nameEl.value||'Mgeni').trim()||'Mgeni',message=msgEl.value.trim();if(!message)return;sendBtn.disabled=true;sendBtn.textContent='Inatuma…';try{const r=await fetch('/api/public-chat/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,message})});const d=await r.json();if(!r.ok){alert(d.error||'Imeshindikana');return}msgEl.value='';await load()}catch(e){alert('Hitilafu ya mtandao.')}finally{sendBtn.disabled=false;sendBtn.textContent='Tuma Ujumbe →'}}
-sendBtn.onclick=send;msgEl.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(SR)document.getElementById('voiceBtn').onclick=()=>{const r=new SR();r.lang='sw-TZ';r.interimResults=false;r.onresult=e=>msgEl.value=e.results[0][0].transcript;r.start()};else document.getElementById('voiceBtn').onclick=()=>alert('Voice input haijaungwa kwenye browser hii.');
-load();setInterval(load,7000);
+(function(){
+  var esc=ZP.esc;
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  var feed=document.getElementById('feed'), nameEl=document.getElementById('name'), msgEl=document.getElementById('message'),
+      sendBtn=document.getElementById('sendBtn'), statusEl=document.getElementById('status'), countEl=document.getElementById('count');
+  sendBtn.innerHTML=ZP.icon('arrow')+'Tuma';
+
+  /* small local memory: nickname + which messages are mine (never leaves this browser) */
+  function ls(k,d){ try{ var v=JSON.parse(localStorage.getItem(k)); return v==null?d:v; }catch(e){ return d; } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+  var mine=ls('zpChatMine',[]), lastKey='', rows=[], seen=0;
+  nameEl.value=ls('zpChatName','');
+
+  function say(msg,ok){ statusEl.textContent=msg||''; statusEl.className='cm-status'+(ok?' ok':''); }
+
+  /* time helpers */
+  function dayKey(d){ return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate(); }
+  function dayLabel(d){
+    var t=new Date(), y=new Date(Date.now()-864e5);
+    if (dayKey(d)===dayKey(t)) return 'Leo';
+    if (dayKey(d)===dayKey(y)) return 'Jana';
+    return d.toLocaleDateString([], {day:'numeric',month:'short',year:'numeric'});
+  }
+  function hm(d){ return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
+
+  function render(force){
+    var atBottom = feed.scrollHeight-feed.scrollTop-feed.clientHeight<90;
+    if (!rows.length){
+      feed.innerHTML='<div class="cm-empty"><b>Hakuna ujumbe bado</b>Kuwa wa kwanza kuanza mazungumzo. 🎮</div>'; return;
+    }
+    var html='', prev=null, groupOpen=false;
+    rows.forEach(function(r){
+      var d=new Date(r.time), isMine=mine.indexOf(r.id)>-1;
+      var newDay=!prev || dayKey(new Date(prev.time))!==dayKey(d);
+      var same=prev && !newDay && prev.name===r.name && (d-new Date(prev.time))<5*60000 && (mine.indexOf(prev.id)>-1)===isMine;
+      if (newDay){ if(groupOpen) html+='</div></div>'; groupOpen=false; html+='<div class="cm-day">'+esc(dayLabel(d))+'</div>'; }
+      if (!same){
+        if (groupOpen) html+='</div></div>';
+        html+='<div class="cm-group'+(isMine?' mine':'')+'">'+ZP.match.badge(r.name)+'<div class="cm-col"><div class="cm-meta"><b>'+esc(r.name)+'</b><time datetime="'+esc(r.time)+'">'+esc(hm(d))+'</time></div>';
+        groupOpen=true;
+      }
+      html+='<div class="cm-bubble">'+esc(r.message)+'</div>';
+      prev=r;
+    });
+    if (groupOpen) html+='</div></div>';
+    feed.innerHTML=html;
+    if (force || atBottom || !seen){ feed.style.scrollBehavior='auto'; feed.scrollTop=feed.scrollHeight; feed.style.scrollBehavior=''; }
+    else if (rows.length>seen){ var b=document.createElement('button'); b.type='button'; b.className='zp-btn sm cm-new'; b.innerHTML=ZP.icon('chevr').replace('<svg','<svg style="transform:rotate(90deg)"')+'Ujumbe mpya'; b.addEventListener('click',function(){ feed.scrollTop=feed.scrollHeight; b.remove(); }); feed.appendChild(b); }
+    seen=rows.length;
+  }
+
+  function load(force){
+    return fetch('/api/public-chat/messages').then(function(r){ return r.json(); }).then(function(d){
+      if (!d||!d.success) return;
+      var list=d.messages||[], last=list[list.length-1], key=list.length+'|'+(last?last.id:'');
+      if (key===lastKey && !force) return;            // nothing new: leave the scroll position alone
+      lastKey=key; rows=list; render(!!force);
+    }).catch(function(){ if(!lastKey) feed.innerHTML='<div class="cm-empty"><b>Chat haipatikani kwa sasa</b>Angalia mtandao wako, itajaribu tena yenyewe.</div>'; });
+  }
+
+  function send(){
+    var name=(nameEl.value||'').trim()||'Mgeni', message=msgEl.value.trim();
+    if (!message){ say('Andika ujumbe kwanza.'); return; }
+    sendBtn.disabled=true; say('');
+    lsSet('zpChatName',nameEl.value.trim());
+    fetch('/api/public-chat/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name,message:message})})
+      .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+      .then(function(x){
+        if (!x.ok){ say((x.d&&x.d.error)||'Imeshindikana kutuma. Jaribu tena.'); return; }
+        if (x.d.message && x.d.message.id){ mine.push(x.d.message.id); mine=mine.slice(-200); lsSet('zpChatMine',mine); }
+        msgEl.value=''; countEl.textContent='0/500'; return load(true);
+      })
+      .catch(function(){ say('Hitilafu ya mtandao. Jaribu tena.'); })
+      .then(function(){ sendBtn.disabled=false; msgEl.focus({preventScroll:true}); });
+  }
+  sendBtn.addEventListener('click',send);
+  msgEl.addEventListener('keydown',function(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); } });
+  msgEl.addEventListener('input',function(){ countEl.textContent=msgEl.value.length+'/500'; });
+
+  /* quick emoji */
+  var emo=document.getElementById('emoji');
+  emo.innerHTML=['🎮','⚽','🔥','👏','😂','💪'].map(function(e){ return '<button type="button" aria-label="Weka '+e+'">'+e+'</button>'; }).join('');
+  emo.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; msgEl.value=(msgEl.value+b.textContent).slice(0,500); msgEl.dispatchEvent(new Event('input')); msgEl.focus(); });
+
+  /* voice input (only shown when the browser supports it) */
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition, mic=document.getElementById('voiceBtn');
+  if (SR){
+    mic.hidden=false; mic.innerHTML='🎙️ Voice';
+    mic.addEventListener('click',function(){
+      if (mic.getAttribute('aria-pressed')==='true') return;
+      var r=new SR(); r.lang='sw-TZ'; r.interimResults=false;
+      r.onstart=function(){ mic.setAttribute('aria-pressed','true'); say('Sikiliza… ongea sasa.',true); };
+      r.onresult=function(e){ msgEl.value=(msgEl.value+' '+e.results[0][0].transcript).trim().slice(0,500); msgEl.dispatchEvent(new Event('input')); };
+      r.onerror=function(){ say('Sauti haikupatikana. Jaribu tena.'); };
+      r.onend=function(){ mic.setAttribute('aria-pressed','false'); if(statusEl.classList.contains('ok')) say(''); };
+      try{ r.start(); }catch(e){ say('Voice haikuweza kuanza.'); }
+    });
+  }
+
+  load(true);
+  setInterval(function(){ if(!document.hidden) load(false); },7000);
+})();
 </script>
-  <script src="zoneplay-shell.js"></script>
-</body></html>
+</body>
+</html>

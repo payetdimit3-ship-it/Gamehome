@@ -2,144 +2,89 @@
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>eFootball Vikosi — GameHub</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .sidebar { width:240px; height:100vh; background:#080912; border-right:1px solid #24243a; position:fixed; left:0; top:0; padding:25px 18px; overflow-y:auto; z-index:200; }
-    .sidebar .logo { font-size:22px; font-weight:bold; margin-bottom:35px; text-align:center; }
-    .sidebar .logo span { color:#9b35ff; }
-    .menu a { display:flex; align-items:center; gap:10px; color:#ddd; padding:14px 15px; margin:4px 0; border-radius:10px; transition:0.3s; font-size:14px; text-decoration:none; }
-    .menu a:hover { background:#7525d8; color:#fff; }
-    .menu a.active { background:linear-gradient(90deg,#7725d8,#9c35ff); color:#fff; }
-    .cart-badge { background:#ff3eb5; color:#fff; font-size:11px; font-weight:bold; border-radius:20px; padding:1px 7px; margin-left:auto; }
-    .main { margin-left:240px; }
-    .topbar { display:flex; justify-content:flex-end; align-items:center; padding:18px 30px 0; }
-    @media(max-width:700px) {
-      .sidebar { width:64px; padding:15px 6px; }
-      .sidebar .logo { font-size:0; }
-      .sidebar .logo::before { content:"🎮"; font-size:24px; }
-      .menu a span.label { display:none; }
-      .main { margin-left:64px; }
-      .topbar { padding:12px 15px 0; }
-    }
-  </style>
-  <link rel="stylesheet" href="zoneplay.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>eFootball Vikosi — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-full.css">
 </head>
 <body>
+<div class="main">
 
-  <div class="sidebar">
-  <div class="logo">🎮 GAME<span>HUB</span></div>
-  <div class="menu">
-    <a href="index.html">🏠 <span class="label">Home</span></a>
-    <a href="shop.html">🎮 <span class="label">All Games</span></a>
-    <a href="categories.html">🗂️ <span class="label">Categories</span></a>
-    <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
-    <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
-    <a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
-    <a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
-    <a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
-<a href="live.html">📺 <span class="label">Watch Live</span></a>
-    <a href="livescores.html">📊 <span class="label">Live Scores</span></a>
-    <a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
-    <a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
-<a href="movies.html">🎬 <span class="label">Movies</span></a>
-    <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
-    <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
-    <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
-    <a href="myorders.html">📦 <span class="label">My Orders</span></a>
-    <a href="requests.html">🔍 <span class="label">Requests</span></a>
-    <a href="profile.html">👤 <span class="label">Profile</span></a>
-    <a href="health.html">🩺 <span class="label">Health Support</span></a>
-    <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
-    <a href="contact.html">☎ <span class="label">Contact</span></a>
+  <section class="ac-hero" style="background:linear-gradient(110deg,#0a1f5c,#2a0d6b 60%,#4a0d3a)">
+    <div>
+      <span class="zp-slide-tag">EFOOTBALL</span>
+      <h1>eFootball Vikosi</h1>
+      <p>Vikosi vya wachezaji maarufu kwa eFootball — delivery automatic baada ya malipo.</p>
+      <div class="ac-cta">
+        <a class="zp-btn" href="#vikosi"><span data-ic="ball"></span>Angalia Vikosi</a>
+        <a class="zp-btn ghost" href="topup.html"><span data-ic="wallet"></span>Coins &amp; Top-Up</a>
+      </div>
+    </div>
+    <div class="ac-stats" id="stats" hidden></div>
+  </section>
+
+  <nav class="zp-tabs" style="margin:16px 0 0" aria-label="eFootball">
+    <span class="zp-chip active" aria-current="page">Vikosi</span>
+    <a class="zp-chip" href="topup.html">Coins &amp; Top-Up</a>
+    <a class="zp-chip" href="tournaments.html">Tournaments</a>
+  </nav>
+
+  <div class="zp-sec" id="vikosi"><h2>Vikosi Vinavyopatikana</h2></div>
+  <div class="zp-toolbar">
+    <label class="zp-search"><span data-ic="search"></span><input type="search" id="searchBox" placeholder="Tafuta kikosi..." autocomplete="off" aria-label="Tafuta kikosi"></label>
+    <select id="sortSel" aria-label="Panga" style="height:36px;padding:0 12px;margin-left:auto">
+      <option value="new">Mpya kwanza</option>
+      <option value="low">Bei: chini → juu</option>
+      <option value="high">Bei: juu → chini</option>
+      <option value="az">A – Z</option>
+    </select>
   </div>
+  <p class="zp-count" id="count" aria-live="polite"></p>
+  <section class="zp-grid" id="productGrid" aria-live="polite"><div class="zp-empty"><p>Inapakia...</p></div></section>
+
+  <div class="zp-sec"><h2>Zaidi ya Vikosi</h2></div>
+  <section class="zp-strips">
+    <a class="zp-strip" href="topup.html" style="--art:linear-gradient(120deg,#166534,#0a2a4a)"><span class="zp-pi">🪙</span><h3>Coins &amp; Top-Up</h3><span>Packages za eFootball coins na top-up kwa bei nafuu.</span></a>
+    <a class="zp-strip" href="tournaments.html" style="--art:linear-gradient(120deg,#b45309,#4a0d3a)"><span class="zp-pi">🏆</span><h3>Tournaments</h3><span>Shindana na wachezaji wengine wa community.</span></a>
+    <a class="zp-strip" href="livescores.html" style="--art:linear-gradient(120deg,#0f3d91,#0a1240)"><span class="zp-pi">📊</span><h3>Live Scores</h3><span>Matokeo ya mechi za moja kwa moja.</span></a>
+  </section>
+
+  <div class="rn-note" style="margin-top:22px"><span data-ic="shield"></span><span>Usishirikishe password yako ya account. Tumia taarifa zinazohitajika tu kwenye checkout.</span></div>
 </div>
 
-  <div class="main">
-    <div class="topbar">
-      <a href="login.html" class="btn-login">🔐 Login</a>
-    </div>
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  var all=null, q='', sort='new', grid=document.getElementById('productGrid'), countEl=document.getElementById('count');
 
-    <section class="shop-banner">
-      <h1>⚽ eFootball Vikosi</h1>
-      <p>Vikosi vya wachezaji maarufu kwa eFootball — delivery automatic baada ya malipo</p>
-    </section>
-
-    <section class="shop-controls">
-      <input type="text" id="searchBox" placeholder="🔍 Tafuta kikosi...">
-    </section>
-
-    <section class="shop-grid" id="productGrid">
-      <p style="color:#8f8faa; grid-column:1/-1; text-align:center;">Inapakia...</p>
-    </section>
-
-    <footer class="footer">
-      <div class="footer-grid">
-        <div>
-          <h3>🎮 GameHub</h3>
-          <p>Duka la gaming la Tanzania: game keys, top-ups, gift cards na rental.</p>
-        </div>
-        <div>
-          <h3>Links</h3>
-          <a href="index.html">Home</a>
-          <a href="shop.html">Shop</a>
-          <a href="efootball.html">eFootball</a>
-          <a href="contact.html">Contact</a>
-        </div>
-        <div>
-          <h3>Contact</h3>
-          <p>📱 +255 700 000 000</p>
-          <p>📧 info@gamehub.co.tz</p>
-          <p>💬 <a href="https://wa.me/255700000000" target="_blank">WhatsApp Support</a></p>
-        </div>
-      </div>
-      <p class="copyright">© 2026 GameHub. Haki zote zimehifadhiwa.</p>
-    </footer>
-
-  </div>
-
-  <script src="app.js"></script>
-  <script src="chat.js"></script>
-
-  <script>
-    let allSquads = [];
-
-    function renderSquads(list) {
-      const grid = document.getElementById('productGrid');
-      if (!list.length) {
-        grid.innerHTML = '<p style="color:#8f8faa; grid-column:1/-1; text-align:center;">Hakuna kikosi kwa sasa — rudi baadaye au wasiliana nasi WhatsApp.</p>';
-        return;
-      }
-      grid.innerHTML = list.map(p => {
-        const cover = p.imageUrl
-          ? `<div class="game-cover" style="padding:0; overflow:hidden;"><img src="${p.imageUrl}" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML='${p.emoji || '⚽'}'"></div>`
-          : `<div class="game-cover cover-mine">${p.emoji || '⚽'}</div>`;
-        return `
-          <div class="game-card">
-            ${cover}
-            <h3>${p.name}</h3>
-            <p class="game-type">${p.type || 'eFootball Kikosi'}</p>
-            <p class="game-price">${Number(p.price).toLocaleString()} TZS</p>
-            <a href="product.html?id=${p.id}&admin=1" class="btn-buy">Nunua</a>
-          </div>`;
-      }).join('');
+  function render(){
+    if (all===null){
+      grid.innerHTML='<div class="zp-empty"><h3>Imeshindikana kupakia vikosi</h3><p>Angalia mtandao kisha jaribu tena.</p><button class="zp-btn" type="button" onclick="location.reload()">Jaribu tena</button></div>';
+      countEl.textContent=''; return;
     }
+    var term=q.trim().toLowerCase();
+    var list=all.filter(function(p){ return !term || (p.name+' '+p.type).toLowerCase().indexOf(term)>-1; });
+    if (sort==='low') list.sort(function(a,b){return a.price-b.price;});
+    else if (sort==='high') list.sort(function(a,b){return b.price-a.price;});
+    else if (sort==='az') list.sort(function(a,b){return a.name.localeCompare(b.name);});
+    else list.reverse();
+    countEl.textContent=all.length?list.length+' vikosi':'';
+    grid.innerHTML=list.length ? list.map(ZP.card).join('') :
+      '<div class="zp-empty"><h3>'+(all.length?'Hakuna kikosi kilichopatikana':'Hakuna kikosi kwa sasa')+'</h3><p>'+(all.length?'Jaribu neno lingine.':'Rudi baadaye au wasiliana nasi.')+'</p><a class="zp-btn" href="'+ZP.waLink('Habari, nahitaji kikosi cha eFootball')+'" target="_blank" rel="noopener">'+ZP.icon('chat')+'Wasiliana WhatsApp</a></div>';
+  }
+  document.getElementById('searchBox').addEventListener('input',function(e){ q=e.target.value; render(); });
+  document.getElementById('sortSel').addEventListener('change',function(e){ sort=e.target.value; render(); });
 
-    fetch('/api/products')
-      .then(r => r.json())
-      .then(data => {
-        allSquads = data.success ? data.products.filter(p => p.section === 'efootball') : [];
-        renderSquads(allSquads);
-      })
-      .catch(() => { document.getElementById('productGrid').innerHTML = '<p style="color:#ff3d71; grid-column:1/-1; text-align:center;">Hitilafu ya mtandao.</p>'; });
-
-    document.getElementById('searchBox').addEventListener('input', (e) => {
-      const term = e.target.value.toLowerCase();
-      renderSquads(allSquads.filter(p => p.name.toLowerCase().includes(term)));
-    });
-  </script>
-
-  <script src="zoneplay-shell.js"></script>
+  ZP.loadSection('efootball').then(function(list){
+    all=list;
+    var st=document.getElementById('stats');
+    if (list && list.length){ st.hidden=false; st.innerHTML='<div class="ac-stat"><b>'+list.length+'</b><span>Vikosi</span></div>'; }
+    render();
+  });
+})();
+</script>
 </body>
 </html>

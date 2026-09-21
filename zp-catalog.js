@@ -22,7 +22,7 @@
   ZP.KINDS = [
     {key:'all',label:'Zote'},{key:'key',label:'Game Keys'},{key:'topup',label:'Top-Up'},{key:'gift',label:'Gift Cards'},{key:'account',label:'Steam Accounts'}
   ];
-  var KIND_TAG = {topup:'TOP-UP', gift:'GIFT CARD', account:'ACCOUNT'};
+  var KIND_TAG = {topup:'TOP-UP', gift:'GIFT CARD', account:'ACCOUNT', squad:'KIKOSI'};
 
   /* Seeded products (used when the API is empty or unreachable) */
   var D = function(id,name,type,price,emoji,kind){ return {id:id,name:name,type:type,price:price,emoji:emoji,kind:kind,platform:(kind==='key'||kind==='account')?'pc':''}; };
@@ -58,6 +58,17 @@
     return {id:p.id, name:p.name||'Bidhaa', type:p.type||'Bidhaa', price:Number(p.price)||0, emoji:p.emoji||'🎮', imageUrl:p.imageUrl||'',
       trailerUrl:p.trailerUrl||'', desc:p.desc||'', kind:detectKind(p), platform:detectPlatform(p), admin:true};
   }
+
+  /* Products of one admin section (e.g. 'efootball' squads). Resolves to null when the request fails. */
+  ZP.loadSection = function(section){
+    return fetch('/api/products').then(function(r){ return r.json(); }).then(function(d){
+      var list=(d&&d.success&&Array.isArray(d.products)?d.products:[]).filter(function(p){ return section==='*' || p.section===section; }).map(function(p){
+        var n=norm(p); if(section==='efootball'){ n.kind='squad'; n.platform=''; if(!p.emoji) n.emoji='⚽'; } return n;
+      });
+      ZP._extra=(ZP._extra||[]).concat(list);
+      return list;
+    }).catch(function(){ return null; });
+  };
 
   /* Load products: admin products first, seeded ones after (no duplicates). Never throws. */
   var pending;
@@ -98,6 +109,30 @@
     hasScore: function(m){ return m.homeScore!=null && m.homeScore!=='' && m.awayScore!=null && m.awayScore!==''; }
   };
 
+  /* Rental packages (same values as rental.html) */
+  ZP.RENTAL = [
+    {min:20,  price:300,  label:'Dakika 20'},
+    {min:50,  price:500,  label:'Dakika 50'},
+    {min:120, price:1000, label:'Masaa 2', popular:true}
+  ];
+
+  /* Custom rental price: the cheaper per minute the longer the time (same rule as before, rounded to 100 TZS) */
+  ZP.rentalPrice = function(minutes){
+    minutes = parseInt(minutes, 10);
+    if (!minutes || minutes < 1) return 0;
+    var rate = minutes <= 20 ? 15 : minutes <= 50 ? 10 : 8;
+    return Math.round(minutes * rate / 100) * 100;
+  };
+  ZP.rentalLabel = function(minutes){
+    if (minutes < 60) return 'Dakika ' + minutes;
+    var h = Math.floor(minutes / 60), m = minutes % 60;
+    return m ? h + ' Masaa ' + m + ' Dakika' : 'Masaa ' + h;
+  };
+
+  /* Site contact details (single place to change them) */
+  ZP.CONTACT = { phone:'0786 095 758', wa:'255786095758', email:'lifeisgametz@gmail.com' };
+  ZP.waLink = function(text){ return 'https://wa.me/'+ZP.CONTACT.wa+(text?'?text='+encodeURIComponent(text):''); };
+
   ZP.money = function(n){ return Number(n||0).toLocaleString('en-US'); };
   ZP.href = function(p){ return 'product.html?id='+encodeURIComponent(p.id)+(p.admin?'&admin=1':''); };
   ZP.platformOf = function(key){ return ZP.PLATFORMS.filter(function(x){return x.key===key;})[0]; };
@@ -119,7 +154,7 @@
   /* Wishlist hearts (same storage as product.html / wishlist.html) */
   document.addEventListener('click', function(e){
     var b = e.target.closest && e.target.closest('.zp-fav'); if(!b) return;
-    var id=b.dataset.fav, list=(ZP.products||[]), p=list.filter(function(x){return String(x.id)===String(id);})[0]; if(!p) return;
+    var id=b.dataset.fav, list=(ZP.products||[]).concat(ZP._extra||[]), p=list.filter(function(x){return String(x.id)===String(id);})[0]; if(!p) return;
     var w=wish();
     if (w[id]) delete w[id]; else w[id]={id:p.id,name:p.name,emoji:p.emoji,imageUrl:p.imageUrl||'',price:p.price,admin:!!p.admin};
     try{ localStorage.setItem('gamehubWishlist', JSON.stringify(w)); }catch(err){}

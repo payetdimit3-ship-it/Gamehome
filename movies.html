@@ -1,36 +1,141 @@
-<!DOCTYPE html><html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Movies — GameHub</title><link rel="stylesheet" href="style.css"><style>
-.page-shell{max-width:1200px;margin:0 auto;padding:24px 20px 50px}.page-hero{background:linear-gradient(135deg,#120b2d,#241052 55%,#11152b);border:1px solid #35206b;border-radius:22px;padding:34px 28px;margin-bottom:22px}.page-hero h1{font-size:clamp(26px,5vw,42px);margin-bottom:8px}.page-hero p{color:#b9b7cf;max-width:850px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}.card{background:#121323;border:1px solid #292844;border-radius:16px;padding:18px}.card:hover{border-color:#7b2ff7}.btn{display:inline-block;background:#7b2ff7;color:#fff;border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer}.btn.alt{background:#17203a;border:1px solid #3c4b78}.input{width:100%;background:#080914;color:#fff;border:1px solid #302d4a;border-radius:10px;padding:12px;margin:6px 0 12px;outline:none}.muted{color:#9b9ab2}.player{width:100%;aspect-ratio:16/9;background:#05050b;border-radius:14px;border:1px solid #302d4a;overflow:hidden}.player video,.player iframe{width:100%;height:100%;border:0;display:block}.badge{display:inline-block;font-size:11px;padding:4px 9px;border-radius:99px;background:#2a1a4e;color:#cdaaff}.ai-box{background:#0d0d1d;border:1px solid #35206b;border-radius:16px;padding:18px;margin-top:20px}.messages{min-height:150px;max-height:330px;overflow:auto;display:flex;flex-direction:column;gap:8px;margin:10px 0}.msg{padding:9px 12px;border-radius:12px;max-width:88%;white-space:pre-wrap}.user{align-self:flex-end;background:#7b2ff7}.bot{align-self:flex-start;background:#18182b;color:#e8e8f5}@media(max-width:700px){.page-shell{padding:16px 12px 40px}.page-hero{padding:25px 18px}}
-</style>  <link rel="stylesheet" href="zoneplay.css">
-</head><body><div class="sidebar">
-<div class="logo">🎮 GAME<span>HUB</span></div>
-<div class="menu">
-<a href="index.html">🏠 <span class="label">Home</span></a>
-<a href="shop.html">🎮 <span class="label">All Games</span></a>
-<a href="categories.html">🗂️ <span class="label">Categories</span></a>
-<a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
-<a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
-<a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
-<a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
-<a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
-<a href="live.html">📺 <span class="label">Watch Live</span></a>
-<a href="livescores.html">📊 <span class="label">Live Scores</span></a>
-<a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
-<a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
-<a href="movies.html">🎬 <span class="label">Movies</span></a>
-<a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
-<a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
-<a href="mygames.html">🕹️ <span class="label">My Games</span></a>
-<a href="myorders.html">📦 <span class="label">My Orders</span></a>
-<a href="requests.html">🔍 <span class="label">Requests</span></a>
-<a href="profile.html">👤 <span class="label">Profile</span></a>
-<a href="health.html">🩺 <span class="label">Health AI</span></a>
-<a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
-<a href="contact.html">☎ <span class="label">Contact</span></a>
-</div></div><div class="main"><div class="topbar"><a href="login.html" class="btn-login" id="topLoginBtn">🔐 Login</a></div><div class="page-shell"><section class="page-hero"><h1>🎬 GameHub Movies</h1><p>Video library ya GameHub. Admin anaongeza video kupitia Admin Dashboard; wateja wanaweza kuangalia kwenye website.</p></section><div id="movies" class="grid"><div class="card">Inapakia movies...</div></div>
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Movies — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-full.css">
+</head>
+<body>
+<div class="main">
+
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="film"></div>
+    <div><h1>Movies</h1><p>Video library ya LIFEISGAMETZ — chagua movie na uangalie hapa hapa.</p></div>
+  </header>
+
+  <section id="feature" hidden></section>
+
+  <div class="zp-toolbar">
+    <label class="zp-search"><span data-ic="search"></span><input type="search" id="q" placeholder="Tafuta movie..." autocomplete="off" aria-label="Tafuta movie"></label>
+    <div class="zp-chips" id="genres" role="group" aria-label="Aina ya movie"></div>
+    <select id="sortSel" aria-label="Panga" style="height:36px;padding:0 12px;margin-left:auto">
+      <option value="new">Mpya kwanza</option>
+      <option value="az">A – Z</option>
+      <option value="year">Mwaka</option>
+    </select>
+  </div>
+  <p class="zp-count" id="count" aria-live="polite"></p>
+  <section class="mv-grid" id="grid"><div class="zp-empty"><p>Inapakia movies...</p></div></section>
+</div>
+
+<div class="mv-modal" id="modal" role="dialog" aria-modal="true" aria-label="Movie player" hidden>
+  <div class="mv-box">
+    <div class="mv-stage" id="stage"><button class="mv-close" id="closeBtn" type="button" aria-label="Funga"></button></div>
+    <div class="mv-info" id="mInfo"></div>
+  </div>
+</div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
 <script>
-async function loadMovies(){const r=await fetch('/api/movies');const d=await r.json();const a=d.movies||[];document.getElementById('movies').innerHTML=a.length?a.map(m=>'<article class="card"><div class="player">'+media(m.videoUrl)+'</div><h2 style="margin-top:10px">'+esc(m.title)+'</h2><p class="muted">'+esc(m.genre||'Movie')+' • '+esc(m.year||'')+'</p><p>'+esc(m.description||'')+'</p></article>').join(''):'<div class="card"><h3>🎬 Hakuna movie bado</h3><p class="muted">Admin hajapakia movie bado.</p></div>'}
-function esc(x){const d=document.createElement('div');d.textContent=x||'';return d.innerHTML}
-function media(u){u=String(u||'').trim();try{const x=new URL(u);let id='';if(x.hostname.includes('youtu.be'))id=x.pathname.slice(1);else if(x.searchParams.get('v'))id=x.searchParams.get('v');else{const z=x.pathname.match(/\/(?:embed|shorts|live)\/([^/?]+)/);if(z)id=z[1];}if(id)return '<iframe src="https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay=0&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="width:100%;height:100%;border:0"></iframe>';}catch(e){}return '<video controls playsinline preload="metadata" src="'+esc(u)+'"></video>'}
-loadMovies().catch(()=>{});
-</script></div></div><script src="app.js"></script><script src="chat.js"></script>  <script src="zoneplay-shell.js"></script>
-</body></html>
+(function(){
+  var esc=ZP.esc;
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  document.getElementById('closeBtn').innerHTML=ZP.icon('x');
+
+  var all=[], genre='', q='', sort='new', opener=null;
+  var params=new URLSearchParams(location.search);
+
+  function safeUrl(u){ u=String(u||'').trim(); return /^(https?:\/\/|\/)/i.test(u) ? u : ''; }
+  function idNum(m){ var n=parseInt(String(m.id||'').replace(/\D/g,''),10); return isNaN(n)?0:n; }
+  function ytId(u){
+    try{ var x=new URL(u), id='';
+      if (x.hostname.indexOf('youtu.be')>-1) id=x.pathname.slice(1);
+      else if (x.searchParams.get('v')) id=x.searchParams.get('v');
+      else { var z=x.pathname.match(/\/(?:embed|shorts|live)\/([^/?]+)/); if(z) id=z[1]; }
+      return /youtube\.com|youtu\.be/.test(x.hostname) ? id : '';
+    }catch(e){ return ''; }
+  }
+  function poster(m,big){
+    var p=safeUrl(m.poster);
+    return '<span class="'+(big?'mv-big':'mv-emoji')+'" aria-hidden="true">🎬</span>'+(p?'<img src="'+esc(p)+'" alt="" loading="lazy" onerror="this.remove()">':'');
+  }
+
+  function renderFeature(){
+    var box=document.getElementById('feature'), m=all.slice().sort(function(a,b){ return idNum(b)-idNum(a); })[0];
+    if (!m){ box.hidden=true; return; }
+    box.hidden=false;
+    box.innerHTML='<div class="mv-feature" style="--art:'+ZP.art(m.title)+'">'+poster(m,true)+
+      '<div class="mv-feature-body"><span class="zp-slide-tag">MPYA</span><h2>'+esc(m.title)+'</h2>'+(m.description?'<p>'+esc(m.description)+'</p>':'')+
+      '<button class="zp-btn" type="button" data-play="'+esc(m.id)+'">'+ZP.icon('play')+'Tazama Sasa</button></div></div>';
+  }
+
+  function renderGenres(){
+    var gs=[]; all.forEach(function(m){ var g=(m.genre||'Movie').trim(); if(gs.indexOf(g)<0) gs.push(g); });
+    var el=document.getElementById('genres'); el.hidden=gs.length<2;
+    if (genre && gs.indexOf(genre)<0) genre='';
+    el.innerHTML='<button type="button" class="zp-chip'+(genre?'':' active')+'" data-g="">Zote <i>'+all.length+'</i></button>'+gs.map(function(g){
+      var n=all.filter(function(m){ return (m.genre||'Movie').trim()===g; }).length;
+      return '<button type="button" class="zp-chip'+(g===genre?' active':'')+'" data-g="'+esc(g)+'">'+esc(g)+' <i>'+n+'</i></button>';
+    }).join('');
+  }
+
+  function render(){
+    renderGenres();
+    var term=q.trim().toLowerCase();
+    var list=all.filter(function(m){ return (!genre||(m.genre||'Movie').trim()===genre) && (!term||(m.title+' '+(m.genre||'')+' '+(m.description||'')).toLowerCase().indexOf(term)>-1); });
+    if (sort==='az') list.sort(function(a,b){ return String(a.title).localeCompare(String(b.title)); });
+    else if (sort==='year') list.sort(function(a,b){ return (parseInt(b.year,10)||0)-(parseInt(a.year,10)||0); });
+    else list.sort(function(a,b){ return idNum(b)-idNum(a); });
+    document.getElementById('count').textContent=all.length?list.length+' movies':'';
+    document.getElementById('grid').innerHTML=list.length?list.map(function(m){
+      return '<button type="button" class="mv-card" data-play="'+esc(m.id)+'" aria-label="Cheza '+esc(m.title)+'"><span class="mv-poster" style="--art:'+ZP.art(m.title)+'">'+poster(m,false)+
+        '<span class="mv-tag">'+esc(m.genre||'Movie')+'</span><span class="mv-play">'+ZP.icon('play')+'</span></span>'+
+        '<span><h3>'+esc(m.title)+'</h3><small>'+esc(m.year||'')+'</small></span></button>';
+    }).join(''):'<div class="zp-empty"><h3>'+(all.length?'Hakuna movie iliyopatikana':'Hakuna movie bado')+'</h3><p>'+(all.length?'Jaribu neno lingine au ondoa kichujio.':'Admin akipakia movie zitaonekana hapa.')+'</p></div>';
+  }
+
+  /* ---------- Player modal ---------- */
+  var modal=document.getElementById('modal'), stage=document.getElementById('stage');
+  function open(id,from){
+    var m=all.filter(function(x){ return String(x.id)===String(id); })[0]; if(!m) return;
+    opener=from||null;
+    var url=safeUrl(m.videoUrl), yt=ytId(url), media;
+    if (!url) media='<div class="cr-none">'+ZP.icon('film')+'<h3>Video haipatikani</h3><p>Movie hii bado haina video.</p></div>';
+    else if (yt) media='<iframe src="https://www.youtube.com/embed/'+encodeURIComponent(yt)+'?autoplay=1&rel=0&playsinline=1" title="'+esc(m.title)+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+    else media='<video controls playsinline autoplay src="'+esc(url)+'"></video>';
+    stage.querySelectorAll('iframe,video,.cr-none').forEach(function(n){ n.remove(); });
+    stage.insertAdjacentHTML('afterbegin',media);
+    document.getElementById('mInfo').innerHTML='<div class="cr-meta"><span class="ls-pill">'+esc((m.genre||'Movie').toUpperCase())+'</span>'+(m.year?'<span class="ls-pill">'+esc(m.year)+'</span>':'')+'</div><h2>'+esc(m.title)+'</h2>'+(m.description?'<p>'+esc(m.description)+'</p>':'');
+    modal.hidden=false; modal.classList.add('on'); document.body.style.overflow='hidden'; document.body.classList.add('mv-open');
+    var u=new URL(location.href); u.searchParams.set('id',m.id); history.replaceState(null,'',u.pathname+u.search);
+    document.getElementById('closeBtn').focus();
+  }
+  function close(){
+    stage.querySelectorAll('iframe,video,.cr-none').forEach(function(n){ n.remove(); });   // stops playback
+    modal.classList.remove('on'); modal.hidden=true; document.body.style.overflow=''; document.body.classList.remove('mv-open');
+    var u=new URL(location.href); u.searchParams.delete('id'); history.replaceState(null,'',u.pathname+u.search);
+    if (opener && opener.focus) opener.focus();
+  }
+  document.addEventListener('click',function(e){
+    var p=e.target.closest('[data-play]'); if(p){ open(p.dataset.play,p); return; }
+    if (e.target===modal || e.target.closest('#closeBtn')) { close(); return; }
+    var g=e.target.closest('#genres [data-g]'); if(g){ genre=g.dataset.g; render(); }
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && modal.classList.contains('on')) close(); });
+  document.getElementById('q').addEventListener('input',function(e){ q=e.target.value; render(); });
+  document.getElementById('sortSel').addEventListener('change',function(e){ sort=e.target.value; render(); });
+
+  fetch('/api/movies').then(function(r){ return r.json(); }).then(function(d){
+    all=(d&&d.movies)||[]; renderFeature(); render();
+    var id=params.get('id'); if(id) open(id,null);
+  }).catch(function(){
+    document.getElementById('grid').innerHTML='<div class="zp-empty"><h3>Imeshindikana kupakia movies</h3><p>Angalia mtandao kisha jaribu tena.</p><button class="zp-btn" type="button" onclick="location.reload()">Jaribu tena</button></div>';
+  });
+})();
+</script>
+</body>
+</html>

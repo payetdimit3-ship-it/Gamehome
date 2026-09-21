@@ -2,205 +2,122 @@
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rental — GameHub</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .sidebar { width:240px; height:100vh; background:#080912; border-right:1px solid #24243a; position:fixed; left:0; top:0; padding:25px 18px; overflow-y:auto; z-index:200; }
-    .sidebar .logo { font-size:22px; font-weight:bold; margin-bottom:35px; text-align:center; }
-    .sidebar .logo span { color:#9b35ff; }
-    .menu a { display:flex; align-items:center; gap:10px; color:#ddd; padding:14px 15px; margin:4px 0; border-radius:10px; transition:0.3s; font-size:14px; text-decoration:none; }
-    .menu a:hover { background:#7525d8; color:#fff; }
-    .menu a.active { background:linear-gradient(90deg,#7725d8,#9c35ff); color:#fff; }
-    .cart-badge { background:#ff3eb5; color:#fff; font-size:11px; font-weight:bold; border-radius:20px; padding:1px 7px; margin-left:auto; }
-    .main { margin-left:240px; }
-    .topbar { display:flex; justify-content:flex-end; align-items:center; padding:18px 30px 0; }
-    @media(max-width:700px) {
-      .sidebar { width:64px; padding:15px 6px; }
-      .sidebar .logo { font-size:0; }
-      .sidebar .logo::before { content:"🎮"; font-size:24px; }
-      .menu a span.label { display:none; }
-      .main { margin-left:64px; }
-      .topbar { padding:12px 15px 0; }
-    }
-  </style>
-  <link rel="stylesheet" href="zoneplay.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Kodisha Muda — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-full.css">
 </head>
 <body>
+<div class="main">
 
-  <div class="sidebar">
-  <div class="logo">🎮 GAME<span>HUB</span></div>
-  <div class="menu">
-    <a href="index.html">🏠 <span class="label">Home</span></a>
-    <a href="shop.html">🎮 <span class="label">All Games</span></a>
-    <a href="categories.html">🗂️ <span class="label">Categories</span></a>
-    <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
-    <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
-    <a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
-    <a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
-    <a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
-<a href="live.html">📺 <span class="label">Watch Live</span></a>
-    <a href="livescores.html">📊 <span class="label">Live Scores</span></a>
-    <a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
-    <a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
-<a href="movies.html">🎬 <span class="label">Movies</span></a>
-    <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
-    <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
-    <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
-    <a href="myorders.html">📦 <span class="label">My Orders</span></a>
-    <a href="requests.html">🔍 <span class="label">Requests</span></a>
-    <a href="profile.html">👤 <span class="label">Profile</span></a>
-    <a href="health.html">🩺 <span class="label">Health Support</span></a>
-    <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
-    <a href="contact.html">☎ <span class="label">Contact</span></a>
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="cloud"></div>
+    <div><h1>Kodisha Muda wa Kucheza</h1><p>Cheza kwenye GeForce NOW — malipo ya M-Pesa, Tigo, Airtel na Halotel ni automatic, timer inaanza mara moja.</p></div>
+    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="cloudgaming.html"><span data-ic="chevl"></span>Cloud Gaming</a></div>
+  </header>
+
+  <div class="rn-layout">
+    <div>
+      <div class="zp-sec" style="margin-top:0"><h2>Packages Zilizopo</h2></div>
+      <section class="rn-pkgs" id="pkgs"></section>
+
+      <section class="rn-custom" id="custom">
+        <h3>Muda Zaidi?</h3>
+        <p>Weka dakika unazotaka — bei inakokotolewa papo hapo, na kadiri muda unavyoongezeka bei kwa dakika inashuka.</p>
+        <div class="rn-row">
+          <div class="rn-field">
+            <label for="customMinutes">Dakika</label>
+            <div class="rn-input"><input type="number" id="customMinutes" min="1" max="1440" inputmode="numeric" placeholder="mfano: 180"><span>dakika</span></div>
+          </div>
+          <div class="rn-field">
+            <label>Bei Yako</label>
+            <div class="rn-price"><strong id="customPrice">— TZS</strong><small id="customPer"></small></div>
+          </div>
+        </div>
+        <div class="rn-quick" id="quick" aria-label="Chagua haraka"></div>
+        <p class="rn-hint" id="hint" aria-live="polite"></p>
+        <button class="zp-btn" id="addCustomBtn" type="button" disabled></button>
+      </section>
+
+      <div class="rn-note"><span data-ic="gamepad"></span><span>Baada ya malipo, timer inaanza automatic — angalia <a href="mygames.html">My Games</a>.</span></div>
+    </div>
+
+    <aside class="rn-cart" aria-label="Kikapu chako">
+      <header><span data-ic="cart" style="font-size:20px"></span><h3>Kikapu Chako</h3></header>
+      <div class="rn-items" id="items"></div>
+      <div class="rn-total"><span>JUMLA</span><strong id="total">0 TZS</strong></div>
+      <a class="zp-btn" href="cart.html" id="payBtn"></a>
+    </aside>
   </div>
 </div>
+<div class="rn-toast" id="toast" role="status" aria-live="polite"></div>
 
-  <div class="main">
-    <div class="topbar">
-      <a href="login.html" class="btn-login">🔐 Login</a>
-    </div>
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script>
+(function(){
+  var esc=ZP.esc, MAX=1440;
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  document.getElementById('addCustomBtn').innerHTML=ZP.icon('cart')+'Ongeza Kwenye Kikapu';
+  document.getElementById('payBtn').innerHTML=ZP.icon('wallet')+'Enda Kulipa';
 
+  /* Packages */
+  document.getElementById('pkgs').innerHTML=ZP.RENTAL.map(function(p){
+    var per=(p.price/p.min).toFixed(1).replace(/\.0$/,'');
+    return '<article class="cg-pkg'+(p.popular?' popular':'')+'">'+(p.popular?'<span class="cg-tag">POPULAR</span>':'')+
+      '<h3>'+esc(p.label)+'</h3><div class="p">'+ZP.money(p.price)+'<small>TZS</small></div><div class="per">≈ '+per+' TZS kwa dakika</div>'+
+      '<button class="zp-btn" type="button" data-min="'+p.min+'" data-price="'+p.price+'">'+ZP.icon('cart')+'Ongeza</button></article>';
+  }).join('');
+  document.getElementById('quick').innerHTML=[30,60,90,180,300].map(function(m){ return '<button type="button" class="zp-chip" data-q="'+m+'">'+esc(ZP.rentalLabel(m))+'</button>'; }).join('');
 
-  <section class="shop-banner">
-    <h1>⏱️ Kodisha Muda wa Kucheza</h1>
-    <p>Cheza kwenye GeForce NOW — malipo ya M-Pesa/Tigo/Airtel automatic, timer inaanza mara moja</p>
-  </section>
+  /* Cart (same storage shape as before, so cart.html and checkout keep working) */
+  function readCart(){ try{ return JSON.parse(localStorage.getItem('gamehubCart')||'{}')||{}; }catch(e){ return {}; } }
+  function toast(msg){ var t=document.getElementById('toast'); t.innerHTML=ZP.icon('check')+esc(msg); t.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(function(){ t.classList.remove('on'); },2200); }
+  function addItem(id,name,price,minutes){
+    var cart=readCart();
+    if (cart[id]) cart[id].qty=(Number(cart[id].qty)||1)+1;
+    else cart[id]={id:id,name:name,emoji:'⏱️',price:price.toLocaleString()+' TZS',num:price,qty:1,rentalMinutes:minutes};
+    try{ localStorage.setItem('gamehubCart',JSON.stringify(cart)); }catch(e){ toast('Imeshindikana kuhifadhi kikapu.'); return; }
+    if (typeof window.updateCartBadge==='function') window.updateCartBadge();
+    ZP.updateCart(); renderCart(); toast('Imeongezwa kwenye kikapu');
+  }
+  function renderCart(){
+    var items=Object.values(readCart()), total=0, box=document.getElementById('items');
+    box.innerHTML=items.length ? items.map(function(i){
+      var qty=Number(i.qty)||1, num=Number(i.num)||0; total+=num*qty;
+      return '<div class="rn-item"><span><b>'+esc(i.emoji||'🎮')+' '+esc(i.name)+'</b><small>× '+qty+'</small></span><span>'+(num*qty).toLocaleString()+' TZS</span></div>';
+    }).join('') : '<div class="rn-empty">Kikapu chako ni tupu.</div>';
+    document.getElementById('total').textContent=total.toLocaleString()+' TZS';
+  }
 
-  <section class="rental-page">
-    <h2>📦 Packages Zilizopo</h2>
-    <div class="rental-grid">
-      <div class="rental-card">
-        <h3>Dakika 20</h3>
-        <p class="rental-price">300 TZS</p>
-        <button class="btn-rent" onclick="addRental(20, 300)">➕ Ongeza</button>
-      </div>
-      <div class="rental-card">
-        <h3>Dakika 50</h3>
-        <p class="rental-price">500 TZS</p>
-        <button class="btn-rent" onclick="addRental(50, 500)">➕ Ongeza</button>
-      </div>
-      <div class="rental-card popular">
-        <h3>Masaa 2</h3>
-        <p class="rental-price">1,000 TZS</p>
-        <span class="tag">POPULAR</span>
-        <button class="btn-rent" onclick="addRental(120, 1000)">➕ Ongeza</button>
-      </div>
-    </div>
+  document.getElementById('pkgs').addEventListener('click',function(e){
+    var b=e.target.closest('[data-min]'); if(!b) return;
+    var m=parseInt(b.dataset.min,10), p=parseInt(b.dataset.price,10);
+    addItem('rent'+m,'Rental '+ZP.rentalLabel(m),p,m);
+  });
 
-    <div class="ai-pricing">
-      <h2>🤖 AI Pricing — Muda Zaidi?</h2>
-      <p class="section-sub">Chagua muda wowote — AI inakokotoa bei nafuu zaidi kwako</p>
+  /* Custom time */
+  var inp=document.getElementById('customMinutes'), priceEl=document.getElementById('customPrice'), perEl=document.getElementById('customPer'), hint=document.getElementById('hint'), addBtn=document.getElementById('addCustomBtn');
+  function calc(){
+    var raw=parseInt(inp.value,10), m=raw>MAX?MAX:raw;
+    if (raw>MAX){ inp.value=MAX; }
+    var price=ZP.rentalPrice(m);
+    priceEl.textContent=price?price.toLocaleString()+' TZS':'— TZS';
+    perEl.textContent=price?'≈ '+(price/m).toFixed(1).replace(/\.0$/,'')+' TZS/dk':'';
+    addBtn.disabled=!price;
+    hint.textContent = (raw>0 && !price) ? 'Muda ni mfupi sana — weka dakika zaidi.' : (raw>MAX ? 'Kiwango cha juu ni masaa 24 (dakika 1,440) kwa mara moja.' : (price?ZP.rentalLabel(m):''));
+  }
+  inp.addEventListener('input',calc);
+  document.getElementById('quick').addEventListener('click',function(e){ var b=e.target.closest('[data-q]'); if(!b) return; inp.value=b.dataset.q; calc(); });
+  addBtn.addEventListener('click',function(){
+    var m=parseInt(inp.value,10), price=ZP.rentalPrice(m); if(!price) return;
+    addItem('rentC'+m+'-'+Date.now(),'Rental '+ZP.rentalLabel(m)+' (Custom)',price,m);
+  });
 
-      <div class="custom-row">
-        <input type="number" id="customMinutes" min="1" placeholder="Dakika (mfano: 180)" oninput="calcPrice()">
-        <div class="price-box">
-          <span>Bei Yako:</span>
-          <strong id="customPrice">— TZS</strong>
-        </div>
-        <button class="btn-primary" id="addCustomBtn" onclick="addCustomRental()" disabled>➕ Ongeza Kwenye Kikapu</button>
-      </div>
-      <p class="rental-note">💡 Kadiri muda unavyoongezeka, bei kwa dakika inashuka. Siri ya wateja wa akili!</p>
-    </div>
-
-    <div class="cart-mini">
-      <h2>🛒 Kikapu Chako</h2>
-      <div id="miniCartItems"></div>
-      <p class="checkout-total">JUMLA: <span id="miniCartTotal">0 TZS</span></p>
-      <a href="cart.html" class="btn-primary" style="display:block; text-align:center;">💳 Enda Kulipa</a>
-    </div>
-
-    <p class="rental-note">🎮 Baada ya malipo, timer inaanza automatic — angalia <a href="mygames.html" style="color:#00e5ff;">My Games</a>.</p>
-  </section>
-
-  <footer class="footer">
-    <div class="footer-grid">
-      <div>
-        <h3>🎮 GameHub</h3>
-        <p>Duka la gaming la Tanzania: game keys, top-ups, gift cards na rental.</p>
-      </div>
-      <div>
-        <h3>Links</h3>
-        <a href="index.html">Home</a>
-        <a href="shop.html">Shop</a>
-        <a href="rental.html">Rental</a>
-        <a href="mygames.html">My Games</a>
-      </div>
-      <div>
-        <h3>Contact</h3>
-        <p>📱 +255 700 000 000</p>
-        <p>📧 info@gamehub.co.tz</p>
-        <p>💬 <a href="https://wa.me/255700000000" target="_blank">WhatsApp Support</a></p>
-      </div>
-    </div>
-    <p class="copyright">© 2026 GameHub. Haki zote zimehifadhiwa.</p>
-  </footer>
-
-  </div>
-
-  <script src="app.js"></script>
-  <script src="chat.js"></script>
-
-  <script>
-    function aiPrice(minutes) {
-      minutes = parseInt(minutes);
-      if (!minutes || minutes < 1) return 0;
-      const rate = minutes <= 20 ? 15 : minutes <= 50 ? 10 : 8;
-      const raw = minutes * rate;
-      return Math.round(raw / 100) * 100;
-    }
-
-    function calcPrice() {
-      const minutes = document.getElementById('customMinutes').value;
-      const price = aiPrice(minutes);
-      document.getElementById('customPrice').textContent = price ? price.toLocaleString() + ' TZS' : '— TZS';
-      document.getElementById('addCustomBtn').disabled = !price;
-    }
-
-    function addRental(minutes, price) {
-      addItem('rent' + minutes, 'Rental ' + label(minutes), '⏱️', price, minutes);
-    }
-
-    function addCustomRental() {
-      const minutes = parseInt(document.getElementById('customMinutes').value);
-      const price = aiPrice(minutes);
-      if (!price) return;
-      addItem('rentC' + minutes + '-' + Date.now(), 'Rental ' + label(minutes) + ' (Custom)', '⏱️', price, minutes);
-    }
-
-    function label(minutes) {
-      if (minutes < 60) return 'Dakika ' + minutes;
-      const h = Math.floor(minutes / 60);
-      const m = minutes % 60;
-      return (m ? h + ' Masaa ' + m + ' Dakika' : 'Masaa ' + h);
-    }
-
-    function addItem(id, name, emoji, num, rentalMinutes) {
-      let cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
-      if (cart[id]) { cart[id].qty += 1; }
-      else { cart[id] = { id, name, emoji, price: num.toLocaleString() + ' TZS', num, qty: 1, rentalMinutes }; }
-      localStorage.setItem('gamehubCart', JSON.stringify(cart));
-      renderMiniCart();
-      window.updateCartBadge();
-      alert('✅ Imeongezwa kwenye kikapu!');
-    }
-
-    function renderMiniCart() {
-      const cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
-      const items = Object.values(cart);
-      const box = document.getElementById('miniCartItems');
-      let total = 0;
-      box.innerHTML = '';
-      items.forEach(i => {
-        total += i.num * i.qty;
-        box.innerHTML += `<div class="checkout-item"><span>${i.emoji} ${i.name} × ${i.qty}</span><span>${(i.num*i.qty).toLocaleString()} TZS</span></div>`;
-      });
-      document.getElementById('miniCartTotal').textContent = total.toLocaleString() + ' TZS';
-    }
-
-    renderMiniCart();
-  </script>
-
-  <script src="zoneplay-shell.js"></script>
+  renderCart();
+  window.addEventListener('storage',renderCart);
+})();
+</script>
 </body>
 </html>

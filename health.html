@@ -1,70 +1,116 @@
 <!DOCTYPE html>
-<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Health Support — GameHub</title><link rel="stylesheet" href="style.css">
-<style>
-.page-shell{max-width:1180px;margin:0 auto;padding:24px 20px 50px}
-.page-hero{background:linear-gradient(135deg,#120b2d,#241052 55%,#11152b);border:1px solid #35206b;border-radius:22px;padding:34px 28px;margin-bottom:22px;box-shadow:0 15px 45px rgba(60,20,130,.18)}
-.page-hero h1{font-size:clamp(26px,5vw,42px);margin-bottom:8px}.page-hero p{color:#b9b7cf;max-width:760px}
-.section-title{font-size:22px;margin:24px 0 12px}.muted{color:#9b9ab2}
-.feature-grid,.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-.pro-card{background:#121323;border:1px solid #292844;border-radius:16px;padding:20px;transition:.25s}
-.pro-card:hover{transform:translateY(-3px);border-color:#7b2ff7;box-shadow:0 10px 30px rgba(123,47,247,.15)}
-.pro-card .icon{font-size:34px;margin-bottom:10px}.pro-card h3{margin-bottom:7px}.pro-card p{color:#aaa9c1;font-size:14px}
-.btn-purple{display:inline-block;background:linear-gradient(90deg,#7024e8,#9b35ff);color:#fff;padding:11px 18px;border-radius:10px;border:0;font-weight:700;cursor:pointer;margin-top:12px}
-.btn-outline{display:inline-block;border:1px solid #6330ad;color:#ddd;padding:10px 16px;border-radius:10px;margin:12px 8px 0 0}
-.form-card{max-width:650px;background:#111222;border:1px solid #292844;border-radius:18px;padding:20px}
-.form-card input,.form-card select,.form-card textarea{width:100%;background:#080914;color:#fff;border:1px solid #302d4a;border-radius:10px;padding:12px;margin:6px 0 12px;outline:none}
-.form-card textarea{min-height:100px;resize:vertical}.status{padding:12px;border-radius:10px;background:#090a16;color:#bbb;margin-top:12px;white-space:pre-wrap}
-.score-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px;background:#121323;border:1px solid #292844;border-radius:13px;margin:9px 0}
-.badge{font-size:11px;padding:4px 8px;border-radius:99px;background:#2a1a4e;color:#cdaaff}
-@media(max-width:700px){.page-shell{padding:16px 12px 40px}.page-hero{padding:25px 18px}.score-row{font-size:13px}}
-</style>  <link rel="stylesheet" href="zoneplay.css">
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Health Assistant — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-full.css">
 </head>
-<body><div class="sidebar">
-  <div class="logo">🎮 GAME<span>HUB</span></div>
-  <div class="menu">
-    <a href="index.html">🏠 <span class="label">Home</span></a>
-    <a href="shop.html">🎮 <span class="label">All Games</span></a>
-    <a href="categories.html">🗂️ <span class="label">Categories</span></a>
-    <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
-    <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
-    <a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
-    <a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
-    <a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
-<a href="live.html">📺 <span class="label">Watch Live</span></a>
-    <a href="livescores.html">📊 <span class="label">Live Scores</span></a>
-    <a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
-    <a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
-<a href="movies.html">🎬 <span class="label">Movies</span></a>
-    <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
-    <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
-    <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
-    <a href="myorders.html">📦 <span class="label">My Orders</span></a>
-    <a href="requests.html">🔍 <span class="label">Requests</span></a>
-    <a href="profile.html">👤 <span class="label">Profile</span></a>
-    <a href="health.html">🩺 <span class="label">Health Support</span></a>
-    <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
-    <a href="contact.html">☎ <span class="label">Contact</span></a>
+<body>
+<div class="main">
+
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="pulse"></div>
+    <div><h1>Health &amp; Community Support</h1><p>Sehemu ya msaada wa taarifa za afya kwa jamii. AI hutoa taarifa za jumla na kuelekeza huduma inapohitajika.</p></div>
+  </header>
+
+  <div class="hl-warn" role="note"><span data-ic="alert"></span><div><b>Muhimu:</b> AI hii si daktari na haitoi diagnosis ya uhakika. Kwa dalili kali au dharura, tafuta huduma ya afya/dharura mara moja.</div></div>
+
+  <div class="cm-layout">
+    <section class="cm-card" aria-label="Msaidizi wa afya">
+      <div class="cm-head"><span class="hl-avatar" data-ic="pulse"></span><h2>Msaidizi wa Afya</h2><button class="zp-btn ghost sm" id="resetBtn" type="button">Anza upya</button></div>
+      <div class="hl-msgs" id="msgs" role="log" aria-live="polite" aria-label="Mazungumzo"></div>
+      <div class="cm-compose">
+        <textarea id="healthInput" maxlength="1000" placeholder="Uliza kuhusu taarifa za jumla za afya, lishe, kinga au jinsi ya kutafuta huduma…" aria-label="Swali lako"></textarea>
+        <div class="cm-actions">
+          <button class="zp-btn ghost sm cm-mic" id="voiceBtn" type="button" aria-pressed="false" hidden></button>
+          <button class="zp-btn ghost sm" id="speakBtn" type="button">🔊 Sikiliza AI</button>
+          <button class="zp-btn ghost sm" id="stopBtn" type="button">⏹️ Stop</button>
+          <button class="zp-btn" id="sendBtn" type="button" style="margin-left:auto"></button>
+        </div>
+        <p class="cm-status" id="status" role="status" aria-live="polite"></p>
+        <p class="hl-note">Usiandike taarifa binafsi nyeti kama jina kamili au namba ya simu.</p>
+      </div>
+    </section>
+
+    <aside class="cm-side">
+      <div class="cm-box"><h3>Mada za Kuuliza</h3>
+        <div class="hl-prompts" id="prompts"></div>
+      </div>
+      <div class="cm-box"><h3>Huduma Zaidi</h3>
+        <div class="cm-links">
+          <a href="professionals.html"><span data-ic="pulse"></span>Health Network</a>
+          <a href="recovery.html"><span data-ic="life"></span>Recovery Support</a>
+          <a href="community-fund.html"><span data-ic="heart"></span>Community Fund</a>
+          <a href="community.html"><span data-ic="users"></span>Community Help</a>
+        </div>
+      </div>
+    </aside>
   </div>
 </div>
-<div class="main"><div class="topbar"><a href="login.html" class="btn-login" id="topLoginBtn">🔐 Login</a></div>
-<div class="page-shell"><section class="page-hero"><h1>🩺 Health & Community Support</h1><p>Sehemu ya msaada wa taarifa za afya kwa jamii. AI hutoa taarifa za jumla na kuelekeza huduma inapohitajika.</p></section><div class="pro-card" style="margin-bottom:18px"><b>⚠️ Muhimu:</b> AI hii si daktari na haitoi diagnosis ya uhakika. Kwa dalili kali au dharura, tafuta huduma ya afya/dharura mara moja.</div>
-<div class="form-card" style="max-width:900px"><h2>🤖 Msaidizi wa Afya</h2><p class="muted">Uliza kuhusu taarifa za jumla za afya, lishe, kinga au jinsi ya kutafuta huduma.</p>
-<div id="healthMsgs" class="status" style="min-height:220px"></div>
-<textarea id="healthInput" placeholder="Andika swali lako hapa..."></textarea>
-<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-purple" onclick="askHealth()">Tuma Swali</button><button class="btn-purple" onclick="startHealthVoice()">🎙️ Ongea</button><button class="btn-outline" onclick="speakLastHealth()">🔊 Sikiliza AI</button><button class="btn-outline" onclick="speechSynthesis.cancel()">⏹️ Stop</button></div>
-<p class="muted" id="voiceStatus" style="margin-top:8px"></p></div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
 <script>
-let lastHealthReply=''; const hm=[]; const out=document.getElementById('healthMsgs');
-function show(t,w){out.textContent+=(w==='u'?'\n\nWewe: ':'\n\nAI: ')+t;out.scrollTop=out.scrollHeight;}
-show('Habari! Naweza kutoa taarifa za jumla za afya. Nitaelekeza huduma ya kitaalamu pale inapohitajika.','a');
-async function askHealth(){const input=document.getElementById('healthInput'),q=input.value.trim();if(!q)return;input.value='';show(q,'u');hm.push({role:'user',text:q});
-try{const r=await fetch('/api/ai/health',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:hm.slice(-8)})});const d=await r.json();const ans=d.reply||d.error||'Samahani, jaribu tena.';show(ans,'a'); lastHealthReply=ans; hm.push({role:'assistant',text:ans});}catch(e){show('Hitilafu ya mtandao. Jaribu tena.','a');}}
-function speakLastHealth(){if(lastHealthReply&&'speechSynthesis'in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(lastHealthReply));}}
-function startHealthVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('Browser yako haiungi mkono voice input. Tumia Chrome.');return}const r=new SR();r.lang='sw-TZ';r.interimResults=false;document.getElementById('voiceStatus').textContent='🎙️ Sikiliza...';r.onresult=e=>{document.getElementById('healthInput').value=e.results[0][0].transcript;document.getElementById('voiceStatus').textContent='Nimetambua sauti. Inatuma...';askHealth()};r.onerror=()=>document.getElementById('voiceStatus').textContent='Sauti haikupatikana. Jaribu tena.';r.onend=()=>{if(document.getElementById('voiceStatus').textContent.includes('Sikiliza'))document.getElementById('voiceStatus').textContent=''};r.start()}
-</script></div>
-<footer class="footer"><div class="footer-grid"><div><h3>🎮 GameHub</h3><p>Duka la gaming la Tanzania — games, digital products, community na huduma za gaming.</p></div>
-<div><h3>Quick Links</h3><a href="shop.html">Shop</a><a href="livescores.html">Live Scores</a><a href="tournaments.html">Tournaments</a><a href="courses.html">Courses</a></div>
-<div><h3>Contact</h3><p>📱 +255 700 000 000</p><p>📧 info@gamehub.co.tz</p><p>💬 WhatsApp Support</p></div></div><p class="copyright">© 2026 GameHub. Haki zote zimehifadhiwa.</p></footer>
-</div><script src="app.js"></script><script src="chat.js"></script>  <script src="zoneplay-shell.js"></script>
-</body></html>
+(function(){
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  var out=document.getElementById('msgs'), input=document.getElementById('healthInput'), sendBtn=document.getElementById('sendBtn'), statusEl=document.getElementById('status');
+  sendBtn.innerHTML=ZP.icon('arrow')+'Tuma Swali';
+
+  var hist=[], lastReply='', busy=false;
+  var GREETING='Habari! Naweza kutoa taarifa za jumla za afya. Nitaelekeza huduma ya kitaalamu pale inapohitajika.';
+
+  function say(m,ok){ statusEl.textContent=m||''; statusEl.className='cm-status'+(ok?' ok':''); }
+  function add(text,who,cls){
+    var row=document.createElement('div'); row.className='hl-row '+who;
+    if (who==='bot'){ var a=document.createElement('span'); a.className='hl-avatar'; a.innerHTML=ZP.icon('pulse'); row.appendChild(a); }
+    var b=document.createElement('div'); b.className='cr-msg '+who+(cls?' '+cls:''); b.textContent=text; row.appendChild(b);
+    out.appendChild(row); out.scrollTop=out.scrollHeight; return b;
+  }
+  function reset(){ out.innerHTML=''; hist=[]; lastReply=''; if('speechSynthesis' in window) speechSynthesis.cancel(); add(GREETING,'bot'); say(''); }
+  reset();
+
+  function ask(){
+    var q=input.value.trim(); if(!q||busy) return;
+    busy=true; sendBtn.disabled=true; say('');
+    input.value=''; add(q,'user'); hist.push({role:'user',text:q});
+    var wait=add('Ninafikiria…','bot','wait');
+    fetch('/api/ai/health',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:hist.slice(-8)})})
+      .then(function(r){ return r.json(); })
+      .then(function(d){ var ans=d.reply||d.error||'Samahani, jaribu tena.'; wait.className='cr-msg bot'; wait.textContent=ans; lastReply=ans; hist.push({role:'assistant',text:ans}); })
+      .catch(function(){ wait.className='cr-msg bot'; wait.textContent='Hitilafu ya mtandao. Jaribu tena.'; })
+      .then(function(){ busy=false; sendBtn.disabled=false; out.scrollTop=out.scrollHeight; input.focus({preventScroll:true}); });
+  }
+  sendBtn.addEventListener('click',ask);
+  input.addEventListener('keydown',function(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); ask(); } });
+  document.getElementById('resetBtn').addEventListener('click',reset);
+  document.getElementById('speakBtn').addEventListener('click',function(){ if(lastReply&&'speechSynthesis' in window){ speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(lastReply)); } });
+  document.getElementById('stopBtn').addEventListener('click',function(){ if('speechSynthesis' in window) speechSynthesis.cancel(); });
+
+  /* suggested questions */
+  var P=[['pulse','Lishe bora kwa mtu anayekaa muda mrefu kucheza games?'],['shield','Nawezaje kujikinga na malaria?'],['search','Nitafute wapi huduma ya afya iliyo karibu nami?'],['heart','Vidokezo vya kupata usingizi mzuri?']];
+  var pr=document.getElementById('prompts');
+  pr.innerHTML=P.map(function(p,i){ return '<button type="button" data-i="'+i+'">'+ZP.icon(p[0])+'<span></span></button>'; }).join('');
+  pr.querySelectorAll('button').forEach(function(b){ b.querySelector('span').textContent=P[b.dataset.i][1]; });
+  pr.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; input.value=P[b.dataset.i][1]; input.focus(); });
+
+  /* voice input: recognised text is sent automatically, like before */
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition, mic=document.getElementById('voiceBtn');
+  if (SR){
+    mic.hidden=false; mic.innerHTML='🎙️ Ongea';
+    mic.addEventListener('click',function(){
+      if (mic.getAttribute('aria-pressed')==='true') return;
+      var r=new SR(); r.lang='sw-TZ'; r.interimResults=false;
+      r.onstart=function(){ mic.setAttribute('aria-pressed','true'); say('🎙️ Sikiliza… ongea sasa.',true); };
+      r.onresult=function(e){ input.value=e.results[0][0].transcript; say('Nimetambua sauti. Inatuma…',true); ask(); };
+      r.onerror=function(){ say('Sauti haikupatikana. Jaribu tena.'); };
+      r.onend=function(){ mic.setAttribute('aria-pressed','false'); if(statusEl.textContent.indexOf('Sikiliza')>-1) say(''); };
+      try{ r.start(); }catch(e){ say('Voice haikuweza kuanza.'); }
+    });
+  }
+})();
+</script>
+</body>
+</html>
