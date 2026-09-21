@@ -1474,3 +1474,165 @@ html[data-zp-page="recovery"] .zp-content{
   .zp-content .game-card h3{font-size:12px!important}
   .zp-content .game-price{font-size:14px!important}
 }
+
+/* ========================================================================
+   LIFEISGAMETZ — V10 FINAL REFERENCE MATCH
+   Last-mile normalization for the pages below the main catalog.
+   Every page uses the same ZonePlay dashboard language as the reference.
+   ======================================================================== */
+
+/* --- Sidebar / MORE PAGES: make the entire navigation one system --- */
+.zp-nav{scroll-behavior:smooth}
+.zp-nav-label{color:#6377a3!important}
+.zp-more{border-top:1px solid #162e61!important;margin-top:10px!important;padding-top:6px!important}
+.zp-more summary{height:32px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:0 10px!important;color:#7d90ba!important;background:#06112a;border:1px solid #132957;border-radius:8px;font-size:9px!important}
+.zp-more summary:after{content:'⌄';font-size:14px;color:#9b7cff;transition:transform .2s}
+.zp-more[open] summary:after{transform:rotate(180deg)}
+.zp-more .zp-nav-item{height:33px!important;margin:2px 0!important;padding:0 10px!important;font-size:12px!important;color:#91a2c7!important;border:1px solid transparent!important;background:transparent!important}
+.zp-more .zp-nav-item:hover{background:#0b1836!important;border-color:#183463!important;color:#fff!important}
+.zp-more .zp-nav-item.active{background:linear-gradient(90deg,#6426ee,#4720bb)!important;color:#fff!important;border-color:#754cff!important;box-shadow:0 7px 20px rgba(91,37,255,.22)!important}
+
+/* --- Universal legacy page frame --- */
+.zp-content>.main>section,
+.zp-content>main>section,
+.zp-content>.product-page,
+.zp-content>.contact-page,
+.zp-content>.page-shell,
+.zp-content>.cart-page,
+.zp-content>.checkout-page,
+.zp-content>.success-page,
+.zp-content>.requests-page,
+.zp-content>.mygames-page{
+  position:relative;
+  width:100%!important;
+  max-width:1180px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+.zp-content>.main>.hero,
+.zp-content>main>.hero,
+.zp-content>.page-shell>.page-hero,
+.zp-content>.product-page>h1:first-child,
+.zp-content>.cart-page>h1:first-child,
+.zp-content>.checkout-page>h1:first-child{
+  position:relative;
+}
+
+/* Hero language used by Opportunities, Community, Professionals, Fund, etc. */
+.zp-content .hero,
+.zp-content .page-hero,
+.zp-content .shop-banner{
+  overflow:hidden!important;
+  background:
+    radial-gradient(480px 220px at 88% 0%,rgba(124,60,255,.23),transparent 68%),
+    radial-gradient(360px 180px at 0% 100%,rgba(32,217,255,.06),transparent 70%),
+    linear-gradient(145deg,#0a1837,#061027)!important;
+  border:1px solid #1c3c79!important;
+  border-radius:14px!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.25),inset 0 0 0 1px rgba(255,255,255,.018)!important;
+}
+.zp-content .hero:after,
+.zp-content .page-hero:after,
+.zp-content .shop-banner:after{
+  content:'';position:absolute;right:-100px;top:-120px;width:280px;height:280px;border-radius:50%;border:1px solid rgba(124,60,255,.16);box-shadow:0 0 80px rgba(124,60,255,.10);pointer-events:none;
+}
+.zp-content .hero h1,.zp-content .page-hero h1,.zp-content .shop-banner h1{font-family:var(--font-d)!important;letter-spacing:.2px!important}
+.zp-content .hero .pill,.zp-content .page-hero .pill{background:#111e42!important;border:1px solid #27477f!important;color:#bba5ff!important}
+
+/* Generic cards/lists on legacy pages */
+.zp-content .section{margin-top:16px!important}
+.zp-content .section>h2,.zp-content .section>h3{font-family:var(--font-d)!important;font-size:20px!important;margin:0 0 11px!important}
+.zp-content .section.grid,.zp-content .section-grid,.zp-content .grid{gap:11px!important}
+.zp-content .section.grid .card,
+.zp-content .section-grid .card,
+.zp-content .grid .card,
+.zp-content .section.card,
+.zp-content .card{
+  background:linear-gradient(150deg,#091735,#050d22)!important;
+  border:1px solid #19386f!important;
+  border-radius:12px!important;
+  box-shadow:0 9px 28px rgba(0,0,0,.24)!important;
+}
+.zp-content .section.grid .card:hover,
+.zp-content .section-grid .card:hover,
+.zp-content .grid .card:hover{transform:translateY(-2px);border-color:#6645d9!important}
+.zp-content .list{gap:8px!important}
+.zp-content .item{background:#07142e!important;border:1px solid #19386f!important;border-radius:10px!important}
+.zp-content .ai{background:linear-gradient(145deg,#0d1838,#080f25)!important;border:1px solid #2c3f83!important;border-radius:13px!important;box-shadow:0 12px 35px rgba(0,0,0,.25)!important}
+.zp-content .btn{background:linear-gradient(90deg,#6426ee,#873cff)!important;border:1px solid #8c62ff!important;box-shadow:0 7px 18px rgba(101,38,238,.18)!important}
+.zp-content .btn.alt{background:#091630!important;border-color:#27477f!important}
+.zp-content .pill{background:#111e42!important;border:1px solid #27477f!important}
+
+/* --- Profile: reference-style account dashboard --- */
+html[data-zp-page="profile"] .zp-content .page-shell{padding:0!important}
+html[data-zp-page="profile"] .zp-content .page-hero{
+  min-height:145px!important;padding:24px 26px!important;margin-bottom:12px!important;display:flex;flex-direction:column;justify-content:center!important;
+}
+html[data-zp-page="profile"] .zp-content .page-hero h1{font-size:30px!important;margin:0 0 5px!important}
+html[data-zp-page="profile"] .zp-content #profileBox{
+  max-width:none!important;padding:0!important;background:transparent!important;border:0!important;display:grid!important;grid-template-columns:1.25fr .75fr!important;gap:12px!important;box-shadow:none!important;
+}
+html[data-zp-page="profile"] .zp-content #profileBox>h2,
+html[data-zp-page="profile"] .zp-content #profileBox>p,
+html[data-zp-page="profile"] .zp-content #profileBox>a{box-sizing:border-box}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-identity,
+html[data-zp-page="profile"] .zp-content #profileBox .profile-side-card,
+html[data-zp-page="profile"] .zp-content #profileBox .profile-actions-card{
+  background:linear-gradient(150deg,#091735,#050d22)!important;border:1px solid #19386f!important;border-radius:13px!important;box-shadow:0 10px 30px rgba(0,0,0,.24)!important;
+}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-identity{grid-row:span 2;padding:22px!important;position:relative;overflow:hidden}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-avatar{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#20d9ff,#7035ff);font:800 30px var(--font-d);color:#fff;box-shadow:0 0 28px rgba(124,60,255,.28);margin-bottom:14px}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-name{font:800 25px var(--font-d);color:#fff;margin:0 0 5px}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-meta{color:#8195bc!important;margin:4px 0!important}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-side-card{padding:17px!important}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-side-card h3{font-size:14px!important;margin:0 0 12px!important;color:#b9c8e9!important}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-stat{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #142b58;color:#8ea1c7;font-size:12px}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-stat:last-child{border-bottom:0}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-stat strong{color:#fff}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-actions-card{padding:17px!important;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-actions-card a{margin:0!important;text-align:center!important;display:flex!important;align-items:center;justify-content:center;min-height:40px;background:#0a1733!important;border:1px solid #23457f!important;border-radius:9px!important;color:#dce5fb!important;text-decoration:none!important;font-size:12px!important;font-weight:700}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-actions-card a.primary{background:linear-gradient(90deg,#6426ee,#873cff)!important;border-color:#8c62ff!important;color:#fff!important}
+html[data-zp-page="profile"] .zp-content #profileBox>.auth-empty{grid-column:1/-1;background:linear-gradient(150deg,#091735,#050d22)!important;border:1px solid #19386f!important;border-radius:13px!important;padding:30px!important;text-align:center}
+
+/* --- Lower-page families: orders, requests, recommendations, contact, FAQ, legal --- */
+.zp-content .requests-page,
+.zp-content .contact-page,
+.zp-content .product-page{padding-top:0!important}
+.zp-content .requests-page .request-form,
+.zp-content .contact-page .contact-card,
+.zp-content .product-page .faq-item,
+.zp-content .product-page .terms-card,
+.zp-content .product-page .refund-card{
+  background:linear-gradient(150deg,#091735,#050d22)!important;border:1px solid #19386f!important;border-radius:12px!important;box-shadow:0 9px 28px rgba(0,0,0,.22)!important;
+}
+.zp-content .requests-page .request-row{background:#07142e!important;border-color:#19386f!important;border-radius:10px!important}
+.zp-content .contact-page .contact-card{padding:18px!important}
+.zp-content .contact-page input,.zp-content .contact-page textarea,.zp-content .contact-page select,
+.zp-content .requests-page input,.zp-content .requests-page textarea,.zp-content .requests-page select,
+.zp-content .form-card input,.zp-content .form-card textarea,.zp-content .form-card select{
+  background:#050d20!important;border:1px solid #1d3c74!important;color:#eef3ff!important;border-radius:9px!important;
+}
+.zp-content .cart-empty{background:linear-gradient(150deg,#091735,#050d22)!important;border:1px solid #19386f!important;border-radius:13px!important;box-shadow:0 10px 30px rgba(0,0,0,.22)!important}
+
+/* --- All page footers share the reference footer card --- */
+.zp-content .footer{background:linear-gradient(150deg,#06122b,#040b1b)!important;border-top:1px solid #173365!important;border-radius:13px 13px 0 0!important;padding:20px!important}
+.zp-content .footer-grid{gap:12px!important}
+.zp-content .footer-grid>div{background:#07142e;border:1px solid #142d5b;border-radius:10px;padding:14px!important}
+.zp-content .footer-grid h3{font-size:13px!important;color:#dce5ff!important}
+.zp-content .footer-grid a{color:#8196bf!important}
+
+/* --- Ensure every page's content sits above the mobile navigation --- */
+@media(max-width:820px){
+  .zp-content{padding-bottom:105px!important}
+  .zp-content .hero,.zp-content .page-hero,.zp-content .shop-banner{border-radius:12px!important}
+  .zp-content .section.grid,.zp-content .section-grid,.zp-content .grid{grid-template-columns:1fr 1fr!important}
+  html[data-zp-page="profile"] .zp-content #profileBox{grid-template-columns:1fr!important}
+  html[data-zp-page="profile"] .zp-content #profileBox .profile-identity{grid-row:auto}
+  html[data-zp-page="profile"] .zp-content #profileBox .profile-actions-card{grid-template-columns:1fr 1fr!important}
+  .zp-content .footer{margin-bottom:8px!important}
+}
+@media(max-width:480px){
+  .zp-content .section.grid,.zp-content .section-grid,.zp-content .grid{grid-template-columns:1fr!important}
+  html[data-zp-page="profile"] .zp-content .page-hero{padding:19px!important}
+  html[data-zp-page="profile"] .zp-content .page-hero h1{font-size:25px!important}
+}

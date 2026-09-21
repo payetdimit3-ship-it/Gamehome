@@ -48,13 +48,17 @@
   </div>
 </div>
 <div class="main"><div class="topbar"><a href="login.html" class="btn-login" id="topLoginBtn">🔐 Login</a></div>
-<div class="page-shell"><section class="page-hero"><h1>👤 My Profile</h1><p>Simamia akaunti yako na huduma zako za GameHub.</p></section><div id="profileBox" class="form-card"><h2>⏳ Inapakia...</h2></div>
+<div class="page-shell"><section class="page-hero"><h1>👤 My Profile</h1><p>Simamia akaunti yako na huduma zako za GameHub.</p></section><div id="profileBox" class="profile-dashboard"><div class="auth-empty"><h2>⏳ Inapakia...</h2><p class="muted">Tunaandaa dashboard yako.</p></div></div>
 <script>
 fetch('/api/auth/me').then(r=>r.json()).then(d=>{
  const u=d.user||d; const box=document.getElementById('profileBox');
- if(!u||!u.email){box.innerHTML='<h2>🔐 Ingia kwanza</h2><p class="muted">Ingia ili kuona profile yako.</p><a class="btn-purple" href="login.html">Login</a>';return;}
- box.innerHTML=`<h2>👋 ${u.name||'Mchezaji'}</h2><p>Email: ${u.email}</p><p>Role: ${u.isAdmin?'Admin':'Customer'}</p><a class="btn-outline" href="myorders.html">📦 My Orders</a><a class="btn-outline" href="mygames.html">🕹️ My Games</a>`;
-}).catch(()=>document.getElementById('profileBox').innerHTML='<h2>🔐 Ingia kwanza</h2><a class="btn-purple" href="login.html">Login</a>');
+ if(!u||!u.email){box.innerHTML='<div class="auth-empty"><div class="profile-avatar" style="margin:0 auto 14px">?</div><h2>🔐 Ingia kwanza</h2><p class="muted">Ingia ili kuona profile, oda, library na huduma zako.</p><a class="btn-purple" href="login.html">Ingia kwenye akaunti</a></div>';return;}
+ const name=(u.name||'Mchezaji'); const initial=name.charAt(0).toUpperCase();
+ box.innerHTML=`
+ <section class="profile-identity"><div class="profile-avatar">${initial}</div><h2 class="profile-name">${name}</h2><p class="profile-meta">${u.email}</p><p class="profile-meta">${u.isAdmin?'🛡️ Administrator':'🎮 LIFEISGAMETZ Member'}</p><div style="height:1px;background:#173365;margin:18px 0"></div><p class="profile-meta">Akaunti yako iko tayari kwa shopping, library, orders na huduma za LIFEISGAMETZ.</p></section>
+ <section class="profile-side-card"><h3>ACCOUNT OVERVIEW</h3><div class="profile-stat"><span>Status</span><strong>Active</strong></div><div class="profile-stat"><span>Role</span><strong>${u.isAdmin?'Admin':'Customer'}</strong></div><div class="profile-stat"><span>Wallet</span><strong>TSh ${Number(u.wallet||0).toLocaleString()}</strong></div><div class="profile-stat"><span>Member</span><strong>LIFEISGAMETZ</strong></div></section>
+ <section class="profile-actions-card"><a class="primary" href="myorders.html">📦 My Orders</a><a href="mygames.html">🎮 My Library</a><a href="wishlist.html">❤️ Wishlist</a><a href="cart.html">🛒 Cart</a><a href="profile.html#settings">⚙️ Settings</a><a href="contact.html">🎧 Support</a></section>`;
+}).catch(()=>document.getElementById('profileBox').innerHTML='<div class="auth-empty"><h2>🔐 Ingia kwanza</h2><p class="muted">Session haijapatikana. Ingia ili kuendelea.</p><a class="btn-purple" href="login.html">Ingia</a></div>');
 </script></div>
 <footer class="footer"><div class="footer-grid"><div><h3>🎮 LIFEISGAMETZ</h3><p>Duka la gaming la Tanzania — games, digital products, community na huduma za gaming.</p></div>
 <div><h3>Quick Links</h3><a href="shop.html">Shop</a><a href="livescores.html">Live Scores</a><a href="tournaments.html">Tournaments</a><a href="courses.html">Courses</a></div>
