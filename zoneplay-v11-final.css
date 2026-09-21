@@ -1,0 +1,86 @@
+/* LIFEISGAMETZ — ZonePlay V11 final visual normalization layer.
+   Purpose: make every page read as one product, not a collection of legacy templates. */
+:root{--zp-max:1560px;--zp-card:#091735;--zp-card2:#060f24;--zp-stroke:#19386f;--zp-stroke2:#28498d;--zp-purple:#6a2cff;--zp-purple2:#873cff;--zp-cyan:#20d9ff}
+
+/* One content rhythm across the complete site */
+.zp-content{padding:18px 22px 52px!important}
+.zp-content>*{box-sizing:border-box}
+.zp-content .page-shell,.zp-content .product-page,.zp-content .cart-page,.zp-content .checkout-page,.zp-content .success-page,.zp-content .contact-page,.zp-content .requests-page,.zp-content .mygames-page{max-width:var(--zp-max)!important;width:100%!important;margin-left:auto!important;margin-right:auto!important}
+
+/* One visual language for every page header family */
+.zp-content .zp-page-head,.zp-content .page-hero,.zp-content .shop-banner,.zp-content .hero,.zp-content .ac-hero,.zp-content .dash-welcome{position:relative!important;overflow:hidden!important;border:1px solid var(--zp-stroke2)!important;border-radius:14px!important;background:radial-gradient(520px 220px at 88% 0%,rgba(124,60,255,.23),transparent 68%),radial-gradient(360px 180px at 0 100%,rgba(32,217,255,.06),transparent 70%),linear-gradient(145deg,#0d0a31,#0a1739 58%,#071029)!important;box-shadow:0 14px 40px rgba(0,0,0,.25),inset 0 0 0 1px rgba(255,255,255,.018)!important}
+.zp-content .page-hero,.zp-content .shop-banner,.zp-content .hero,.zp-content .ac-hero{min-height:106px!important;padding:20px 24px!important;margin:0 0 16px!important}
+.zp-content .ac-hero{display:block!important}
+.zp-content .ac-hero h1,.zp-content .page-hero h1,.zp-content .shop-banner h1,.zp-content .hero h1{font:800 30px/1.05 var(--font-d)!important;margin:0 0 6px!important;color:#fff!important}
+.zp-content .ac-hero p,.zp-content .page-hero p,.zp-content .shop-banner p,.zp-content .hero p{font-size:13px!important;color:#a9b8da!important;margin:0!important;max-width:760px!important;line-height:1.55!important}
+.zp-content .ac-hero:after,.zp-content .page-hero:after,.zp-content .shop-banner:after,.zp-content .hero:after{content:'';position:absolute;right:-100px;top:-130px;width:330px;height:330px;border-radius:50%;border:1px solid rgba(124,60,255,.16);box-shadow:0 0 90px rgba(124,60,255,.10);pointer-events:none}
+
+/* Cards, panels and list blocks share one surface */
+.zp-content .card,.zp-content .panel,.zp-content .section.card,.zp-content .section.grid .card,.zp-content .grid .card,.zp-content .game-card,.zp-content .product-card,.zp-content .course-card,.zp-content .movie-card,.zp-content .pro-card,.zp-content .request-card,.zp-content .request,.zp-content .form-card,.zp-content .profile-card,.zp-content .order-card,.zp-content .contact-card,.zp-content .terms-card,.zp-content .refund-card,.zp-content .info-card,.zp-content .faq-item,.zp-content .payment-form,.zp-content .cart-summary,.zp-content .checkout-cart,.zp-content .success-box,.zp-content .ai,.zp-content .item{background:linear-gradient(150deg,var(--zp-card),var(--zp-card2))!important;border:1px solid var(--zp-stroke)!important;border-radius:12px!important;box-shadow:0 9px 28px rgba(0,0,0,.23)!important}
+.zp-content .card:hover,.zp-content .game-card:hover,.zp-content .product-card:hover,.zp-content .course-card:hover,.zp-content .movie-card:hover,.zp-content .pro-card:hover,.zp-content .request:hover{border-color:#7650ff!important}
+
+/* Dense catalog layout like the reference */
+.zp-content .shop-grid,.zp-content .games,.zp-content .card-grid,.zp-content .products-grid,.zp-content .game-grid,.zp-content .course-grid,.zp-content .movie-grid,.zp-content .ac-grid{gap:12px!important}
+.zp-content .shop-grid,.zp-content .games,.zp-content .card-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.zp-content .game-card,.zp-content .product-card,.zp-content .course-card,.zp-content .movie-card,.zp-content .pro-card{overflow:hidden!important}
+.zp-content .game-card img,.zp-content .product-card img,.zp-content .course-card img,.zp-content .movie-card img{display:block;max-width:100%;object-fit:cover}
+.zp-content .game-cover{border-radius:8px!important;border:1px solid #142c5d!important}
+.zp-content .game-card h3,.zp-content .product-card h3,.zp-content .course-card h3,.zp-content .movie-card h3{font-size:13px!important;line-height:1.25!important}
+.zp-content .game-price,.zp-content .product-price,.zp-content .price{color:var(--zp-cyan)!important;font-family:var(--font-d)!important;font-weight:800!important}
+
+/* Buttons and form controls */
+.zp-content button,.zp-content .btn,.zp-content .btn-primary,.zp-content .btn-purple,.zp-content .btn-buy,.zp-content .buy-btn,.zp-content .primary{border-radius:9px!important}
+.zp-content .btn,.zp-content .btn-primary,.zp-content .btn-purple,.zp-content .btn-buy,.zp-content .buy-btn,.zp-content .primary{background:linear-gradient(90deg,var(--zp-purple),var(--zp-purple2))!important;color:#fff!important;border:1px solid #8c62ff!important;box-shadow:0 7px 18px rgba(101,38,238,.18)!important}
+.zp-content input,.zp-content select,.zp-content textarea{background:#07142c!important;color:#eef3ff!important;border:1px solid #1d3570!important;border-radius:9px!important;min-height:40px}
+.zp-content textarea{min-height:100px}
+.zp-content input:focus,.zp-content select:focus,.zp-content textarea:focus{border-color:#8c62ff!important;box-shadow:0 0 0 3px rgba(124,60,255,.16)!important;outline:0!important}
+
+/* Profile: full dashboard treatment */
+html[data-zp-page="profile"] .zp-content .page-shell{max-width:var(--zp-max)!important}
+html[data-zp-page="profile"] .zp-content .page-hero{min-height:112px!important}
+html[data-zp-page="profile"] .zp-content #profileBox{width:100%!important;max-width:none!important;display:grid!important;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr)!important;gap:12px!important}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-identity{grid-row:span 2!important;min-height:280px!important;padding:24px!important}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-actions-card{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+html[data-zp-page="profile"] .zp-content #profileBox .profile-actions-card a{min-height:44px!important}
+
+/* Auth pages: same shell, premium ZonePlay center card */
+html[data-zp-page="login"] .zp-content,html[data-zp-page="register"] .zp-content,html[data-zp-page="recovery"] .zp-content{min-height:calc(100vh - var(--head))!important}
+.zp-content .auth-page{min-height:calc(100vh - var(--head) - 20px)!important;display:grid!important;place-items:center!important;padding:24px 0 40px!important}
+.zp-content .auth-box{width:min(500px,100%)!important;padding:30px!important;background:linear-gradient(155deg,#0b1838,#050d22)!important;border:1px solid #28498d!important;border-radius:16px!important;box-shadow:0 24px 70px rgba(0,0,0,.46),0 0 55px rgba(92,42,255,.09)!important}
+.zp-content .auth-box:before{content:'LIFEISGAMETZ';display:block;text-align:center;color:#fff;font:800 22px var(--font-d);letter-spacing:1px;margin-bottom:18px}
+.zp-content .auth-box h1{font:800 30px/1.05 var(--font-d)!important;text-align:center!important;margin:0 0 6px!important}
+.zp-content .auth-box .payment-form{padding:20px!important;background:#07132d!important}
+.zp-content .auth-box .payment-form button{width:100%!important;min-height:44px!important}
+
+/* Admin keeps the same shell but loses its separate old sidebar/topbar */
+.zp-content .admin-page{width:100%!important;max-width:var(--zp-max)!important;margin:0 auto!important}
+.zp-content .admin-page .admin-sidebar{display:none!important}
+.zp-content .admin-page .admin-content{width:100%!important;margin:0!important}
+.zp-content .admin-page .admin-topbar{background:transparent!important;border:0!important}
+
+/* Tables and long information pages */
+.zp-content table{width:100%!important;border-collapse:separate!important;border-spacing:0!important;overflow:hidden!important;border:1px solid var(--zp-stroke)!important;border-radius:10px!important;background:#07142c!important}
+.zp-content th{background:#0c1b3a!important;color:#b8c7e7!important}
+.zp-content td{border-color:#132d58!important;color:#dce5fa!important}
+.zp-content .footer{max-width:var(--zp-max)!important;margin:28px auto 0!important;padding:22px 0 5px!important;background:transparent!important;border-top:1px solid #152a5c!important}
+
+/* Remove visual remnants of legacy chrome after the shell takes over. */
+.zp-content .topbar,.zp-content .navbar,.zp-content>.main>.sidebar,.zp-content .sidebar{display:none!important}
+
+@media(max-width:1100px){
+  .zp-content .shop-grid,.zp-content .games,.zp-content .card-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+@media(max-width:820px){
+  .zp-content{padding:14px 12px 78px!important}
+  .zp-content .page-hero,.zp-content .shop-banner,.zp-content .hero,.zp-content .ac-hero{padding:17px 18px!important;min-height:92px!important}
+  .zp-content .ac-hero h1,.zp-content .page-hero h1,.zp-content .shop-banner h1,.zp-content .hero h1{font-size:25px!important}
+  .zp-content .shop-grid,.zp-content .games,.zp-content .card-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  html[data-zp-page="profile"] .zp-content #profileBox{grid-template-columns:1fr!important}
+  html[data-zp-page="profile"] .zp-content #profileBox .profile-identity{grid-row:auto!important}
+  .zp-content .auth-box{padding:22px!important}
+}
+@media(max-width:480px){
+  .zp-content .shop-grid,.zp-content .games,.zp-content .card-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+  .zp-content .game-card,.zp-content .product-card,.zp-content .course-card,.zp-content .movie-card{border-radius:10px!important}
+  .zp-content .game-card h3,.zp-content .product-card h3{font-size:12px!important}
+}
