@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="sw">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GameHub — Duka la Gaming Tanzania</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
@@ -195,22 +194,168 @@
     .search { width:100%; }
   }
 </style>
-<link href="zoneplay.css" rel="stylesheet"/>
-<script src="zoneplay-shell.js"></script>
+  <link rel="stylesheet" href="zoneplay.css">
+  <script src="zoneplay-shell.js"></script>
 </head>
-<body><div class="main"><div class="topbar"><input class="search" id="searchBox" placeholder="Tafuta game..."/><a href="login.html" id="topLoginBtn">Login</a></div>
-<div class="zp-home">
-<div class="zp-home-grid">
-<section class="zp-home-hero"><section class="pro-hero-stage" id="heroTrailerStage"><div class="hero-stage-media" id="heroStageMedia"><div class="hero-stage-empty"><span>🎬</span><strong>Loading featured trailer…</strong></div></div><div class="hero-stage-shade"></div><div class="hero-stage-badge">● AUTO PLAY • FEATURED</div><button class="hero-stage-nav hero-stage-prev" id="heroStagePrev">‹</button><button class="hero-stage-nav hero-stage-next" id="heroStageNext">›</button><div class="hero-stage-controls" id="heroStageDots"></div><div class="hero-stage-progress"><i id="heroStageProgress"></i></div></section></section>
-<div class="zp-home-side"><article class="zp-mini-banner"><small>PlayStation</small><h3>PS5 Games</h3><a href="shop.html?category=PS5">Explore Now →</a><span class="zp-mini-icon">🎮</span></article><article class="zp-mini-banner"><small>Nintendo Switch</small><h3>Switch Games</h3><a href="shop.html?category=Nintendo%20Switch">Explore Now →</a><span class="zp-mini-icon">◈</span></article><article class="zp-mini-banner"><small>PC Gaming</small><h3>High Performance</h3><a href="shop.html?category=PC">Explore Now →</a><span class="zp-mini-icon">🖥</span></article></div>
-<aside class="zp-lifestyle"><div class="zp-life-content"><div><small>WELCOME TO LIFEISGAMETZ</small><h2>GAMING<br/><span>IS NOT JUST A GAME</span><br/>IT'S A LIFESTYLE</h2></div><div class="zp-life-icons"><a href="shop.html"><span>🎮</span>Games</a><a href="movies.html"><span>▣</span>Movies</a><a href="live.html"><span>▶</span>Live</a><a href="courses.html"><span>🎓</span>Courses</a><a href="chat.html"><span>✦</span>AI</a><a href="health.html"><span>♥</span>Health</a><a href="community.html"><span>◉</span>Community</a><a href="marketplace.html"><span>•••</span>More</a></div></div></aside>
+<body>
+
+  <!-- ============ SIDEBAR ============ -->
+  <div class="sidebar">
+  <div class="logo">🎮 LIFEIS<span>GAME</span><small style="color:#67e8f9;font-size:10px;letter-spacing:1px;margin-left:3px">TZ</small></div>
+  <div class="menu">
+    <a href="index.html">🏠 <span class="label">Home</span></a>
+    <a href="shop.html">🎮 <span class="label">All Games</span></a>
+    <a href="categories.html">🗂️ <span class="label">Categories</span></a>
+    <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
+    <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
+    <a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
+    <a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
+    <a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
+<a href="live.html">📺 <span class="label">Watch Live</span></a>
+    <a href="livescores.html">📊 <span class="label">Live Scores</span></a>
+    <a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
+    <a href="academy.html">🎓 <span class="label">Academy</span></a>
+    <a href="courses.html">📚 <span class="label">Courses + AI</span></a>
+    <a href="opportunities.html">💼 <span class="label">Youth Opportunities</span></a>
+<a href="movies.html">🎬 <span class="label">Movies</span></a>
+    <a href="marketplace.html">🏪 <span class="label">Creator Marketplace</span></a>
+    <a href="community.html">🤝 <span class="label">Community Help</span></a>
+    <a href="recovery.html">❤️ <span class="label">Recovery Support</span></a>
+    <a href="professionals.html">👨‍⚕️ <span class="label">Health Network</span></a>
+    <a href="community-fund.html">🏥 <span class="label">Community Fund</span></a>
+    <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
+    <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
+    <a href="myorders.html">📦 <span class="label">My Orders</span></a>
+    <a href="requests.html">🔍 <span class="label">Requests</span></a>
+    <a href="profile.html">👤 <span class="label">Profile</span></a>
+    <a href="health.html">🩺 <span class="label">Health Support</span></a>
+    <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
+    <a href="chat.html">💬 <span class="label">Public Chat</span></a>
+    <a href="contact.html">☎ <span class="label">Contact</span></a>
+  </div>
 </div>
-<section class="zp-trending"><div class="zp-heading"><h2>🔥 Trending Games</h2><a href="shop.html">Explore All →</a></div><div class="zp-trending-grid" id="featuredGames"><div class="zp-trend-card"><div class="zp-trend-img">🎮</div><div class="zp-trend-body"><h3>Loading games...</h3></div></div></div></section>
-<div class="zp-lower"><section class="zp-trending"><div class="zp-heading"><h2>🎮 Browse By Categories</h2><a href="categories.html">Explore All →</a></div><div class="zp-category-grid"><a class="zp-cat" href="categories.html?category=Action"><span>⚔️ Action &amp; Adventure</span></a><a class="zp-cat" href="categories.html?category=Racing"><span>🏎️ Racing</span></a><a class="zp-cat" href="categories.html?category=Sports"><span>⚽ Sports</span></a><a class="zp-cat" href="categories.html?category=RPG"><span>🧙 RPG</span></a><a class="zp-cat" href="categories.html?category=Strategy"><span>♟ Strategy</span></a><a class="zp-cat" href="categories.html?category=Shooting"><span>🎯 Shooting</span></a></div></section><div class="zp-right-stack"><article class="zp-offer"><small>⚡ SPECIAL OFFER</small><h3>Marvel's Spider-Man 2</h3><b>TSh 52,999</b> <del>TSh 70,000</del><a class="zp-chip" href="shop.html" style="float:right">View Deal →</a></article><article class="zp-library"><div class="zp-heading"><h2 style="font-size:15px">🎮 My Games</h2><a href="mygames.html">Explore All →</a></div><div class="zp-library-items"><div class="zp-library-item">GTA V<br/><small>Played: 24.5 hrs</small></div><div class="zp-library-item">Paladins<br/><small>Played: 18.2 hrs</small></div><div class="zp-library-item">Team Fortress 2<br/><small>Played: 12.7 hrs</small></div></div></article></div></div>
-<div class="zp-live-row"><section class="zp-live"><div class="zp-heading"><h2>⚽ Live Football</h2><a href="live.html">View All Matches →</a></div><div class="zp-match"><span>🔵 Man City</span><strong>2 - 1<br/><small>72:34</small></strong><span>Arsenal 🔴</span></div></section><section class="zp-courses"><div class="zp-heading"><h2>🎓 Popular Courses</h2><a href="courses.html">Explore All →</a></div><div class="zp-course-mini"><div class="zp-course-thumb">💻</div><div><h4>Web Development</h4><p>HTML, CSS, JavaScript • ⭐ 8.8</p></div></div></section></div>
-<div class="zp-home-extra"><article class="zp-extra"><h3>☁ Cloud Gaming</h3><p>Cheza PC games bila ku-download.</p><a href="cloudgaming.html">Open Cloud Gaming →</a></article><article class="zp-extra"><h3>⚽ eFootball &amp; Top Up</h3><p>Coins, vikosi na huduma za eFootball.</p><a href="efootball.html">Open eFootball →</a></article><article class="zp-extra"><h3>💼 Youth Opportunities</h3><p>Tasks, creators, tournaments na digital work.</p><a href="opportunities.html">View Opportunities →</a></article><article class="zp-extra"><h3>🤖 AI Assistant</h3><p>Msaada wa Kiswahili kwa gaming na platform.</p><button class="zp-chip" id="openAiBtn">Zungumza na AI →</button></article></div>
-<section id="dynamicBanners" style="display:none;margin-top:14px"><div id="bannerGrid"></div></section><div id="featuredTrailers" style="display:none"></div>
-</div></div><script src="app.js"></script><script src="chat.js"></script><script>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+
+    <div class="topbar">
+      <input type="text" class="search" id="searchBox" placeholder="🔍 Tafuta game...">
+      <a href="login.html" class="login-btn" id="topLoginBtn">👤 Login / Sign Up</a>
+    </div>
+
+    <!-- HERO TRAILER STAGE — content comes from Admin Dashboard -->
+    <section class="pro-hero-stage" id="heroTrailerStage">
+      <div class="hero-stage-media" id="heroStageMedia">
+        <div class="hero-stage-empty"><span>🎬</span><strong>Loading featured trailer…</strong></div>
+      </div>
+      <div class="hero-stage-shade"></div>
+      <div class="hero-stage-badge">● AUTO PLAY • FEATURED</div><button class="hero-stage-nav hero-stage-prev" id="heroStagePrev" aria-label="Previous trailer">‹</button><button class="hero-stage-nav hero-stage-next" id="heroStageNext" aria-label="Next trailer">›</button><div class="hero-stage-controls" id="heroStageDots"></div><div class="hero-stage-progress"><i id="heroStageProgress"></i></div>
+    </section>
+
+    <!-- HERO COPY — placed UNDER the trailer so the video stays clean -->
+    <section class="hero-copy-below">
+      <div>
+        <span class="welcome">LIFEISGAMETZ • GAMEHUB</span>
+        <h1>CHEZA. <span>JIFUNZE.</span> SHINDA.</h1>
+        <div class="slogan">GAMING • DIGITAL ECONOMY • COMMUNITY</div>
+        <p>Duka la gaming la Tanzania lenye games, digital products, tournaments, live football, Academy, youth opportunities na AI assistants — yote sehemu moja.</p>
+        <div class="buttons"><a href="shop.html" class="btn primary">🎮 Explore Games</a><a href="academy.html" class="btn secondary">🎓 Gaming Academy</a><a href="live.html" class="btn secondary">📺 Watch Live</a></div>
+      </div>
+      <div class="hero-copy-trust"><span>⚡ Fast Delivery</span><span>🛡️ Secure Payments</span><span>🤖 AI Support</span></div>
+    </section>
+
+    <!-- 🤖 AI/DYNAMIC BANNERS -->
+    <section id="dynamicBanners" style="display:none;margin:20px 0;">
+      <div id="bannerGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;"></div>
+    </section>
+
+    <!-- FEATURES -->
+    <div class="features">
+      <div class="feature"><div class="icon">💰</div><h3>Bei Nafuu</h3><p>Bei rahisi kwa kila mchezaji.</p></div>
+      <div class="feature"><div class="icon">⬇️</div><h3>Delivery Automatic</h3><p>Bidhaa zinafika mara moja baada ya malipo.</p></div>
+      <div class="feature"><div class="icon">🛡️</div><h3>100% Salama</h3><p>Malipo salama na yaliyolindwa.</p></div>
+      <div class="feature"><div class="icon">🎧</div><h3>Msaada 24/7</h3><p>AI na WhatsApp support wakati wowote.</p></div>
+    </div>
+
+    <!-- FEATURED GAMES -->
+    <div class="section-title">
+      <h2>🎮 Games Maarufu</h2>
+      <a href="shop.html">Angalia Zote →</a>
+    </div>
+    <div class="games" id="featuredGames">
+      <p style="color:#8f8faa;">Inapakia...</p>
+    </div>
+
+    <!-- GEFORCE RENTAL PROMO -->
+    <div class="rental-promo">
+      <div>
+        <h2>⏱️ Kodisha Muda — GeForce NOW</h2>
+        <p>Cheza games za PC bila kudownload — kupitia GeForce NOW. Chagua muda, lipa, timer inaanza mara moja.</p>
+        <div class="rental-mini-grid">
+          <div class="rental-mini">Dakika 20<strong>300 TZS</strong></div>
+          <div class="rental-mini">Dakika 50<strong>500 TZS</strong></div>
+          <div class="rental-mini">Masaa 2<strong>1,000 TZS</strong></div>
+        </div>
+      </div>
+      <a href="rental.html" class="btn primary">Kodisha Sasa →</a>
+    </div>
+
+    <!-- 🤖 AI SHOWCASE -->
+    <div class="ai-showcase">
+      <div class="ai-showcase-glow"></div>
+      <div class="ai-showcase-content">
+        <span class="ai-badge">🤖 AI Msaidizi wa GameHub</span>
+        <h2>Uliza Chochote — Jibu Papo Hapo</h2>
+        <p>AI yetu inajua bei zote, bidhaa zote, na mfumo wa malipo — inakusaidia kununua, kuomba game, au kutatua tatizo, kwa Kiswahili, muda wowote.</p>
+        <div class="ai-examples">
+          <div class="ai-example">💬 "FIFA 25 bei gani?"</div>
+          <div class="ai-example">💬 "Naomba muda wa masaa 3 GeForce"</div>
+          <div class="ai-example">💬 "Sijapata bidhaa yangu"</div>
+        </div>
+        <button class="btn primary" id="openAiBtn">🤖 Zungumza na AI Sasa</button>
+      </div>
+    </div>
+
+    <!-- COMMUNITY + DIGITAL ECONOMY -->
+    <section class="section-title"><h2>🌍 Beyond Gaming</h2><a href="community.html">Explore Hub →</a></section>
+    <div class="features" style="grid-template-columns:repeat(4,1fr);">
+      <div class="feature"><div class="icon">🎓</div><h3>Academy</h3><p>Learn coding, design, AI, game dev na digital business.</p><a href="academy.html" style="color:#b33cff">Jifunze →</a></div>
+      <div class="feature"><div class="icon">💼</div><h3>Youth Opportunities</h3><p>Jobs, creator work, testing, tournaments na affiliate opportunities.</p><a href="opportunities.html" style="color:#b33cff">Tazama fursa →</a></div>
+      <div class="feature"><div class="icon">🏪</div><h3>Creator Marketplace</h3><p>Vijana wanaweza kuuza guides, graphics, templates na services.</p><a href="marketplace.html" style="color:#b33cff">Open marketplace →</a></div>
+      <div class="feature"><div class="icon">🤝</div><h3>Community Help</h3><p>Health education, online safety, digital literacy na youth guidance.</p><a href="community.html" style="color:#b33cff">Community →</a></div>
+    </div>
+
+    <!-- PAYMENT METHODS -->
+    <div class="payment-strip">
+      <h2>💳 Njia za Malipo</h2>
+      <div class="pay-methods">
+        <div class="pay-chip">✅ M-Pesa (Vodacom)</div>
+        <div class="pay-chip">✅ Tigo Pesa</div>
+        <div class="pay-chip">✅ Airtel Money</div>
+        <div class="pay-chip">✅ Halotel</div>
+      </div>
+      <p class="manual-pay">
+        Malipo automatic kupitia AzamPay. Kama una tatizo la malipo automatic, tuma pesa moja kwa moja:
+        <br><strong>0786 095 758 — Amina Mwinyi</strong>, kisha wasiliana WhatsApp na namba ya muamala (ref) kupata bidhaa yako.
+      </p>
+    </div>
+
+    <!-- OFFER -->
+    <div class="offer">
+      <div>
+        <h2>🔥 Games za Kudownload Zinapatikana</h2>
+        <p>Tuna games binafsi za kudownload moja kwa moja — si tu GeForce. Angalia dukani.</p>
+      </div>
+      <a href="shop.html" class="shop-now">Nunua Sasa</a>
+    </div>
+
+    <br><br>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="chat.js"></script>
+
+  <script>
     // ===== BIDHAA ZA DEFAULT (kama backup ikiwa API haijibu) =====
     const DEFAULT_GAMES = [
       { id:'fifa25', name:'FIFA 25', type:'Game Key • PC', price:'45,000 TZS', cover:'cover-a', emoji:'⚽' },
@@ -276,7 +421,8 @@
       if (chatBtn) chatBtn.click();
     });
 
-  </script><script>
+  </script>
+  <script>
     // ============ FEATURED TRAILERS FROM ADMIN ============
     (function () {
       function ytId(url) {
@@ -384,7 +530,11 @@
       }
       fetch('/api/products').then(r=>r.json()).then(d=>{renderTrailers(d.success?d.products:[]);}).catch(()=>renderTrailers([]));
     })();
-  </script><script>
+  </script>
+
+<script>
 (async()=>{try{const r=await fetch('/api/banners');const d=await r.json();const a=d.banners||[];if(!a.length)return;const wrap=document.getElementById('dynamicBanners');wrap.style.display='block';document.getElementById('bannerGrid').innerHTML=a.map(b=>`<div style="background:linear-gradient(135deg,#17102f,#0b1022);border:1px solid #5d2bb0;border-radius:16px;padding:18px"><span style="color:#a63cff;font-weight:700">📢 GAMEHUB UPDATE</span><h2 style="margin:8px 0">${escB(b.title)}</h2><p style="color:#c9c9e0">${escB(b.description)}</p><a class="btn primary" href="${escB(b.buttonUrl||'#')}">${escB(b.buttonText||'Angalia')}</a></div>`).join('')}catch(e){}})();function escB(x){const d=document.createElement('div');d.textContent=x||'';return d.innerHTML}
-</script></body>
+</script>
+
+</body>
 </html>
