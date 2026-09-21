@@ -1,204 +1,103 @@
 <!DOCTYPE html>
 <html lang="sw">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>LIFEISGAMETZ — Play • Learn • Earn</title>
-  <meta name="description" content="Duka la gaming la Tanzania: game keys, top-up, gift cards, live football, Academy na AI assistants.">
-  <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LIFEISGAMETZ — Home</title>
+<meta name="description" content="LIFEISGAMETZ gaming marketplace, live sports, courses and digital services.">
+<link rel="stylesheet" href="zoneplay-full.css">
+<link rel="stylesheet" href="zoneplay-v11-final.css">
+<link rel="stylesheet" href="zoneplay-v12-final.css">
+<style>
+/* HOME V17 — visual direction based on the supplied LIFEISGAMETZ reference */
+.home17{padding:18px 18px 34px;max-width:1600px;margin:auto}
+.h17-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(270px,.82fr);gap:14px}
+.h17-card{background:linear-gradient(145deg,#081535,#071029);border:1px solid #1b3473;border-radius:14px;box-shadow:0 12px 35px #0006,inset 0 0 0 1px #ffffff04;overflow:hidden}
+.h17-hero{min-height:310px;position:relative;display:flex;align-items:flex-end;padding:28px;background:radial-gradient(circle at 72% 35%,#4c1cff66,transparent 34%),linear-gradient(110deg,#09132f,#08133b 48%,#160a3f)}
+.h17-hero:after{content:'⚽';position:absolute;right:4%;top:5%;font-size:170px;opacity:.12;filter:drop-shadow(0 0 30px #19d8ff)}
+.h17-hero-copy{position:relative;z-index:2;max-width:68%}
+.h17-badge{display:inline-flex;padding:7px 13px;border-radius:7px;background:#6d28ff;color:#fff;font-size:12px;font-weight:800;margin-bottom:18px}
+.h17-hero h1{font:800 clamp(30px,4vw,52px)/.95 Rajdhani,system-ui;margin:0 0 12px;letter-spacing:.3px}
+.h17-hero h1 span{color:#8b5cf6}.h17-hero p{color:#b4c1df;max-width:560px;margin:0 0 20px;line-height:1.55}
+.h17-price{font:800 25px Rajdhani;color:#19d8ff}.h17-old{text-decoration:line-through;color:#7584a6;font-size:14px;margin-left:8px}.h17-discount{background:#19b85a;color:#fff;padding:5px 8px;border-radius:7px;font-size:11px;margin-left:7px}
+.h17-actions{display:flex;gap:9px;margin-top:14px}.h17-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:9px;background:linear-gradient(90deg,#6d28ff,#8b35ff);color:#fff!important;text-decoration:none;font-weight:800;font-size:13px;border:1px solid #8b5cf6}.h17-btn.ghost{background:#0a1736;border-color:#28417e}
+.h17-side{display:grid;gap:12px;grid-template-rows:1fr 1fr 1fr}
+.h17-promo{padding:18px 20px;position:relative;min-height:94px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(120deg,#081838,#102e69)}
+.h17-promo:nth-child(2){background:linear-gradient(120deg,#281052,#111b4b)}.h17-promo:nth-child(3){background:linear-gradient(120deg,#092a47,#101a4c)}
+.h17-promo strong{font:700 20px Rajdhani}.h17-promo small{color:#7fe7ff;margin-bottom:4px}.h17-promo a{color:#fff;text-decoration:none;font-size:11px;margin-top:7px}.h17-promo:after{content:'◈';position:absolute;right:22px;top:15px;font-size:50px;color:#5b3bff66}
+.h17-section{margin-top:14px}.h17-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}.h17-section-head h2{font:700 22px Rajdhani;margin:0}.h17-section-head a{font-size:12px;color:#a78bfa;text-decoration:none}
+.h17-products{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.h17-product{position:relative;min-width:0;background:#07132d;border:1px solid #17326b;border-radius:11px;overflow:hidden;transition:.18s}.h17-product:hover{transform:translateY(-2px);border-color:#6840ff;box-shadow:0 10px 25px #0007}
+.h17-art{height:145px;display:flex;align-items:flex-end;padding:10px;position:relative;background:linear-gradient(145deg,#24136c,#071a46)}
+.h17-art:after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 70% 30%,#ffffff2b,transparent 28%),linear-gradient(0deg,#02081799,transparent 65%)}
+.h17-product:nth-child(2) .h17-art{background:linear-gradient(145deg,#073f69,#2c0f67)}.h17-product:nth-child(3) .h17-art{background:linear-gradient(145deg,#3c1a08,#082a5e)}.h17-product:nth-child(4) .h17-art{background:linear-gradient(145deg,#8b175c,#151049)}.h17-product:nth-child(5) .h17-art{background:linear-gradient(145deg,#5225a6,#080d38)}.h17-product:nth-child(6) .h17-art{background:linear-gradient(145deg,#5b2b1d,#081b48)}
+.h17-art span{position:relative;z-index:2;font-size:48px;filter:drop-shadow(0 4px 10px #000)}
+.h17-product .tag{position:absolute;left:9px;top:9px;z-index:3;font-size:9px;padding:4px 6px;background:#111d45dd;border:1px solid #2b4382;border-radius:5px;color:#c7d2fe}.h17-info{padding:10px}.h17-info h3{font-size:13px;margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.h17-info small{color:#8494b7;font-size:10px}.h17-stars{color:#ffc043;font-size:11px;margin-top:6px}.h17-cost{font:800 16px Rajdhani;color:#19d8ff;margin:5px 0}.h17-add{width:100%;border:0;border-radius:7px;padding:8px;background:linear-gradient(90deg,#6124ed,#7c3aff);color:#fff;font-weight:700;cursor:pointer}
+.h17-lower{display:grid;grid-template-columns:1.5fr .85fr;gap:14px}.h17-cats{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.h17-cat{height:122px;border:1px solid #17326b;border-radius:10px;overflow:hidden;padding:10px;display:flex;flex-direction:column;justify-content:flex-end;text-decoration:none;color:#fff;background:linear-gradient(145deg,#17406d,#0b1330)}.h17-cat:nth-child(2){background:linear-gradient(145deg,#133f75,#32135c)}.h17-cat:nth-child(3){background:linear-gradient(145deg,#145a49,#12183b)}.h17-cat:nth-child(4){background:linear-gradient(145deg,#5c1a6e,#111739)}.h17-cat:nth-child(5){background:linear-gradient(145deg,#3d5722,#121735)}.h17-cat:nth-child(6){background:linear-gradient(145deg,#3d2520,#10254d)}.h17-cat b{font-size:12px}.h17-cat span{font-size:9px;color:#aab6d3;margin-top:3px}
+.h17-offer{min-height:180px;padding:18px;background:radial-gradient(circle at 80% 30%,#ff22aa55,transparent 30%),linear-gradient(120deg,#241052,#06193b)}.h17-offer h3{font:700 20px Rajdhani;margin:5px 0}.h17-offer p{color:#bdc8df;font-size:11px;max-width:250px}.h17-offer strong{color:#fff;font:800 23px Rajdhani}.h17-mini{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}.h17-mini .h17-card{padding:10px;border-radius:8px}.h17-mini b{display:block;font-size:11px}.h17-mini span{color:#8495b9;font-size:9px}
+.h17-bottom{display:grid;grid-template-columns:1.35fr 1fr;gap:14px}.h17-matches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.h17-match{padding:12px;border:1px solid #17326b;border-radius:9px;background:#07132d}.h17-match .live{color:#2be879;font-size:9px;font-weight:800}.h17-score{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:11px}.h17-score strong{font-size:20px;color:#fff}.h17-course{display:flex;gap:12px;align-items:center;padding:14px}.h17-course .thumb{width:90px;height:65px;border-radius:8px;background:linear-gradient(135deg,#1d4ed8,#6d28d9);display:grid;place-items:center;font-size:30px}.h17-course h3{font-size:14px;margin:0 0 4px}.h17-course p{font-size:10px;color:#8594b7;margin:0 0 8px}
+@media(max-width:1200px){.h17-products{grid-template-columns:repeat(4,1fr)}.h17-lower,.h17-bottom{grid-template-columns:1fr}.h17-cats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:820px){.home17{padding:10px}.h17-grid{grid-template-columns:1fr}.h17-side{grid-template-columns:1fr 1fr;grid-template-rows:auto}.h17-side .h17-promo:last-child{grid-column:1/-1}.h17-hero{min-height:290px;padding:20px}.h17-hero-copy{max-width:100%}.h17-hero:after{font-size:100px}.h17-products{display:flex;overflow-x:auto}.h17-product{min-width:170px}.h17-cats{grid-template-columns:repeat(2,1fr)}.h17-matches{grid-template-columns:1fr}.h17-mini{grid-template-columns:1fr}.h17-bottom{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-<div class="main">
-
-  <!-- HERO -->
-  <section class="zp-hero" aria-label="Matangazo makuu">
-    <div class="zp-slider" id="zpSlider" role="region" aria-roledescription="carousel" aria-label="Featured">
-      <div id="zpSlides"></div>
-      <button class="zp-arrow prev" id="zpPrev" aria-label="Iliyotangulia"></button>
-      <button class="zp-arrow next" id="zpNext" aria-label="Inayofuata"></button>
-      <div class="zp-dots" id="zpDots"></div>
-    </div>
-    <div class="zp-promos">
-      <a class="zp-promo" href="rental.html" style="--art:linear-gradient(140deg,#0e7490,#1e1b4b)">
-        <span class="zp-pi" data-ic="cloud"></span>
-        <small>GEFORCE NOW</small><h3>Kodisha Muda</h3><span>Cheza PC games bila kudownload — kuanzia 300 TZS.</span>
-      </a>
-      <a class="zp-promo" href="efootball.html" style="--art:linear-gradient(140deg,#6d28d9,#831843)">
-        <span class="zp-pi" data-ic="ball"></span>
-        <small>EFOOTBALL</small><h3>Coins &amp; Vikosi</h3><span>Top-up salama, delivery papo hapo.</span>
-      </a>
-    </div>
-  </section>
-
-  <div class="zp-trust">
-    <div><span data-ic="bolt"></span><p style="margin:0"><b>Delivery ya haraka</b><span>Bidhaa zinafika baada ya malipo</span></p></div>
-    <div><span data-ic="shield"></span><p style="margin:0"><b>100% Salama</b><span>Malipo yaliyolindwa</span></p></div>
-    <div><span data-ic="wallet"></span><p style="margin:0"><b>Bei nafuu</b><span>Kwa kila mchezaji</span></p></div>
-    <div><span data-ic="headset"></span><p style="margin:0"><b>Msaada 24/7</b><span>AI na WhatsApp</span></p></div>
-  </div>
-
-  <div id="dynamicBanners" hidden></div>
-
-  <!-- CATEGORIES -->
-  <div class="zp-sec"><h2>Chagua Platform</h2><a href="categories.html">Zote <span data-ic="chevr"></span></a></div>
-  <div class="zp-cats" id="zpCats"></div>
-
-  <!-- POPULAR -->
-  <div class="zp-sec"><h2>Games Maarufu</h2><a href="shop.html">Angalia Zote <span data-ic="chevr"></span></a></div>
-  <div class="zp-grid c5 hscroll" id="featuredGames" aria-live="polite">
-    <div class="zp-empty"><p>Inapakia...</p></div>
-  </div>
-
-  <!-- MORE WORLDS -->
-  <div class="zp-sec"><h2>Zaidi ya Gaming</h2></div>
-  <div class="zp-strips">
-    <a class="zp-strip" href="live.html" style="--art:linear-gradient(120deg,#0f3d91,#0a1240)"><span class="zp-pi">📺</span><h3>Live TV / Sports</h3><span>Mechi na matukio live, na matokeo ya papo hapo.</span></a>
-    <a class="zp-strip" href="movies.html" style="--art:linear-gradient(120deg,#7a1fa2,#1b0d4a)"><span class="zp-pi">🎬</span><h3>Movies</h3><span>Filamu na video zilizopakiwa na admin.</span></a>
-    <a class="zp-strip" href="academy.html" style="--art:linear-gradient(120deg,#0e7490,#0a1a4a)"><span class="zp-pi">🎓</span><h3>Academy</h3><span>Jifunze coding, design, AI na biashara ya kidijitali.</span></a>
-    <a class="zp-strip" href="opportunities.html" style="--art:linear-gradient(120deg,#b45309,#4a0d3a)"><span class="zp-pi">💼</span><h3>Youth Opportunities</h3><span>Kazi, creator work, testing na tournaments.</span></a>
-    <a class="zp-strip" href="marketplace.html" style="--art:linear-gradient(120deg,#166534,#0a2a4a)"><span class="zp-pi">🏪</span><h3>Creator Marketplace</h3><span>Uza guides, graphics, templates na huduma.</span></a>
-    <a class="zp-strip" href="community.html" style="--art:linear-gradient(120deg,#be185d,#1b0d4a)"><span class="zp-pi">🤝</span><h3>Community Help</h3><span>Elimu ya afya, usalama mtandaoni na ushauri kwa vijana.</span></a>
-  </div>
-
-  <!-- AI -->
-  <div class="zp-sec"><h2>Msaidizi wa AI</h2></div>
-  <section class="zp-ai" id="ai">
-    <div>
-      <span class="zp-slide-tag">AI MSAIDIZI WA GAMEHUB</span>
-      <h2>Uliza Chochote — Jibu Papo Hapo</h2>
-      <p>AI inajua bei, bidhaa na mfumo wa malipo. Inakusaidia kununua, kuomba game au kutatua tatizo — kwa Kiswahili, wakati wowote.</p>
-      <div class="zp-ai-ex" id="aiExamples">
-        <button class="zp-chip" type="button">FIFA 25 bei gani?</button>
-        <button class="zp-chip" type="button">Naomba muda wa masaa 3 GeForce</button>
-        <button class="zp-chip" type="button">Sijapata bidhaa yangu</button>
+<main class="home17">
+  <section class="h17-grid">
+    <div class="h17-card h17-hero">
+      <div class="h17-hero-copy">
+        <span class="h17-badge">Bestseller</span>
+        <h1>EA SPORTS <span>FC 26</span></h1>
+        <p>PS5 | PS4 | Nintendo Switch | PC | Android</p>
+        <div><span class="h17-price">TSh 5,000</span><span class="h17-old">TSh 7,000</span><span class="h17-discount">-29%</span></div>
+        <div class="h17-actions"><a class="h17-btn" href="product.html?id=fifa25">🛒 Buy Now</a><a class="h17-btn ghost" href="shop.html">Explore Games</a></div>
       </div>
-      <p style="margin:16px 0 0;display:flex;gap:10px;flex-wrap:wrap"><button class="zp-btn" id="openAiBtn" type="button"><span data-ic="bot"></span>Zungumza na AI</button><a class="zp-btn ghost" href="ai.html"><span data-ic="chevr"></span>Fungua AI Assistant</a></p>
     </div>
-    <div class="zp-ai-orb" data-ic="bot"></div>
+    <div class="h17-side">
+      <div class="h17-card h17-promo"><small>PlayStation</small><strong>PS5 Games</strong><a href="shop.html?cat=ps3">Explore Now →</a></div>
+      <div class="h17-card h17-promo"><small>Nintendo Switch</small><strong>Switch Games</strong><a href="shop.html?cat=switch">Explore Now →</a></div>
+      <div class="h17-card h17-promo"><small>PC Gaming</small><strong>High Performance Games</strong><a href="shop.html?cat=pc">Explore Now →</a></div>
+    </div>
   </section>
 
-  <!-- PAYMENTS -->
-  <div class="zp-sec"><h2>Njia za Malipo</h2></div>
-  <section class="zp-pay">
-    <div class="chips"><span>M-Pesa (Vodacom)</span><span>Tigo Pesa</span><span>Airtel Money</span><span>Halotel</span></div>
-    <p>Malipo ni automatic kupitia AzamPay. Ukipata tatizo, tuma pesa moja kwa moja kwa <strong>0786 095 758 — Amina Mwinyi</strong>, kisha wasiliana nasi WhatsApp na namba ya muamala (ref) kupata bidhaa yako.</p>
+  <section class="h17-section">
+    <div class="h17-section-head"><h2>🔥 Trending Games</h2><a href="shop.html">Explore All →</a></div>
+    <div class="h17-products">
+      <article class="h17-product"><div class="h17-art"><i class="tag">ACTION</i><span>💀</span></div><div class="h17-info"><h3>Call of Duty: Modern Warfare II</h3><small>PS5 • PS4 • Xbox • PC</small><div class="h17-stars">★★★★★ 4.9</div><div class="h17-cost">TSh 48,000</div><button class="h17-add" data-add-product="codmw3">Add to Cart</button></div></article>
+      <article class="h17-product"><div class="h17-art"><i class="tag">RACING</i><span>🏎️</span></div><div class="h17-info"><h3>Need for Speed: Most Wanted</h3><small>PC • PS2 • PSP</small><div class="h17-stars">★★★★★ 4.8</div><div class="h17-cost">TSh 15,000</div><button class="h17-add" data-add-product="nfs">Add to Cart</button></div></article>
+      <article class="h17-product"><div class="h17-art"><i class="tag">ACTION</i><span>🌴</span></div><div class="h17-info"><h3>Far Cry 5</h3><small>PS4 • Xbox • PC</small><div class="h17-stars">★★★★★ 4.7</div><div class="h17-cost">TSh 32,000</div><button class="h17-add" data-add-product="farcry5">Add to Cart</button></div></article>
+      <article class="h17-product"><div class="h17-art"><i class="tag">SPORTS</i><span>⚽</span></div><div class="h17-info"><h3>EA SPORTS FC 24</h3><small>PS5 • PS4 • Xbox • PC</small><div class="h17-stars">★★★★★ 4.8</div><div class="h17-cost">TSh 45,000</div><button class="h17-add" data-add-product="fifa25">Add to Cart</button></div></article>
+      <article class="h17-product"><div class="h17-art"><i class="tag">RPG</i><span>🌃</span></div><div class="h17-info"><h3>Cyberpunk 2077</h3><small>PS5 • Xbox • PC</small><div class="h17-stars">★★★★★ 4.6</div><div class="h17-cost">TSh 35,000</div><button class="h17-add" data-add-product="cyberpunk">Add to Cart</button></div></article>
+      <article class="h17-product"><div class="h17-art"><i class="tag">OPEN WORLD</i><span>🚗</span></div><div class="h17-info"><h3>Grand Theft Auto V</h3><small>PS5 • PS4 • Xbox • PC</small><div class="h17-stars">★★★★★ 4.9</div><div class="h17-cost">TSh 35,000</div><button class="h17-add" data-add-product="gta5">Add to Cart</button></div></article>
+    </div>
   </section>
-</div>
 
+  <section class="h17-section h17-lower">
+    <div><div class="h17-section-head"><h2>🎮 Browse By Categories</h2><a href="categories.html">Explore All →</a></div><div class="h17-cats"><a class="h17-cat" href="categories.html"><b>⚔️ Action & Adventure</b><span>Explore games</span></a><a class="h17-cat" href="categories.html"><b>🏎️ Racing</b><span>Speed & cars</span></a><a class="h17-cat" href="categories.html"><b>⚽ Sports</b><span>Football & more</span></a><a class="h17-cat" href="categories.html"><b>🧙 RPG</b><span>Role playing</span></a><a class="h17-cat" href="categories.html"><b>♟ Strategy</b><span>Think & win</span></a><a class="h17-cat" href="categories.html"><b>🔫 Shooting</b><span>FPS & action</span></a></div></div>
+    <div class="h17-card h17-offer"><small>Special Offers</small><h3>Marvel's Spider-Man 2</h3><strong>TSh 52,999</strong><p><s>TSh 70,000</s> &nbsp; <b style="color:#2be879">-25%</b></p><a class="h17-btn" href="shop.html">View Deal →</a></div>
+  </section>
+
+  <section class="h17-section h17-bottom">
+    <div><div class="h17-section-head"><h2>⚽ Live Football</h2><a href="livescores.html">View All Matches →</a></div><div class="h17-matches"><div class="h17-match"><span class="live">● LIVE</span><div class="h17-score"><span>Man City</span><strong>2 - 1</strong><span>Arsenal</span></div><small>72:34</small></div><div class="h17-match"><span class="live" style="color:#8aa0c7">UPCOMING</span><div class="h17-score"><span>Real Madrid</span><strong>VS</strong><span>Barcelona</span></div><small>20:00</small></div><div class="h17-match"><span class="live" style="color:#8aa0c7">UPCOMING</span><div class="h17-score"><span>Bayern</span><strong>VS</strong><span>Dortmund</span></div><small>22:00</small></div></div></div>
+    <div class="h17-card"><div class="h17-section-head" style="padding:14px 14px 0"><h2>📚 Popular Courses</h2><a href="academy.html">Explore All →</a></div><div class="h17-course"><div class="thumb">💻</div><div><h3>Web Development</h3><p>Learn HTML, CSS, JavaScript</p><span style="color:#ffc043;font-size:11px">★★★★★ 4.8 (12K)</span></div><a class="h17-btn" style="margin-left:auto;white-space:nowrap" href="academy.html">View Course</a></div></div>
+  </section>
+</main>
 <script src="zoneplay-shell.js"></script>
 <script src="zp-catalog.js"></script>
 <script src="app.js"></script>
 <script src="chat.js"></script>
 <script>
 (function(){
-  var esc = ZP.esc;
-  // Fill icon placeholders
-  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
-  document.getElementById('zpPrev').innerHTML = ZP.icon('chevl');
-  document.getElementById('zpNext').innerHTML = ZP.icon('chevr');
-
-  /* ---------- Categories ---------- */
-  var catsEl = document.getElementById('zpCats');
-  function renderCats(list){
-    var counts = {};
-    (list||[]).forEach(function(p){ if(p.platform) counts[p.platform]=(counts[p.platform]||0)+1; });
-    catsEl.innerHTML = ZP.PLATFORMS.map(function(pl){
-      var n = counts[pl.key]||0;
-      return '<a class="zp-cat" href="shop.html?cat='+pl.key+'"><span class="zp-ci" style="--art:'+pl.art+'">'+ZP.icon(pl.icon)+'</span><b>'+esc(pl.label)+'</b><small>'+(n? n+' bidhaa':'Angalia')+'</small></a>';
-    }).join('') +
-    '<a class="zp-cat" href="giftcards.html"><span class="zp-ci" style="--art:linear-gradient(135deg,#f59e0b,#c2255c)">'+ZP.icon('gift')+'</span><b>Gift Cards</b><small>Steam • PSN</small></a>'+
-    '<a class="zp-cat" href="efootball.html"><span class="zp-ci" style="--art:linear-gradient(135deg,#16a34a,#0b5a8a)">'+ZP.icon('ball')+'</span><b>Top-Up</b><small>eFootball</small></a>';
+  function add(id){
+    var products=(window.ZP&&ZP.products)||[]; var p=products.find(function(x){return String(x.id)===String(id);});
+    if(!p){p={id:id,name:id,price:0,emoji:'🎮'};}
+    var cart={}; try{cart=JSON.parse(localStorage.getItem('gamehubCart')||'{}')||{};}catch(e){}
+    if(Array.isArray(cart)){ var obj={}; cart.forEach(function(x){obj[x.id]=x;}); cart=obj; }
+    cart[id]=Object.assign({},p,{qty:(Number(cart[id]&&cart[id].qty)||0)+1});
+    localStorage.setItem('gamehubCart',JSON.stringify(cart));
+    if(window.ZP&&ZP.updateCart)ZP.updateCart();
+    alert('Imeongezwa kwenye Cart');
   }
-  renderCats([]);
-
-  /* ---------- Featured games ---------- */
-  var grid = document.getElementById('featuredGames');
-  ZP.loadProducts().then(function(list){
-    renderCats(list);
-    grid.innerHTML = list.slice(0,10).map(ZP.card).join('') || '<div class="zp-empty"><h3>Bado hakuna bidhaa</h3><p>Admin akiongeza bidhaa zitaonekana hapa.</p></div>';
-  });
-
-  /* ---------- Hero ---------- */
-  function ytId(u){ var m=(u||'').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/); return m?m[1]:null; }
-  function safeUrl(u){ u=String(u||''); return /^(https?:\/\/|\/|[\w-]+\.html)/i.test(u) ? u : 'shop.html'; }
-  var DEFAULT_SLIDES = [
-    {tag:'LIFEISGAMETZ', title:'CHEZA. JIFUNZE. SHINDA.', desc:'Duka la gaming la Tanzania lenye games, digital products, tournaments, live football, Academy na AI assistants — yote sehemu moja.', emoji:'🎮', art:'linear-gradient(120deg,#1a0a56,#0a1f6b 60%,#062a5c)', cta:['Explore Games','shop.html'], cta2:['Gaming Academy','academy.html']},
-    {tag:'DUKA', title:'GAME KEYS & GIFT CARDS', desc:'Games za kudownload moja kwa moja, gift cards na Steam accounts. Lipa kwa M-Pesa, Tigo Pesa, Airtel Money au Halotel.', emoji:'🎁', art:'linear-gradient(120deg,#3b0a5c,#141a6b 60%,#0a2a5c)', cta:['Nunua Sasa','shop.html'], cta2:['Gift Cards','giftcards.html']},
-    {tag:'LIVE', title:'TAZAMA LIVE FOOTBALL', desc:'Mechi live, matokeo ya papo hapo, filamu na video — kila kitu ndani ya LIFEISGAMETZ.', emoji:'⚽', art:'linear-gradient(120deg,#0a3a5c,#0a1a6b 60%,#2a0a5c)', cta:['Watch Live','live.html'], cta2:['Live Scores','livescores.html']}
-  ];
-  var slidesEl=document.getElementById('zpSlides'), dotsEl=document.getElementById('zpDots'), slider=document.getElementById('zpSlider');
-  var slides=[], cur=0, timer=null, paused=false;
-  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function slideHtml(s,i){
-    var media='';
-    if (s.yt) media='<iframe data-yt="'+s.yt+'" title="'+esc(s.title)+'" allow="autoplay; encrypted-media" tabindex="-1"></iframe>';
-    else if (s.video) media='<video muted loop playsinline preload="metadata"'+(s.poster?' poster="'+esc(s.poster)+'"':'')+'><source src="'+esc(s.video)+'"></video>';
-    else if (s.image) media='<img src="'+esc(s.image)+'" alt="" onerror="this.remove()">';
-    var big = (!media && s.emoji) ? '<span class="zp-bigemoji" aria-hidden="true">'+esc(s.emoji)+'</span>' : '';
-    var price = s.price ? '<span class="zp-price">'+ZP.money(s.price)+'<small>TZS</small></span>' : '';
-    return '<div class="zp-slide'+(i===0?' on':'')+'" role="group" aria-roledescription="slide" aria-label="'+(i+1)+'">'+
-      '<div class="zp-slide-bg" style="--art:'+(s.art||ZP.art(s.title))+'">'+media+big+'</div>'+
-      '<div class="zp-slide-body"><span class="zp-slide-tag">'+esc(s.tag||'FEATURED')+'</span><h2>'+esc(s.title)+'</h2>'+(s.desc?'<p>'+esc(s.desc)+'</p>':'')+
-      '<div class="zp-slide-cta">'+price+'<a class="zp-btn" href="'+esc(s.cta[1])+'">'+esc(s.cta[0])+'</a>'+(s.cta2?'<a class="zp-btn ghost" href="'+esc(s.cta2[1])+'">'+esc(s.cta2[0])+'</a>':'')+'</div></div></div>';
-  }
-  function media(i,on){
-    var el=slidesEl.children[i]; if(!el) return;
-    var f=el.querySelector('iframe'); if(f){ if(on){ var id=f.dataset.yt; f.src='https://www.youtube.com/embed/'+id+'?autoplay=1&mute=1&controls=0&loop=1&playlist='+id+'&rel=0&modestbranding=1&playsinline=1'; } else f.removeAttribute('src'); }
-    var v=el.querySelector('video'); if(v){ if(on && !reduce){ v.muted=true; var p=v.play(); p&&p.catch&&p.catch(function(){}); } else v.pause(); }
-  }
-  function show(i){
-    if(!slides.length) return;
-    media(cur,false); cur=(i+slides.length)%slides.length;
-    Array.prototype.forEach.call(slidesEl.children,function(el,n){ el.classList.toggle('on',n===cur); });
-    Array.prototype.forEach.call(dotsEl.children,function(el,n){ el.classList.toggle('on',n===cur); el.setAttribute('aria-current',n===cur?'true':'false'); });
-    media(cur,true);
-  }
-  function tick(){ clearInterval(timer); if(slides.length>1 && !reduce) timer=setInterval(function(){ if(!paused && !document.hidden) show(cur+1); },8000); }
-  function build(list){
-    slides=list;
-    slidesEl.innerHTML=slides.map(slideHtml).join('');
-    dotsEl.innerHTML=slides.map(function(s,i){ return '<button type="button" aria-label="Slide '+(i+1)+'" class="'+(i===0?'on':'')+'"></button>'; }).join('');
-    dotsEl.querySelectorAll('button').forEach(function(b,i){ b.addEventListener('click',function(){ show(i); tick(); }); });
-    var multi=slides.length>1; document.getElementById('zpPrev').style.display=multi?'':'none'; document.getElementById('zpNext').style.display=multi?'':'none'; dotsEl.style.display=multi?'':'none';
-    cur=0; media(0,true); tick();
-  }
-  build(DEFAULT_SLIDES);
-  document.getElementById('zpPrev').addEventListener('click',function(){ show(cur-1); tick(); });
-  document.getElementById('zpNext').addEventListener('click',function(){ show(cur+1); tick(); });
-  slider.addEventListener('mouseenter',function(){ paused=true; });
-  slider.addEventListener('mouseleave',function(){ paused=false; });
-  slider.addEventListener('focusin',function(){ paused=true; });
-  slider.addEventListener('focusout',function(){ paused=false; });
-  var x0=null;
-  slider.addEventListener('touchstart',function(e){ x0=e.touches[0].clientX; },{passive:true});
-  slider.addEventListener('touchend',function(e){ if(x0==null) return; var dx=e.changedTouches[0].clientX-x0; x0=null; if(Math.abs(dx)>45){ show(cur+(dx<0?1:-1)); tick(); } });
-
-  // Admin-fed slides: product trailers + banners, then the defaults
-  Promise.all([
-    ZP.loadProducts(),
-    fetch('/api/banners').then(function(r){ return r.json(); }).catch(function(){ return {}; })
-  ]).then(function(res){
-    var prods=res[0]||[], banners=(res[1]&&res[1].banners)||[];
-    var fromProducts=prods.filter(function(p){ return p.admin && (p.trailerUrl||p.imageUrl); }).slice(0,4).map(function(p){
-      var id=ytId(p.trailerUrl);
-      return {tag:(p.type||'GAME').toUpperCase(), title:p.name, desc:p.desc, price:p.price, yt:id, video:(!id&&p.trailerUrl)?p.trailerUrl:'', image:(!p.trailerUrl)?p.imageUrl:'', poster:p.imageUrl, emoji:p.emoji, art:ZP.art(p.name), cta:['Nunua Sasa',ZP.href(p)]};
-    });
-    var fromBanners=banners.slice(0,3).map(function(b){ return {tag:'GAMEHUB UPDATE', title:b.title||'Habari mpya', desc:b.description, emoji:'📢', art:'linear-gradient(120deg,#3b0a5c,#0a2a6b)', cta:[b.buttonText||'Angalia',safeUrl(b.buttonUrl)]}; });
-    var all=fromProducts.concat(fromBanners);
-    if (all.length) build(all.concat(DEFAULT_SLIDES.slice(0, Math.max(0,3-all.length))));
-  });
-
-  /* ---------- AI helpers ---------- */
-  function openChat(text){
-    var b=document.getElementById('ghChatBtn'), box=document.getElementById('ghChatBox');
-    if(box && box.style.display!=='block' && b) b.click();
-    if(text){ var i=document.getElementById('ghChatInput'); if(i){ i.value=text; i.focus(); } }
-  }
-  document.getElementById('openAiBtn').addEventListener('click',function(){ openChat(); });
-  document.querySelectorAll('#aiExamples .zp-chip').forEach(function(c){ c.addEventListener('click',function(){ openChat(c.textContent); }); });
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-add-product]');if(b){e.preventDefault();add(b.dataset.addProduct);}});
 })();
 </script>
 </body>
