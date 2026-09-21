@@ -1,118 +1,40 @@
 <!DOCTYPE html>
-<html lang="sw">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Health Assistant — LIFEISGAMETZ</title>
-  <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
-</head>
-<body>
-<div class="main">
-
-  <header class="zp-page-head">
-    <div class="zp-ph-ic" data-ic="pulse"></div>
-    <div><h1>Health &amp; Community Support</h1><p>Sehemu ya msaada wa taarifa za afya kwa jamii. AI hutoa taarifa za jumla na kuelekeza huduma inapohitajika.</p></div>
-  </header>
-
-  <div class="hl-warn" role="note"><span data-ic="alert"></span><div><b>Muhimu:</b> AI hii si daktari na haitoi diagnosis ya uhakika. Kwa dalili kali au dharura, tafuta huduma ya afya/dharura mara moja.</div></div>
-
-  <div class="cm-layout">
-    <section class="cm-card" aria-label="Msaidizi wa afya">
-      <div class="cm-head"><span class="hl-avatar" data-ic="pulse"></span><h2>Msaidizi wa Afya</h2><button class="zp-btn ghost sm" id="resetBtn" type="button">Anza upya</button></div>
-      <div class="hl-msgs" id="msgs" role="log" aria-live="polite" aria-label="Mazungumzo"></div>
-      <div class="cm-compose">
-        <textarea id="healthInput" maxlength="1000" placeholder="Uliza kuhusu taarifa za jumla za afya, lishe, kinga au jinsi ya kutafuta huduma…" aria-label="Swali lako"></textarea>
-        <div class="cm-actions">
-          <button class="zp-btn ghost sm cm-mic" id="voiceBtn" type="button" aria-pressed="false" hidden></button>
-          <button class="zp-btn ghost sm" id="speakBtn" type="button">🔊 Sikiliza AI</button>
-          <button class="zp-btn ghost sm" id="stopBtn" type="button">⏹️ Stop</button>
-          <button class="zp-btn" id="sendBtn" type="button" style="margin-left:auto"></button>
-        </div>
-        <p class="cm-status" id="status" role="status" aria-live="polite"></p>
-        <p class="hl-note">Usiandike taarifa binafsi nyeti kama jina kamili au namba ya simu.</p>
-      </div>
-    </section>
-
-    <aside class="cm-side">
-      <div class="cm-box"><h3>Mada za Kuuliza</h3>
-        <div class="hl-prompts" id="prompts"></div>
-      </div>
-      <div class="cm-box"><h3>Huduma Zaidi</h3>
-        <div class="cm-links">
-          <a href="professionals.html"><span data-ic="pulse"></span>Health Network</a>
-          <a href="recovery.html"><span data-ic="life"></span>Recovery Support</a>
-          <a href="community-fund.html"><span data-ic="heart"></span>Community Fund</a>
-          <a href="community.html"><span data-ic="users"></span>Community Help</a>
-        </div>
-      </div>
-    </aside>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Health Assistant — LIFEISGAMETZ</title>
+<link rel="stylesheet" href="zoneplay-four-reference.css"></head><body>
+<div class="z-layout">
+<aside class="z-sidebar">
+  <div class="z-brand"><div class="z-mark">✦</div><div><b>LIFEIS<span>GAMETZ</span></b><small>PLAY • LEARN • EARN</small></div></div>
+  <nav class="z-nav">
+    <a href="index.html" class="active"><i>⌂</i>Home</a>
+    <a href="shop.html"><i>⌘</i>Store</a><a href="categories.html"><i>◈</i>Games</a>
+    <a href="pspgames.html"><i>◫</i>PSP Gaming</a><a href="ps2games.html"><i>◫</i>PS2 Gaming</a><a href="ps3games.html"><i>◫</i>PS3 Gaming</a>
+    <a href="switch.html"><i>◈</i>Nintendo Switch</a><a href="android.html"><i>▣</i>Android Gaming</a><a href="pc.html"><i>▤</i>PC Gaming</a>
+    <a href="movies.html"><i>▦</i>Movies</a><a href="live.html"><i>▣</i>Live TV / Sports</a><a href="livescores.html"><i>●</i>Live Scores</a>
+    <a href="academy.html"><i>◇</i>Academy / Courses</a><a href="cloudgaming.html"><i>☁</i>Cloud Gaming</a><a href="efootball.html"><i>◉</i>eFootball & Top Up</a>
+    <a href="giftcards.html"><i>🎁</i>Gift Cards</a><a href="community.html"><i>◌</i>Community / Chat</a><a href="health.html"><i>♥</i>Health Assistant</a><a href="ai.html"><i>✦</i>AI Assistant</a><a href="marketplace.html"><i>▰</i>Marketplace</a>
+    <div class="section">Account</div>
+    <a href="wishlist.html"><i>♡</i>Wishlist</a><a href="cart.html"><i>🛒</i>Cart</a><a href="mygames.html"><i>▣</i>My Games / Library</a><a href="profile.html"><i>♙</i>Profile</a>
+  </nav>
+</aside>
+<main class="z-main">
+<header class="z-topbar">
+  <div class="z-search"><span>⌕</span><input placeholder="Tafuta game, filamu, kozi, bidhaa..." /></div>
+  <div class="z-actions">
+    <div class="z-chip">♧ <b>3</b></div><div class="z-chip">🛒 <b>2</b></div><div class="z-chip">▣ <strong>TSh 12,500</strong> →</div>
+    <div class="z-chip user"><div class="z-avatar">K</div><span><strong>Kelvin Fred</strong><br><small style="color:#8195bb">Premium User</small></span>⌄</div>
   </div>
-</div>
-
-<script src="zoneplay-shell.js"></script>
-<script src="zp-catalog.js"></script>
-<script src="app.js"></script>
-<script src="chat.js"></script>
+</header>
+<div class="z-content">
+<div class="page-title"><div style="font-size:18px">♥</div><div><h1>Health Assistant</h1><p>Your AI-powered health companion</p></div></div>
+<div class="warn">⚠ <b>Muhimu:</b> AI hii haitoi diagnosis ya uhakika. Kwa dalili kali au dharura, tafuta huduma ya afya mara moja.</div>
+<div class="health-layout"><section class="ref-card health-main">
+<div class="health-hero"><div class="doctor-art"></div><h2>How can I help you today?</h2><p>Ask me anything about your health, wellness and medical advice. Nitatoa taarifa za jumla na kukuongoza kwenye huduma sahihi inapohitajika.</p>
+<div class="health-pills"><button>◉ General Health</button><button>♥ Mental Health</button><button>◇ Nutrition</button><button>⚡ Fitness & Exercise</button><button>♡ Medical Advice</button><button>⌕ Symptom Checker</button></div></div>
+<div class="chatbox"><div class="messages" id="msgs"></div><div class="composer"><textarea id="healthInput" placeholder="Type your message..."></textarea><button id="sendBtn">➤</button></div></div>
+</section>
+<aside class="health-side"><div class="ref-card side-box"><h3>Health Services</h3><a class="side-link" href="professionals.html"><span>♙ Medical Consultation<small>Talk to a professional</small></span>›</a><a class="side-link" href="#"><span>♥ Health Tips<small>Daily health tips & advice</small></span>›</a><a class="side-link" href="#"><span>⌕ Symptom Checker<small>Check possible conditions</small></span>›</a><a class="side-link" href="#"><span>✚ Emergency Help<small>Find nearest emergency care</small></span>›</a></div>
+<div class="ref-card side-box"><h3>Health Reminders</h3><div class="side-link"><span>♧ Take your daily vitamins<small>Today, 8:00 AM</small></span><b style="color:#9b35ff">●</b></div></div></aside></div>
+</div><footer class="z-footer"><span>© 2025 LIFEISGAMETZ. All rights reserved.</span><span>Terms &nbsp;&nbsp; Privacy &nbsp;&nbsp; Support</span></footer></main></div>
 <script>
-(function(){
-  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
-  var out=document.getElementById('msgs'), input=document.getElementById('healthInput'), sendBtn=document.getElementById('sendBtn'), statusEl=document.getElementById('status');
-  sendBtn.innerHTML=ZP.icon('arrow')+'Tuma Swali';
-
-  var hist=[], lastReply='', busy=false;
-  var GREETING='Habari! Naweza kutoa taarifa za jumla za afya. Nitaelekeza huduma ya kitaalamu pale inapohitajika.';
-
-  function say(m,ok){ statusEl.textContent=m||''; statusEl.className='cm-status'+(ok?' ok':''); }
-  function add(text,who,cls){
-    var row=document.createElement('div'); row.className='hl-row '+who;
-    if (who==='bot'){ var a=document.createElement('span'); a.className='hl-avatar'; a.innerHTML=ZP.icon('pulse'); row.appendChild(a); }
-    var b=document.createElement('div'); b.className='cr-msg '+who+(cls?' '+cls:''); b.textContent=text; row.appendChild(b);
-    out.appendChild(row); out.scrollTop=out.scrollHeight; return b;
-  }
-  function reset(){ out.innerHTML=''; hist=[]; lastReply=''; if('speechSynthesis' in window) speechSynthesis.cancel(); add(GREETING,'bot'); say(''); }
-  reset();
-
-  function ask(){
-    var q=input.value.trim(); if(!q||busy) return;
-    busy=true; sendBtn.disabled=true; say('');
-    input.value=''; add(q,'user'); hist.push({role:'user',text:q});
-    var wait=add('Ninafikiria…','bot','wait');
-    fetch('/api/ai/health',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:hist.slice(-8)})})
-      .then(function(r){ return r.json(); })
-      .then(function(d){ var ans=d.reply||d.error||'Samahani, jaribu tena.'; wait.className='cr-msg bot'; wait.textContent=ans; lastReply=ans; hist.push({role:'assistant',text:ans}); })
-      .catch(function(){ wait.className='cr-msg bot'; wait.textContent='Hitilafu ya mtandao. Jaribu tena.'; })
-      .then(function(){ busy=false; sendBtn.disabled=false; out.scrollTop=out.scrollHeight; input.focus({preventScroll:true}); });
-  }
-  sendBtn.addEventListener('click',ask);
-  input.addEventListener('keydown',function(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); ask(); } });
-  document.getElementById('resetBtn').addEventListener('click',reset);
-  document.getElementById('speakBtn').addEventListener('click',function(){ if(lastReply&&'speechSynthesis' in window){ speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(lastReply)); } });
-  document.getElementById('stopBtn').addEventListener('click',function(){ if('speechSynthesis' in window) speechSynthesis.cancel(); });
-
-  /* suggested questions */
-  var P=[['pulse','Lishe bora kwa mtu anayekaa muda mrefu kucheza games?'],['shield','Nawezaje kujikinga na malaria?'],['search','Nitafute wapi huduma ya afya iliyo karibu nami?'],['heart','Vidokezo vya kupata usingizi mzuri?']];
-  var pr=document.getElementById('prompts');
-  pr.innerHTML=P.map(function(p,i){ return '<button type="button" data-i="'+i+'">'+ZP.icon(p[0])+'<span></span></button>'; }).join('');
-  pr.querySelectorAll('button').forEach(function(b){ b.querySelector('span').textContent=P[b.dataset.i][1]; });
-  pr.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; input.value=P[b.dataset.i][1]; input.focus(); });
-
-  /* voice input: recognised text is sent automatically, like before */
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition, mic=document.getElementById('voiceBtn');
-  if (SR){
-    mic.hidden=false; mic.innerHTML='🎙️ Ongea';
-    mic.addEventListener('click',function(){
-      if (mic.getAttribute('aria-pressed')==='true') return;
-      var r=new SR(); r.lang='sw-TZ'; r.interimResults=false;
-      r.onstart=function(){ mic.setAttribute('aria-pressed','true'); say('🎙️ Sikiliza… ongea sasa.',true); };
-      r.onresult=function(e){ input.value=e.results[0][0].transcript; say('Nimetambua sauti. Inatuma…',true); ask(); };
-      r.onerror=function(){ say('Sauti haikupatikana. Jaribu tena.'); };
-      r.onend=function(){ mic.setAttribute('aria-pressed','false'); if(statusEl.textContent.indexOf('Sikiliza')>-1) say(''); };
-      try{ r.start(); }catch(e){ say('Voice haikuweza kuanza.'); }
-    });
-  }
-})();
-</script>
-</body>
-</html>
+(()=>{const out=document.getElementById('msgs'),input=document.getElementById('healthInput'),send=document.getElementById('sendBtn');function add(t,c){const d=document.createElement('div');d.className='msg '+c;d.textContent=t;out.appendChild(d);out.scrollTop=out.scrollHeight}add('Habari! Naweza kutoa taarifa za jumla za afya na kukuongoza kwenye huduma ya kitaalamu.','bot');async function ask(){const q=input.value.trim();if(!q)return;input.value='';add(q,'user');add('Ninafikiria…','bot');try{const r=await fetch('/api/ai/health',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})});const d=await r.json();out.lastElementChild.textContent=d.reply||d.error||'Samahani, jaribu tena.'}catch(e){out.lastElementChild.textContent='Hitilafu ya mtandao. Jaribu tena.'}}send.onclick=ask;input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}})})();
+</script></body></html>
