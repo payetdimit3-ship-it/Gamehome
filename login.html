@@ -33,10 +33,26 @@
 <div class="form-row"><label>Password</label><div class="input-wrap"><span>▣</span><input id="password" type="password" required placeholder="••••••••"></div></div>
 <div class="remember"><label><input type="checkbox" checked> Remember me</label><a href="recovery.html">Forgot password?</a></div>
 <button class="primary-btn" type="submit">Login &nbsp; →</button><p id="authMsg" style="font-size:9px;color:#ff718e;text-align:center;min-height:14px"></p></form>
-<div class="form-foot">or continue with</div><div class="socials"><button>G Google</button><button>f Facebook</button><button>● Apple</button></div>
+<div class="form-foot">or continue with</div><div class="socials"><button type="button" data-provider="google">G Google</button><button type="button" data-provider="facebook">f Facebook</button><button type="button" data-provider="apple">● Apple</button></div><p id="socialMsg" style="font-size:9px;color:#ffb86b;text-align:center;min-height:14px"></p>
 <div class="form-foot">Don't have an account? <a href="register.html">Register</a></div></section>
 </div></div>
 </div><footer class="z-footer"><span>© 2025 LIFEISGAMETZ. All rights reserved.</span><span>Terms &nbsp;&nbsp; Privacy &nbsp;&nbsp; Support</span></footer></main></div>
 <script>
 document.getElementById('loginForm').addEventListener('submit',async(e)=>{e.preventDefault();const m=document.getElementById('authMsg'),b=e.target.querySelector('button');b.disabled=true;try{const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email.value.trim(),password:password.value})});const d=await r.json();if(!d.success){m.textContent='❌ '+(d.error||'Login failed');b.disabled=false;return}localStorage.setItem('gamehubToken',d.token);localStorage.setItem('gamehubUser',JSON.stringify(d.user));location.replace('index.html')}catch(x){m.textContent='❌ Hitilafu ya mtandao';b.disabled=false}});
-</script></body></html>
+
+<script>
+(async()=>{
+  const msg=document.getElementById('socialMsg');
+  document.querySelectorAll('.socials button').forEach(btn=>btn.addEventListener('click',async()=>{
+    const provider=btn.dataset.provider; msg.textContent='Inaandaa '+provider+' login...'; btn.disabled=true;
+    try{
+      const c=await (await fetch('/api/auth/social/config')).json();
+      if(!c.enabled) throw new Error('Social login haija-configurewa kwenye server. Weka Supabase URL + anon key, kisha enable Google/Facebook/Apple.');
+      if(!window.supabase){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
+      const sb=window.supabase.createClient(c.url,c.anonKey);
+      const {error}=await sb.auth.signInWithOAuth({provider,options:{redirectTo:location.origin+'/auth-callback.html'}});
+      if(error) throw error;
+    }catch(e){msg.textContent='❌ '+(e.message||'Social login failed');btn.disabled=false}
+  }));
+})();
+</script></script></body></html>

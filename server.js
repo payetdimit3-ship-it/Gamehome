@@ -130,6 +130,7 @@ app.delete('/api/admin/public-chat/:id', async (req, res) => {
 let supabase = null;
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
   supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
   console.log('☁️ Supabase imeunganishwa — data itahifadhiwa kudumu.');
@@ -316,6 +317,59 @@ app.post('/api/auth/register', (req, res) => {
   res.json({ success: true, token, user: { name: name.trim(), email: cleanEmail, isAdmin: users[cleanEmail].isAdmin, isStaff: false } });
 });
 
+// OAuth configuration for Google / Facebook / Apple via Supabase
+app.get('/api/auth/social/config', (req, res) => {
+  res.json({
+    success: true,
+    enabled: !!(SUPABASE_URL && SUPABASE_ANON_KEY),
+    url: SUPABASE_URL || '',
+    anonKey: SUPABASE_ANON_KEY || ''
+  });
+});
+
+// Complete a Supabase OAuth login and create a LIFEISGAMETZ session
+app.post('/api/auth/social/complete', async (req, res) => {
+  try {
+    if (!supabase) return res.status(503).json({ error: 'Social login haijawekwa. Weka SUPABASE_URL na SUPABASE_SERVICE_ROLE_KEY.' });
+    const accessToken = String(req.body.accessToken || '').trim();
+    const provider = String(req.body.provider || '').trim().toLowerCase();
+    if (!accessToken || !['google','facebook','apple'].includes(provider)) {
+      return res.status(400).json({ error: 'Provider au access token si sahihi.' });
+    }
+    const { data, error } = await supabase.auth.getUser(accessToken);
+    if (error || !data?.user?.email) return res.status(401).json({ error: 'Social account haikuthibitishwa.' });
+    const authUser = data.user;
+    const email = String(authUser.email).trim().toLowerCase();
+    const meta = authUser.user_metadata || {};
+    const displayName = String(meta.full_name || meta.name || [meta.first_name, meta.last_name].filter(Boolean).join(' ') || email.split('@')[0]).trim();
+    const users = readJson(usersFile, {});
+    const adminEmail = (process.env.ADMIN_EMAIL || 'admin@gamehub.co.tz').toLowerCase();
+    if (!users[email]) {
+      users[email] = {
+        name: displayName || 'LIFEISGAMETZ User', email, phone: '',
+        password: null, authProvider: provider, providerId: authUser.id,
+        isAdmin: email === adminEmail, isStaff: false, balance: 0, adminEarnings: 0,
+        created: new Date().toISOString()
+      };
+      writeJson(usersFile, users);
+    } else {
+      users[email].authProvider = users[email].authProvider || provider;
+      users[email].providerId = users[email].providerId || authUser.id;
+      if (!users[email].name || users[email].name === email.split('@')[0]) users[email].name = displayName;
+      writeJson(usersFile, users);
+    }
+    const token = crypto.randomBytes(24).toString('hex');
+    const sessions = readJson(sessionsFile, {});
+    sessions[token] = email;
+    writeJson(sessionsFile, sessions);
+    const user = users[email];
+    res.json({ success:true, token, user:{ name:user.name, email:user.email, isAdmin:!!user.isAdmin, isStaff:!!user.isStaff, provider } });
+  } catch (e) {
+    console.error('Social login:', e);
+    res.status(500).json({ error: 'Social login imeshindikana.' });
+  }
+});
+
 // Kuingia (Login)
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
@@ -350,7 +404,50 @@ app.post('/api/auth/login', (req, res) => {
 app.get('/api/auth/me', (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Huna token au token si sahihi' });
-  res.json({ success: true, user: { name: user.name, email: user.email, balance: user.balance || 0, adminEarnings: user.adminEarnings || 0, isAdmin: user.isAdmin, isStaff: !!user.isStaff } });
+  res.json({ success: true, user: { name: user.name, email: user.email, phone: user.phone || '', created: user.created || null, balance: user.balance || 0, adminEarnings: user.adminEarnings || 0, isAdmin: !!user.isAdmin, isStaff: !!user.isStaff } });
+});
+
+// 👤 PROFILE — update details + change password
+app.put('/api/auth/profile', (req, res) => {
+  const user = getUserByToken(req);
+  if (!user) return res.status(401).json({ error: 'Tafadhali ingia kwanza.' });
+  const token = req.headers.authorization || req.query.token;
+  const users = readJson(usersFile, {});
+  const email = String(user.email || '').trim().toLowerCase();
+  const current = users[email];
+  if (!current) return res.status(404).json({ error: 'Akaunti haikupatikana.' });
+
+  const name = String(req.body?.name || '').trim();
+  const phone = String(req.body?.phone || '').trim();
+  if (name.length < 2) return res.status(400).json({ error: 'Jina liwe na angalau herufi 2.' });
+  if (name.length > 80) return res.status(400).json({ error: 'Jina ni refu sana.' });
+  if (phone.length > 30) return res.status(400).json({ error: 'Namba ya simu si sahihi.' });
+
+  current.name = name;
+  current.phone = phone;
+  users[email] = current;
+  writeJson(usersFile, users);
+  res.json({ success: true, user: { name: current.name, email: current.email, phone: current.phone || '', balance: current.balance || 0, isAdmin: !!current.isAdmin, isStaff: !!current.isStaff } });
+});
+
+app.post('/api/auth/change-password', (req, res) => {
+  const user = getUserByToken(req);
+  if (!user) return res.status(401).json({ error: 'Tafadhali ingia kwanza.' });
+  const oldPassword = String(req.body?.oldPassword || '');
+  const newPassword = String(req.body?.newPassword || '');
+  const confirmPassword = String(req.body?.confirmPassword || '');
+  if (!oldPassword || !newPassword || !confirmPassword) return res.status(400).json({ error: 'Jaza password zote.' });
+  if (!verifyPassword(oldPassword, user.password)) return res.status(400).json({ error: 'Password ya sasa si sahihi.' });
+  if (newPassword.length < 6) return res.status(400).json({ error: 'Password mpya iwe na angalau herufi 6.' });
+  if (newPassword !== confirmPassword) return res.status(400).json({ error: 'Password mpya hazifanani.' });
+  if (newPassword === oldPassword) return res.status(400).json({ error: 'Tumia password mpya tofauti na ya zamani.' });
+
+  const users = readJson(usersFile, {});
+  const email = String(user.email || '').trim().toLowerCase();
+  if (!users[email]) return res.status(404).json({ error: 'Akaunti haikupatikana.' });
+  users[email].password = hashPassword(newPassword);
+  writeJson(usersFile, users);
+  res.json({ success: true, message: 'Password imebadilishwa kikamilifu.' });
 });
 
 // Admin: Weka au Ondoa Staff

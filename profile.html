@@ -1,40 +1,76 @@
 <!DOCTYPE html>
-<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Profile — LIFEISGAMETZ</title>
-<link rel="stylesheet" href="zoneplay-four-reference.css"></head><body>
+<html lang="sw">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>My Profile — LIFEISGAMETZ</title>
+<link rel="stylesheet" href="zoneplay-four-reference.css">
+<style>
+.profile-main{position:relative}.profile-identity{display:flex;align-items:center;gap:13px;min-width:0}.profile-copy{min-width:0}.profile-copy p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.edit-btn{cursor:pointer}.quick{cursor:pointer;transition:.18s}.quick:hover{border-color:#7d32ff;transform:translateY(-1px);box-shadow:0 8px 22px rgba(86,27,255,.16)}.quick .arrow{float:right;color:#8f39ff}.modal-backdrop{position:fixed;inset:0;background:rgba(0,5,18,.76);backdrop-filter:blur(7px);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}.modal-backdrop.show{display:flex}.modal{width:min(500px,100%);background:linear-gradient(180deg,#081a3c,#040d23);border:1px solid #2855a4;border-radius:14px;box-shadow:0 25px 70px rgba(0,0,0,.55),0 0 35px rgba(101,37,255,.18);padding:18px}.modal h2{font-size:16px;margin:0}.modal .muted{font-size:9px;color:#8196bd;margin:5px 0 15px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}.close{width:30px;height:30px;border:1px solid #20427f;background:#071736;color:#cbd8ef;border-radius:8px;cursor:pointer}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}.secondary-btn{height:38px;border:1px solid #24457f;background:#071936;color:#b9c8e3;border-radius:8px;padding:0 14px;cursor:pointer}.status{font-size:9px;margin-top:9px;min-height:14px}.status.ok{color:#39e883}.status.err{color:#ff7198}.security-note{padding:9px 10px;border:1px solid #173a75;background:#061734;border-radius:8px;color:#8399bf;font-size:9px;margin-top:10px}.profile-empty{font-size:10px;color:#91a4c7}.logout-link{color:#ff7097!important}
+</style>
+</head>
+<body>
 <div class="z-layout">
 <aside class="z-sidebar">
   <div class="z-brand"><div class="z-mark">✦</div><div><b>LIFEIS<span>GAMETZ</span></b><small>PLAY • LEARN • EARN</small></div></div>
   <nav class="z-nav">
-    <a href="index.html" class="active"><i>⌂</i>Home</a>
-    <a href="shop.html"><i>⌘</i>Store</a><a href="categories.html"><i>◈</i>Games</a>
+    <a href="index.html"><i>⌂</i>Home</a><a href="shop.html"><i>⌘</i>Store</a><a href="categories.html"><i>◈</i>Games</a>
     <a href="pspgames.html"><i>◫</i>PSP Gaming</a><a href="ps2games.html"><i>◫</i>PS2 Gaming</a><a href="ps3games.html"><i>◫</i>PS3 Gaming</a>
     <a href="switch.html"><i>◈</i>Nintendo Switch</a><a href="android.html"><i>▣</i>Android Gaming</a><a href="pc.html"><i>▤</i>PC Gaming</a>
     <a href="movies.html"><i>▦</i>Movies</a><a href="live.html"><i>▣</i>Live TV / Sports</a><a href="livescores.html"><i>●</i>Live Scores</a>
     <a href="academy.html"><i>◇</i>Academy / Courses</a><a href="cloudgaming.html"><i>☁</i>Cloud Gaming</a><a href="efootball.html"><i>◉</i>eFootball & Top Up</a>
     <a href="giftcards.html"><i>🎁</i>Gift Cards</a><a href="community.html"><i>◌</i>Community / Chat</a><a href="health.html"><i>♥</i>Health Assistant</a><a href="ai.html"><i>✦</i>AI Assistant</a><a href="marketplace.html"><i>▰</i>Marketplace</a>
     <div class="section">Account</div>
-    <a href="wishlist.html"><i>♡</i>Wishlist</a><a href="cart.html"><i>🛒</i>Cart</a><a href="mygames.html"><i>▣</i>My Games / Library</a><a href="profile.html"><i>♙</i>Profile</a>
+    <a href="wishlist.html"><i>♡</i>Wishlist</a><a href="cart.html"><i>🛒</i>Cart</a><a href="mygames.html"><i>▣</i>My Games / Library</a><a href="profile.html" class="active"><i>♙</i>Profile</a>
+    <a href="#" id="logoutLink" class="logout-link"><i>↪</i>Logout</a>
   </nav>
 </aside>
 <main class="z-main">
-<header class="z-topbar">
-  <div class="z-search"><span>⌕</span><input placeholder="Tafuta game, filamu, kozi, bidhaa..." /></div>
-  <div class="z-actions">
-    <div class="z-chip">♧ <b>3</b></div><div class="z-chip">🛒 <b>2</b></div><div class="z-chip">▣ <strong>TSh 12,500</strong> →</div>
-    <div class="z-chip user"><div class="z-avatar">K</div><span><strong>Kelvin Fred</strong><br><small style="color:#8195bb">Premium User</small></span>⌄</div>
-  </div>
-</header>
+<header class="z-topbar"><div class="z-search"><span>⌕</span><input placeholder="Tafuta game, filamu, kozi, bidhaa..." /></div><div class="z-actions"><div class="z-chip">♧ <b>3</b></div><div class="z-chip">🛒 <b>2</b></div><div class="z-chip">▣ <strong id="topWallet">TSh 0</strong> →</div><div class="z-chip user"><div class="z-avatar" id="topAvatar">?</div><span><strong id="topName">Account</strong><br><small style="color:#8195bb" id="topStatus">Guest</small></span>⌄</div></div></header>
 <div class="z-content">
-<div class="page-title"><div style="font-size:18px">♙</div><div><h1>My Profile</h1><p>Manage your account, library and LIFEISGAMETZ services.</p></div></div>
+<div class="page-title"><div style="font-size:18px">♙</div><div><h1>My Profile</h1><p>Simamia taarifa zako, usalama na huduma za LIFEISGAMETZ.</p></div></div>
+<div id="loading" class="ref-card" style="padding:16px"><span class="profile-empty">Inapakia profile...</span></div>
+<div id="profileArea" style="display:none">
 <div class="profile-hero">
-<section class="ref-card profile-main"><div class="big-avatar" id="profileAvatar">K</div><div><h2 id="profileName">Kelvin Fred</h2><span class="premium">Premium User</span><p id="profileEmail">kelvinfred@gmail.com</p></div><button class="edit-btn">✎ Edit Profile</button><div class="profile-stats"><div class="stat">Total Orders<strong>12</strong></div><div class="stat">Games Owned<strong>8</strong></div><div class="stat">Member Since<strong>2025</strong></div></div></section>
-<section class="ref-card wallet"><div class="label">Wallet Balance</div><strong id="wallet">TSh 12,500</strong><button class="topup" onclick="location.href='topup.html'">⊕ Top Up</button><div class="stat">Available for purchases and services</div></section>
+<section class="ref-card profile-main">
+ <div class="profile-identity"><div class="big-avatar" id="profileAvatar">?</div><div class="profile-copy"><h2 id="profileName">—</h2><span class="premium" id="premiumBadge">User</span><p id="profileEmail">Email itaonekana baada ya kusajili/kuingia.</p><p id="profilePhone" style="color:#7087af"></p></div></div>
+ <button class="edit-btn" id="editProfileBtn">✎ Edit Profile</button>
+ <div class="profile-stats"><div class="stat">Total Orders<strong id="ordersCount">0</strong></div><div class="stat">Games Owned<strong id="gamesCount">0</strong></div><div class="stat">Member Since<strong id="memberSince">—</strong></div></div>
+</section>
+<section class="ref-card wallet"><div class="label">Wallet Balance</div><strong id="wallet">TSh 0</strong><button class="topup" onclick="location.href='topup.html'">⊕ Top Up</button><div class="stat">Available for purchases and services</div></section>
 </div>
 <div class="profile-tabs"><a class="on" href="#">Account Overview</a><a href="myorders.html">My Orders</a><a href="mygames.html">My Games</a><a href="wishlist.html">Wishlist</a><a href="cart.html">Cart</a><a href="contact.html">Support</a></div>
 <div class="profile-grid"><section class="ref-card quick-grid">
-<div class="quick"><i>♙</i><b>Personal Information</b><span>Update your personal details →</span></div><div class="quick"><i>⌁</i><b>Change Password</b><span>Keep your account secure →</span></div><div class="quick"><i>▣</i><b>Wallet & Payments</b><span>Manage wallet and payments →</span></div><div class="quick"><i>♧</i><b>Notifications</b><span>Control your notifications →</span></div><div class="quick"><i>▣</i><b>Privacy Settings</b><span>Manage your privacy →</span></div><div class="quick"><i>?</i><b>Help & Support</b><span>Get help when you need it →</span></div>
-</section><aside class="ref-card activity"><h3>Recent Activity</h3><p>◉ Purchased FC 26<br><small>2 hours ago</small></p><p>♥ Added to Wishlist<br><small>5 hours ago</small></p><p>● Logged in<br><small>1 day ago</small></p><p>♙ Profile Updated<br><small>2 days ago</small></p></aside></div>
-</div><footer class="z-footer"><span>© 2025 LIFEISGAMETZ. All rights reserved.</span><span>Terms &nbsp;&nbsp; Privacy &nbsp;&nbsp; Support</span></footer></main></div>
+ <div class="quick" data-action="edit"><i>♙</i><span class="arrow">→</span><b>Personal Information</b><span>Update jina na namba yako</span></div>
+ <div class="quick" data-action="password"><i>⌁</i><span class="arrow">→</span><b>Change Password</b><span>Badilisha password yako</span></div>
+ <div class="quick" data-action="wallet"><i>▣</i><span class="arrow">→</span><b>Wallet & Payments</b><span>Manage wallet na malipo</span></div>
+ <div class="quick" data-action="notifications"><i>♧</i><span class="arrow">→</span><b>Notifications</b><span>Washa au zima alerts</span></div>
+ <div class="quick" data-action="privacy"><i>▣</i><span class="arrow">→</span><b>Privacy Settings</b><span>Simamia privacy yako</span></div>
+ <div class="quick" data-action="support"><i>?</i><span class="arrow">→</span><b>Help & Support</b><span>Pata msaada wa LIFEISGAMETZ</span></div>
+</section><aside class="ref-card activity"><h3>Recent Activity</h3><p>◉ Profile loaded<br><small>Now</small></p><p>♙ Account ready<br><small>End-to-end profile</small></p><p>● Security protected<br><small>Password encrypted</small></p><p>♥ LIFEISGAMETZ member<br><small id="activityMember">—</small></p></aside></div>
+</div></div>
+<footer class="z-footer"><span>© 2025 LIFEISGAMETZ. All rights reserved.</span><span>Terms &nbsp;&nbsp; Privacy &nbsp;&nbsp; Support</span></footer>
+</main></div>
+
+<div class="modal-backdrop" id="editModal"><div class="modal"><div class="modal-head"><h2>Edit Profile</h2><button class="close" data-close="editModal">×</button></div><div class="muted">Email yako haibadilishwi hapa; inaonyeshwa kutoka kwenye account uliyosajili.</div><form id="editForm"><div class="form-row"><label>Full Name</label><div class="input-wrap"><span>♙</span><input id="editName" required maxlength="80"></div></div><div class="form-row"><label>Email</label><div class="input-wrap"><span>✉</span><input id="editEmail" disabled></div></div><div class="form-row"><label>Phone</label><div class="input-wrap"><span>☎</span><input id="editPhone" maxlength="30" placeholder="07XXXXXXXX"></div></div><div id="editStatus" class="status"></div><div class="modal-actions"><button type="button" class="secondary-btn" data-close="editModal">Cancel</button><button class="primary-btn" style="width:auto;padding:0 18px">Save Changes</button></div></form></div></div>
+<div class="modal-backdrop" id="passwordModal"><div class="modal"><div class="modal-head"><h2>Change Password</h2><button class="close" data-close="passwordModal">×</button></div><div class="muted">Tumia password yako ya sasa kuthibitisha mabadiliko.</div><form id="passwordForm"><div class="form-row"><label>Current Password</label><div class="input-wrap"><span>●</span><input id="oldPassword" type="password" required></div></div><div class="form-row"><label>New Password</label><div class="input-wrap"><span>●</span><input id="newPassword" type="password" minlength="6" required></div></div><div class="form-row"><label>Confirm New Password</label><div class="input-wrap"><span>●</span><input id="confirmPassword" type="password" minlength="6" required></div></div><div class="security-note">Password mpya lazima iwe na angalau herufi 6 na iwe tofauti na ya zamani.</div><div id="passwordStatus" class="status"></div><div class="modal-actions"><button type="button" class="secondary-btn" data-close="passwordModal">Cancel</button><button class="primary-btn" style="width:auto;padding:0 18px">Change Password</button></div></form></div></div>
+<div class="modal-backdrop" id="settingsModal"><div class="modal"><div class="modal-head"><h2 id="settingsTitle">Settings</h2><button class="close" data-close="settingsModal">×</button></div><div class="muted" id="settingsText"></div><div id="settingsBody"></div><div class="modal-actions"><button class="secondary-btn" data-close="settingsModal">Close</button></div></div></div>
 <script>
-fetch('/api/auth/me').then(r=>r.json()).then(d=>{const u=d.user||d;if(!u||!u.email)return;document.getElementById('profileName').textContent=u.name||'Kelvin Fred';document.getElementById('profileEmail').textContent=u.email;document.getElementById('profileAvatar').textContent=(u.name||'K').charAt(0).toUpperCase();document.getElementById('wallet').textContent='TSh '+Number(u.wallet||12500).toLocaleString();}).catch(()=>{});
-</script></body></html>
+const token=localStorage.getItem('gamehubToken');
+const $=id=>document.getElementById(id);
+const api=(url,opt={})=>fetch(url,{...opt,headers:{...(opt.headers||{}),'Authorization':token,'Content-Type':'application/json'}});
+let currentUser=null;
+function openModal(id){$(id).classList.add('show')}
+function closeModal(id){$(id).classList.remove('show')}
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>closeModal(b.dataset.close)));
+document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+function status(el,msg,ok=false){el.textContent=msg;el.className='status '+(ok?'ok':'err')}
+function render(u){currentUser=u; $('loading').style.display='none';$('profileArea').style.display='block'; const name=u.name||'User'; const email=u.email||''; $('profileName').textContent=name;$('profileEmail').textContent=email||'Email haijawekwa.';$('profilePhone').textContent=u.phone?'☎ '+u.phone:'';$('profileAvatar').textContent=name.charAt(0).toUpperCase();$('topAvatar').textContent=name.charAt(0).toUpperCase();$('topName').textContent=name;$('topStatus').textContent=u.isAdmin?'Admin':(u.isStaff?'Staff':'Member');const bal=Number(u.balance||0);$('wallet').textContent='TSh '+bal.toLocaleString();$('topWallet').textContent='TSh '+bal.toLocaleString();$('premiumBadge').textContent=u.isAdmin?'Admin':(u.isStaff?'Staff':'Member');$('memberSince').textContent=u.created?new Date(u.created).getFullYear():'—';$('activityMember').textContent=u.created?'Member since '+new Date(u.created).getFullYear():'Account active';$('editName').value=name;$('editEmail').value=email;$('editPhone').value=u.phone||''}
+async function loadProfile(){if(!token){location.replace('login.html?redirect=profile.html');return}try{const r=await api('/api/auth/me');const d=await r.json();if(!r.ok||!d.user)throw new Error(d.error||'Session imeisha');render(d.user);localStorage.setItem('gamehubUser',JSON.stringify(d.user));}catch(e){localStorage.removeItem('gamehubToken');location.replace('login.html?redirect=profile.html')}}
+$('editProfileBtn').onclick=()=>openModal('editModal');
+document.querySelectorAll('.quick').forEach(q=>q.onclick=()=>{const a=q.dataset.action;if(a==='edit')openModal('editModal');if(a==='password')openModal('passwordModal');if(a==='wallet')location.href='topup.html';if(a==='support')location.href='contact.html';if(a==='notifications'||a==='privacy'){ $('settingsTitle').textContent=a==='notifications'?'Notifications':'Privacy Settings'; $('settingsText').textContent=a==='notifications'?'Dhibiti aina za taarifa unazotaka kupokea.':'Taarifa za account yako zinabaki ndani ya session yako salama.'; $('settingsBody').innerHTML=a==='notifications'?'<label style="display:flex;gap:10px;align-items:center;padding:12px;border:1px solid #173a75;border-radius:8px;color:#b9c9e5;font-size:10px"><input id="notifToggle" type="checkbox" checked> Email & account notifications</label>':'<div class="security-note">✓ Password huhifadhiwa kwa hashing. ✓ Email ya account inatoka kwenye registration/login. ✓ Profile requests zinahitaji login token.</div>';openModal('settingsModal')}});
+$('editForm').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button.primary-btn');b.disabled=true;try{const r=await api('/api/auth/profile',{method:'PUT',body:JSON.stringify({name:$('editName').value.trim(),phone:$('editPhone').value.trim()})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Imeshindikana');render(d.user);localStorage.setItem('gamehubUser',JSON.stringify(d.user));status($('editStatus'),'✓ Profile imehifadhiwa.',true);setTimeout(()=>closeModal('editModal'),650)}catch(e){status($('editStatus'),'❌ '+e.message)}finally{b.disabled=false}};
+$('passwordForm').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button.primary-btn');b.disabled=true;try{const r=await api('/api/auth/change-password',{method:'POST',body:JSON.stringify({oldPassword:$('oldPassword').value,newPassword:$('newPassword').value,confirmPassword:$('confirmPassword').value})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Imeshindikana');status($('passwordStatus'),'✓ '+d.message,true);e.target.reset();setTimeout(()=>closeModal('passwordModal'),800)}catch(e){status($('passwordStatus'),'❌ '+e.message)}finally{b.disabled=false}};
+$('logoutLink').onclick=async e=>{e.preventDefault();try{await api('/api/auth/logout',{method:'POST'})}catch(_){}localStorage.removeItem('gamehubToken');localStorage.removeItem('gamehubUser');location.replace('login.html')};
+loadProfile();
+</script>
+</body></html>
