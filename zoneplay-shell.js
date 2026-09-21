@@ -76,6 +76,7 @@
     'courses.html':'academy.html','topup.html':'efootball.html','rental.html':'cloudgaming.html','community.html':'chat.html','tournaments.html':'efootball.html',
     'steamaccounts.html':'shop.html','recommendations.html':'shop.html'};
   var here = (location.pathname.split('/').pop()||'index.html').toLowerCase();
+  document.documentElement.dataset.zpPage = here.replace(/\.html$/,'');
   var qs = new URLSearchParams(location.search);
   function isActive(href, strict){
     var parts = href.split('#')[0].split('?'), file = parts[0], q = new URLSearchParams(parts[1]||'');
@@ -122,6 +123,7 @@
     var tc = document.querySelector('meta[name=theme-color]');
     if (!tc){ tc=document.createElement('meta'); tc.name='theme-color'; document.head.appendChild(tc); }
     tc.content = '#040816';
+    if (document.title) document.title = document.title.replace(/GameHub/gi,'LIFEISGAMETZ');
 
     /* remove the old per-page chrome */
     document.querySelectorAll('body > .sidebar, body > .navbar, body > .topbar, body > header.navbar').forEach(function(e){ e.remove(); });
@@ -133,10 +135,23 @@
 
     var shell = document.createElement('div'); shell.id='zp-shell'; shell.className='zp-shell';
     var side = document.createElement('aside'); side.className='zp-sidebar'; side.setAttribute('aria-label','Menu kuu');
+    /* Grouped navigation keeps the same ZonePlay structure on every page. */
+    var groups = [
+      ['MAIN', NAV.slice(0,3)],
+      ['GAMING', NAV.slice(3,10)],
+      ['LIVE & MEDIA', NAV.slice(10,13)],
+      ['SERVICES', NAV.slice(13,19)],
+      ['ACCOUNT', NAV.slice(19)]
+    ];
+    var groupedNav = groups.map(function(g){
+      return '<div class="zp-nav-label">'+g[0]+'</div>'+g[1].map(function(x){
+        return item(x[0],x[1],x[2], x[0]==='Cart');
+      }).join('');
+    }).join('');
     side.innerHTML =
       '<a class="zp-brand" href="index.html">'+logoSvg()+'<span><b>LIFEIS<span>GAME</span>TZ</b><small>PLAY • LEARN • EARN</small></span></a>'+
-      '<nav class="zp-nav">'+NAV.map(function(x){ return item(x[0],x[1],x[2], x[0]==='Cart'); }).join('')+
-      '<details class="zp-more"'+(MORE.some(function(m){return isActive(m[1],true);})?' open':'')+'><summary>ZAIDI</summary>'+MORE.map(function(x){ return item(x[0],x[1],x[2]); }).join('')+'</details></nav>'+
+      '<nav class="zp-nav">'+groupedNav+
+      '<details class="zp-more"'+(MORE.some(function(m){return isActive(m[1],true);})?' open':'')+'><summary>MORE PAGES</summary>'+MORE.map(function(x){ return item(x[0],x[1],x[2]); }).join('')+'</details></nav>'+
       '<div class="zp-side-foot">'+(isAdmin?'<a href="admin.html">'+ZP.icon('settings')+'Admin Dashboard</a>':'')+'<a href="contact.html">'+ZP.icon('headset')+'Msaada</a></div>';
 
     var main = document.createElement('div'); main.className='zp-main';
