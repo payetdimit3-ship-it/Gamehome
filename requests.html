@@ -24,30 +24,10 @@
       .topbar { padding:12px 15px 0; }
     }
   </style>
-
-  <link rel="stylesheet" href="zoneplay-full.css">
+  <link rel="stylesheet" href="zoneplay.css">
+  <script src="zoneplay-shell.js"></script>
 </head>
-<body class="zp-body">
-<div class="zp-shell">
-  <aside class="zp-sidebar">
-    <a class="zp-brand" href="index.html"><span class="zp-brand-mark">✦</span><span><b>LIFEIS<span>GAME</span>TZ</b><small>PLAY • LEARN • EARN</small></span></a>
-    <nav class="zp-nav"><a class="zp-nav-item " href="index.html"><i>⌂</i><span>Home</span></a><a class="zp-nav-item " href="shop.html"><i>🎮</i><span>Store</span></a><a class="zp-nav-item " href="categories.html"><i>▦</i><span>Games</span></a><a class="zp-nav-item " href="shop.html"><i>▣</i><span>PSP Gaming</span></a><a class="zp-nav-item " href="shop.html"><i>▣</i><span>PS2 Gaming</span></a><a class="zp-nav-item " href="shop.html"><i>▣</i><span>PS3 Gaming</span></a><a class="zp-nav-item " href="shop.html"><i>🎮</i><span>Nintendo Switch</span></a><a class="zp-nav-item " href="shop.html"><i>▥</i><span>Android Gaming</span></a><a class="zp-nav-item " href="shop.html"><i>▤</i><span>PC Gaming</span></a><a class="zp-nav-item " href="movies.html"><i>▤</i><span>Movies</span></a><a class="zp-nav-item " href="live.html"><i>▣</i><span>Live TV / Sports</span></a><a class="zp-nav-item " href="livescores.html"><i>⚽</i><span>Live Scores</span></a><a class="zp-nav-item " href="academy.html"><i>🎓</i><span>Academy / Courses</span></a><a class="zp-nav-item " href="cloudgaming.html"><i>☁</i><span>Cloud Gaming</span></a><a class="zp-nav-item " href="topup.html"><i>◉</i><span>eFootball & Top Up</span></a><a class="zp-nav-item " href="giftcards.html"><i>🎁</i><span>Gift Cards</span></a><a class="zp-nav-item " href="chat.html"><i>◌</i><span>Community / Chat</span></a><a class="zp-nav-item " href="health.html"><i>♥</i><span>Health Assistant</span></a><a class="zp-nav-item " href="courses.html"><i>✦</i><span>AI Assistant</span></a><a class="zp-nav-item " href="marketplace.html"><i>▰</i><span>Marketplace</span></a><a class="zp-nav-item " href="wishlist.html"><i>♡</i><span>Wishlist</span></a><a class="zp-nav-item " href="cart.html"><i>🛒</i><span>Cart</span></a><a class="zp-nav-item " href="mygames.html"><i>▤</i><span>My Games / Library</span></a><a class="zp-nav-item " href="profile.html"><i>♙</i><span>Profile</span></a></nav>
-    <div class="zp-side-foot"><a href="contact.html">☎ Contact</a><a href="faq.html">? Help & FAQ</a><a href="terms.html">⌘ Terms</a></div>
-  </aside>
-  <div class="zp-main">
-    <header class="zp-header">
-      <button class="zp-mobile-menu" type="button" aria-label="Menu" onclick="document.querySelector('.zp-shell').classList.toggle('open')">☰</button>
-      <a class="zp-mobile-brand" href="index.html">LIFEIS<span>GAME</span>TZ</a>
-      <label class="zp-search"><span>⌕</span><input id="zpGlobalSearch" type="search" placeholder="Tafuta game, filamu, kozi, bidhaa..." autocomplete="off"></label>
-      <div class="zp-head-actions">
-        <a href="contact.html" aria-label="Notifications">♧<b>3</b></a>
-        <a href="cart.html" aria-label="Cart">🛒<b id="zpCartBadge">0</b></a>
-        <a class="zp-wallet" href="topup.html">▣ <strong>TSh 12,500 →</strong></a>
-        <a class="zp-profile" href="profile.html"><span>👤</span><span><strong>Kelvin Fred</strong><small>Premium User</small></span></a>
-      </div>
-    </header>
-    <div class="zp-content">
-
+<body>
 
   <div class="sidebar">
   <div class="logo">🎮 GAME<span>HUB</span></div>
@@ -205,16 +185,5 @@
     loadRequests();
   </script>
 
-  <script src="zoneplay-shell.js"></script>
-</div>
-    <nav class="zp-bottom-nav"><a href="index.html"><i>⌂</i>Home</a><a href="shop.html"><i>🎮</i>Store</a><a href="cart.html"><i>🛒</i>Cart</a><a href="mygames.html"><i>▤</i>Library</a><a href="profile.html"><i>♙</i>Profile</a></nav>
-  </div>
-</div>
-
-<script>(function(){
-  const q=document.getElementById('zpGlobalSearch');
-  if(q){q.addEventListener('keydown',function(e){if(e.key==='Enter'){const v=q.value.trim();if(v) location.href='shop.html?search='+encodeURIComponent(v);}});}
-  try{const c=JSON.parse(localStorage.getItem('cart')||'[]');const n=Array.isArray(c)?c.reduce((a,x)=>a+(Number(x.qty)||1),0):0;const b=document.getElementById('zpCartBadge');if(b)b.textContent=n;}catch(e){}
-})();</script>
 </body>
 </html>
