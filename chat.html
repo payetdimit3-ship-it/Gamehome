@@ -7,9 +7,30 @@
 <style>
 body{background:#05060d;color:#fff}.chat-shell{max-width:1050px;margin:0 auto;padding:28px 18px 60px}.chat-hero{padding:28px;border:1px solid rgba(139,92,246,.2);border-radius:24px;background:radial-gradient(circle at 85% 20%,rgba(124,58,237,.28),transparent 32%),linear-gradient(135deg,#0d1020,#17112d);margin-bottom:16px}.eyebrow{font-size:10px;letter-spacing:2px;color:#67e8f9;font-weight:900}.chat-hero h1{font-size:clamp(30px,6vw,52px);margin:7px 0}.chat-hero p{color:#aeb5cc;max-width:760px;line-height:1.7}.chat-card{background:#0b0e1a;border:1px solid #242942;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}.chat-head{padding:14px 16px;border-bottom:1px solid #22263a;display:flex;justify-content:space-between;align-items:center;gap:10px}.online{color:#6ee7b7;font-size:11px}.messages{height:520px;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:10px;background:radial-gradient(circle at 50% 0,rgba(124,58,237,.08),transparent 40%)}.msg{max-width:82%;padding:10px 13px;border-radius:14px;background:#12162a;border:1px solid #252b43}.msg b{display:block;font-size:12px;color:#c4b5fd;margin-bottom:4px}.msg p{font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word}.msg time{display:block;color:#69718d;font-size:9px;margin-top:5px}.empty{margin:auto;color:#77809e;text-align:center}.compose{padding:14px;border-top:1px solid #22263a;background:#080a13}.compose-top{display:flex;gap:8px;margin-bottom:8px}.compose input,.compose textarea{width:100%;background:#05070e;color:#fff;border:1px solid #292e48;border-radius:11px;padding:11px;outline:none}.compose textarea{resize:vertical;min-height:70px}.compose-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}.hint{color:#68718e;font-size:11px}.send{border:0;background:linear-gradient(135deg,#7c3aed,#c026d3);color:#fff;padding:11px 18px;border-radius:11px;font-weight:800;cursor:pointer}.back{display:inline-block;margin-bottom:15px;color:#b9a4ff}.voice{border:1px solid #30364f;background:#101428;color:#fff;border-radius:10px;padding:9px 12px;cursor:pointer}@media(max-width:650px){.messages{height:60vh}.msg{max-width:92%}.compose-top{flex-direction:column}}
 </style>
+
   <link rel="stylesheet" href="zoneplay-full.css">
 </head>
-<body>
+<body class="zp-body">
+<div class="zp-shell">
+  <aside class="zp-sidebar">
+    <a class="zp-brand" href="index.html"><span class="zp-brand-mark">✦</span><span><b>LIFEIS<span>GAME</span>TZ</b><small>PLAY • LEARN • EARN</small></span></a>
+    <nav class="zp-nav"><a class="zp-nav-item " href="index.html"><i>⌂</i><span>Home</span></a><a class="zp-nav-item " href="shop.html"><i>🎮</i><span>Store</span></a><a class="zp-nav-item " href="categories.html"><i>▦</i><span>Games</span></a><a class="zp-nav-item " href="shop.html"><i>▣</i><span>PSP Gaming</span></a><a class="zp-nav-item " href="shop.html"><i>▣</i><span>PS2 Gaming</span></a><a class="zp-nav-item " href="shop.html"><i>▣</i><span>PS3 Gaming</span></a><a class="zp-nav-item " href="shop.html"><i>🎮</i><span>Nintendo Switch</span></a><a class="zp-nav-item " href="shop.html"><i>▥</i><span>Android Gaming</span></a><a class="zp-nav-item " href="shop.html"><i>▤</i><span>PC Gaming</span></a><a class="zp-nav-item " href="movies.html"><i>▤</i><span>Movies</span></a><a class="zp-nav-item " href="live.html"><i>▣</i><span>Live TV / Sports</span></a><a class="zp-nav-item " href="livescores.html"><i>⚽</i><span>Live Scores</span></a><a class="zp-nav-item " href="academy.html"><i>🎓</i><span>Academy / Courses</span></a><a class="zp-nav-item " href="cloudgaming.html"><i>☁</i><span>Cloud Gaming</span></a><a class="zp-nav-item " href="topup.html"><i>◉</i><span>eFootball & Top Up</span></a><a class="zp-nav-item " href="giftcards.html"><i>🎁</i><span>Gift Cards</span></a><a class="zp-nav-item active" href="chat.html"><i>◌</i><span>Community / Chat</span></a><a class="zp-nav-item " href="health.html"><i>♥</i><span>Health Assistant</span></a><a class="zp-nav-item " href="courses.html"><i>✦</i><span>AI Assistant</span></a><a class="zp-nav-item " href="marketplace.html"><i>▰</i><span>Marketplace</span></a><a class="zp-nav-item " href="wishlist.html"><i>♡</i><span>Wishlist</span></a><a class="zp-nav-item " href="cart.html"><i>🛒</i><span>Cart</span></a><a class="zp-nav-item " href="mygames.html"><i>▤</i><span>My Games / Library</span></a><a class="zp-nav-item " href="profile.html"><i>♙</i><span>Profile</span></a></nav>
+    <div class="zp-side-foot"><a href="contact.html">☎ Contact</a><a href="faq.html">? Help & FAQ</a><a href="terms.html">⌘ Terms</a></div>
+  </aside>
+  <div class="zp-main">
+    <header class="zp-header">
+      <button class="zp-mobile-menu" type="button" aria-label="Menu" onclick="document.querySelector('.zp-shell').classList.toggle('open')">☰</button>
+      <a class="zp-mobile-brand" href="index.html">LIFEIS<span>GAME</span>TZ</a>
+      <label class="zp-search"><span>⌕</span><input id="zpGlobalSearch" type="search" placeholder="Tafuta game, filamu, kozi, bidhaa..." autocomplete="off"></label>
+      <div class="zp-head-actions">
+        <a href="contact.html" aria-label="Notifications">♧<b>3</b></a>
+        <a href="cart.html" aria-label="Cart">🛒<b id="zpCartBadge">0</b></a>
+        <a class="zp-wallet" href="topup.html">▣ <strong>TSh 12,500 →</strong></a>
+        <a class="zp-profile" href="profile.html"><span>👤</span><span><strong>Kelvin Fred</strong><small>Premium User</small></span></a>
+      </div>
+    </header>
+    <div class="zp-content">
+
 <div class="chat-shell">
 <a class="back" href="index.html">← Rudi LIFEISGAMETZ Home</a>
 <section class="chat-hero"><span class="eyebrow">LIFEISGAMETZ • COMMUNITY</span><h1>💬 Public Gaming Chat</h1><p>Ongea na gamers wengine kuhusu games, tournaments, Academy na community. Hii page ni public — hakuna login inayohitajika.</p></section>
@@ -34,4 +55,14 @@ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(SR)document
 load();setInterval(load,7000);
 </script>
   <script src="zoneplay-shell.js"></script>
+</div>
+    <nav class="zp-bottom-nav"><a href="index.html"><i>⌂</i>Home</a><a href="shop.html"><i>🎮</i>Store</a><a href="cart.html"><i>🛒</i>Cart</a><a href="mygames.html"><i>▤</i>Library</a><a href="profile.html"><i>♙</i>Profile</a></nav>
+  </div>
+</div>
+
+<script>(function(){
+  const q=document.getElementById('zpGlobalSearch');
+  if(q){q.addEventListener('keydown',function(e){if(e.key==='Enter'){const v=q.value.trim();if(v) location.href='shop.html?search='+encodeURIComponent(v);}});}
+  try{const c=JSON.parse(localStorage.getItem('cart')||'[]');const n=Array.isArray(c)?c.reduce((a,x)=>a+(Number(x.qty)||1),0):0;const b=document.getElementById('zpCartBadge');if(b)b.textContent=n;}catch(e){}
+})();</script>
 </body></html>
