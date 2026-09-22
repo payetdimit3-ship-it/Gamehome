@@ -7,7 +7,7 @@ const { createClient } = require('@supabase/supabase-js');
 const multer = require('multer');
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static('.'));
 
 // 🎬 MEDIA STORAGE — Supabase Storage (production) au local uploads (fallback)
@@ -107,21 +107,22 @@ const DATA_DIR = path.join(__dirname, '.data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const TRACKED_FILES = [
-  'users.json', 'sessions.json', 'products.json', 
-  'orders.json', 'requests.json', 'security.json', 
-  'marketplace.json', 'coupons.json', 'reviews.json', 
-  'matches.json', 'tournaments.json', 'live_streams.json', 
-  'courses.json', 'movies.json', 'media.json', 
-  'ai_builder_runs.json', 'banners.json', 'settings.json', 'public_chat.json'
+  'users.json', 'sessions.json', 'products.json',
+  'orders.json', 'requests.json', 'security.json',
+  'marketplace.json', 'coupons.json', 'reviews.json',
+  'matches.json', 'tournaments.json', 'live_streams.json',
+  'courses.json', 'movies.json', 'media.json',
+  'ai_builder_runs.json', 'banners.json', 'settings.json',
+  'public_chat.json', 'health_chats.json', 'boss_approvals.json'
 ];
 
 function readJson(file, fallback) {
-  try { 
+  try {
     const filePath = path.join(DATA_DIR, file);
     if (!fs.existsSync(filePath)) return fallback;
-    return JSON.parse(fs.readFileSync(filePath, 'utf8')); 
-  } catch (e) { 
-    return fallback; 
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch (e) {
+    return fallback;
   }
 }
 
@@ -130,14 +131,14 @@ async function writeJson(file, data) {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
   if (!supabase) return { local: true, cloud: false };
   try {
-    const { error } = await supabase.from(process.env.SUPABASE_KV_TABLE || 'kv_store').upsert({ 
-      file_name: file, 
-      data, 
-      updated_at: new Date().toISOString() 
+    const { error } = await supabase.from(process.env.SUPABASE_KV_TABLE || 'kv_store').upsert({
+      file_name: file,
+      data,
+      updated_at: new Date().toISOString()
     });
-    if (error) { 
-      console.error('☁️ Supabase backup error (' + file + '):', error.message); 
-      return { local: true, cloud: false, error: error.message }; 
+    if (error) {
+      console.error('☁️ Supabase backup error (' + file + '):', error.message);
+      return { local: true, cloud: false, error: error.message };
     }
     return { local: true, cloud: true };
   } catch (err) {
@@ -1366,23 +1367,29 @@ app.get('/api/my-orders', (req, res) => {
   res.json({ success: true, orders: mine });
 });
 
-// 🤖 AI INTEGRATION
+// ═══════════════════════════════════════════════════════════════
+// 🤖 AI INTEGRATION — MODEL MPYA ZA SEPTEMBA 2026
+// ═══════════════════════════════════════════════════════════════
 async function askAI(prompt, preferred) {
   const providers = {
     openai: {
       key: process.env.OPENAI_API_KEY,
-      model: process.env.NEXUS_OPENAI_MODEL || 'gpt-4o-mini'
+      // GPT-6 Astra (flagship) au GPT-5.6 Luna (haraka, bei nafuu)
+      model: process.env.NEXUS_OPENAI_MODEL || 'gpt-5.6-luna'
     },
     deepseek: {
       key: process.env.DEEPSEEK_API_KEY,
-      model: process.env.NEXUS_DEEPSEEK_MODEL || 'deepseek-chat'
+      // DeepSeek V4.1 Flash — bei nafuu sana, nzuri kwa coding
+      model: process.env.NEXUS_DEEPSEEK_MODEL || 'deepseek-v4.1-flash'
     },
     anthropic: {
       key: process.env.ANTHROPIC_API_KEY,
-      model: process.env.NEXUS_ANTHROPIC_MODEL || 'claude-3-5-haiku-latest'
+      // Claude Fable 5 (ubora wa juu) au Sonnet 5 (wastani)
+      model: process.env.NEXUS_ANTHROPIC_MODEL || 'claude-fable-5'
     },
     google: {
       key: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY,
+      // Gemini 3.5 Flash — model ya msingi ya Google kwa sasa
       model: process.env.NEXUS_GOOGLE_MODEL || 'gemini-3.5-flash'
     }
   };
@@ -1419,9 +1426,12 @@ async function askAI(prompt, preferred) {
           },
           body: JSON.stringify({
             model: cfg.model,
-            messages: [{ role: 'user', content: clean(prompt) }],
+            messages: [
+              { role: 'system', content: 'Wewe ni msaidizi wa GameHub Tanzania. Jibu kwa Kiswahili au Kiingereza kulingana na mteja.' },
+              { role: 'user', content: clean(prompt) }
+            ],
             temperature: 0.7,
-            max_tokens: 700
+            max_tokens: 900
           })
         });
         const data = await response.json();
@@ -1439,7 +1449,7 @@ async function askAI(prompt, preferred) {
           },
           body: JSON.stringify({
             model: cfg.model,
-            max_tokens: 700,
+            max_tokens: 900,
             temperature: 0.7,
             messages: [{ role: 'user', content: clean(prompt) }]
           })
@@ -1458,7 +1468,7 @@ async function askAI(prompt, preferred) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [{ parts: [{ text: clean(prompt) }] }],
-              generationConfig: { temperature: 0.7, maxOutputTokens: 700 }
+              generationConfig: { temperature: 0.7, maxOutputTokens: 900 }
             })
           }
         );
@@ -1481,6 +1491,23 @@ async function askGemini(prompt) {
   return askAI(prompt, 'google');
 }
 
+// ═══════════ 🩺 HEALTH SAFETY LAYER (Data Isolation) ═══════════
+// Inatenganisha AI ya afya na biashara kwa usalama wa data.
+const HEALTH_FORBIDDEN = ['orders.json', 'users.json', 'products.json', 'coupons.json', 'sessions.json'];
+
+function healthSafetyLayer(prompt) {
+  let cleaned = String(prompt);
+  for (const f of HEALTH_FORBIDDEN) {
+    if (cleaned.includes(f)) {
+      cleaned = cleaned.replace(new RegExp(f.replace(/\./g, '\\.'), 'g'), '[DATA_ILIYOFICHWA]');
+    }
+  }
+  // Zuia maneno ya kutoa prescription/diagnosis
+  cleaned = cleaned.replace(/toa dawa|agiza dawa|andika prescription|diagnosis ya uhakika/gi, '[KANUNI: Hauruhusiwi]');
+  return cleaned;
+}
+
+// ═══════════ 💬 AI CHAT (Customer Support) ═══════════
 app.post('/api/ai/chat', async (req, res) => {
   const { message, history } = req.body;
   if (!message || !message.trim()) return res.status(400).json({ error: 'Andika ujumbe' });
@@ -1518,6 +1545,7 @@ app.post('/api/ai/chat', async (req, res) => {
   res.json({ reply });
 });
 
+// ═══════════ 🎮 AI RECOMMENDATIONS ═══════════
 app.post('/api/ai/recommendations', async (req, res) => {
   const { message, games } = req.body;
   const products = Object.values(readJson('products.json', {}));
@@ -1532,9 +1560,14 @@ Jibu kwa Kiswahili kwa ufupi, toa chaguo hadi 3 na sababu.`;
   res.json({ reply });
 });
 
+// ═══════════ 🩺 AI HEALTH (Kwa Safety Layer) ═══════════
 app.post('/api/ai/health', async (req, res) => {
   const { message, history } = req.body;
   if (!message || !String(message).trim()) return res.status(400).json({ error: 'Andika swali' });
+
+  // 🔒 Tumia Safety Layer kwa data isolation
+  const safeMessage = healthSafetyLayer(String(message).slice(0, 5000));
+
   const transcript = Array.isArray(history) ? history.slice(-8).map(h => `${h.role}: ${h.text}`).join('\n') : '';
   const prompt = `Wewe ni msaidizi wa taarifa za afya wa jamii ndani ya GameHub.
 Jibu kwa Kiswahili rahisi na kwa usalama. Toa taarifa za jumla tu; usijidai kuwa daktari, usifanye diagnosis ya uhakika, na usiagize dawa kwa mtu binafsi.
@@ -1542,11 +1575,25 @@ Kama kuna dalili kali au dharura (kupumua kwa shida, maumivu makali ya kifua, ku
 Usiombe taarifa nyeti zisizo muhimu.
 Mazungumzo:
 ${transcript}
-Swali jipya: ${String(message).slice(0, 5000)}`;
+Swali jipya: ${safeMessage}`;
+
   const reply = await askAI(prompt, process.env.NEXUS_HEALTH_PROVIDER || 'google');
+
+  // Hifadhi chat ya afya kwenye file tofauti (isolation)
+  const healthLog = readJson('health_chats.json', []);
+  healthLog.push({
+    id: 'hc_' + Date.now(),
+    user: getUserByToken(req)?.email || 'anonymous',
+    question: safeMessage.slice(0, 200),
+    time: new Date().toISOString()
+  });
+  if (healthLog.length > 500) healthLog.splice(0, healthLog.length - 500);
+  writeJson('health_chats.json', healthLog);
+
   res.json({ reply });
 });
 
+// ═══════════ 🤖 AI ADMIN (Business Commands) ═══════════
 app.post('/api/ai/admin', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
@@ -1616,6 +1663,88 @@ app.post('/api/ai/admin', async (req, res) => {
   res.json({ reply });
 });
 
+// ═══════════ 🎙️ AI BOSS ASSISTANT (Chat + Voice Control) ═══════════
+app.post('/api/ai/boss', async (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si Boss (Admin).' });
+
+  const { message, mode } = req.body; // mode: 'chat' au 'voice'
+  if (!message || !message.trim()) return res.status(400).json({ error: 'Andika au sema amri yako.' });
+
+  const orders = readJson('orders.json', []);
+  const paid = orders.filter(o => o.status === 'successful');
+  const usersCount = Object.keys(readJson('users.json', {})).length;
+  const revenue = paid.reduce((t, o) => t + Number(o.amount || 0), 0);
+  const pending = orders.filter(o => String(o.status || '').startsWith('pending'));
+
+  // 🔒 Boss Approval Required kwa miamala ya pesa
+  const needsApproval = /payout|refund|withdraw|kutoa pesa|kufuta user|delete user|badilisha wallet|futa data/i.test(message);
+
+  const prompt = `Wewe ni AI Boss Assistant wa GameHub Tanzania. Boss (${user.name}) amekuuliza:
+"${message}"
+
+TAARIFA ZA SASA:
+- Mauzo yote: ${orders.length} orders
+- Mauzo yaliyofanikiwa: ${paid.length} orders
+- Mapato: ${revenue.toLocaleString()} TZS
+- Wateja: ${usersCount}
+- Orders zinazosubiri: ${pending.length}
+
+KANUNI:
+1. Jibu kwa Kiswahili kifupi na kwa heshima.
+2. Kama ombi linahitaji mabadiliko ya pesa (payout/refund/delete), SEMSA: "⚠️ Hii inahitaji idhini yako ya moja kwa moja (Boss Approval)."
+3. Kama ni ripoti tu, itoe kwa ufupi.
+4. Unaweza kupendekeza hatua zinazofuata.
+
+${needsApproval ? '⚠️ TAMBUA: Ombi hili linahitaji Boss Approval — lisifanye lolote lenyewe.' : ''}`;
+
+  const reply = await askAI(prompt, process.env.NEXUS_BOSS_PROVIDER || 'google');
+
+  // Hifadhi approval requests kama zinahitaji
+  if (needsApproval) {
+    const approvals = readJson('boss_approvals.json', []);
+    approvals.push({
+      id: 'appr_' + Date.now(),
+      command: message.slice(0, 500),
+      status: 'pending',
+      time: new Date().toISOString(),
+      requestedBy: user.email
+    });
+    await writeJson('boss_approvals.json', approvals);
+  }
+
+  res.json({
+    success: true,
+    reply,
+    needsApproval,
+    mode: mode || 'chat',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ═══════════ 📋 BOSS APPROVALS LIST ═══════════
+app.get('/api/ai/boss/approvals', (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si Boss.' });
+  const approvals = readJson('boss_approvals.json', []);
+  res.json({ success: true, approvals: approvals.slice().reverse() });
+});
+
+app.post('/api/ai/boss/approvals/:id/decide', async (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si Boss.' });
+  const { decision } = req.body; // 'approve' au 'reject'
+  const approvals = readJson('boss_approvals.json', []);
+  const item = approvals.find(x => x.id === req.params.id);
+  if (!item) return res.status(404).json({ error: 'Approval haipatikani.' });
+  item.status = decision === 'approve' ? 'approved' : 'rejected';
+  item.decidedAt = new Date().toISOString();
+  item.decidedBy = user.email;
+  await writeJson('boss_approvals.json', approvals);
+  res.json({ success: true, approval: item });
+});
+
+// ═══════════ BANNERS ═══════════
 app.get('/api/banners', (req, res) => {
   res.json({ success: true, banners: readJson('banners.json', []).filter(x => x.status !== 'hidden').slice(-20).reverse() });
 });
@@ -1747,10 +1876,11 @@ function extractJson(text) {
 async function askClaudeBuilder(command) {
   const key=process.env.ANTHROPIC_API_KEY;
   if(!key) throw new Error('Weka ANTHROPIC_API_KEY kwenye Render.');
-  const model=process.env.NEXUS_ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022';
+  // Claude Fable 5 (ubora wa juu) au Sonnet 5 (wastani)
+  const model=process.env.NEXUS_ANTHROPIC_BUILDER_MODEL || process.env.NEXUS_ANTHROPIC_MODEL || 'claude-fable-5';
   const system=`Wewe ni AI Web Developer & Manager wa GameHub. Tengeneza JSON TU, bila markdown.
 Allowed actions pekee:
-1) add_product: {name,price,type,desc,section,image}
+1) add_product: {name,price,productType,desc,section,image}
 2) add_banner: {title,description,buttonText,buttonUrl}
 3) add_movie: {title,description,genre,year,videoUrl,poster}
 4) add_course_video: {courseName,title,description,videoUrl}
@@ -1775,7 +1905,15 @@ app.post('/api/admin/ai-builder', async (req,res)=>{
       const type=String(action.type||action.action||'');
       if(type==='add_product'){
         const products=readJson('products.json',{}), id='p'+Date.now()+crypto.randomBytes(2).toString('hex');
-        products[id]={id,name:String(action.name||'New Product').slice(0,160),type:String(action.typeName||action.section||'Game').slice(0,80),price:Number(action.price||0),desc:String(action.desc||'').slice(0,800),image:String(action.image||'').slice(0,1000),section:String(action.section||'shop').slice(0,30)};
+        products[id]={
+          id,
+          name:String(action.name||'New Product').slice(0,160),
+          type:String(action.productType||action.itemType||action.section||'Game').slice(0,80),
+          price:Number(action.price||0),
+          desc:String(action.desc||'').slice(0,800),
+          imageUrl:String(action.image||action.imageUrl||'').slice(0,1000),
+          section:String(action.section||'shop').slice(0,30)
+        };
         await writeJson('products.json',products); results.push('Bidhaa: '+products[id].name); continue;
       }
       if(type==='add_banner'){
@@ -1793,10 +1931,9 @@ app.post('/api/admin/ai-builder', async (req,res)=>{
         c.videos=c.videos||[]; c.videos.push({id:'cv_'+Date.now(),title:String(action.title||'Video').slice(0,160),description:String(action.description||'').slice(0,1000),url:String(action.videoUrl||'').slice(0,2000),createdAt:new Date().toISOString()}); await writeJson('courses.json',courses); results.push('Course video: '+action.title); continue;
       }
       if(type==='update_settings'){
-        // REKEREBISHO: writeJson inachukua file_name na data pekee
-        const settings=readJson('settings.json',{}); 
-        settings[String(action.key||'').slice(0,80)]=String(action.value||'').slice(0,500); 
-        await writeJson('settings.json',settings); 
+        const settings=readJson('settings.json',{});
+        settings[String(action.key||'').slice(0,80)]=String(action.value||'').slice(0,500);
+        await writeJson('settings.json',settings);
         results.push('Setting: '+action.key); continue;
       }
     }
@@ -1805,7 +1942,7 @@ app.post('/api/admin/ai-builder', async (req,res)=>{
   }catch(e){console.error('AI Builder:',e);res.status(500).json({error:e.message});}
 });
 
-// 🏆 TOURNAMENTS
+// ═══════════ TOURNAMENTS ═══════════
 app.get('/api/tournaments', (req, res) => {
   const data = readJson('tournaments.json', []);
   res.json({ success: true, tournaments: data });
@@ -1826,7 +1963,7 @@ app.post('/api/tournaments/register', (req, res) => {
 
 ensureTournamentSeed();
 
-// 🛡️ Upload/API error handler
+// ═══════════ UPLOAD/API ERROR HANDLER ═══════════
 app.use((err, req, res, next) => {
   if (err) {
     console.error('API error:', err.message);
@@ -1840,7 +1977,7 @@ app.use((err, req, res, next) => {
   next();
 });
 
-// START SERVER
+// ═══════════ START SERVER ═══════════
 restoreFromSupabase()
   .then(() => ensureMediaBucket())
   .catch(err => console.error('☁️ Imeshindwa kurudisha data kutoka Supabase:', err.message))
