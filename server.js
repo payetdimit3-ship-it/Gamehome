@@ -19,7 +19,7 @@ app.use('/uploads', express.static(MEDIA_DIR));
 
 const upload = multer({
   dest: TMP_MEDIA_DIR,
-  limits: { fileSize: 1024 * 1024 * 1024 }, // 1GB limit
+  limits: { fileSize: 1024 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const mime = String(file.mimetype || '').toLowerCase();
     const name = String(file.originalname || '').toLowerCase();
@@ -1368,35 +1368,50 @@ app.get('/api/my-orders', (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════
-// 🤖 AI INTEGRATION — MODEL MPYA ZA SEPTEMBA 2026
+// 🤖 AI INTEGRATION — PROVIDERS WOTE 6 (Sept 2026)
+// Mpangilio: Groq → Google → OpenRouter → DeepSeek → OpenAI → Anthropic
 // ═══════════════════════════════════════════════════════════════
 async function askAI(prompt, preferred) {
   const providers = {
-    openai: {
-      key: process.env.OPENAI_API_KEY,
-      // GPT-6 Astra (flagship) au GPT-5.6 Luna (haraka, bei nafuu)
-      model: process.env.NEXUS_OPENAI_MODEL || 'gpt-5.6-luna'
+    // 🥇 GROQ — Bure kabisa, haraka sana
+    groq: {
+      key: process.env.GROQ_API_KEY,
+      model: process.env.NEXUS_GROQ_MODEL || 'llama-3.3-70b-versatile',
+      base: 'https://api.groq.com/openai/v1'
     },
-    deepseek: {
-      key: process.env.DEEPSEEK_API_KEY,
-      // DeepSeek V4.1 Flash — bei nafuu sana, nzuri kwa coding
-      model: process.env.NEXUS_DEEPSEEK_MODEL || 'deepseek-v4.1-flash'
-    },
-    anthropic: {
-      key: process.env.ANTHROPIC_API_KEY,
-      // Claude Fable 5 (ubora wa juu) au Sonnet 5 (wastani)
-      model: process.env.NEXUS_ANTHROPIC_MODEL || 'claude-fable-5'
-    },
+    // 🥈 GOOGLE GEMINI — Bure kwa kiasi
     google: {
       key: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY,
-      // Gemini 3.5 Flash — model ya msingi ya Google kwa sasa
-      model: process.env.NEXUS_GOOGLE_MODEL || 'gemini-3.5-flash'
+      model: process.env.NEXUS_GOOGLE_MODEL || 'gemini-2.0-flash-exp'
+    },
+    // 🥉 OPENROUTER — Model 50+ bure
+    openrouter: {
+      key: process.env.OPENROUTER_API_KEY,
+      model: process.env.NEXUS_OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',
+      base: 'https://openrouter.ai/api/v1'
+    },
+    // DEEPSEEK — $5 bure
+    deepseek: {
+      key: process.env.DEEPSEEK_API_KEY,
+      model: process.env.NEXUS_DEEPSEEK_MODEL || 'deepseek-chat',
+      base: 'https://api.deepseek.com'
+    },
+    // OPENAI
+    openai: {
+      key: process.env.OPENAI_API_KEY,
+      model: process.env.NEXUS_OPENAI_MODEL || 'gpt-4o-mini',
+      base: 'https://api.openai.com'
+    },
+    // ANTHROPIC CLAUDE
+    anthropic: {
+      key: process.env.ANTHROPIC_API_KEY,
+      model: process.env.NEXUS_ANTHROPIC_MODEL || 'claude-3-5-haiku-latest'
     }
   };
 
   const configured = Object.keys(providers).filter(p => providers[p].key);
   if (!configured.length) {
-    return 'AI API key haijawekwa. Weka OPENAI_API_KEY, DEEPSEEK_API_KEY, ANTHROPIC_API_KEY au GOOGLE_GENERATIVE_AI_API_KEY kwenye Render.';
+    return 'AI API key haijawekwa. Weka GROQ_API_KEY au GOOGLE_GENERATIVE_AI_API_KEY kwenye Render.';
   }
 
   const primary = preferred && providers[preferred] && providers[preferred].key
@@ -1406,7 +1421,7 @@ async function askAI(prompt, preferred) {
 
   const fallbackEnv = process.env.NEXUS_AI_FALLBACK;
   const order = [primary]
-    .concat(fallbackEnv && providers[fallbackEnv]?.key ? [fallbackEnv] : [])
+    .concat(fallbackEnv && providers[fallbackEnv]?.key && fallbackEnv !== primary ? [fallbackEnv] : [])
     .concat(configured.filter(p => p !== primary && p !== fallbackEnv));
 
   const clean = (value) => String(value || '').slice(0, 12000);
@@ -1416,18 +1431,25 @@ async function askAI(prompt, preferred) {
       const cfg = providers[provider];
       let text = '';
 
-      if (provider === 'openai' || provider === 'deepseek') {
-        const base = provider === 'deepseek' ? 'https://api.deepseek.com' : 'https://api.openai.com';
+      // 🟢 GROQ, OPENROUTER, DEEPSEEK, OPENAI — OpenAI-compatible format
+      if (['groq', 'openrouter', 'deepseek', 'openai'].includes(provider)) {
+        const base = cfg.base || (provider === 'deepseek' ? 'https://api.deepseek.com' : 'https://api.openai.com');
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + cfg.key
+        };
+        if (provider === 'openrouter') {
+          headers['HTTP-Referer'] = process.env.RENDER_EXTERNAL_URL || 'https://form-ecosystem.onrender.com';
+          headers['X-Title'] = 'GameHub Tanzania';
+        }
+
         const response = await fetch(base + '/chat/completions', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + cfg.key
-          },
+          headers,
           body: JSON.stringify({
             model: cfg.model,
             messages: [
-              { role: 'system', content: 'Wewe ni msaidizi wa GameHub Tanzania. Jibu kwa Kiswahili au Kiingereza kulingana na mteja.' },
+              { role: 'system', content: 'Wewe ni msaidizi wa GameHub Tanzania. Jibu kwa Kiswahili au Kiingereza kulingana na mteja. Kuwa mfupi, rafiki na wa kweli.' },
               { role: 'user', content: clean(prompt) }
             ],
             temperature: 0.7,
@@ -1439,6 +1461,7 @@ async function askAI(prompt, preferred) {
         text = data?.choices?.[0]?.message?.content || '';
       }
 
+      // 🔵 ANTHROPIC
       if (provider === 'anthropic') {
         const response = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
@@ -1459,6 +1482,7 @@ async function askAI(prompt, preferred) {
         text = data?.content?.map(x => x.text || '').join('') || '';
       }
 
+      // 🟡 GOOGLE GEMINI
       if (provider === 'google') {
         const response = await fetch(
           'https://generativelanguage.googleapis.com/v1beta/models/' +
@@ -1477,22 +1501,90 @@ async function askAI(prompt, preferred) {
         text = data?.candidates?.[0]?.content?.parts?.map(x => x.text || '').join('') || '';
       }
 
-      if (text.trim()) return text.trim();
+      if (text.trim()) {
+        console.log('✅ AI imejibu kwa: ' + provider);
+        return text.trim();
+      }
       throw new Error('Provider returned an empty response');
     } catch (err) {
-      console.error('AI provider failed:', provider, err.message);
+      console.error('❌ AI provider failed [' + provider + ']:', err.message);
     }
   }
 
-  return 'Samahani, AI haikupatikana kwa sasa. Kagua API key, model, quota/billing kwenye Render.';
+  return 'Samahani, AI haikupatikana kwa sasa. Kagua API key kwenye Render.';
 }
 
 async function askGemini(prompt) {
   return askAI(prompt, 'google');
 }
 
+// ═══════════ 🧪 AI DIAGNOSTIC — Jaribu providers wote ═══════════
+app.get('/api/ai/test', async (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
+
+  const results = {};
+  const testPrompt = 'Sema "AI inafanya kazi" kwa Kiswahili.';
+
+  const providers = {
+    groq: { key: process.env.GROQ_API_KEY, model: process.env.NEXUS_GROQ_MODEL || 'llama-3.3-70b-versatile', base: 'https://api.groq.com/openai/v1' },
+    google: { key: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY, model: process.env.NEXUS_GOOGLE_MODEL || 'gemini-2.0-flash-exp' },
+    openrouter: { key: process.env.OPENROUTER_API_KEY, model: process.env.NEXUS_OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free', base: 'https://openrouter.ai/api/v1' },
+    deepseek: { key: process.env.DEEPSEEK_API_KEY, model: process.env.NEXUS_DEEPSEEK_MODEL || 'deepseek-chat', base: 'https://api.deepseek.com' },
+    openai: { key: process.env.OPENAI_API_KEY, model: process.env.NEXUS_OPENAI_MODEL || 'gpt-4o-mini', base: 'https://api.openai.com' },
+    anthropic: { key: process.env.ANTHROPIC_API_KEY, model: process.env.NEXUS_ANTHROPIC_MODEL || 'claude-3-5-haiku-latest' }
+  };
+
+  for (const [name, cfg] of Object.entries(providers)) {
+    if (!cfg.key) {
+      results[name] = { status: 'NO_KEY', model: cfg.model };
+      continue;
+    }
+    try {
+      let text = '';
+      if (['groq', 'openrouter', 'deepseek', 'openai'].includes(name)) {
+        const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.key };
+        if (name === 'openrouter') {
+          headers['HTTP-Referer'] = process.env.RENDER_EXTERNAL_URL || 'https://form-ecosystem.onrender.com';
+          headers['X-Title'] = 'GameHub Tanzania';
+        }
+        const r = await fetch(cfg.base + '/chat/completions', {
+          method: 'POST', headers,
+          body: JSON.stringify({ model: cfg.model, messages: [{ role: 'user', content: testPrompt }], max_tokens: 100 })
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data?.error?.message || ('HTTP ' + r.status));
+        text = data?.choices?.[0]?.message?.content || '';
+      } else if (name === 'google') {
+        const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(cfg.model) + ':generateContent?key=' + encodeURIComponent(cfg.key), {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: testPrompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 100 } })
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data?.error?.message || ('HTTP ' + r.status));
+        text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      } else if (name === 'anthropic') {
+        const r = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': cfg.key, 'anthropic-version': '2023-06-01' },
+          body: JSON.stringify({ model: cfg.model, max_tokens: 100, messages: [{ role: 'user', content: testPrompt }] })
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data?.error?.message || ('HTTP ' + r.status));
+        text = data?.content?.[0]?.text || '';
+      }
+      results[name] = { status: 'OK', model: cfg.model, reply: text.slice(0, 100) };
+    } catch (e) {
+      results[name] = { status: 'FAILED', model: cfg.model, error: e.message };
+    }
+  }
+
+  res.json({ success: true, results, env: {
+    primary: process.env.NEXUS_AI_PRIMARY || 'auto',
+    fallback: process.env.NEXUS_AI_FALLBACK || 'auto'
+  }});
+});
+
 // ═══════════ 🩺 HEALTH SAFETY LAYER (Data Isolation) ═══════════
-// Inatenganisha AI ya afya na biashara kwa usalama wa data.
 const HEALTH_FORBIDDEN = ['orders.json', 'users.json', 'products.json', 'coupons.json', 'sessions.json'];
 
 function healthSafetyLayer(prompt) {
@@ -1502,7 +1594,6 @@ function healthSafetyLayer(prompt) {
       cleaned = cleaned.replace(new RegExp(f.replace(/\./g, '\\.'), 'g'), '[DATA_ILIYOFICHWA]');
     }
   }
-  // Zuia maneno ya kutoa prescription/diagnosis
   cleaned = cleaned.replace(/toa dawa|agiza dawa|andika prescription|diagnosis ya uhakika/gi, '[KANUNI: Hauruhusiwi]');
   return cleaned;
 }
@@ -1514,32 +1605,34 @@ app.post('/api/ai/chat', async (req, res) => {
 
   const products = Object.values(readJson('products.json', {}));
   const productList = products.length
-    ? products.map(p => p.name + ' (' + (p.type || 'Bidhaa') + ') - ' + Number(p.price).toLocaleString() + ' TZS' + (p.downloadLink ? ' [inadownload moja kwa moja]' : ' [Steam key/account]')).join('\n')
+    ? products.map(p => '• ' + p.name + ' (' + (p.type || 'Bidhaa') + ') — ' + Number(p.price).toLocaleString() + ' TZS' + (p.downloadLink ? ' [download moja kwa moja]' : ' [Steam key/account]')).join('\n')
     : 'Hakuna bidhaa bado kwenye duka';
 
   let transcript = '';
   if (Array.isArray(history) && history.length) {
-    transcript = '\n\nMazungumzo ya awali (kwa muktadha, usirudie kujitambulisha):\n' +
-      history.map(h => (h.role === 'user' ? 'Mteja: ' : 'Wewe: ') + h.text).join('\n') + '\n';
+    const recent = history.slice(-4);
+    transcript = '\n[Mazungumzo ya awali — kwa muktadha tu, USIJIBU yale maswali tena]:\n' +
+      recent.map(h => (h.role === 'user' ? 'Mteja alisema: ' : 'Wewe ulijibu: ') + String(h.text).slice(0, 200)).join('\n') +
+      '\n[Mwisho wa mazungumzo ya awali]\n\n';
   }
 
-  const prompt = 'Wewe ni msaidizi wa duka la gaming la Tanzania liitwalo GameHub.\n' +
-    'Unaweza kusaidia wateja kwa Kiswahili au Kiingereza.\n\n' +
-    'MUHIMU — KANUNI ZA USAHIHI:\n' +
-    '- Jibu tu kutokana na taarifa halisi zilizopo hapa chini. Usibuni bei, huduma, au njia za kucheza zisizotajwa.\n' +
-    '- GameHub HAITOI wala HAIPENDEKEZI emulator za watu wengine (kama Winlator, n.k.) au njia nyingine za "kupiga" mfumo wa malipo ya games. Njia PEKEE ya kucheza bila kudownload/kununua PC ni kukodi muda kwenye GeForce NOW (rental yetu).\n' +
-    '- Bidhaa zenye "[inadownload moja kwa moja]" ni games za kudownload wenyewe baada ya malipo (link inatolewa My Orders). Bidhaa zenye "[Steam key/account]" zinahitaji Steam.\n' +
-    '- Kama mteja anauliza kitu nje ya huduma zetu, sema wazi hatutoi hilo, usijaribu "kusaidia" kwa kubuni jibu.\n\n' +
-    'Bidhaa zinazopatikana:\n' + productList + '\n\n' +
-    'Bei za kukodi muda wa kucheza (GeForce NOW — njia pekee ya kucheza bila kununua/kudownload):\n' +
-    '- Dakika 20 = 300 TZS\n' +
-    '- Dakika 50 = 500 TZS\n' +
-    '- Masaa 2 = 1,000 TZS\n' +
-    '(Muda mwingine wowote: mfumo unakokotoa bei kwa kanuni ya bei nafuu zaidi kwa dakika — mteja anaweka muda anaotaka kwenye ukurasa wa Rental.)\n\n' +
-    'Malipo: M-Pesa (Vodacom), Tigo Pesa, Airtel Money, HaloPesa kupitia AzamPay (automatic), au malipo ya moja kwa moja (manual) kwa namba tuliyotoa kwenye checkout.\n' +
-    'Baada ya malipo, bidhaa/download link inapatikana kwenye "My Orders".\n' +
-    transcript +
-    '\nJibu kwa ufupi, kirafiki na kwa lugha rahisi. Mteja anasema sasa: "' + message + '"';
+  const prompt = `Wewe ni msaidizi wa duka la gaming la Tanzania liitwalo GameHub.
+
+🔴 KANUNI YA MSINGI: Jibu SWALI LA SASA HIVI tu. Usijibu maswali ya awali. Ukiona swali jipya, jibu jipya.
+
+Bidhaa zilizopo:
+${productList}
+
+Bei za kukodi muda (GeForce NOW):
+- Dakika 20 = 300 TZS
+- Dakika 50 = 500 TZS
+- Masaa 2 = 1,000 TZS
+
+Malipo: M-Pesa, Tigo Pesa, Airtel Money, HaloPesa kupitia AzamPay au Malipo Manual.
+
+${transcript}Jibu swali hili la sasa HIVI: "${message}"
+
+Jibu kwa ufupi (sentensi 2-4), kirafiki, kwa Kiswahili.`;
 
   const reply = await askAI(prompt);
   res.json({ reply });
@@ -1547,7 +1640,7 @@ app.post('/api/ai/chat', async (req, res) => {
 
 // ═══════════ 🎮 AI RECOMMENDATIONS ═══════════
 app.post('/api/ai/recommendations', async (req, res) => {
-  const { message, games } = req.body;
+  const { message } = req.body;
   const products = Object.values(readJson('products.json', {}));
   const catalog = products.map(p => `${p.name} | ${p.type || 'Game'} | ${Number(p.price || 0).toLocaleString()} TZS`).join('\n');
   const prompt = `Wewe ni AI Recommendation wa GameHub Tanzania.
@@ -1560,14 +1653,12 @@ Jibu kwa Kiswahili kwa ufupi, toa chaguo hadi 3 na sababu.`;
   res.json({ reply });
 });
 
-// ═══════════ 🩺 AI HEALTH (Kwa Safety Layer) ═══════════
+// ═══════════ 🩺 AI HEALTH ═══════════
 app.post('/api/ai/health', async (req, res) => {
   const { message, history } = req.body;
   if (!message || !String(message).trim()) return res.status(400).json({ error: 'Andika swali' });
 
-  // 🔒 Tumia Safety Layer kwa data isolation
   const safeMessage = healthSafetyLayer(String(message).slice(0, 5000));
-
   const transcript = Array.isArray(history) ? history.slice(-8).map(h => `${h.role}: ${h.text}`).join('\n') : '';
   const prompt = `Wewe ni msaidizi wa taarifa za afya wa jamii ndani ya GameHub.
 Jibu kwa Kiswahili rahisi na kwa usalama. Toa taarifa za jumla tu; usijidai kuwa daktari, usifanye diagnosis ya uhakika, na usiagize dawa kwa mtu binafsi.
@@ -1579,7 +1670,6 @@ Swali jipya: ${safeMessage}`;
 
   const reply = await askAI(prompt, process.env.NEXUS_HEALTH_PROVIDER || 'google');
 
-  // Hifadhi chat ya afya kwenye file tofauti (isolation)
   const healthLog = readJson('health_chats.json', []);
   healthLog.push({
     id: 'hc_' + Date.now(),
@@ -1657,18 +1747,18 @@ app.post('/api/ai/admin', async (req, res) => {
   const prompt = 'Wewe ni msaidizi wa AI wa Admin wa duka la gaming GameHub (Tanzania).\n' +
     'Mauzo: ' + stats.length + ' orders. Bidhaa: ' + productsCount + '.\n' +
     'Admin ameuliza: "' + command + '"\n' +
-    'Msaidi: jibu kwa Kiswahili kwa ufupi, toa ushauri wa biashara. Ukibaini amri ya kuongeza bidhaa mwambie atumie maneno: "ongeza game JINA bei BEI" (mfano: ongeza game FIFA 26 bei 50000).';
+    'Msaidi: jibu kwa Kiswahili kwa ufupi, toa ushauri wa biashara.';
 
-  const reply = await askGemini(prompt);
+  const reply = await askAI(prompt);
   res.json({ reply });
 });
 
-// ═══════════ 🎙️ AI BOSS ASSISTANT (Chat + Voice Control) ═══════════
+// ═══════════ 🎙️ AI BOSS ASSISTANT ═══════════
 app.post('/api/ai/boss', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si Boss (Admin).' });
 
-  const { message, mode } = req.body; // mode: 'chat' au 'voice'
+  const { message, mode } = req.body;
   if (!message || !message.trim()) return res.status(400).json({ error: 'Andika au sema amri yako.' });
 
   const orders = readJson('orders.json', []);
@@ -1677,7 +1767,6 @@ app.post('/api/ai/boss', async (req, res) => {
   const revenue = paid.reduce((t, o) => t + Number(o.amount || 0), 0);
   const pending = orders.filter(o => String(o.status || '').startsWith('pending'));
 
-  // 🔒 Boss Approval Required kwa miamala ya pesa
   const needsApproval = /payout|refund|withdraw|kutoa pesa|kufuta user|delete user|badilisha wallet|futa data/i.test(message);
 
   const prompt = `Wewe ni AI Boss Assistant wa GameHub Tanzania. Boss (${user.name}) amekuuliza:
@@ -1694,13 +1783,11 @@ KANUNI:
 1. Jibu kwa Kiswahili kifupi na kwa heshima.
 2. Kama ombi linahitaji mabadiliko ya pesa (payout/refund/delete), SEMSA: "⚠️ Hii inahitaji idhini yako ya moja kwa moja (Boss Approval)."
 3. Kama ni ripoti tu, itoe kwa ufupi.
-4. Unaweza kupendekeza hatua zinazofuata.
 
 ${needsApproval ? '⚠️ TAMBUA: Ombi hili linahitaji Boss Approval — lisifanye lolote lenyewe.' : ''}`;
 
-  const reply = await askAI(prompt, process.env.NEXUS_BOSS_PROVIDER || 'google');
+  const reply = await askAI(prompt, process.env.NEXUS_BOSS_PROVIDER || 'groq');
 
-  // Hifadhi approval requests kama zinahitaji
   if (needsApproval) {
     const approvals = readJson('boss_approvals.json', []);
     approvals.push({
@@ -1722,7 +1809,6 @@ ${needsApproval ? '⚠️ TAMBUA: Ombi hili linahitaji Boss Approval — lisifan
   });
 });
 
-// ═══════════ 📋 BOSS APPROVALS LIST ═══════════
 app.get('/api/ai/boss/approvals', (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si Boss.' });
@@ -1733,7 +1819,7 @@ app.get('/api/ai/boss/approvals', (req, res) => {
 app.post('/api/ai/boss/approvals/:id/decide', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si Boss.' });
-  const { decision } = req.body; // 'approve' au 'reject'
+  const { decision } = req.body;
   const approvals = readJson('boss_approvals.json', []);
   const item = approvals.find(x => x.id === req.params.id);
   if (!item) return res.status(404).json({ error: 'Approval haipatikani.' });
@@ -1876,8 +1962,7 @@ function extractJson(text) {
 async function askClaudeBuilder(command) {
   const key=process.env.ANTHROPIC_API_KEY;
   if(!key) throw new Error('Weka ANTHROPIC_API_KEY kwenye Render.');
-  // Claude Fable 5 (ubora wa juu) au Sonnet 5 (wastani)
-  const model=process.env.NEXUS_ANTHROPIC_BUILDER_MODEL || process.env.NEXUS_ANTHROPIC_MODEL || 'claude-fable-5';
+  const model=process.env.NEXUS_ANTHROPIC_BUILDER_MODEL || process.env.NEXUS_ANTHROPIC_MODEL || 'claude-3-5-sonnet-latest';
   const system=`Wewe ni AI Web Developer & Manager wa GameHub. Tengeneza JSON TU, bila markdown.
 Allowed actions pekee:
 1) add_product: {name,price,productType,desc,section,image}
@@ -1886,9 +1971,8 @@ Allowed actions pekee:
 4) add_course_video: {courseName,title,description,videoUrl}
 5) add_live_match: {title,league,homeTeam,awayTeam,status,streamUrl,videoUrl,startTime,description}
 6) update_settings: {key,value}
-Usiweke JavaScript/HTML/SQL/raw code inayotekelezwa moja kwa moja. Kwa video, tumia URL ikiwa admin hajatoa upload file.
-Jibu: {"summary":"...","actions":[...]}.
-`;
+Usiweke JavaScript/HTML/SQL/raw code inayotekelezwa moja kwa moja.
+Jibu: {"summary":"...","actions":[...]}.`;
   const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model,max_tokens:1800,temperature:0.2,system,messages:[{role:'user',content:String(command).slice(0,6000)}]})});
   const data=await r.json(); if(!r.ok) throw new Error(data?.error?.message||('Claude HTTP '+r.status));
   return extractJson(data?.content?.map(x=>x.text||'').join(''));
