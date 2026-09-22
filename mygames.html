@@ -2,165 +2,133 @@
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>My Games — LIFEISGAMETZ</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .sidebar { width:240px; height:100vh; background:#080912; border-right:1px solid #24243a; position:fixed; left:0; top:0; padding:25px 18px; overflow-y:auto; z-index:200; }
-    .sidebar .logo { font-size:22px; font-weight:bold; margin-bottom:35px; text-align:center; }
-    .sidebar .logo span { color:#9b35ff; }
-    .menu a { display:flex; align-items:center; gap:10px; color:#ddd; padding:14px 15px; margin:4px 0; border-radius:10px; transition:0.3s; font-size:14px; text-decoration:none; }
-    .menu a:hover { background:#7525d8; color:#fff; }
-    .menu a.active { background:linear-gradient(90deg,#7725d8,#9c35ff); color:#fff; }
-    .cart-badge { background:#ff3eb5; color:#fff; font-size:11px; font-weight:bold; border-radius:20px; padding:1px 7px; margin-left:auto; }
-    .main { margin-left:240px; }
-    .topbar { display:flex; justify-content:flex-end; align-items:center; padding:18px 30px 0; }
-    @media(max-width:700px) {
-      .sidebar { width:64px; padding:15px 6px; }
-      .sidebar .logo { font-size:0; }
-      .sidebar .logo::before { content:"🎮"; font-size:24px; }
-      .menu a span.label { display:none; }
-      .main { margin-left:64px; }
-      .topbar { padding:12px 15px 0; }
-    }
-  </style>
   <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
 </head>
 <body>
+<div class="main">
 
-  <div class="sidebar">
-  <div class="logo">🎮 GAME<span>HUB</span></div>
-  <div class="menu">
-    <a href="index.html">🏠 <span class="label">Home</span></a>
-    <a href="shop.html">🎮 <span class="label">All Games</span></a>
-    <a href="categories.html">🗂️ <span class="label">Categories</span></a>
-    <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
-    <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
-    <a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
-    <a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
-    <a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
-<a href="live.html">📺 <span class="label">Watch Live</span></a>
-    <a href="livescores.html">📊 <span class="label">Live Scores</span></a>
-    <a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
-    <a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
-<a href="movies.html">🎬 <span class="label">Movies</span></a>
-    <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
-    <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
-    <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
-    <a href="myorders.html">📦 <span class="label">My Orders</span></a>
-    <a href="requests.html">🔍 <span class="label">Requests</span></a>
-    <a href="profile.html">👤 <span class="label">Profile</span></a>
-    <a href="health.html">🩺 <span class="label">Health Support</span></a>
-    <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
-    <a href="contact.html">☎ <span class="label">Contact</span></a>
-  </div>
-</div>
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="book"></div>
+    <div><h1>My Games</h1><p>Muda wako wa kucheza na games ulizonunua — vyote mahali pamoja.</p></div>
+    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="myorders.html"><span data-ic="box"></span>My Orders</a></div>
+  </header>
 
-  <div class="main">
-    <div class="topbar">
-      <a href="login.html" class="btn-login">🔐 Login</a>
+  <div class="zp-sec" style="margin-top:6px"><h2>Muda wa Kucheza</h2><a href="rental.html">Kodisha zaidi <span data-ic="chevr"></span></a></div>
+  <div class="mg-rents" id="rentals" aria-live="polite"></div>
+
+  <section class="zp-ai" style="margin-top:18px">
+    <div>
+      <h2 style="font-size:26px">Cheza Sasa — GeForce NOW</h2>
+      <p style="margin:0 0 14px">Bonyeza hapa kucheza kwenye GeForce NOW. Kumbuka: utahitaji kuingia kwenye <strong>Steam yako mwenyewe</strong> (sio ya duka).</p>
+      <a class="zp-btn" href="https://play.geforcenow.com" target="_blank" rel="noopener"><span data-ic="cloud"></span>Fungua GeForce NOW</a>
     </div>
-
-
-  <section class="mygames-page">
-    <h1>🎮 My Games</h1>
-    <p class="section-sub">Muda wako wa kucheza uliobaki (countdown live)</p>
-
-    <div id="rentalsList" class="rentals-list"></div>
-
-    <div class="gfn-box">
-      <h2>🎮 Cheza Sasa — GeForce NOW</h2>
-      <p>Bonyeza hapa kucheza kwenye GeForce NOW. Kumbuka: utahitaji kuingia kwenye <strong>Steam yako mwenyewe</strong> (sio ya duka).</p>
-      <a href="https://play.geforcenow.com" target="_blank" class="btn-secondary">🚀 Fungua GeForce NOW</a>
-    </div>
+    <div class="zp-ai-orb" data-ic="cloud"></div>
   </section>
 
-  <footer class="footer">
-    <div class="footer-grid">
-      <div>
-        <h3>🎮 LIFEISGAMETZ</h3>
-        <p>Duka la gaming la Tanzania: game keys, top-ups, gift cards na rental.</p>
-      </div>
-      <div>
-        <h3>Links</h3>
-        <a href="index.html">Home</a>
-        <a href="shop.html">Shop</a>
-        <a href="rental.html">Rental</a>
-        <a href="mygames.html">My Games</a>
-      </div>
-      <div>
-        <h3>Contact</h3>
-        <p>📱 +255 786 095 758</p>
-        <p>📧 lifeisgametz@gmail.com</p>
-        <p>💬 <a href="https://wa.me/255786095758" target="_blank">WhatsApp Support</a></p>
-      </div>
-    </div>
-    <p class="copyright">© 2026 LIFEISGAMETZ. Haki zote zimehifadhiwa.</p>
-  </footer>
+  <div class="zp-sec"><h2>Maktaba Yangu</h2><a href="myorders.html">Oda zote <span data-ic="chevr"></span></a></div>
+  <p class="zp-count" id="libNote" aria-live="polite"></p>
+  <div class="mg-lib" id="library" aria-live="polite"><div class="zp-empty" style="grid-column:1/-1"><p>Inapakia...</p></div></div>
+</div>
 
-  </div>
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script>
+(function(){
+  var esc=ZP.esc;
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  function lsGet(k,d){ try{ var v=JSON.parse(localStorage.getItem(k)); return v==null?d:v; }catch(e){ return d; } }
 
-  <script src="app.js"></script>
-  <script src="chat.js"></script>
+  /* ---------- Rentals (stored on this device after payment) ---------- */
+  var box=document.getElementById('rentals');
+  function pad(n){ return n<10?'0'+n:''+n; }
+  function fmt(ms){ var s=Math.max(0,Math.floor(ms/1000)); return Math.floor(s/3600)+':'+pad(Math.floor(s%3600/60))+':'+pad(s%60); }
+  function clock(t){ return new Date(t).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
 
-  <script>
-    function renderRentals() {
-      const list = document.getElementById('rentalsList');
-      let rentals = JSON.parse(localStorage.getItem('gamehubRentals') || '[]');
-      const now = Date.now();
-
-      const active = rentals.filter(r => r.endTime > now);
-      const expired = rentals.filter(r => r.endTime <= now);
-      localStorage.setItem('gamehubRentals', JSON.stringify(active));
-
-      if (!active.length && !expired.length) {
-        list.innerHTML = '<div class="cart-empty"><p>Hujakodi muda wowote bado.</p><a href="rental.html" class="btn-primary">⏱️ Kodisha Sasa</a></div>';
-        return;
-      }
-
-      list.innerHTML = '';
-
-      active.forEach(r => {
-        const card = document.createElement('div');
-        card.className = 'mygame-card active';
-        card.innerHTML = `
-          <div>
-            <h3>⏱️ ${r.name}</h3>
-            <p class="countdown" data-end="${r.endTime}">Inakokotoa...</p>
-          </div>
-          <span class="status-live">● LIVE</span>`;
-        list.appendChild(card);
-      });
-
-      expired.forEach(r => {
-        list.innerHTML += `
-          <div class="mygame-card expired">
-            <div><h3>⏱️ ${r.name}</h3><p style="color:#8f8faa;">Muda umemalizika</p></div>
-            <span class="status-done">IMEISHIA</span>
-          </div>`;
-      });
-
-      updateCountdowns();
-      setInterval(updateCountdowns, 1000);
+  function renderRentals(){
+    var now=Date.now(), all=lsGet('gamehubRentals',[]).filter(function(r){ return r && r.endTime; });
+    var active=all.filter(function(r){ return r.endTime>now; }).sort(function(a,b){ return a.endTime-b.endTime; });
+    var expired=all.filter(function(r){ return r.endTime<=now; }).slice(-5).reverse();
+    try{ localStorage.setItem('gamehubRentals', JSON.stringify(expired.slice().reverse().concat(active))); }catch(e){}   // keep the last 5 finished ones as history
+    if (!active.length && !expired.length){
+      box.innerHTML='<div class="zp-empty" style="grid-column:1/-1"><h3>Hujakodi muda wowote bado</h3><p>Kodisha muda wa kucheza na timer inaanza mara baada ya malipo.</p><a class="zp-btn" href="rental.html">'+ZP.icon('cloud')+'Kodisha Sasa</a></div>';
+      return;
     }
+    box.innerHTML=active.map(function(r){
+      var total=(Number(r.minutes)||0)*60000;
+      return '<article class="mg-rent live" data-end="'+Number(r.endTime)+'" data-total="'+total+'"><div class="mg-top"><b>⏱️ '+esc(r.name)+'</b><span class="mg-live">LIVE</span></div>'+
+        '<div class="mg-time">'+fmt(r.endTime-now)+'</div>'+(total?'<div class="mg-bar"><i style="width:'+Math.min(100,Math.max(0,(r.endTime-now)/total*100))+'%"></i></div>':'')+
+        '<small>imebaki • inaisha saa '+esc(clock(r.endTime))+'</small></article>';
+    }).join('')+expired.map(function(r){
+      return '<article class="mg-rent done"><div class="mg-top"><b>⏱️ '+esc(r.name)+'</b><span class="mg-done">IMEISHIA</span></div><div class="mg-time">Muda umemalizika</div><a class="zp-btn ghost sm" style="align-self:flex-start;margin-top:4px" href="rental.html">Kodisha tena</a></article>';
+    }).join('');
+  }
+  function tick(){
+    var now=Date.now(), needRefresh=false;
+    box.querySelectorAll('.mg-rent.live').forEach(function(c){
+      var end=Number(c.dataset.end), total=Number(c.dataset.total), left=end-now;
+      if (left<=0){ needRefresh=true; return; }
+      c.querySelector('.mg-time').textContent=fmt(left);
+      var bar=c.querySelector('.mg-bar i'); if(bar&&total) bar.style.width=Math.min(100,Math.max(0,left/total*100))+'%';
+    });
+    if (needRefresh) renderRentals();
+  }
+  renderRentals(); setInterval(function(){ if(!document.hidden) tick(); },1000);
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) tick(); });
 
-    function updateCountdowns() {
-      document.querySelectorAll('.countdown').forEach(el => {
-        const end = parseInt(el.dataset.end);
-        const diff = end - Date.now();
-        if (diff <= 0) { el.textContent = 'Muda umemalizika'; return; }
-        const h = Math.floor(diff / 3600000);
-        const m = Math.floor((diff % 3600000) / 60000);
-        const s = Math.floor((diff % 60000) / 1000);
-        el.textContent = (h ? h + 'saa ' : '') + m + 'dk ' + s + 's imebaki';
+  /* ---------- Library (paid orders of the logged-in customer) ---------- */
+  var lib=document.getElementById('library'), note=document.getElementById('libNote'), token=localStorage.getItem('gamehubToken');
+  function empty(h,p,btn){ lib.innerHTML='<div class="zp-empty" style="grid-column:1/-1"><h3>'+h+'</h3><p>'+p+'</p>'+(btn||'')+'</div>'; }
+  function safeUrl(u){ u=String(u||'').trim(); return /^(https?:\/\/|\/)/i.test(u)?u:''; }
+
+  function card(it,i){
+    var link=safeUrl(it.downloadLink), tag=link?'DOWNLOAD':(it.accountUser?'ACCOUNT':'IMENUNULIWA');
+    return '<article class="mg-item"><div class="mg-face" style="--art:'+ZP.art(it.name)+'"><span class="e">'+esc(it.emoji||'🎮')+'</span><span class="ac-tag">'+tag+'</span></div>'+
+      '<div class="mg-body"><h3>'+esc(it.name)+'</h3><small>'+esc(new Date(it.date).toLocaleDateString())+(it.qty>1?' • × '+it.qty:'')+'</small>'+
+      (link?'<a class="zp-btn sm" href="'+esc(link)+'" target="_blank" rel="noopener noreferrer">'+ZP.icon('download')+'Download</a>':'')+
+      (it.accountUser?'<button class="zp-btn ghost sm" type="button" data-cred="'+i+'">'+ZP.icon('shield')+'Taarifa za account</button><div class="mg-cred" id="cred'+i+'" hidden></div>':'')+
+      (!link&&!it.accountUser?'<a class="zp-btn ghost sm" href="myorders.html">Angalia oda</a>':'')+'</div></article>';
+  }
+
+  var items=[];
+  lib.addEventListener('click',function(e){
+    var b=e.target.closest('[data-cred]'); if(!b) return;
+    var box=document.getElementById('cred'+b.dataset.cred), it=items[b.dataset.cred];
+    if (!box.hidden){ box.hidden=true; return; }
+    box.hidden=false; box.innerHTML='';
+    [['Email/Username',it.accountUser,false],['Password',it.accountPassword||'—',true]].forEach(function(row){
+      var d=document.createElement('div'), s=document.createElement('span'), c=document.createElement('code'), cp=document.createElement('button');
+      s.textContent=row[0]+':'; c.textContent=row[2]?'••••••••':row[1]; cp.type='button'; cp.textContent='Nakili';
+      cp.addEventListener('click',function(){ if(navigator.clipboard) navigator.clipboard.writeText(String(row[1])).then(function(){ cp.textContent='Imenakiliwa'; setTimeout(function(){ cp.textContent='Nakili'; },1500); }); });
+      d.appendChild(s); d.appendChild(c);
+      if (row[2]){ var sh=document.createElement('button'); sh.type='button'; sh.textContent='Onyesha'; sh.addEventListener('click',function(){ var hid=c.textContent==='••••••••'; c.textContent=hid?row[1]:'••••••••'; sh.textContent=hid?'Ficha':'Onyesha'; }); d.appendChild(sh); }
+      d.appendChild(cp); box.appendChild(d);
+    });
+  });
+
+  if (!token){
+    empty('Ingia kuona maktaba yako','Games ulizonunua zinaonekana hapa baada ya kuingia.','<a class="zp-btn" href="login.html">'+ZP.icon('user')+'Ingia</a>');
+  } else {
+    fetch('/api/my-orders',{headers:{'Authorization':token}}).then(function(r){ return r.json(); }).then(function(d){
+      if (!d.success){ empty('Session imeisha','Ingia tena kuona maktaba yako.','<a class="zp-btn" href="login.html">'+ZP.icon('user')+'Ingia</a>'); return; }
+      var orders=d.orders||[], pending=orders.filter(function(o){ return /^pending/.test(o.status); }).length, seen={};
+      orders.filter(function(o){ return o.status==='successful'; }).forEach(function(o){
+        (o.items||[]).forEach(function(i){
+          if (i.rentalMinutes) return;                     // rentals live in "Muda wa Kucheza"
+          var k=(i.name||'')+'|'+(i.downloadLink||'')+'|'+(i.accountUser||'');
+          if (seen[k]) return; seen[k]=1;
+          items.push({name:i.name||'Bidhaa',emoji:i.emoji,qty:Number(i.qty)||1,downloadLink:i.downloadLink,accountUser:i.accountUser,accountPassword:i.accountPassword,date:o.date});
+        });
       });
-    }
-
-    renderRentals();
-  </script>
-
-  <script src="zoneplay-shell.js"></script>
+      note.textContent=pending?('Oda '+pending+' bado zinasubiri uthibitisho wa malipo — angalia My Orders.'):'';
+      if (!items.length){ empty('Bado hakuna game kwenye maktaba','Games ulizonunua na malipo yaliyothibitishwa zinaonekana hapa.','<a class="zp-btn" href="shop.html">'+ZP.icon('bag')+'Nenda Dukani</a>'); return; }
+      lib.innerHTML=items.map(card).join('');
+    }).catch(function(){ empty('Imeshindikana kupakia maktaba','Angalia mtandao kisha jaribu tena.','<button class="zp-btn" type="button" onclick="location.reload()">Jaribu tena</button>'); });
+  }
+})();
+</script>
 </body>
 </html>

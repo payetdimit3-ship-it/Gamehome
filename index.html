@@ -6,8 +6,6 @@
   <title>LIFEISGAMETZ — Play • Learn • Earn</title>
   <meta name="description" content="Duka la gaming la Tanzania: game keys, top-up, gift cards, live football, Academy na AI assistants.">
   <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
 </head>
 <body>
 <div class="main">
@@ -144,8 +142,18 @@
       '<div class="zp-slide-body"><span class="zp-slide-tag">'+esc(s.tag||'FEATURED')+'</span><h2>'+esc(s.title)+'</h2>'+(s.desc?'<p>'+esc(s.desc)+'</p>':'')+
       '<div class="zp-slide-cta">'+price+'<a class="zp-btn" href="'+esc(s.cta[1])+'">'+esc(s.cta[0])+'</a>'+(s.cta2?'<a class="zp-btn ghost" href="'+esc(s.cta2[1])+'">'+esc(s.cta2[0])+'</a>':'')+'</div></div></div>';
   }
+  var startedSlides={};
+  function playOverlay(el,i){
+    if (el.querySelector('.zp-ds-play')) return;
+    var b=document.createElement('button'); b.type='button'; b.className='zp-ds-play';
+    b.innerHTML=ZP.icon('play')+'<span>Data Saver iko wazi — bonyeza kucheza</span>';
+    b.addEventListener('click',function(e){ e.stopPropagation(); startedSlides[i]=true; b.remove(); media(i,true); });
+    el.appendChild(b);
+  }
   function media(i,on){
     var el=slidesEl.children[i]; if(!el) return;
+    var hasEmbed=el.querySelector('iframe,video');
+    if (on && ZP.dataSaver() && hasEmbed && !startedSlides[i]){ playOverlay(el,i); return; }
     var f=el.querySelector('iframe'); if(f){ if(on){ var id=f.dataset.yt; f.src='https://www.youtube.com/embed/'+id+'?autoplay=1&mute=1&controls=0&loop=1&playlist='+id+'&rel=0&modestbranding=1&playsinline=1'; } else f.removeAttribute('src'); }
     var v=el.querySelector('video'); if(v){ if(on && !reduce){ v.muted=true; var p=v.play(); p&&p.catch&&p.catch(function(){}); } else v.pause(); }
   }

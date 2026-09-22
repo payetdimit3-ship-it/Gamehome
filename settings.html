@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mipangilio — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-full.css">
+</head>
+<body>
+<div class="main">
+
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="settings"></div>
+    <div><h1>Mipangilio</h1><p>Haya ni mapendeleo ya kifaa hiki tu — yanahifadhiwa kwenye browser yako, si kwenye akaunti.</p></div>
+  </header>
+
+  <section class="st-sec">
+    <h2>Data ya Kifaa Hiki</h2>
+    <p>Muhtasari wa kilichohifadhiwa kwenye browser hii.</p>
+    <div class="st-data" id="dataSummary"></div>
+    <div class="st-danger">
+      <p>Kufuta data ya kifaa kunaondoa kikapu, wishlist na mipangilio hapa chini kwenye browser hii pekee. Akaunti yako, oda na muda wa kucheza haviguswi.</p>
+      <button class="zp-btn ghost sm" id="wipeBtn" type="button"></button>
+    </div>
+  </section>
+
+  <section class="st-sec">
+    <h2>AI Assistant</h2>
+    <p>Inatumika kwenye AI Assistant, Course Tutor na Health Assistant.</p>
+    <div class="st-row">
+      <span class="ic-box" data-ic="bot"></span>
+      <div><b>Lugha ya Majibu</b><span>Swali lako linaweza kuwa lugha yoyote — hii ni lugha ya majibu tu.</span></div>
+      <div class="st-ctl st-seg" id="langSeg" role="group" aria-label="Lugha ya AI">
+        <button type="button" data-v="sw">Kiswahili</button>
+        <button type="button" data-v="en">English</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="st-sec">
+    <h2>Data &amp; Video</h2>
+    <p>Kwa mtandao wa polepole au bando ndogo.</p>
+    <div class="st-row">
+      <span class="ic-box" data-ic="wifi"></span>
+      <div><b>Data Saver</b><span>Video na stream (Home, Live TV, Movies) hazicheza zenyewe — bonyeza play kwanza.</span></div>
+      <label class="st-switch st-ctl"><input type="checkbox" id="dataSaverToggle"><i></i></label>
+    </div>
+  </section>
+
+  <section class="st-sec">
+    <h2>Arifa</h2>
+    <p>Sauti ndogo unaposhiriki kwenye chat ya community.</p>
+    <div class="st-row">
+      <span class="ic-box" data-ic="chat"></span>
+      <div><b>Sauti ya Ujumbe Mpya</b><span>Inasikika Community Chat ikipata ujumbe mpya kutoka kwa wengine.</span></div>
+      <label class="st-switch st-ctl"><input type="checkbox" id="soundToggle"><i></i></label>
+    </div>
+  </section>
+
+  <section class="zp-ai" style="margin-top:6px">
+    <div>
+      <h2 style="font-size:24px">Unataka kubadilisha jina au email?</h2>
+      <p style="margin:0 0 14px">Hayo ni mapendeleo ya akaunti, sio ya kifaa — wasiliana nasi tuyabadilishe.</p>
+      <a class="zp-btn" target="_blank" rel="noopener" id="waBtn"><span data-ic="chat"></span>WhatsApp</a>
+    </div>
+  </section>
+</div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script>
+(function(){
+  var esc=ZP.esc;
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  var wa=document.getElementById('waBtn'); wa.href=ZP.waLink('Habari, naomba msaada kubadilisha taarifa za akaunti yangu');
+
+  function lsGet(k,d){ try{ var v=JSON.parse(localStorage.getItem(k)); return v==null?d:v; }catch(e){ return d; } }
+  function countOf(k){ var v=lsGet(k,{}); return Array.isArray(v)?v.length:Object.keys(v||{}).length; }
+
+  function renderData(){
+    var cartN=Object.values(lsGet('gamehubCart',{})).reduce(function(n,i){ return n+(Number(i.qty||i.quantity)||1); },0);
+    var rentN=lsGet('gamehubRentals',[]).filter(function(r){ return r&&r.endTime>Date.now(); }).length;
+    document.getElementById('dataSummary').innerHTML=
+      '<a href="cart.html"><b>'+cartN+'</b><span>Kwenye Kikapu</span></a>'+
+      '<a href="wishlist.html"><b>'+countOf('gamehubWishlist')+'</b><span>Kwenye Wishlist</span></a>'+
+      '<a href="mygames.html"><b>'+rentN+'</b><span>Muda Unaoendelea</span></a>';
+  }
+  renderData();
+
+  /* AI language */
+  var langSeg=document.getElementById('langSeg');
+  function paintLang(){ var v=ZP.aiLang(); langSeg.querySelectorAll('button').forEach(function(b){ b.classList.toggle('on',b.dataset.v===v); }); }
+  paintLang();
+  langSeg.addEventListener('click',function(e){ var b=e.target.closest('[data-v]'); if(!b) return; ZP.setPref('aiLang',b.dataset.v); paintLang(); });
+
+  /* Data saver */
+  var ds=document.getElementById('dataSaverToggle'); ds.checked=ZP.dataSaver();
+  ds.addEventListener('change',function(){ ZP.setPref('dataSaver',ds.checked); });
+
+  /* Chat sound */
+  var sd=document.getElementById('soundToggle'); sd.checked=ZP.soundOn();
+  sd.addEventListener('change',function(){ ZP.setPref('soundOn',sd.checked); if(sd.checked) ZP.beep(); });
+
+  /* Wipe device data */
+  var wipeBtn=document.getElementById('wipeBtn'), armed=false, armTimer;
+  wipeBtn.innerHTML=ZP.icon('x')+'Futa Data ya Kifaa';
+  wipeBtn.addEventListener('click',function(){
+    if (!armed){ armed=true; wipeBtn.textContent='Una uhakika? Bonyeza tena'; clearTimeout(armTimer); armTimer=setTimeout(function(){ armed=false; wipeBtn.innerHTML=ZP.icon('x')+'Futa Data ya Kifaa'; },3500); return; }
+    ['gamehubCart','gamehubWishlist','zp_aiLang','zp_dataSaver','zp_soundOn'].forEach(function(k){ localStorage.removeItem(k); });
+    ZP.updateCart(); renderData(); paintLang(); ds.checked=ZP.dataSaver(); sd.checked=ZP.soundOn();
+    armed=false; wipeBtn.innerHTML=ZP.icon('x')+'Futa Data ya Kifaa';
+  });
+})();
+</script>
+</body>
+</html>

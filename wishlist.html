@@ -2,71 +2,120 @@
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Wishlist — LIFEISGAMETZ</title>
-  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
 </head>
 <body>
-  <header class="navbar">
-    <div class="logo">🎮 <span>GAME</span>HUB</div>
-    <nav class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="shop.html">Shop</a>
-      <a href="wishlist.html">❤️ Wishlist</a>
-      <a href="cart.html">🛒 Kikapu (<span id="cartCount">0</span>)</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-    <a href="login.html" class="btn-login">🔐 Login</a>
+<div class="main">
+
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="heart"></div>
+    <div><h1>Wishlist Yangu</h1><p>Games ulizoweka kwa ajili ya baadaye — bei zinasasishwa kutoka dukani.</p></div>
+    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="shop.html"><span data-ic="bag"></span>Nenda Dukani</a></div>
   </header>
 
-  <section class="shop-banner">
-    <h1>❤️ Wishlist Yangu</h1>
-    <p>Games ulizoweka kwa ajili ya baadaye</p>
-  </section>
+  <div class="zp-toolbar" id="bar" hidden>
+    <p class="zp-count" id="count" style="margin:0"></p>
+    <select id="sortSel" aria-label="Panga" style="height:36px;padding:0 12px;margin-left:auto">
+      <option value="new">Mpya kwanza</option>
+      <option value="low">Bei: chini → juu</option>
+      <option value="high">Bei: juu → chini</option>
+      <option value="az">A – Z</option>
+    </select>
+    <button class="zp-btn ghost sm" id="clearBtn" type="button"></button>
+  </div>
 
-  <section class="shop-grid" id="wishGrid" style="padding:0 20px 30px;"></section>
+  <section class="zp-grid" id="wishGrid" aria-live="polite"><div class="zp-empty"><p>Inapakia...</p></div></section>
+</div>
+<div class="rn-toast" id="toast" role="status" aria-live="polite"></div>
 
-  <footer class="footer">
-    <div class="footer-grid">
-      <div><h3>🎮 LIFEISGAMETZ</h3><p>Duka la gaming la Tanzania.</p></div>
-      <div><h3>Links</h3><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="faq.html">FAQ</a></div>
-      <div><h3>Contact</h3><p>📱 +255 786 095 758</p><p>📧 lifeisgametz@gmail.com</p></div>
-    </div>
-    <p class="copyright">© 2026 LIFEISGAMETZ. Haki zote zimehifadhiwa.</p>
-  </footer>
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script>
+(function(){
+  var esc=ZP.esc;
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  var clearBtn=document.getElementById('clearBtn'); clearBtn.innerHTML=ZP.icon('x')+'Futa zote';
 
-  <script src="app.js"></script>
-  <script src="chat.js"></script>
+  function readWish(){ try{ return JSON.parse(localStorage.getItem('gamehubWishlist')||'{}')||{}; }catch(e){ return {}; } }
+  function saveWish(w){ try{ localStorage.setItem('gamehubWishlist',JSON.stringify(w)); }catch(e){} }
+  function priceOf(v){ return typeof v==='number' ? v : (parseFloat(String(v||0).replace(/[^\d.]/g,''))||0); }
 
-  <script>
-    function renderWishlist() {
-      const wish = JSON.parse(localStorage.getItem('gamehubWishlist') || '{}');
-      const grid = document.getElementById('wishGrid');
-      const items = Object.values(wish);
-      if (!items.length) {
-        grid.innerHTML = '<div class="cart-empty" style="grid-column:1/-1;"><p>Wishlist yako ni tupu.</p><a href="shop.html" class="btn-primary">🛒 Nenda Dukani</a></div>';
-        return;
-      }
-      grid.innerHTML = items.map(g => `
-        <div class="game-card">
-          <div class="game-cover ${g.imageUrl ? '' : 'cover-mine'}" style="${g.imageUrl ? 'padding:0; overflow:hidden;' : ''}">${g.imageUrl ? `<img src="${g.imageUrl}" style="width:100%; height:100%; object-fit:cover;">` : (g.emoji || '🎮')}</div>
-          <h3>${g.name}</h3>
-          <p class="game-price">${g.price}</p>
-          <a href="product.html?id=${g.id}${g.admin ? '&admin=1' : ''}" class="btn-buy">Angalia</a>
-          <button onclick="removeWish('${g.id}')" style="width:100%; margin-top:8px; background:transparent; border:1px solid #ff3d71; color:#ff3d71; padding:8px; border-radius:8px; cursor:pointer; font-size:13px;">💔 Ondoa</button>
-        </div>`).join('');
+  var catalog=null;               // Map id -> current product, or null when the shop could not be reached
+  var sort='new', snapshot=null, toastTimer;
+
+  function toast(msg,undo){
+    var t=document.getElementById('toast'); t.textContent=msg;
+    if (undo){ var b=document.createElement('button'); b.type='button'; b.textContent='Tendua'; b.addEventListener('click',function(){ if(snapshot){ saveWish(snapshot); snapshot=null; render(); } t.classList.remove('on'); }); t.appendChild(b); }
+    t.classList.add('on'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove('on'); },5000);
+  }
+
+  function build(){
+    var w=readWish(), ids=Object.keys(w).reverse();
+    return ids.map(function(id){
+      var s=w[id], saved=priceOf(s.price), cur=catalog&&catalog[id];
+      var base=cur||{id:id,name:s.name||'Bidhaa',type:'',price:saved,emoji:s.emoji||'🎮',imageUrl:s.imageUrl||'',kind:'key',platform:'',admin:!!s.admin};
+      var status='';
+      if (catalog && !cur) status='gone';
+      else if (cur && saved && cur.price<saved) status='down';
+      else if (cur && saved && cur.price>saved) status='up';
+      return {p:base,saved:saved,status:status};
+    });
+  }
+
+  function cardHtml(x){
+    var h=ZP.card(x.p), chip='';
+    if (x.status==='down') chip='<span class="wl-chip down">Bei imeshuka ↓ '+ZP.money(x.saved-x.p.price)+'</span>';
+    else if (x.status==='up') chip='<span class="wl-chip up">Bei imepanda ↑</span>';
+    else if (x.status==='gone') chip='<span class="wl-chip gone">HAIPATIKANI TENA</span>';
+    if (chip) h=h.replace(/(<span class="zp-tag">[^<]*<\/span>)/,'$1'+chip);
+    if (x.status==='gone') h=h.replace('class="zp-poster"','class="zp-poster wl-gone"');
+    return h;
+  }
+
+  function render(){
+    var grid=document.getElementById('wishGrid'), bar=document.getElementById('bar'), rows=build();
+    bar.hidden=!rows.length;
+    if (!rows.length){
+      grid.innerHTML='<div class="zp-empty"><h3>Wishlist yako ni tupu</h3><p>Bonyeza moyo ❤ kwenye game yoyote kuiweka hapa kwa ajili ya baadaye.</p><a class="zp-btn" href="shop.html">'+ZP.icon('bag')+'Nenda Dukani</a></div>';
+      return;
     }
-    function removeWish(id) {
-      const wish = JSON.parse(localStorage.getItem('gamehubWishlist') || '{}');
-      delete wish[id];
-      localStorage.setItem('gamehubWishlist', JSON.stringify(wish));
-      renderWishlist();
-    }
-    renderWishlist();
-  </script>
-  <script src="zoneplay-shell.js"></script>
+    if (sort==='low') rows.sort(function(a,b){ return a.p.price-b.p.price; });
+    else if (sort==='high') rows.sort(function(a,b){ return b.p.price-a.p.price; });
+    else if (sort==='az') rows.sort(function(a,b){ return String(a.p.name).localeCompare(b.p.name); });
+    document.getElementById('count').textContent=rows.length+(rows.length===1?' game':' games');
+    grid.innerHTML=rows.map(cardHtml).join('');
+    grid.querySelectorAll('.zp-fav').forEach(function(b){ b.setAttribute('aria-label','Ondoa kwenye wishlist'); });
+  }
+
+  /* the heart on this page removes the card (with undo) instead of just toggling */
+  document.getElementById('wishGrid').addEventListener('click',function(e){
+    var b=e.target.closest('.zp-fav'); if(!b) return;
+    e.stopPropagation();
+    var w=readWish(); snapshot=JSON.parse(JSON.stringify(w)); delete w[b.dataset.fav]; saveWish(w); render(); toast('Imeondolewa kwenye wishlist',true);
+  });
+  document.getElementById('sortSel').addEventListener('change',function(e){ sort=e.target.value; render(); });
+
+  var armed=false, armTimer;
+  clearBtn.addEventListener('click',function(){
+    if (!armed){ armed=true; clearBtn.textContent='Una uhakika? Bonyeza tena'; clearTimeout(armTimer); armTimer=setTimeout(function(){ armed=false; clearBtn.innerHTML=ZP.icon('x')+'Futa zote'; },3500); return; }
+    armed=false; clearTimeout(armTimer); clearBtn.innerHTML=ZP.icon('x')+'Futa zote';
+    snapshot=readWish(); saveWish({}); render(); toast('Wishlist imefutwa',true);
+  });
+  window.addEventListener('storage',render);
+
+  render();   // show the saved snapshot right away, then refresh prices from the shop
+  ZP.loadSection('*').then(function(api){
+    if (api===null) return;                      // shop unreachable: keep showing saved data, flag nothing
+    catalog={};
+    ZP.DEFAULTS.forEach(function(p){ catalog[p.id]=p; });
+    api.forEach(function(p){ catalog[p.id]=p; });
+    render();
+  });
+})();
+</script>
 </body>
 </html>
