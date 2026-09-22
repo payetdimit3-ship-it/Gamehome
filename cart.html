@@ -1,150 +1,110 @@
-<!DOCTYPE html>
-<html lang="sw">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kikapu — LIFEISGAMETZ</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .sidebar { width:240px; height:100vh; background:#080912; border-right:1px solid #24243a; position:fixed; left:0; top:0; padding:25px 18px; overflow-y:auto; z-index:200; }
-    .sidebar .logo { font-size:22px; font-weight:bold; margin-bottom:35px; text-align:center; }
-    .sidebar .logo span { color:#9b35ff; }
-    .menu a { display:flex; align-items:center; gap:10px; color:#ddd; padding:14px 15px; margin:4px 0; border-radius:10px; transition:0.3s; font-size:14px; text-decoration:none; }
-    .menu a:hover { background:#7525d8; color:#fff; }
-    .menu a.active { background:linear-gradient(90deg,#7725d8,#9c35ff); color:#fff; }
-    .cart-badge { background:#ff3eb5; color:#fff; font-size:11px; font-weight:bold; border-radius:20px; padding:1px 7px; margin-left:auto; }
-    .main { margin-left:240px; }
-    .topbar { display:flex; justify-content:flex-end; align-items:center; padding:18px 30px 0; }
-    @media(max-width:700px) {
-      .sidebar { width:64px; padding:15px 6px; }
-      .sidebar .logo { font-size:0; }
-      .sidebar .logo::before { content:"🎮"; font-size:24px; }
-      .menu a span.label { display:none; }
-      .main { margin-left:64px; }
-      .topbar { padding:12px 15px 0; }
-    }
-  </style>
-  <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
-</head>
-<body>
+<div class="main">
 
-  <div class="sidebar">
-  <div class="logo">🎮 GAME<span>HUB</span></div>
-  <div class="menu">
-    <a href="index.html">🏠 <span class="label">Home</span></a>
-    <a href="shop.html">🎮 <span class="label">All Games</span></a>
-    <a href="categories.html">🗂️ <span class="label">Categories</span></a>
-    <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
-    <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
-    <a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
-    <a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
-    <a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
-<a href="live.html">📺 <span class="label">Watch Live</span></a>
-    <a href="livescores.html">📊 <span class="label">Live Scores</span></a>
-    <a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
-    <a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
-<a href="movies.html">🎬 <span class="label">Movies</span></a>
-    <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
-    <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
-    <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
-    <a href="myorders.html">📦 <span class="label">My Orders</span></a>
-    <a href="requests.html">🔍 <span class="label">Requests</span></a>
-    <a href="profile.html">👤 <span class="label">Profile</span></a>
-    <a href="health.html">🩺 <span class="label">Health Support</span></a>
-    <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
-    <a href="contact.html">☎ <span class="label">Contact</span></a>
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="cart"></div>
+    <div><h1>Kikapu Chako</h1><p id="sub">Hakiki bidhaa zako kisha uende kulipa.</p></div>
+    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="shop.html"><span data-ic="chevl"></span>Endelea Kununua</a></div>
+  </header>
+
+  <div id="filled" class="ct-layout" hidden>
+    <section class="ct-list" id="items" aria-label="Bidhaa kwenye kikapu"></section>
+    <aside class="ct-sum" aria-label="Muhtasari">
+      <header><h3>Muhtasari</h3></header>
+      <div class="ct-row"><span id="countLbl">Bidhaa</span><span id="countVal"></span></div>
+      <div class="ct-total"><span>JUMLA</span><strong id="total">0 TZS</strong></div>
+      <a class="zp-btn" href="checkout.html" id="payBtn"></a>
+      <button class="zp-btn ghost" id="clearBtn" type="button"></button>
+      <div class="ct-pay"><span>M-Pesa</span><span>Tigo Pesa</span><span>Airtel Money</span><span>Halotel</span></div>
+      <p class="ct-note">💡 Baada ya malipo, bidhaa zako zitatumwa automatic kwenye email yako.</p>
+    </aside>
+  </div>
+
+  <div id="empty" hidden>
+    <div class="zp-empty" style="margin-top:6px">
+      <h3>Kikapu chako ni tupu</h3>
+      <p>Ongeza games, top-up au muda wa kucheza, kisha urudi hapa kulipa.</p>
+      <a class="zp-btn" href="shop.html" id="shopBtn"></a>
+    </div>
+    <div class="zp-sec"><h2>Unaweza Kupenda</h2><a href="shop.html">Zote <span data-ic="chevr"></span></a></div>
+    <section class="zp-grid c5 hscroll" id="suggest"></section>
   </div>
 </div>
+<div class="rn-toast" id="toast" role="status" aria-live="polite"></div>
 
-  <div class="main">
-    <div class="topbar">
-      <a href="login.html" class="btn-login">🔐 Login</a>
-    </div>
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script>
+(function(){
+  var esc=ZP.esc, MAXQ=99;
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  document.getElementById('payBtn').innerHTML=ZP.icon('wallet')+'Enda Kulipa';
+  document.getElementById('shopBtn').innerHTML=ZP.icon('bag')+'Nenda Dukani';
+  var clearBtn=document.getElementById('clearBtn'); clearBtn.innerHTML=ZP.icon('x')+'Futa Kikapu';
 
-  <section class="cart-page">
-    <h1>🛒 Kikapu Chako</h1>
-    <div id="cartItems"></div>
+  function readCart(){
+    try{ var raw=JSON.parse(localStorage.getItem('gamehubCart')||'{}'); return Array.isArray(raw)?Object.fromEntries(raw.map(function(x,i){ return [x.id||('cart-'+i),x]; })):(raw||{}); }
+    catch(e){ return {}; }
+  }
+  function save(c){ try{ localStorage.setItem('gamehubCart',JSON.stringify(c)); }catch(e){} if(typeof window.updateCartBadge==='function') window.updateCartBadge(); ZP.updateCart(); }
+  function qtyOf(i){ return Math.max(1,Number(i.qty!=null?i.qty:i.quantity!=null?i.quantity:1)||1); }
+  function numOf(i){
+    var v=i.num!=null?i.num:i.priceNumber!=null?i.priceNumber:(typeof i.price==='number'?i.price:String(i.price||0).replace(/[^\d.]/g,''));
+    return Number(v)||0;
+  }
+  function money(n){ return Number(n||0).toLocaleString()+' TZS'; }
 
-    <div id="cartSummary" class="cart-summary" style="display:none;">
-      <div class="cart-total">
-        <span>JUMLA:</span>
-        <span id="cartTotal">0 TZS</span>
-      </div>
-      <div class="cart-actions">
-        <a href="checkout.html" class="btn-primary">💳 Enda Kulipa</a>
-        <button id="clearCart" class="btn-danger">🗑️ Futa Kikapu</button>
-      </div>
-      <p class="cart-note">💡 Baada ya malipo, bidhaa zako zitatumwa automatic kwenye email yako.</p>
-    </div>
+  /* undo */
+  var snapshot=null, toastTimer;
+  function toast(msg,undo){
+    var t=document.getElementById('toast'); t.textContent=msg;
+    if (undo){ var b=document.createElement('button'); b.type='button'; b.textContent='Tendua'; b.addEventListener('click',function(){ if(snapshot){ save(snapshot); snapshot=null; render(); } t.classList.remove('on'); }); t.appendChild(b); }
+    t.classList.add('on'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove('on'); },5000);
+  }
 
-    <div id="cartEmpty" class="cart-empty" style="display:none;">
-      <p>😕 Kikapu chako ni tupu.</p>
-      <a href="shop.html" class="btn-primary">🛒 Nenda Dukani</a>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <div class="footer-grid">
-      <div>
-        <h3>🎮 LIFEISGAMETZ</h3>
-        <p>Duka la gaming la Tanzania: game keys, top-ups, gift cards na rental.</p>
-      </div>
-      <div>
-        <h3>Links</h3>
-        <a href="index.html">Home</a>
-        <a href="shop.html">Shop</a>
-        <a href="cart.html">Kikapu</a>
-        <a href="contact.html">Contact</a>
-      </div>
-      <div>
-        <h3>Contact</h3>
-        <p>📱 +255 786 095 758</p>
-        <p>📧 lifeisgametz@gmail.com</p>
-        <p>💬 <a href="https://wa.me/255786095758" target="_blank">WhatsApp Support</a></p>
-      </div>
-    </div>
-    <p class="copyright">© 2026 LIFEISGAMETZ. Haki zote zimehifadhiwa.</p>
-  </footer>
-
-  </div>
-
-  <script src="app.js"></script>
-  <script src="chat.js"></script>
-
-  <script>
-    const cartItemsDiv = document.getElementById('cartItems');
-    const cartSummary = document.getElementById('cartSummary');
-    const cartEmpty = document.getElementById('cartEmpty');
-    const cartTotal = document.getElementById('cartTotal');
-
-    function readCartObject(){
-      try { const raw=JSON.parse(localStorage.getItem('gamehubCart')||'{}'); return Array.isArray(raw) ? Object.fromEntries(raw.map((x,i)=>[x.id||('cart-'+i),x])) : (raw||{}); }
-      catch(e){ return {}; }
+  var suggested=false;
+  function render(){
+    var cart=readCart(), items=Object.keys(cart).map(function(k){ var i=cart[k]; if(!i.id) i.id=k; return i; });
+    var filled=document.getElementById('filled'), empty=document.getElementById('empty');
+    filled.hidden=!items.length; empty.hidden=!!items.length;
+    document.getElementById('sub').textContent=items.length?'Hakiki bidhaa zako kisha uende kulipa.':'Hakuna bidhaa bado.';
+    if (!items.length){
+      if(!suggested){ suggested=true; ZP.loadProducts().then(function(list){ document.getElementById('suggest').innerHTML=list.slice(0,10).map(ZP.card).join(''); }); }
+      return;
     }
-    function money(n){ return Number(n||0).toLocaleString()+' TZS'; }
-    function renderCart(){
-      const cart=readCartObject(), items=Object.values(cart);
-      cartItemsDiv.innerHTML='';
-      if(!items.length){ cartSummary.style.display='none'; cartEmpty.style.display='block'; return; }
-      cartSummary.style.display='block'; cartEmpty.style.display='none'; let total=0;
-      items.forEach(item=>{
-        const qty=Math.max(1,Number(item.qty??item.quantity??1)||1);
-        const num=Number(item.num??item.priceNumber??(typeof item.price==='number'?item.price:String(item.price||0).replace(/[^\d.]/g,'')))||0;
-        total+=num*qty;
-        const row=document.createElement('div'); row.className='cart-item';
-        row.innerHTML=`<div class="cart-emoji">${item.emoji||'🎮'}</div><div class="cart-info"><h3>${escapeHtml(item.name||'Bidhaa')}</h3><p>${money(num)} × ${qty}</p></div><div class="cart-right"><p class="cart-line-total">${money(num*qty)}</p><button class="btn-remove" data-id="${escapeHtml(item.id)}">✖ Futa</button></div>`;
-        cartItemsDiv.appendChild(row);
-      });
-      cartTotal.textContent=money(total);
-      cartItemsDiv.querySelectorAll('.btn-remove').forEach(btn=>btn.onclick=()=>{ const c=readCartObject(); delete c[btn.dataset.id]; localStorage.setItem('gamehubCart',JSON.stringify(c)); renderCart(); if(window.updateCartBadge) window.updateCartBadge(); });
-    }
-    function escapeHtml(v){const d=document.createElement('div');d.textContent=v??'';return d.innerHTML;}
-    document.getElementById('clearCart').onclick=()=>{localStorage.removeItem('gamehubCart');renderCart();if(window.updateCartBadge)window.updateCartBadge();};
-    window.addEventListener('storage',renderCart); renderCart();
-  </script>
+    var total=0, count=0;
+    document.getElementById('items').innerHTML=items.map(function(i){
+      var q=qtyOf(i), n=numOf(i); total+=n*q; count+=q;
+      return '<article class="ct-item" data-id="'+esc(i.id)+'">'+
+        '<div class="ct-thumb" style="--art:'+ZP.art(i.name)+'" aria-hidden="true">'+esc(i.emoji||'🎮')+'</div>'+
+        '<div class="ct-info"><h3>'+esc(i.name||'Bidhaa')+'</h3><small>'+money(n)+' kila moja</small></div>'+
+        '<div class="ct-qty" role="group" aria-label="Idadi"><button type="button" data-act="dec" aria-label="Punguza"'+(q<=1?' disabled':'')+'>−</button><output aria-live="polite">'+q+'</output><button type="button" data-act="inc" aria-label="Ongeza"'+(q>=MAXQ?' disabled':'')+'>+</button></div>'+
+        '<div class="ct-line">'+money(n*q)+'</div>'+
+        '<button class="ct-del" type="button" data-act="del" aria-label="Futa '+esc(i.name||'bidhaa')+'">'+ZP.icon('x')+'</button></article>';
+    }).join('');
+    document.getElementById('total').textContent=money(total);
+    document.getElementById('countLbl').textContent=items.length===1?'Bidhaa 1':'Bidhaa '+items.length;
+    document.getElementById('countVal').textContent=count+(count===1?' kipande':' vipande');
+  }
 
-  <script src="zoneplay-shell.js"></script>
-</body>
-</html>
+  document.getElementById('items').addEventListener('click',function(e){
+    var b=e.target.closest('[data-act]'); if(!b) return;
+    var row=b.closest('.ct-item'), id=row.dataset.id, cart=readCart(), it=cart[id]; if(!it) return;
+    var act=b.dataset.act;
+    if (act==='del'){ snapshot=JSON.parse(JSON.stringify(cart)); delete cart[id]; save(cart); render(); toast('Imeondolewa kwenye kikapu',true); return; }
+    var q=qtyOf(it)+(act==='inc'?1:-1); q=Math.min(MAXQ,Math.max(1,q));
+    it.qty=q; delete it.quantity; save(cart); render();
+  });
+
+  var armed=false, armTimer;
+  clearBtn.addEventListener('click',function(){
+    if (!armed){ armed=true; clearBtn.textContent='Una uhakika? Bonyeza tena'; clearTimeout(armTimer); armTimer=setTimeout(function(){ armed=false; clearBtn.innerHTML=ZP.icon('x')+'Futa Kikapu'; },3500); return; }
+    armed=false; clearTimeout(armTimer); clearBtn.innerHTML=ZP.icon('x')+'Futa Kikapu';
+    snapshot=readCart(); save({}); render(); toast('Kikapu kimefutwa',true);
+  });
+
+  window.addEventListener('storage',render);
+  render();
+})();
+</script>
