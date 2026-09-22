@@ -1,213 +1,390 @@
 <!DOCTYPE html>
+
 <html lang="sw">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>LIFEISGAMETZ — Play • Learn • Earn</title>
-  <meta name="description" content="Duka la gaming la Tanzania: game keys, top-up, gift cards, live football, Academy na AI assistants.">
-  <link rel="stylesheet" href="zoneplay-full.css">
-</head>
-<body>
-<div class="main">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GameHub — Duka la Gaming Tanzania</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+  body { background:#05060d; color:#fff; }
+  a { text-decoration:none; color:inherit; }
 
-  <!-- HERO -->
-  <section class="zp-hero" aria-label="Matangazo makuu">
-    <div class="zp-slider" id="zpSlider" role="region" aria-roledescription="carousel" aria-label="Featured">
-      <div id="zpSlides"></div>
-      <button class="zp-arrow prev" id="zpPrev" aria-label="Iliyotangulia"></button>
-      <button class="zp-arrow next" id="zpNext" aria-label="Inayofuata"></button>
-      <div class="zp-dots" id="zpDots"></div>
-    </div>
-    <div class="zp-promos">
-      <a class="zp-promo" href="rental.html" style="--art:linear-gradient(140deg,#0e7490,#1e1b4b)">
-        <span class="zp-pi" data-ic="cloud"></span>
-        <small>GEFORCE NOW</small><h3>Kodisha Muda</h3><span>Cheza PC games bila kudownload — kuanzia 300 TZS.</span>
-      </a>
-      <a class="zp-promo" href="efootball.html" style="--art:linear-gradient(140deg,#6d28d9,#831843)">
-        <span class="zp-pi" data-ic="ball"></span>
-        <small>EFOOTBALL</small><h3>Coins &amp; Vikosi</h3><span>Top-up salama, delivery papo hapo.</span>
-      </a>
-    </div>
-  </section>
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    width:240px; height:100vh; background:#080912;
+    border-right:1px solid #24243a; position:fixed; left:0; top:0;
+    padding:25px 18px; overflow-y:auto; z-index:200;
+  }
+  .logo { font-size:22px; font-weight:bold; margin-bottom:35px; text-align:center; }
+  .logo span { color:#9b35ff; }
+  .menu a {
+    display:flex; align-items:center; gap:10px;
+    color:#ddd; padding:14px 15px; margin:4px 0;
+    border-radius:10px; transition:0.3s; font-size:14px;
+  }
+  .menu a:hover { background:#7525d8; color:#fff; }
+  .menu a.active { background:linear-gradient(90deg,#7725d8,#9c35ff); color:#fff; }
+  .cart-badge {
+    background:#ff3eb5; color:#fff; font-size:11px; font-weight:bold;
+    border-radius:20px; padding:1px 7px; margin-left:auto;
+  }
+  .ai-box {
+    margin-top:25px; border:1px solid #842cff; border-radius:15px;
+    padding:18px; text-align:center;
+  }
+  .ai-box h3 { color:#b34cff; font-size:16px; margin-bottom:8px; }
+  .ai-box p { color:#aaa; font-size:12px; line-height:1.5; }
 
-  <div class="zp-trust">
-    <div><span data-ic="bolt"></span><p style="margin:0"><b>Delivery ya haraka</b><span>Bidhaa zinafika baada ya malipo</span></p></div>
-    <div><span data-ic="shield"></span><p style="margin:0"><b>100% Salama</b><span>Malipo yaliyolindwa</span></p></div>
-    <div><span data-ic="wallet"></span><p style="margin:0"><b>Bei nafuu</b><span>Kwa kila mchezaji</span></p></div>
-    <div><span data-ic="headset"></span><p style="margin:0"><b>Msaada 24/7</b><span>AI na WhatsApp</span></p></div>
-  </div>
+  /* ============ MAIN ============ */
+  .main { margin-left:240px; padding:20px 40px 50px; }
+  .topbar { display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:20px; flex-wrap:wrap; }
+  .search { flex:1; min-width:200px; padding:14px 20px; background:#0b0d18; border:1px solid #292940; border-radius:10px; color:#fff; outline:none; font-size:14px; }
+  .login-btn { background:transparent; border:1px solid #9c35ff; color:#fff; padding:12px 20px; border-radius:8px; cursor:pointer; font-size:14px; white-space:nowrap; }
+  .login-btn:hover { background:#8b2ee9; }
 
-  <div id="dynamicBanners" hidden></div>
+  /* ============ HERO ============ */
+  .hero {
+    position:relative; overflow:hidden;
+    min-height:380px; border-radius:20px; padding:55px 45px;
+    background:
+      linear-gradient(90deg, rgba(5,6,15,0.97), rgba(40,10,70,0.7), rgba(5,6,15,0.25)),
+      linear-gradient(135deg, #1a1040, #0a0a14);
+    display:flex; align-items:center;
+  }
+  .hero-video-bg { position:absolute; inset:0; z-index:0; overflow:hidden; }
+  .hero-video-bg iframe { position:absolute; top:50%; left:50%; width:130%; height:130%; transform:translate(-50%,-50%); border:0; pointer-events:none; }
+  .hero-overlay { position:absolute; inset:0; z-index:1; background:linear-gradient(90deg, rgba(5,6,15,0.95), rgba(40,10,70,0.75), rgba(5,6,15,0.45)); pointer-events:none; }
+  .hero-dots { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); z-index:3; display:flex; gap:7px; }
+  .hero-dot { width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,0.3); cursor:pointer; border:none; padding:0; }
+  .hero-dot.active { background:#a63cff; }
+  .hero-content { position:relative; z-index:2; max-width:600px; }
+  .welcome { color:#a63cff; font-size:16px; font-weight:bold; letter-spacing:2px; }
+  .hero h1 { font-size:52px; margin:10px 0; line-height:1.1; }
+  .hero h1 span { color:#a63cff; }
+  .slogan { font-size:15px; letter-spacing:6px; margin-bottom:18px; color:#c9c9e0; }
+  .hero p { color:#ddd; line-height:1.7; font-size:15px; }
+  .buttons { margin-top:26px; display:flex; gap:10px; flex-wrap:wrap; }
+  .btn { display:inline-block; padding:13px 22px; border-radius:8px; font-weight:bold; font-size:14px; }
+  .primary { background:linear-gradient(90deg,#7926dc,#a93dff); color:#fff; }
+  .secondary { border:1px solid #777; color:#fff; }
 
-  <!-- CATEGORIES -->
-  <div class="zp-sec"><h2>Chagua Platform</h2><a href="categories.html">Zote <span data-ic="chevr"></span></a></div>
-  <div class="zp-cats" id="zpCats"></div>
+  /* ============ PROFESSIONAL TRAILER HERO ============ */
+  .pro-hero-stage{position:relative;min-height:560px;border-radius:24px;overflow:hidden;background:#05060d;border:1px solid rgba(139,92,246,.24);box-shadow:0 30px 80px rgba(0,0,0,.42);}
+  .hero-stage-media{position:absolute;inset:0;}
+  .hero-stage-slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .55s ease;}
+  .hero-stage-slide.active{opacity:1;pointer-events:auto;}
+  .hero-stage-slide iframe,.hero-stage-slide video{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover;}
+  .hero-stage-slide:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,5,12,.86),rgba(4,5,12,.20) 55%,rgba(4,5,12,.58)),linear-gradient(0deg,rgba(4,5,12,.8),transparent 45%);pointer-events:none;}
+  .hero-stage-game{position:absolute;left:34px;right:34px;bottom:42px;z-index:3;display:flex;justify-content:space-between;align-items:end;gap:20px;}
+  .hero-stage-game span{font-size:10px;letter-spacing:2px;color:#67e8f9;font-weight:900;text-transform:uppercase;}
+  .hero-stage-game h2{font-size:clamp(28px,5vw,54px);margin:6px 0;letter-spacing:-1px;}
+  .hero-stage-game p{max-width:650px;color:#d5d8e8;font-size:13px;line-height:1.6;}
+  .hero-stage-price{display:flex;flex-direction:column;align-items:flex-end;gap:8px;white-space:nowrap}.hero-stage-price .hero-price-label{font-size:10px;letter-spacing:2px;color:#aeb5d0;text-transform:uppercase}.hero-stage-price .hero-price-value{font-size:clamp(22px,3vw,32px);font-weight:950;color:#fff;text-shadow:0 0 18px rgba(192,38,211,.35)}
+  .hero-buy{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#7c3aed,#c026d3);padding:13px 22px;border-radius:11px;font-size:13px;font-weight:900;box-shadow:0 10px 30px rgba(124,58,237,.35);border:1px solid rgba(255,255,255,.12);transition:.2s}.hero-buy:hover{transform:translateY(-2px);box-shadow:0 14px 35px rgba(192,38,211,.45)}
+  .hero-stage-controls{position:absolute;z-index:6;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:7px;align-items:center;}
+  .hero-stage-dot{width:9px;height:9px;border:0;border-radius:50%;background:rgba(255,255,255,.3);padding:0;cursor:pointer;transition:.25s}.hero-stage-dot.active{width:30px;border-radius:10px;background:#a855f7;}
+  .hero-stage-nav{position:absolute;z-index:7;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(5,5,12,.58);backdrop-filter:blur(10px);color:#fff;font-size:28px;cursor:pointer;display:grid;place-items:center;transition:.2s}
+  .hero-stage-nav:hover{transform:translateY(-50%) scale(1.08);background:rgba(168,85,247,.38);}
+  .hero-stage-prev{left:16px}.hero-stage-next{right:16px}
+  .hero-stage-progress{position:absolute;z-index:7;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.12);overflow:hidden}
+  .hero-stage-progress i{display:block;width:0;height:100%;background:linear-gradient(90deg,#67e8f9,#a855f7,#ec4899);box-shadow:0 0 14px #a855f7;transition:width .1s linear}
+  .hero-stage-badge{position:absolute;z-index:7;top:16px;left:16px;padding:8px 11px;border-radius:999px;background:rgba(5,5,12,.58);border:1px solid rgba(103,232,249,.25);backdrop-filter:blur(10px);font-size:11px;font-weight:900;letter-spacing:1px;color:#dffcff}
+  @media(max-width:700px){.hero-stage-nav{width:38px;height:38px;font-size:22px}.hero-stage-prev{left:8px}.hero-stage-next{right:8px}}
+  .hero-stage-empty{height:100%;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;color:#aeb5cc;background:radial-gradient(circle at 50% 20%,rgba(124,58,237,.25),transparent 35%),#070912;}.hero-stage-empty span{font-size:58px}.hero-stage-empty strong{color:#fff;font-size:20px}.hero-stage-empty small{color:#7f88a8;}
+  .hero-copy-below{margin:18px 0 0;padding:30px 34px;border:1px solid rgba(139,92,246,.16);border-radius:20px;background:linear-gradient(135deg,#0e1120,#13102a);display:flex;justify-content:space-between;align-items:center;gap:24px;}.hero-copy-below h1{font-size:clamp(30px,5vw,48px);margin:7px 0;line-height:1.05;}.hero-copy-below h1 span{color:#a855f7}.hero-copy-below p{color:#aeb5cc;max-width:760px;line-height:1.7;font-size:14px}.hero-copy-trust{display:flex;flex-direction:column;gap:8px;min-width:190px}.hero-copy-trust span{padding:10px 12px;border:1px solid #252b43;border-radius:10px;background:#0a0d18;color:#cbd1e5;font-size:11px;}
+  @media(max-width:700px){.pro-hero-stage,.hero-stage-empty{min-height:420px}.hero-stage-game{left:18px;right:18px;bottom:28px;align-items:flex-start;flex-direction:column}.hero-stage-price{align-items:flex-start;font-size:18px}.hero-copy-below{padding:22px 18px;flex-direction:column;align-items:flex-start}.hero-copy-trust{width:100%;flex-direction:row;flex-wrap:wrap}.hero-copy-trust span{flex:1;min-width:130px}.hero-copy-below .buttons{margin-top:16px;}}
 
-  <!-- POPULAR -->
-  <div class="zp-sec"><h2>Games Maarufu</h2><a href="shop.html">Angalia Zote <span data-ic="chevr"></span></a></div>
-  <div class="zp-grid c5 hscroll" id="featuredGames" aria-live="polite">
-    <div class="zp-empty"><p>Inapakia...</p></div>
-  </div>
+  /* ============ FEATURES ============ */
+  .features { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:22px 0 35px; }
+  .feature { background:#0b0d18; border:1px solid #24263a; padding:18px; border-radius:12px; }
+  .feature h3 { font-size:15px; margin-bottom:6px; }
+  .feature p { color:#999; font-size:12px; }
+  .feature .icon { font-size:22px; margin-bottom:8px; }
 
-  <!-- MORE WORLDS -->
-  <div class="zp-sec"><h2>Zaidi ya Gaming</h2></div>
-  <div class="zp-strips">
-    <a class="zp-strip" href="live.html" style="--art:linear-gradient(120deg,#0f3d91,#0a1240)"><span class="zp-pi">📺</span><h3>Live TV / Sports</h3><span>Mechi na matukio live, na matokeo ya papo hapo.</span></a>
-    <a class="zp-strip" href="movies.html" style="--art:linear-gradient(120deg,#7a1fa2,#1b0d4a)"><span class="zp-pi">🎬</span><h3>Movies</h3><span>Filamu na video zilizopakiwa na admin.</span></a>
-    <a class="zp-strip" href="academy.html" style="--art:linear-gradient(120deg,#0e7490,#0a1a4a)"><span class="zp-pi">🎓</span><h3>Academy</h3><span>Jifunze coding, design, AI na biashara ya kidijitali.</span></a>
-    <a class="zp-strip" href="opportunities.html" style="--art:linear-gradient(120deg,#b45309,#4a0d3a)"><span class="zp-pi">💼</span><h3>Youth Opportunities</h3><span>Kazi, creator work, testing na tournaments.</span></a>
-    <a class="zp-strip" href="marketplace.html" style="--art:linear-gradient(120deg,#166534,#0a2a4a)"><span class="zp-pi">🏪</span><h3>Creator Marketplace</h3><span>Uza guides, graphics, templates na huduma.</span></a>
-    <a class="zp-strip" href="community.html" style="--art:linear-gradient(120deg,#be185d,#1b0d4a)"><span class="zp-pi">🤝</span><h3>Community Help</h3><span>Elimu ya afya, usalama mtandaoni na ushauri kwa vijana.</span></a>
-  </div>
+  /* ============ SECTIONS ============ */
+  .section-title { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; margin-top:35px; }
+  .section-title h2 { font-size:21px; }
+  .section-title a { color:#b33cff; font-size:14px; }
 
-  <!-- AI -->
-  <div class="zp-sec"><h2>Msaidizi wa AI</h2></div>
-  <section class="zp-ai" id="ai">
-    <div>
-      <span class="zp-slide-tag">AI MSAIDIZI WA GAMEHUB</span>
-      <h2>Uliza Chochote — Jibu Papo Hapo</h2>
-      <p>AI inajua bei, bidhaa na mfumo wa malipo. Inakusaidia kununua, kuomba game au kutatua tatizo — kwa Kiswahili, wakati wowote.</p>
-      <div class="zp-ai-ex" id="aiExamples">
-        <button class="zp-chip" type="button">FIFA 25 bei gani?</button>
-        <button class="zp-chip" type="button">Naomba muda wa masaa 3 GeForce</button>
-        <button class="zp-chip" type="button">Sijapata bidhaa yangu</button>
-      </div>
-      <p style="margin:16px 0 0;display:flex;gap:10px;flex-wrap:wrap"><button class="zp-btn" id="openAiBtn" type="button"><span data-ic="bot"></span>Zungumza na AI</button><a class="zp-btn ghost" href="ai.html"><span data-ic="chevr"></span>Fungua AI Assistant</a></p>
-    </div>
-    <div class="zp-ai-orb" data-ic="bot"></div>
-  </section>
+  /* ============ GAMES GRID ============ */
+  .games { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; }
+  .game { background:#0c0e18; border:1px solid #25273a; border-radius:12px; overflow:hidden; transition:0.3s; }
+  .game:hover { transform:translateY(-6px); border-color:#9432ff; }
+  .game-cover { height:120px; display:flex; align-items:center; justify-content:center; font-size:44px; }
+  .cover-a { background:linear-gradient(135deg,#0d5c2f,#1a9e56); }
+  .cover-b { background:linear-gradient(135deg,#5c2a0d,#e07b00); }
+  .cover-c { background:linear-gradient(135deg,#4a0d0d,#d64545); }
+  .cover-d { background:linear-gradient(135deg,#0d4a4a,#17a2a2); }
+  .cover-e { background:linear-gradient(135deg,#1a1040,#7b2ff7); }
+  .game-info { padding:12px; }
+  .game h3 { font-size:14px; margin-bottom:5px; }
+  .category { color:#888; font-size:11px; margin-bottom:10px; }
+  .price { color:#37e65c; font-size:15px; font-weight:bold; margin-bottom:10px; }
+  .buy { display:block; text-align:center; background:#7625dc; color:#fff; padding:9px; border-radius:7px; font-size:13px; }
+  .buy:hover { background:#a136ff; }
 
-  <!-- PAYMENTS -->
-  <div class="zp-sec"><h2>Njia za Malipo</h2></div>
-  <section class="zp-pay">
-    <div class="chips"><span>M-Pesa (Vodacom)</span><span>Tigo Pesa</span><span>Airtel Money</span><span>Halotel</span></div>
-    <p>Malipo ni automatic kupitia AzamPay. Ukipata tatizo, tuma pesa moja kwa moja kwa <strong>0786 095 758 — Amina Mwinyi</strong>, kisha wasiliana nasi WhatsApp na namba ya muamala (ref) kupata bidhaa yako.</p>
-  </section>
-</div>
+  /* ============ GEFORCE / RENTAL ============ */
+  .rental-promo {
+    margin-top:35px; padding:28px; border-radius:16px;
+    background:linear-gradient(90deg,#0e0e1c,#1a1040);
+    border:1px solid #7b2ff7;
+    display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap;
+  }
+  .rental-promo h2 { font-size:24px; }
+  .rental-promo p { color:#ddd; margin-top:6px; font-size:14px; max-width:420px; }
+  .rental-mini-grid { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+  .rental-mini { background:#15152a; border:1px solid #2a2a4a; border-radius:10px; padding:10px 16px; text-align:center; font-size:13px; }
+  .rental-mini strong { display:block; color:#00e5ff; font-size:16px; margin-top:3px; }
 
+  /* ============ PAYMENT STRIP ============ */
+  /* ============ AI SHOWCASE ============ */
+  .ai-showcase {
+    position:relative; margin-top:35px; padding:40px 30px; border-radius:20px;
+    background:linear-gradient(135deg,#0e0e1c,#1a1040 60%,#0e0e1c);
+    border:1px solid #7b2ff7; overflow:hidden; text-align:center;
+  }
+  .ai-showcase-glow {
+    position:absolute; top:-60px; left:50%; transform:translateX(-50%);
+    width:300px; height:300px; background:radial-gradient(circle,#7b2ff7,transparent 70%);
+    opacity:0.35; filter:blur(20px); pointer-events:none;
+  }
+  .ai-showcase-content { position:relative; max-width:560px; margin:0 auto; }
+  .ai-badge { display:inline-block; background:rgba(123,47,247,0.2); border:1px solid #7b2ff7; color:#c9a3ff; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:bold; margin-bottom:14px; }
+  .ai-showcase h2 { font-size:26px; margin-bottom:10px; }
+  .ai-showcase p { color:#ddd; font-size:14px; line-height:1.6; margin-bottom:18px; }
+  .ai-examples { display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+  .ai-example { background:#15152a; border:1px solid #2a2a4a; border-radius:10px; padding:10px 14px; font-size:13px; color:#c9c9e0; text-align:left; }
+
+  .payment-strip {
+    margin-top:35px; padding:22px; border-radius:14px;
+    background:#0b0d18; border:1px solid #24263a; text-align:center;
+  }
+  .payment-strip h2 { font-size:18px; margin-bottom:12px; }
+  .pay-methods { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .pay-chip { background:#15152a; border:1px solid #2a2a4a; border-radius:10px; padding:10px 16px; font-size:13px; }
+  .manual-pay { margin-top:14px; color:#8f8faa; font-size:13px; }
+  .manual-pay strong { color:#00e5ff; }
+
+  /* ============ OFFER BANNER ============ */
+  .offer {
+    margin-top:35px; padding:28px; border-radius:15px;
+    background:linear-gradient(90deg,#32105b,#6e1ba9,#210735);
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;
+  }
+  .offer h2 { font-size:26px; }
+  .offer p { color:#ddd; margin-top:6px; }
+  .shop-now { background:#ff3eb5; padding:13px 25px; border-radius:8px; color:#fff; font-weight:bold; }
+
+  /* ============ MOBILE ============ */
+  @media(max-width:1100px) {
+    .games { grid-template-columns:repeat(3,1fr); }
+    .features { grid-template-columns:repeat(2,1fr); }
+  }
+  @media(max-width:700px) {
+    .sidebar { width:64px; padding:15px 6px; }
+    .logo { font-size:0; }
+    .logo::before { content:"🎮"; font-size:24px; }
+    .menu a span.label { display:none; }
+    .ai-box { display:none; }
+    .main { margin-left:64px; padding:15px; }
+    .hero { padding:30px 20px; }
+    .hero h1 { font-size:34px; }
+    .games { grid-template-columns:repeat(2,1fr); }
+    .features { grid-template-columns:1fr; }
+    .search { width:100%; }
+  }
+</style>
+<link href="zoneplay.css" rel="stylesheet"/>
 <script src="zoneplay-shell.js"></script>
-<script src="zp-catalog.js"></script>
-<script src="app.js"></script>
-<script src="chat.js"></script>
-<script>
-(function(){
-  var esc = ZP.esc;
-  // Fill icon placeholders
-  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
-  document.getElementById('zpPrev').innerHTML = ZP.icon('chevl');
-  document.getElementById('zpNext').innerHTML = ZP.icon('chevr');
+</head>
+<body><div class="main"><div class="topbar"><input class="search" id="searchBox" placeholder="Tafuta game..."/><a href="login.html" id="topLoginBtn">Login</a></div>
+<div class="zp-home">
+<div class="zp-home-grid">
+<section class="zp-home-hero"><section class="pro-hero-stage" id="heroTrailerStage"><div class="hero-stage-media" id="heroStageMedia"><div class="hero-stage-empty"><span>🎬</span><strong>Loading featured trailer…</strong></div></div><div class="hero-stage-shade"></div><div class="hero-stage-badge">● AUTO PLAY • FEATURED</div><button class="hero-stage-nav hero-stage-prev" id="heroStagePrev">‹</button><button class="hero-stage-nav hero-stage-next" id="heroStageNext">›</button><div class="hero-stage-controls" id="heroStageDots"></div><div class="hero-stage-progress"><i id="heroStageProgress"></i></div></section></section>
+<div class="zp-home-side"><article class="zp-mini-banner"><small>PlayStation</small><h3>PS5 Games</h3><a href="shop.html?category=PS5">Explore Now →</a><span class="zp-mini-icon">🎮</span></article><article class="zp-mini-banner"><small>Nintendo Switch</small><h3>Switch Games</h3><a href="shop.html?category=Nintendo%20Switch">Explore Now →</a><span class="zp-mini-icon">◈</span></article><article class="zp-mini-banner"><small>PC Gaming</small><h3>High Performance</h3><a href="shop.html?category=PC">Explore Now →</a><span class="zp-mini-icon">🖥</span></article></div>
+<aside class="zp-lifestyle"><div class="zp-life-content"><div><small>WELCOME TO LIFEISGAMETZ</small><h2>GAMING<br/><span>IS NOT JUST A GAME</span><br/>IT'S A LIFESTYLE</h2></div><div class="zp-life-icons"><a href="shop.html"><span>🎮</span>Games</a><a href="movies.html"><span>▣</span>Movies</a><a href="live.html"><span>▶</span>Live</a><a href="courses.html"><span>🎓</span>Courses</a><a href="chat.html"><span>✦</span>AI</a><a href="health.html"><span>♥</span>Health</a><a href="community.html"><span>◉</span>Community</a><a href="marketplace.html"><span>•••</span>More</a></div></div></aside>
+</div>
+<section class="zp-trending"><div class="zp-heading"><h2>🔥 Trending Games</h2><a href="shop.html">Explore All →</a></div><div class="zp-trending-grid" id="featuredGames"><div class="zp-trend-card"><div class="zp-trend-img">🎮</div><div class="zp-trend-body"><h3>Loading games...</h3></div></div></div></section>
+<div class="zp-lower"><section class="zp-trending"><div class="zp-heading"><h2>🎮 Browse By Categories</h2><a href="categories.html">Explore All →</a></div><div class="zp-category-grid"><a class="zp-cat" href="categories.html?category=Action"><span>⚔️ Action &amp; Adventure</span></a><a class="zp-cat" href="categories.html?category=Racing"><span>🏎️ Racing</span></a><a class="zp-cat" href="categories.html?category=Sports"><span>⚽ Sports</span></a><a class="zp-cat" href="categories.html?category=RPG"><span>🧙 RPG</span></a><a class="zp-cat" href="categories.html?category=Strategy"><span>♟ Strategy</span></a><a class="zp-cat" href="categories.html?category=Shooting"><span>🎯 Shooting</span></a></div></section><div class="zp-right-stack"><article class="zp-offer"><small>⚡ SPECIAL OFFER</small><h3>Marvel's Spider-Man 2</h3><b>TSh 52,999</b> <del>TSh 70,000</del><a class="zp-chip" href="shop.html" style="float:right">View Deal →</a></article><article class="zp-library"><div class="zp-heading"><h2 style="font-size:15px">🎮 My Games</h2><a href="mygames.html">Explore All →</a></div><div class="zp-library-items"><div class="zp-library-item">GTA V<br/><small>Played: 24.5 hrs</small></div><div class="zp-library-item">Paladins<br/><small>Played: 18.2 hrs</small></div><div class="zp-library-item">Team Fortress 2<br/><small>Played: 12.7 hrs</small></div></div></article></div></div>
+<div class="zp-live-row"><section class="zp-live"><div class="zp-heading"><h2>⚽ Live Football</h2><a href="live.html">View All Matches →</a></div><div class="zp-match"><span>🔵 Man City</span><strong>2 - 1<br/><small>72:34</small></strong><span>Arsenal 🔴</span></div></section><section class="zp-courses"><div class="zp-heading"><h2>🎓 Popular Courses</h2><a href="courses.html">Explore All →</a></div><div class="zp-course-mini"><div class="zp-course-thumb">💻</div><div><h4>Web Development</h4><p>HTML, CSS, JavaScript • ⭐ 8.8</p></div></div></section></div>
+<div class="zp-home-extra"><article class="zp-extra"><h3>☁ Cloud Gaming</h3><p>Cheza PC games bila ku-download.</p><a href="cloudgaming.html">Open Cloud Gaming →</a></article><article class="zp-extra"><h3>⚽ eFootball &amp; Top Up</h3><p>Coins, vikosi na huduma za eFootball.</p><a href="efootball.html">Open eFootball →</a></article><article class="zp-extra"><h3>💼 Youth Opportunities</h3><p>Tasks, creators, tournaments na digital work.</p><a href="opportunities.html">View Opportunities →</a></article><article class="zp-extra"><h3>🤖 AI Assistant</h3><p>Msaada wa Kiswahili kwa gaming na platform.</p><button class="zp-chip" id="openAiBtn">Zungumza na AI →</button></article></div>
+<section id="dynamicBanners" style="display:none;margin-top:14px"><div id="bannerGrid"></div></section><div id="featuredTrailers" style="display:none"></div>
+</div></div><script src="app.js"></script><script src="chat.js"></script><script>
+    // ===== BIDHAA ZA DEFAULT (kama backup ikiwa API haijibu) =====
+    const DEFAULT_GAMES = [
+      { id:'fifa25', name:'FIFA 25', type:'Game Key • PC', price:'45,000 TZS', cover:'cover-a', emoji:'⚽' },
+      { id:'gta5', name:'GTA V', type:'Game Key • PC', price:'35,000 TZS', cover:'cover-b', emoji:'🚗' },
+      { id:'codmw3', name:'Call of Duty: MW3', type:'Game Key • PC', price:'55,000 TZS', cover:'cover-c', emoji:'💥' },
+      { id:'minecraft', name:'Minecraft', type:'Game Key • PC', price:'30,000 TZS', cover:'cover-d', emoji:'🧱' },
+      { id:'accountfifa', name:'Steam Account (FIFA 25)', type:'Account • Full Access', price:'60,000 TZS', cover:'cover-e', emoji:'👤' },
+      { id:'steam20', name:'Steam Gift Card $20', type:'Gift Card • Steam', price:'58,000 TZS', cover:'cover-a', emoji:'🎁' }
+    ];
 
-  /* ---------- Categories ---------- */
-  var catsEl = document.getElementById('zpCats');
-  function renderCats(list){
-    var counts = {};
-    (list||[]).forEach(function(p){ if(p.platform) counts[p.platform]=(counts[p.platform]||0)+1; });
-    catsEl.innerHTML = ZP.PLATFORMS.map(function(pl){
-      var n = counts[pl.key]||0;
-      return '<a class="zp-cat" href="shop.html?cat='+pl.key+'"><span class="zp-ci" style="--art:'+pl.art+'">'+ZP.icon(pl.icon)+'</span><b>'+esc(pl.label)+'</b><small>'+(n? n+' bidhaa':'Angalia')+'</small></a>';
-    }).join('') +
-    '<a class="zp-cat" href="giftcards.html"><span class="zp-ci" style="--art:linear-gradient(135deg,#f59e0b,#c2255c)">'+ZP.icon('gift')+'</span><b>Gift Cards</b><small>Steam • PSN</small></a>'+
-    '<a class="zp-cat" href="efootball.html"><span class="zp-ci" style="--art:linear-gradient(135deg,#16a34a,#0b5a8a)">'+ZP.icon('ball')+'</span><b>Top-Up</b><small>eFootball</small></a>';
-  }
-  renderCats([]);
+    function renderGames(list) {
+      const grid = document.getElementById('featuredGames');
+      grid.innerHTML = list.map(g => `
+        <div class="game">
+          <div class="game-cover ${g.cover || 'cover-e'}">${g.emoji || '🎮'}</div>
+          <div class="game-info">
+            <h3>${g.name}</h3>
+            <div class="category">${g.type || 'Bidhaa'}</div>
+            <div class="price">${g.price}</div>
+            <a href="product.html?id=${g.id}${g.admin ? '&admin=1' : ''}" class="buy">🛒 Buy Now</a>
+          </div>
+        </div>`).join('');
+    }
 
-  /* ---------- Featured games ---------- */
-  var grid = document.getElementById('featuredGames');
-  ZP.loadProducts().then(function(list){
-    renderCats(list);
-    grid.innerHTML = list.slice(0,10).map(ZP.card).join('') || '<div class="zp-empty"><h3>Bado hakuna bidhaa</h3><p>Admin akiongeza bidhaa zitaonekana hapa.</p></div>';
-  });
+    // Onyesha default kwanza, kisha jaribu kuongeza bidhaa za Admin
+    renderGames(DEFAULT_GAMES);
 
-  /* ---------- Hero ---------- */
-  function ytId(u){ var m=(u||'').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/); return m?m[1]:null; }
-  function safeUrl(u){ u=String(u||''); return /^(https?:\/\/|\/|[\w-]+\.html)/i.test(u) ? u : 'shop.html'; }
-  var DEFAULT_SLIDES = [
-    {tag:'LIFEISGAMETZ', title:'CHEZA. JIFUNZE. SHINDA.', desc:'Duka la gaming la Tanzania lenye games, digital products, tournaments, live football, Academy na AI assistants — yote sehemu moja.', emoji:'🎮', art:'linear-gradient(120deg,#1a0a56,#0a1f6b 60%,#062a5c)', cta:['Explore Games','shop.html'], cta2:['Gaming Academy','academy.html']},
-    {tag:'DUKA', title:'GAME KEYS & GIFT CARDS', desc:'Games za kudownload moja kwa moja, gift cards na Steam accounts. Lipa kwa M-Pesa, Tigo Pesa, Airtel Money au Halotel.', emoji:'🎁', art:'linear-gradient(120deg,#3b0a5c,#141a6b 60%,#0a2a5c)', cta:['Nunua Sasa','shop.html'], cta2:['Gift Cards','giftcards.html']},
-    {tag:'LIVE', title:'TAZAMA LIVE FOOTBALL', desc:'Mechi live, matokeo ya papo hapo, filamu na video — kila kitu ndani ya LIFEISGAMETZ.', emoji:'⚽', art:'linear-gradient(120deg,#0a3a5c,#0a1a6b 60%,#2a0a5c)', cta:['Watch Live','live.html'], cta2:['Live Scores','livescores.html']}
-  ];
-  var slidesEl=document.getElementById('zpSlides'), dotsEl=document.getElementById('zpDots'), slider=document.getElementById('zpSlider');
-  var slides=[], cur=0, timer=null, paused=false;
-  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    fetch('/api/products')
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success || !data.products.length) return;
+        const covers = ['cover-a','cover-b','cover-c','cover-d','cover-e'];
+        const adminGames = data.products.slice(0, 6).map((p, i) => ({
+          id: p.id, name: p.name, type: p.type, emoji: p.emoji,
+          price: Number(p.price).toLocaleString() + ' TZS',
+          cover: covers[i % covers.length], admin: true
+        }));
+        renderGames([...adminGames, ...DEFAULT_GAMES].slice(0, 6));
+      })
+      .catch(() => {});
 
-  function slideHtml(s,i){
-    var media='';
-    if (s.yt) media='<iframe data-yt="'+s.yt+'" title="'+esc(s.title)+'" allow="autoplay; encrypted-media" tabindex="-1"></iframe>';
-    else if (s.video) media='<video muted loop playsinline preload="metadata"'+(s.poster?' poster="'+esc(s.poster)+'"':'')+'><source src="'+esc(s.video)+'"></video>';
-    else if (s.image) media='<img src="'+esc(s.image)+'" alt="" onerror="this.remove()">';
-    var big = (!media && s.emoji) ? '<span class="zp-bigemoji" aria-hidden="true">'+esc(s.emoji)+'</span>' : '';
-    var price = s.price ? '<span class="zp-price">'+ZP.money(s.price)+'<small>TZS</small></span>' : '';
-    return '<div class="zp-slide'+(i===0?' on':'')+'" role="group" aria-roledescription="slide" aria-label="'+(i+1)+'">'+
-      '<div class="zp-slide-bg" style="--art:'+(s.art||ZP.art(s.title))+'">'+media+big+'</div>'+
-      '<div class="zp-slide-body"><span class="zp-slide-tag">'+esc(s.tag||'FEATURED')+'</span><h2>'+esc(s.title)+'</h2>'+(s.desc?'<p>'+esc(s.desc)+'</p>':'')+
-      '<div class="zp-slide-cta">'+price+'<a class="zp-btn" href="'+esc(s.cta[1])+'">'+esc(s.cta[0])+'</a>'+(s.cta2?'<a class="zp-btn ghost" href="'+esc(s.cta2[1])+'">'+esc(s.cta2[0])+'</a>':'')+'</div></div></div>';
-  }
-  var startedSlides={};
-  function playOverlay(el,i){
-    if (el.querySelector('.zp-ds-play')) return;
-    var b=document.createElement('button'); b.type='button'; b.className='zp-ds-play';
-    b.innerHTML=ZP.icon('play')+'<span>Data Saver iko wazi — bonyeza kucheza</span>';
-    b.addEventListener('click',function(e){ e.stopPropagation(); startedSlides[i]=true; b.remove(); media(i,true); });
-    el.appendChild(b);
-  }
-  function media(i,on){
-    var el=slidesEl.children[i]; if(!el) return;
-    var hasEmbed=el.querySelector('iframe,video');
-    if (on && ZP.dataSaver() && hasEmbed && !startedSlides[i]){ playOverlay(el,i); return; }
-    var f=el.querySelector('iframe'); if(f){ if(on){ var id=f.dataset.yt; f.src='https://www.youtube.com/embed/'+id+'?autoplay=1&mute=1&controls=0&loop=1&playlist='+id+'&rel=0&modestbranding=1&playsinline=1'; } else f.removeAttribute('src'); }
-    var v=el.querySelector('video'); if(v){ if(on && !reduce){ v.muted=true; var p=v.play(); p&&p.catch&&p.catch(function(){}); } else v.pause(); }
-  }
-  function show(i){
-    if(!slides.length) return;
-    media(cur,false); cur=(i+slides.length)%slides.length;
-    Array.prototype.forEach.call(slidesEl.children,function(el,n){ el.classList.toggle('on',n===cur); });
-    Array.prototype.forEach.call(dotsEl.children,function(el,n){ el.classList.toggle('on',n===cur); el.setAttribute('aria-current',n===cur?'true':'false'); });
-    media(cur,true);
-  }
-  function tick(){ clearInterval(timer); if(slides.length>1 && !reduce) timer=setInterval(function(){ if(!paused && !document.hidden) show(cur+1); },8000); }
-  function build(list){
-    slides=list;
-    slidesEl.innerHTML=slides.map(slideHtml).join('');
-    dotsEl.innerHTML=slides.map(function(s,i){ return '<button type="button" aria-label="Slide '+(i+1)+'" class="'+(i===0?'on':'')+'"></button>'; }).join('');
-    dotsEl.querySelectorAll('button').forEach(function(b,i){ b.addEventListener('click',function(){ show(i); tick(); }); });
-    var multi=slides.length>1; document.getElementById('zpPrev').style.display=multi?'':'none'; document.getElementById('zpNext').style.display=multi?'':'none'; dotsEl.style.display=multi?'':'none';
-    cur=0; media(0,true); tick();
-  }
-  build(DEFAULT_SLIDES);
-  document.getElementById('zpPrev').addEventListener('click',function(){ show(cur-1); tick(); });
-  document.getElementById('zpNext').addEventListener('click',function(){ show(cur+1); tick(); });
-  slider.addEventListener('mouseenter',function(){ paused=true; });
-  slider.addEventListener('mouseleave',function(){ paused=false; });
-  slider.addEventListener('focusin',function(){ paused=true; });
-  slider.addEventListener('focusout',function(){ paused=false; });
-  var x0=null;
-  slider.addEventListener('touchstart',function(e){ x0=e.touches[0].clientX; },{passive:true});
-  slider.addEventListener('touchend',function(e){ if(x0==null) return; var dx=e.changedTouches[0].clientX-x0; x0=null; if(Math.abs(dx)>45){ show(cur+(dx<0?1:-1)); tick(); } });
-
-  // Admin-fed slides: product trailers + banners, then the defaults
-  Promise.all([
-    ZP.loadProducts(),
-    fetch('/api/banners').then(function(r){ return r.json(); }).catch(function(){ return {}; })
-  ]).then(function(res){
-    var prods=res[0]||[], banners=(res[1]&&res[1].banners)||[];
-    var fromProducts=prods.filter(function(p){ return p.admin && (p.trailerUrl||p.imageUrl); }).slice(0,4).map(function(p){
-      var id=ytId(p.trailerUrl);
-      return {tag:(p.type||'GAME').toUpperCase(), title:p.name, desc:p.desc, price:p.price, yt:id, video:(!id&&p.trailerUrl)?p.trailerUrl:'', image:(!p.trailerUrl)?p.imageUrl:'', poster:p.imageUrl, emoji:p.emoji, art:ZP.art(p.name), cta:['Nunua Sasa',ZP.href(p)]};
+    // Search -> shop.html
+    document.getElementById('searchBox').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const q = e.target.value.trim();
+        window.location.href = 'shop.html' + (q ? ('?search=' + encodeURIComponent(q)) : '');
+      }
     });
-    var fromBanners=banners.slice(0,3).map(function(b){ return {tag:'GAMEHUB UPDATE', title:b.title||'Habari mpya', desc:b.description, emoji:'📢', art:'linear-gradient(120deg,#3b0a5c,#0a2a6b)', cta:[b.buttonText||'Angalia',safeUrl(b.buttonUrl)]}; });
-    var all=fromProducts.concat(fromBanners);
-    if (all.length) build(all.concat(DEFAULT_SLIDES.slice(0, Math.max(0,3-all.length))));
-  });
 
-  /* ---------- AI helpers ---------- */
-  function openChat(text){
-    var b=document.getElementById('ghChatBtn'), box=document.getElementById('ghChatBox');
-    if(box && box.style.display!=='block' && b) b.click();
-    if(text){ var i=document.getElementById('ghChatInput'); if(i){ i.value=text; i.focus(); } }
-  }
-  document.getElementById('openAiBtn').addEventListener('click',function(){ openChat(); });
-  document.querySelectorAll('#aiExamples .zp-chip').forEach(function(c){ c.addEventListener('click',function(){ openChat(c.textContent); }); });
-})();
-</script>
-</body>
+    // Login button state (sawa na app.js lakini kwa muundo tofauti wa kitufe)
+    (function () {
+      const user = JSON.parse(localStorage.getItem('gamehubUser') || 'null');
+      const btn = document.getElementById('topLoginBtn');
+      if (user) {
+        btn.textContent = '👤 ' + user.name;
+        btn.href = user.isAdmin ? 'admin.html' : 'mygames.html';
+      }
+    })();
+
+    // Kitufe cha "Zungumza na AI Sasa" kinafungua chat widget (kutoka chat.js)
+    document.getElementById('openAiBtn').addEventListener('click', () => {
+      const chatBtn = document.getElementById('ghChatBtn');
+      if (chatBtn) chatBtn.click();
+    });
+
+  </script><script>
+    // ============ FEATURED TRAILERS FROM ADMIN ============
+    (function () {
+      function ytId(url) {
+        const m = (url || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/);
+        return m ? m[1] : null;
+      }
+      function esc(x) { const d=document.createElement('div'); d.textContent=x==null?'':String(x); return d.innerHTML; }
+      function money(v) { return Number(v || 0).toLocaleString() + ' TZS'; }
+      function renderTrailers(products) {
+        const box=document.getElementById('featuredTrailers');
+        const stage=document.getElementById('heroStageMedia');
+        const dots=document.getElementById('heroStageDots');
+        const prev=document.getElementById('heroStagePrev');
+        const next=document.getElementById('heroStageNext');
+        const progress=document.getElementById('heroStageProgress');
+        const items=(products||[]).filter(p=>p.trailerUrl && p.section !== 'steam' && p.section !== 'efootball');
+        if(!items.length){
+          const empty='<div class="trailer-empty"><span>🎬</span><strong>Hakuna trailer bado</strong><small>Admin → Hero Studio au Bidhaa → weka Trailer URL.</small><a href="shop.html" class="btn primary">Browse Games</a></div>';
+          if(box) box.innerHTML=empty;
+          if(stage) stage.innerHTML='<div class="hero-stage-empty"><span>🎬</span><strong>Featured trailers zitaonekana hapa</strong><small>Admin akiweka trailer kwenye game.</small></div>';
+          if(dots) dots.innerHTML='';
+          if(prev) prev.style.display='none'; if(next) next.style.display='none';
+          return;
+        }
+
+        let active=0;
+        let timer=null, progressTimer=null;
+        const DURATION=10000;
+        let startedAt=0;
+        let paused=false;
+
+        function stageCard(p,i){
+          const id=ytId(p.trailerUrl); const img=p.imageUrl||'';
+          const media=id
+            ? `<iframe data-yt="1" data-video-id="${id}" src="https://www.youtube.com/embed/${id}?autoplay=0&mute=1&controls=1&rel=0&modestbranding=1&playsinline=1" title="${esc(p.name)} Trailer" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>`
+            : `<video controls playsinline preload="metadata" poster="${esc(img)}"><source src="${esc(p.trailerUrl)}"></video>`;
+          return `<div class="hero-stage-slide ${i===0?'active':''}" data-index="${i}">${media}<div class="hero-stage-game"><div><span>${esc(p.category||p.type||'GAME')}</span><h2>${esc(p.name)}</h2><p>${esc(p.desc||'')}</p></div><div class="hero-stage-price"><span class="hero-price-label">Bei ya Game</span><span class="hero-price-value">${money(p.price)}</span><a href="product.html?id=${encodeURIComponent(p.id)}" class="hero-buy">🛒 Buy Now</a></div></div></div>`;
+        }
+        if(stage) stage.innerHTML=items.map(stageCard).join('');
+        if(dots){
+          dots.innerHTML=items.map((p,i)=>`<button class="hero-stage-dot ${i===0?'active':''}" data-index="${i}" aria-label="${esc(p.name)}"></button>`).join('');
+          dots.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>show(Number(b.dataset.index),true)));
+        }
+        if(prev) prev.style.display=items.length>1?'grid':'none';
+        if(next) next.style.display=items.length>1?'grid':'none';
+        prev?.addEventListener('click',()=>show((active-1+items.length)%items.length,true));
+        next?.addEventListener('click',()=>show((active+1)%items.length,true));
+
+        function playActive(){
+          if(!stage) return;
+          const slides=stage.querySelectorAll('.hero-stage-slide');
+          slides.forEach((slide,n)=>{
+            const video=slide.querySelector('video');
+            const iframe=slide.querySelector('iframe');
+            if(n===active){
+              if(video){ video.muted=true; video.currentTime=0; video.play().catch(()=>{}); video.onended=()=>show((active+1)%items.length,false); }
+              if(iframe){
+                const id=iframe.dataset.videoId;
+                iframe.src=`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&playsinline=1`;
+              }
+            } else {
+              if(video){ video.pause(); video.currentTime=0; }
+              if(iframe){
+                const id=iframe.dataset.videoId;
+                iframe.src=`https://www.youtube.com/embed/${id}?autoplay=0&mute=1&controls=1&rel=0&modestbranding=1&playsinline=1`;
+              }
+            }
+          });
+        }
+        function resetProgress(){
+          startedAt=Date.now();
+          if(progress) progress.style.width='0%';
+          clearInterval(progressTimer);
+          progressTimer=setInterval(()=>{
+            if(paused)return;
+            const pct=Math.min(100,(Date.now()-startedAt)/DURATION*100);
+            if(progress) progress.style.width=pct+'%';
+          },100);
+        }
+        function schedule(){
+          clearTimeout(timer);
+          if(items.length>1 && !paused) timer=setTimeout(()=>show((active+1)%items.length,false),DURATION);
+        }
+        function show(i,userAction=false){
+          if(!stage)return;
+          active=(i+items.length)%items.length;
+          stage.querySelectorAll('.hero-stage-slide').forEach((el,n)=>el.classList.toggle('active',n===active));
+          dots?.querySelectorAll('button').forEach((el,n)=>el.classList.toggle('active',n===active));
+          playActive(); resetProgress(); schedule();
+        }
+        const hero=stage?.parentElement;
+        hero?.addEventListener('mouseenter',()=>{paused=true; clearTimeout(timer);});
+        hero?.addEventListener('mouseleave',()=>{paused=false; resetProgress(); schedule();});
+        document.addEventListener('visibilitychange',()=>{
+          if(document.hidden){paused=true; clearTimeout(timer);} else {paused=false; resetProgress(); schedule(); playActive();}
+        });
+        playActive(); resetProgress(); schedule();
+
+        // Keep the lower trailer grid as a catalogue, while Hero remains the main autoplay experience.
+        if(box) box.innerHTML=items.map((p)=>{
+          const id=ytId(p.trailerUrl); const img=p.imageUrl||'';
+          const media=id ? `<div class="trailer-video"><iframe src="https://www.youtube.com/embed/${id}?autoplay=0&controls=1&rel=0&modestbranding=1&playsinline=1" title="${esc(p.name)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>` : `<div class="trailer-video trailer-direct"><video controls preload="metadata" playsinline poster="${esc(img)}"><source src="${esc(p.trailerUrl)}"></video></div>`;
+          return `<article class="trailer-card">${media}<div class="trailer-info"><div class="trailer-game-line"><div>${img?`<img src="${esc(img)}" alt="" onerror="this.style.display='none'">`:''}<div><span>${esc(p.category||p.type||'GAME')}</span><h3>${esc(p.name)}</h3></div></div><div class="trailer-price">${money(p.price)}</div></div><p>${esc(p.desc||'Digital game • Ready to order')}</p><div class="trailer-actions"><a class="btn primary" href="product.html?id=${encodeURIComponent(p.id)}">🛒 Buy Now</a><a class="trailer-more" href="product.html?id=${encodeURIComponent(p.id)}">View Details →</a></div></div></article>`;
+        }).join('');
+      }
+      fetch('/api/products').then(r=>r.json()).then(d=>{renderTrailers(d.success?d.products:[]);}).catch(()=>renderTrailers([]));
+    })();
+  </script><script>
+(async()=>{try{const r=await fetch('/api/banners');const d=await r.json();const a=d.banners||[];if(!a.length)return;const wrap=document.getElementById('dynamicBanners');wrap.style.display='block';document.getElementById('bannerGrid').innerHTML=a.map(b=>`<div style="background:linear-gradient(135deg,#17102f,#0b1022);border:1px solid #5d2bb0;border-radius:16px;padding:18px"><span style="color:#a63cff;font-weight:700">📢 GAMEHUB UPDATE</span><h2 style="margin:8px 0">${escB(b.title)}</h2><p style="color:#c9c9e0">${escB(b.description)}</p><a class="btn primary" href="${escB(b.buttonUrl||'#')}">${escB(b.buttonText||'Angalia')}</a></div>`).join('')}catch(e){}})();function escB(x){const d=document.createElement('div');d.textContent=x||'';return d.innerHTML}
+</script></body>
 </html>
