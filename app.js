@@ -1,4 +1,4 @@
-// ============ GAMEHUB APP.JS (AZAMPAY + ADMIN STATE) ============
+// ============ GAMEHUB APP.JS (CLICKPESA + ADMIN STATE) ============
 
 // 1. KUSIMAMIA CART (KIKAPU)
 function getCart() {
@@ -32,7 +32,7 @@ function updateCartBadge() {
   }
 }
 
-// 2. KUSIMAMIA ADMIN & USER LOGIN STATE (LUDISHA SEHEMU YA ADMIN)
+// 2. KUSIMAMIA ADMIN & USER LOGIN STATE
 function checkUserLoginState() {
   const user = JSON.parse(localStorage.getItem('gamehubUser') || 'null');
   const loginBtn = document.getElementById('topLoginBtn');
@@ -59,7 +59,7 @@ function checkUserLoginState() {
 function detectNetwork(phone) {
   const cleanPhone = phone.replace(/[^0-9]/g, '');
   let prefix = '';
-  
+
   if (cleanPhone.startsWith('255')) {
     prefix = cleanPhone.substring(3, 5);
   } else if (cleanPhone.startsWith('0')) {
@@ -76,8 +76,8 @@ function detectNetwork(phone) {
   return 'airtel';
 }
 
-// 4. AZAMPAY CHECKOUT FUNCTION
-async function processAzamPayCheckout(event) {
+// 4. CLICKPESA CHECKOUT FUNCTION (Badala ya AzamPay)
+async function processClickPesaCheckout(event) {
   if (event) event.preventDefault();
 
   const phoneInput = document.getElementById('checkoutPhone');
@@ -106,13 +106,9 @@ async function processAzamPayCheckout(event) {
     amount = cart.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
     items = cart;
   } else {
-    amount = window.currentProductPrice || 1000; 
+    amount = window.currentProductPrice || 1000;
     items = [{ name: window.currentProductName || 'GameHub Purchase', price: amount }];
   }
-
-  const network = detectNetwork(phone);
-  const providerMap = { vodacom: 'Mpesa', tigo: 'Tigo', airtel: 'Airtel', halotel: 'Halopesa' };
-  const provider = providerMap[network] || 'Airtel';
 
   if (payBtn) {
     payBtn.disabled = true;
@@ -121,13 +117,13 @@ async function processAzamPayCheckout(event) {
   if (errorBox) errorBox.style.display = 'none';
 
   try {
-    const response = await fetch('/api/azampay-pay', {
+    // ✅ CLICKPESA — endpoint mpya
+    const response = await fetch('/api/clickpesa-pay', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        amount: amount,
+        total: amount,
         phone: phone,
-        provider: provider,
         items: items,
         name: nameInput ? nameInput.value : 'Kelvin',
         email: emailInput ? emailInput.value : 'payetdimit3@gmail.com'
@@ -137,22 +133,60 @@ async function processAzamPayCheckout(event) {
     const data = await response.json();
 
     if (response.ok && data.success) {
-      alert("📲 Ombi la malipo limetumwa kwenye simu yako (" + phone + ")!\n\nWeka PIN yako kwenye simu kukamilisha muamala.");
+      alert("📲 Ombi la malipo limetumwa kwenye simu yako (" + phone + ")!\n\nWeka PIN yako kwenye simu kukamilisha muamala.\n\nOrder Ref: " + (data.tx_ref || ''));
+
+      // Anza kuangalia hali ya malipo kila sekunde 3
+      if (data.tx_ref) {
+        pollClickPesaStatus(data.tx_ref);
+      }
+
       localStorage.removeItem('gamehubCart');
       updateCartBadge();
-      window.location.href = 'myorders.html';
     } else {
       showError(data.error || "Hitilafu imetokea kwenye server.", errorBox);
     }
   } catch (err) {
     console.error("Payment Error:", err);
-    showError("Hitilafu ya mtandao. Hakikisha backend server ina /api/azampay/pay route.", errorBox);
+    showError("Hitilafu ya mtandao. Hakikisha backend server ina /api/clickpesa-pay route.", errorBox);
   } finally {
     if (payBtn) {
       payBtn.disabled = false;
       payBtn.textContent = '💳 Lipa Hapa';
     }
   }
+}
+
+// 5. KUFUATILIA HALI YA MALIPO (Polling)
+async function pollClickPesaStatus(txRef) {
+  let attempts = 0;
+  const maxAttempts = 40; // Sekunde 120 (dakika 2)
+
+  const interval = setInterval(async () => {
+    attempts++;
+    try {
+      const res = await fetch('/api/clickpesa-check/' + txRef);
+      const data = await res.json();
+
+      if (data.status === 'successful') {
+        clearInterval(interval);
+        alert("✅ Malipo yamefanikiwa!\n\nBidhaa zako zinapatikana kwenye 'My Orders'.");
+        window.location.href = 'myorders.html';
+      } else if (data.status === 'failed') {
+        clearInterval(interval);
+        alert("❌ Malipo hayakufanikiwa. Tafadhali jaribu tena.");
+      } else if (data.status === 'amount_mismatch') {
+        clearInterval(interval);
+        alert("⚠️ Kiasi kilicholipwa hakilingani. Wasiliana na support.");
+      }
+    } catch (err) {
+      console.error('Poll error:', err);
+    }
+
+    if (attempts >= maxAttempts) {
+      clearInterval(interval);
+      console.log('Polling imeisha — malipo yanaendelea.');
+    }
+  }, 3000);
 }
 
 function showError(msg, element) {
@@ -164,7 +198,7 @@ function showError(msg, element) {
   }
 }
 
-// 5. INITIALIZE ON PAGE LOAD
+// 6. INITIALIZE ON PAGE LOAD
 document.addEventListener('DOMContentLoaded', () => {
   updateCartBadge();
   checkUserLoginState();
@@ -177,13 +211,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkoutForm = document.getElementById('checkoutForm');
   const paymentForm = document.getElementById('paymentForm');
   if (checkoutForm) {
-    checkoutForm.addEventListener('submit', processAzamPayCheckout);
+    checkoutForm.addEventListener('submit', processClickPesaCheckout);
+  }
+  if (paymentForm) {
+    paymentForm.addEventListener('submit', processClickPesaCheckout);
   }
 
-  // checkout.html ina handler yake ya paymentForm; usi-add click handler ya pili,
-  // vinginevyo ombi la AzamPay linaweza kutumwa mara mbili.
   const checkoutBtn = document.getElementById('payBtn');
   if (checkoutBtn && !checkoutForm && !paymentForm) {
-    checkoutBtn.addEventListener('click', processAzamPayCheckout);
+    checkoutBtn.addEventListener('click', processClickPesaCheckout);
   }
 });
