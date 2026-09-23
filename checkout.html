@@ -67,7 +67,7 @@
       <div class="ck-coupon"><input type="text" id="couponInput" placeholder="Discount code" aria-label="Discount code" autocomplete="off"><button type="button" class="zp-btn ghost sm" id="applyCouponBtn" style="height:40px">Tumia</button></div>
       <p class="ck-cmsg" id="couponMsg" role="status" aria-live="polite"></p>
       <div class="ck-total"><span>JUMLA</span><strong id="totalBox">0 TZS</strong></div>
-      <div class="ck-trust"><span data-ic="shield"></span>Malipo salama kupitia AzamPay</div>
+      <div class="ck-trust"><span data-ic="shield"></span>Malipo salama kupitia ClickPesa</div>
     </aside>
   </div>
 </div>
@@ -162,7 +162,7 @@
       }).catch(function(){ say(mStatus,'Hitilafu ya mtandao. Jaribu tena.'); busy(manualBtn,false); });
   });
 
-  /* ----- automatic payment (AzamPay push + polling) ----- */
+  /* ----- automatic payment (ClickPesa push + polling) ----- */
   var pStatus=document.getElementById('payStatus'), poll=null;
   formA.addEventListener('submit',function(e){
     e.preventDefault();
@@ -175,7 +175,9 @@
 
     var total=finalTotal();
     say(pStatus,''); busy(payBtn,true,'⏳ Inaandaa malipo...');
-    fetch('/api/azampay-pay',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify({total:total,phone:phoneFull,provider:provider,name:name,items:discountedItems()})})
+
+    // ✅ CLICKPESA — endpoint mpya (bila provider)
+    fetch('/api/clickpesa-pay',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify({total:total,phone:phoneFull,name:name,items:discountedItems()})})
       .then(function(r){ return r.json(); })
       .then(function(data){
         if (!data.success){ say(pStatus,data.error||'Malipo hayakuanza. Jaribu tena.'); busy(payBtn,false); return; }
@@ -184,7 +186,8 @@
         var attempts=0;
         poll=setInterval(function(){
           attempts++;
-          fetch('/api/azampay-check/'+data.tx_ref,{headers:{'Authorization':token}}).then(function(r){ return r.json(); }).then(function(v){
+          // ✅ CLICKPESA — endpoint mpya ya kuangalia hali
+          fetch('/api/clickpesa-check/'+data.tx_ref,{headers:{'Authorization':token}}).then(function(r){ return r.json(); }).then(function(v){
             if (v.success && v.status==='successful'){
               clearInterval(poll);
               localStorage.setItem('gamehubLastOrder',JSON.stringify({tx_ref:data.tx_ref,items:discountedItems(),total:total,date:new Date().toISOString()}));
