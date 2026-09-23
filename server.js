@@ -971,161 +971,44 @@ app.get('/api/security/report', (req, res) => {
   res.json({ success: true, report: lines.join('\n') });
 });
 
-// 💳 FLUTTERWAVE PAYMENTS
-app.post('/api/pay', async (req, res) => {
-  try {
-    const { amount, email, phone, name, network, items } = req.body;
-    if (!amount || !email || !phone || !name || !network) {
-      return res.status(400).json({ error: 'Jaza taarifa zote za malipo' });
-    }
-    const tx_ref = 'GH-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+// ═══════════════════════════════════════════════════════════════
+// ⚡ CLICKPESA PAYMENTS — Badala ya AzamPay
+// ═══════════════════════════════════════════════════════════════
+const CLICKPESA_BASE = 'https://api.clickpesa.com/third-parties';
 
-    const payload = {
-      tx_ref, amount: String(amount), currency: 'TZS', network,
-      email, phone_number: phone, fullname: name,
-      meta: { items: JSON.stringify(items || []) }
-    };
+let clickpesaTokenCache = { token: null, expiresAt: 0 };
 
-    const response = await fetch('https://api.flutterwave.com/v3/charges?type=mobile_money_tanzania', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + process.env.FLW_SECRET_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const data = await response.json();
-    if (data.status !== 'success') return res.status(400).json({ error: data.message || 'Malipo hayakuanza' });
-    res.json({ success: true, tx_ref });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+async function getClickPesaToken() {
+  if (clickpesaTokenCache.token && Date.now() < clickpesaTokenCache.expiresAt - 60_000) {
+    return clickpesaTokenCache.token;
   }
-});
 
-app.get('/api/verify', async (req, res) => {
-  try {
-    const tx_ref = req.query.tx_ref;
-    const response = await fetch('https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref=' + tx_ref, {
-      headers: { 'Authorization': 'Bearer ' + process.env.FLW_SECRET_KEY }
-    });
-    const data = await response.json();
-
-    if (data.status === 'success' && data.data.status === 'successful') {
-      const orders = readJson('orders.json', []);
-      if (!orders.find(o => o.tx_ref === tx_ref)) {
-        const meta = data.data.meta || {};
-        let items = [];
-        try { items = JSON.parse(meta.items || '[]'); } catch (e) { items = []; }
-        orders.push({
-          tx_ref,
-          customer: (data.data.customer && data.data.customer.email) || '',
-          amount: data.data.amount || 0,
-          items,
-          status: 'successful',
-          date: new Date().toISOString()
-        });
-        await writeJson('orders.json', orders);
-
-        logSecurity('PAYMENT_SUCCESS', 'Malipo yamefika: ' + (data.data.amount || 0) + ' TZS', 'LOW', getIP(req));
-
-        const recentOrders = orders.filter(o => new Date(o.date).getTime() > Date.now() - 10 * 60000);
-        const sameCustomer = recentOrders.filter(o => o.customer === (data.data.customer && data.data.customer.email));
-        if (sameCustomer.length >= 3) {
-          logSecurity('FRAUD_SUSPECT', 'Malipo ya haraka-haraka: ' + sameCustomer.length + ' orders kwa dakika 10', 'HIGH', getIP(req));
-        }
-      }
-      res.json({ success: true, status: 'successful' });
-    } else {
-      res.json({ success: false, status: data.data ? data.data.status : 'pending' });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// ⚡ AZAMPAY PAYMENTS
-const AZAM_ENV = String(process.env.AZAMPAY_ENVIRONMENT || process.env.AZAMPAY_ENV || 'sandbox').toLowerCase();
-const AZAM_AUTH_BASE = AZAM_ENV === 'production'
-  ? 'https://authenticator.azampay.co.tz'
-  : 'https://authenticator-sandbox.azampay.co.tz';
-const AZAM_API_BASE = process.env.AZAMPAY_API_BASE || (AZAM_ENV === 'production'
-  ? 'https://api.azampay.co.tz'
-  : 'https://sandbox.azampay.co.tz');
-
-function azamConfigured() {
-  return !!(process.env.AZAMPAY_APP_NAME && process.env.AZAMPAY_CLIENT_ID && process.env.AZAMPAY_CLIENT_SECRET);
-}
-
-let azamTokenCache = { token: null, expiresAt: 0 };
-
-async function getAzamPayToken() {
-  if (azamTokenCache.token && Date.now() < azamTokenCache.expiresAt - 60_000) {
-    return azamTokenCache.token;
-  }
-  const r = await fetch(AZAM_AUTH_BASE + '/AppRegistration/GenerateToken', {
+  const r = await fetch(CLICKPESA_BASE + '/generate-token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      appName: process.env.AZAMPAY_APP_NAME,
-      clientId: process.env.AZAMPAY_CLIENT_ID,
-      clientSecret: process.env.AZAMPAY_CLIENT_SECRET
-    })
+    headers: {
+      'client-id': process.env.CLICKPESA_CLIENT_ID,
+      'api-key': process.env.CLICKPESA_API_KEY
+    }
   });
-  const raw = await r.text();
-  let data = {};
-  try { data = JSON.parse(raw); } catch (e) {}
 
-  const token = data?.data?.accessToken || data?.accessToken;
-  if (!r.ok || !token) {
-    throw new Error('AzamPay: imeshindwa kupata token — ' + (data?.message || raw.slice(0, 200)));
+  const data = await r.json();
+  if (!r.ok || !data.token) {
+    throw new Error('ClickPesa: imeshindwa kupata token — ' + (data.message || 'Unknown error'));
   }
-  const expire = data?.data?.expire ? Date.parse(data.data.expire) : 0;
-  azamTokenCache = {
-    token: token.startsWith('Bearer ') ? token : 'Bearer ' + token,
-    expiresAt: expire && !isNaN(expire) ? expire : Date.now() + 50 * 60 * 1000
+
+  clickpesaTokenCache = {
+    token: data.token,
+    expiresAt: Date.now() + 55 * 60 * 1000
   };
-  return azamTokenCache.token;
+  return clickpesaTokenCache.token;
 }
 
-function detectAzamProvider(phoneFull) {
-  const p = String(phoneFull).replace(/\D/g, '');
-  const prefix = p.slice(3, 5);
-  if (['74', '75', '76'].includes(prefix)) return 'Mpesa';
-  if (['71', '65', '67', '77'].includes(prefix)) return 'Tigo';
-  if (['78', '68', '69'].includes(prefix)) return 'Airtel';
-  if (['62', '61'].includes(prefix)) return 'Halopesa';
-  if (['73'].includes(prefix)) return 'Azampesa';
-  return null;
-}
-
-const AZAM_PROVIDERS = ['Mpesa', 'Tigo', 'Airtel', 'Halopesa', 'Azampesa'];
-
-app.get('/api/admin/payment-status', (req, res) => {
-  const user = getUserByToken(req);
-  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
-  const configured = azamConfigured();
-  res.json({
-    success: true,
-    configured,
-    environment: AZAM_ENV,
-    provider: 'AzamPay',
-    apiBaseConfigured: !!process.env.AZAMPAY_API_BASE,
-    apiKeyConfigured: !!process.env.AZAMPAY_API_KEY,
-    callbackTokenConfigured: !!(process.env.AZAMPAY_CALLBACK_TOKEN || process.env.AZAMPAY_WEBHOOK_SECRET),
-    callbackPath: '/api/azampay-callback',
-    message: configured ? 'AzamPay credentials are configured.' : 'Set AZAMPAY_APP_NAME, AZAMPAY_CLIENT_ID and AZAMPAY_CLIENT_SECRET.'
-  });
-});
-
-app.post('/api/azampay-pay', async (req, res) => {
+app.post('/api/clickpesa-pay', async (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza kulipa' });
 
-  if (!azamConfigured()) {
-    return res.status(503).json({ error: 'Malipo ya automatic hayapatikani kwa sasa — tafadhali tumia Malipo Manual hapa chini.' });
-  }
-
   try {
-    const { items, total, phone, name, provider } = req.body;
+    const { items, total, phone, name } = req.body;
     if (!items || !items.length || !total) return res.status(400).json({ error: 'Kikapu ni tupu' });
     if (!phone) return res.status(400).json({ error: 'Weka namba ya simu' });
 
@@ -1133,11 +1016,7 @@ app.post('/api/azampay-pay', async (req, res) => {
     if (!phoneFull.startsWith('255')) phoneFull = '255' + phoneFull.replace(/^0/, '');
     if (phoneFull.length !== 12) return res.status(400).json({ error: 'Namba ya simu si sahihi. Mfano: 0786095758' });
 
-    const requestedProvider = String(provider || '').trim();
-    const mno = AZAM_PROVIDERS.includes(requestedProvider) ? requestedProvider : detectAzamProvider(phoneFull);
-    if (!mno) return res.status(400).json({ error: 'Hatujaweza kutambua mtandao wa namba hii. Chagua mtandao mwenyewe.' });
-
-    const orderReference = 'AZ' + Date.now() + crypto.randomBytes(3).toString('hex');
+    const orderReference = 'GH' + Date.now().toString().slice(-10);
 
     const orders = readJson('orders.json', []);
     orders.push({
@@ -1147,103 +1026,102 @@ app.post('/api/azampay-pay', async (req, res) => {
       customerName: name || user.name,
       amount: Number(total),
       items,
-      provider: mno,
-      status: 'pending_azampay',
+      provider: 'ClickPesa',
+      status: 'pending_clickpesa',
       date: new Date().toISOString()
     });
     await writeJson('orders.json', orders);
 
-    const token = await getAzamPayToken();
-    const payload = {
-      accountNumber: phoneFull,
-      amount: String(total),
-      currency: 'TZS',
-      externalId: orderReference,
-      provider: mno,
-      additionalProperties: { customerEmail: user.email }
-    };
+    const token = await getClickPesaToken();
 
-    const apiRes = await fetch(AZAM_API_BASE + '/azampay/mno/checkout', {
+    const previewRes = await fetch(CLICKPESA_BASE + '/payments/preview-ussd-push-request', {
       method: 'POST',
       headers: {
         'Authorization': token,
-        'Content-Type': 'application/json',
-        'X-API-Key': process.env.AZAMPAY_API_KEY || ''
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        amount: String(total),
+        currency: 'TZS',
+        orderReference: orderReference,
+        phoneNumber: phoneFull
+      })
     });
-    const rawBody = await apiRes.text();
-    let apiData = {};
-    try { apiData = JSON.parse(rawBody); } catch (e) {}
 
-    if (!apiRes.ok || apiData.success === false) {
+    const previewData = await previewRes.json();
+    if (!previewRes.ok || previewData.success === false) {
+      console.error('ClickPesa preview error:', previewData);
+      return res.status(400).json({ error: 'ClickPesa: ' + (previewData.message || 'Malipo hayakuanza') });
+    }
+
+    const payRes = await fetch(CLICKPESA_BASE + '/payments/initiate-ussd-push-request', {
+      method: 'POST',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        amount: String(total),
+        currency: 'TZS',
+        orderReference: orderReference,
+        phoneNumber: phoneFull
+      })
+    });
+
+    const payData = await payRes.json();
+    if (!payRes.ok || payData.success === false) {
+      console.error('ClickPesa payment error:', payData);
+
       const all = readJson('orders.json', []);
-      const idx = all.findIndex(o => o.tx_ref === orderReference);
-      if (idx > -1) { all[idx].status = 'failed_to_start'; await writeJson('orders.json', all); }
+      const o = all.find(x => x.tx_ref === orderReference);
+      if (o) { o.status = 'failed_to_start'; await writeJson('orders.json', all); }
 
-      const msg = apiData?.message
-        || (apiData?.errors && JSON.stringify(apiData.errors))
-        || rawBody.slice(0, 200)
-        || 'Imeshindwa kuanzisha malipo';
-      console.error('AzamPay checkout error:', apiRes.status, msg);
-      return res.status(400).json({ error: 'AzamPay: ' + msg + ' (Unaweza kutumia Malipo Manual hapa chini.)' });
+      return res.status(400).json({ error: 'ClickPesa: ' + (payData.message || 'Malipo hayakuanza') });
     }
 
     res.json({
       success: true,
       tx_ref: orderReference,
-      provider: mno,
-      transactionId: apiData.transactionId || null
+      provider: 'ClickPesa',
+      transactionId: payData.id || null
     });
   } catch (err) {
-    console.error(err);
+    console.error('ClickPesa error:', err);
     res.status(500).json({ error: 'Server error: ' + err.message });
   }
 });
 
-function amountMatches(order, collectedAmount) {
-  const collected = Number(collectedAmount);
-  if (isNaN(collected)) return false;
-  return collected >= (order.amount - 5);
-}
-
-app.post('/api/azampay-callback', async (req, res) => {
+// Webhook ya ClickPesa
+app.post('/api/clickpesa-webhook', async (req, res) => {
   try {
-    const expected = process.env.AZAMPAY_CALLBACK_TOKEN || process.env.AZAMPAY_WEBHOOK_SECRET;
-    if (expected) {
-      const got = req.headers['authorization'] || req.headers['x-callback-token'] || '';
-      const clean = String(got).replace(/^Bearer\s+/i, '');
-      if (clean !== expected) {
-        logSecurity('AZAMPAY_CALLBACK_UNAUTHORIZED', 'Callback ya AzamPay yenye token isiyo sahihi', 'HIGH', getIP(req));
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-    }
-
     const body = req.body || {};
-    const payload = (body.data && typeof body.data === 'object') ? body.data : body;
-    const orderReference = payload.utilityref || payload.utilityRef || payload.externalId || payload.reference || payload.referenceId || body.utilityref || body.externalId || body.reference;
-    const status = String(payload.transactionstatus || payload.transactionStatus || payload.status || body.transactionstatus || body.transactionStatus || body.status || '').toLowerCase();
-    const collectedAmount = payload.amount ?? payload.collectedAmount ?? body.amount ?? body.collectedAmount;
+    const event = body.event || body.eventType;
+    const data = body.data || {};
 
-    if (orderReference && (status === 'success' || status === 'successful' || status === 'settled' || status === 'completed' || status === 'paid')) {
+    console.log('ClickPesa webhook:', event, JSON.stringify(data).slice(0, 500));
+
+    if (event === 'PAYMENT RECEIVED') {
+      const orderRef = data.orderReference;
       const orders = readJson('orders.json', []);
-      const order = orders.find(o => o.tx_ref === orderReference);
+      const order = orders.find(o => o.tx_ref === orderRef);
+
       if (order && order.status !== 'successful') {
-        if (!amountMatches(order, collectedAmount)) {
-          logSecurity('AMOUNT_MISMATCH', 'Kiasi kilicholipwa (' + collectedAmount + ') hakilingani na bei halisi (' + order.amount + ') kwa order ' + orderReference, 'HIGH', getIP(req));
+        const collected = Number(data.collectedAmount || data.amount || 0);
+        if (collected >= (order.amount - 5)) {
+          order.status = 'successful';
+          order.confirmedAt = new Date().toISOString();
+          order.clickpesaRef = data.id || null;
+          await writeJson('orders.json', orders);
+          logSecurity('CLICKPESA_PAYMENT_CONFIRMED', 'Malipo yamethibitishwa: ' + orderRef, 'LOW', getIP(req));
+        } else {
           order.status = 'amount_mismatch';
           await writeJson('orders.json', orders);
-          return res.json({ success: false });
         }
-        order.status = 'successful';
-        order.confirmedAt = new Date().toISOString();
-        order.azamTransactionId = body.transactionId || body.operatorreference || null;
-        await writeJson('orders.json', orders);
-        logSecurity('AZAMPAY_PAYMENT_CONFIRMED', 'Malipo ya AzamPay yamethibitishwa: ' + orderReference, 'LOW', getIP(req));
       }
-    } else if (orderReference && (status === 'failed' || status === 'cancelled' || status === 'canceled' || status === 'rejected')) {
+    } else if (event === 'PAYMENT FAILED') {
+      const orderRef = data.orderReference;
       const orders = readJson('orders.json', []);
-      const order = orders.find(o => o.tx_ref === orderReference);
+      const order = orders.find(o => o.tx_ref === orderRef);
       if (order && order.status !== 'successful') {
         order.status = 'failed';
         await writeJson('orders.json', orders);
@@ -1252,60 +1130,23 @@ app.post('/api/azampay-callback', async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error('ClickPesa webhook error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-app.get('/api/azampay-check/:ref', (req, res) => {
+app.get('/api/clickpesa-check/:ref', (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza' });
-  try {
-    const orders = readJson('orders.json', []);
-    const order = orders.find(o => o.tx_ref === req.params.ref && o.customer === user.email);
-    if (!order) return res.status(404).json({ error: 'Order haipatikani' });
-
-    if (order.status === 'successful') return res.json({ success: true, status: 'successful' });
-    if (order.status === 'amount_mismatch') return res.json({ success: true, status: 'amount_mismatch' });
-    if (order.status === 'failed' || order.status === 'failed_to_start') {
-      return res.json({ success: true, status: 'failed' });
-    }
-    res.json({ success: true, status: 'pending' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// 🔁 COMPATIBILITY ALIASES
-app.post('/api/clickpesa-pay', async (req, res) => {
-  const user = getUserByToken(req);
-  if (!user) return res.status(401).json({ error: 'Ingia kwanza kulipa' });
-  if (!azamConfigured()) return res.status(503).json({ error: 'AzamPay haijasanidiwa kwenye Render. Weka AZAMPAY_APP_NAME, AZAMPAY_CLIENT_ID na AZAMPAY_CLIENT_SECRET.' });
-  try {
-    const { items, total, phone, name } = req.body || {};
-    if (!items?.length || !total || !phone) return res.status(400).json({ error: 'Jaza taarifa za malipo.' });
-    let phoneFull = String(phone).replace(/\D/g, '');
-    if (!phoneFull.startsWith('255')) phoneFull = '255' + phoneFull.replace(/^0/, '');
-    const mno = detectAzamProvider(phoneFull);
-    if (!mno) return res.status(400).json({ error: 'Mtandao wa namba hii haukutambulika.' });
-    const orderReference = 'AZ' + Date.now() + crypto.randomBytes(3).toString('hex');
-    const orders = readJson('orders.json', []);
-    orders.push({ tx_ref: orderReference, customer: user.email, customerPhone: phoneFull, customerName: name || user.name, amount: Number(total), items, provider: mno, status: 'pending_azampay', date: new Date().toISOString() });
-    await writeJson('orders.json', orders);
-    const token = await getAzamPayToken();
-    const apiRes = await fetch(AZAM_API_BASE + '/azampay/mno/checkout', { method:'POST', headers:{'Authorization':token,'Content-Type':'application/json','X-API-Key':process.env.AZAMPAY_API_KEY||''}, body:JSON.stringify({accountNumber:phoneFull,amount:String(total),currency:'TZS',externalId:orderReference,provider:mno,additionalProperties:{customerEmail:user.email}}) });
-    const raw = await apiRes.text(); let d={}; try{d=JSON.parse(raw)}catch(e){}
-    if(!apiRes.ok || d.success===false){ const all=readJson('orders.json',[]); const o=all.find(x=>x.tx_ref===orderReference); if(o){o.status='failed_to_start'; await writeJson('orders.json',all);} return res.status(400).json({error:'AzamPay: '+(d.message||raw.slice(0,220)||'Malipo hayakuanza')}); }
-    res.json({success:true,tx_ref:orderReference,provider:mno,transactionId:d.transactionId||null});
-  } catch(e){ console.error('clickpesa compatibility:',e); res.status(500).json({error:e.message}); }
-});
-
-app.get('/api/clickpesa-check/:ref', (req,res) => {
-  const user=getUserByToken(req); if(!user) return res.status(401).json({error:'Ingia kwanza'});
-  const orders=readJson('orders.json',[]); const o=orders.find(x=>x.tx_ref===req.params.ref && x.customer===user.email);
-  if(!o) return res.status(404).json({error:'Order haipatikani'});
-  res.json({success:true,status:o.status==='successful'?'successful':(o.status==='failed'||o.status==='failed_to_start'?'failed':o.status==='amount_mismatch'?'amount_mismatch':'pending')});
+  const orders = readJson('orders.json', []);
+  const o = orders.find(x => x.tx_ref === req.params.ref && x.customer === user.email);
+  if (!o) return res.status(404).json({ error: 'Order haipatikani' });
+  res.json({
+    success: true,
+    status: o.status === 'successful' ? 'successful' :
+            (o.status === 'failed' || o.status === 'failed_to_start' ? 'failed' :
+             o.status === 'amount_mismatch' ? 'amount_mismatch' : 'pending')
+  });
 });
 
 // 💵 MALIPO YA MANUAL
@@ -1369,40 +1210,33 @@ app.get('/api/my-orders', (req, res) => {
 
 // ═══════════════════════════════════════════════════════════════
 // 🤖 AI INTEGRATION — PROVIDERS WOTE 6 (Sept 2026)
-// Mpangilio: Groq → Google → OpenRouter → DeepSeek → OpenAI → Anthropic
 // ═══════════════════════════════════════════════════════════════
 async function askAI(prompt, preferred) {
   const providers = {
-    // 🥇 GROQ — Bure kabisa, haraka sana
     groq: {
       key: process.env.GROQ_API_KEY,
-      model: process.env.NEXUS_GROQ_MODEL || 'llama-3.3-70b-versatile',
+      model: process.env.NEXUS_GROQ_MODEL || 'openai/gpt-oss-120b',
       base: 'https://api.groq.com/openai/v1'
     },
-    // 🥈 GOOGLE GEMINI — Bure kwa kiasi
     google: {
       key: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY,
       model: process.env.NEXUS_GOOGLE_MODEL || 'gemini-2.0-flash-exp'
     },
-    // 🥉 OPENROUTER — Model 50+ bure
     openrouter: {
       key: process.env.OPENROUTER_API_KEY,
       model: process.env.NEXUS_OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',
       base: 'https://openrouter.ai/api/v1'
     },
-    // DEEPSEEK — $5 bure
     deepseek: {
       key: process.env.DEEPSEEK_API_KEY,
       model: process.env.NEXUS_DEEPSEEK_MODEL || 'deepseek-chat',
       base: 'https://api.deepseek.com'
     },
-    // OPENAI
     openai: {
       key: process.env.OPENAI_API_KEY,
       model: process.env.NEXUS_OPENAI_MODEL || 'gpt-4o-mini',
       base: 'https://api.openai.com'
     },
-    // ANTHROPIC CLAUDE
     anthropic: {
       key: process.env.ANTHROPIC_API_KEY,
       model: process.env.NEXUS_ANTHROPIC_MODEL || 'claude-3-5-haiku-latest'
@@ -1431,7 +1265,6 @@ async function askAI(prompt, preferred) {
       const cfg = providers[provider];
       let text = '';
 
-      // 🟢 GROQ, OPENROUTER, DEEPSEEK, OPENAI — OpenAI-compatible format
       if (['groq', 'openrouter', 'deepseek', 'openai'].includes(provider)) {
         const base = cfg.base || (provider === 'deepseek' ? 'https://api.deepseek.com' : 'https://api.openai.com');
         const headers = {
@@ -1461,7 +1294,6 @@ async function askAI(prompt, preferred) {
         text = data?.choices?.[0]?.message?.content || '';
       }
 
-      // 🔵 ANTHROPIC
       if (provider === 'anthropic') {
         const response = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
@@ -1482,7 +1314,6 @@ async function askAI(prompt, preferred) {
         text = data?.content?.map(x => x.text || '').join('') || '';
       }
 
-      // 🟡 GOOGLE GEMINI
       if (provider === 'google') {
         const response = await fetch(
           'https://generativelanguage.googleapis.com/v1beta/models/' +
@@ -1518,7 +1349,7 @@ async function askGemini(prompt) {
   return askAI(prompt, 'google');
 }
 
-// ═══════════ 🧪 AI DIAGNOSTIC — Jaribu providers wote ═══════════
+// 🧪 AI DIAGNOSTIC — Jaribu providers wote
 app.get('/api/ai/test', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
@@ -1527,7 +1358,7 @@ app.get('/api/ai/test', async (req, res) => {
   const testPrompt = 'Sema "AI inafanya kazi" kwa Kiswahili.';
 
   const providers = {
-    groq: { key: process.env.GROQ_API_KEY, model: process.env.NEXUS_GROQ_MODEL || 'llama-3.3-70b-versatile', base: 'https://api.groq.com/openai/v1' },
+    groq: { key: process.env.GROQ_API_KEY, model: process.env.NEXUS_GROQ_MODEL || 'openai/gpt-oss-120b', base: 'https://api.groq.com/openai/v1' },
     google: { key: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY, model: process.env.NEXUS_GOOGLE_MODEL || 'gemini-2.0-flash-exp' },
     openrouter: { key: process.env.OPENROUTER_API_KEY, model: process.env.NEXUS_OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free', base: 'https://openrouter.ai/api/v1' },
     deepseek: { key: process.env.DEEPSEEK_API_KEY, model: process.env.NEXUS_DEEPSEEK_MODEL || 'deepseek-chat', base: 'https://api.deepseek.com' },
@@ -1628,7 +1459,7 @@ Bei za kukodi muda (GeForce NOW):
 - Dakika 50 = 500 TZS
 - Masaa 2 = 1,000 TZS
 
-Malipo: M-Pesa, Tigo Pesa, Airtel Money, HaloPesa kupitia AzamPay au Malipo Manual.
+Malipo: M-Pesa, Tigo Pesa, Airtel Money, HaloPesa kupitia ClickPesa au Malipo Manual.
 
 ${transcript}Jibu swali hili la sasa HIVI: "${message}"
 
