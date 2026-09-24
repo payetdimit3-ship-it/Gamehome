@@ -11,31 +11,17 @@
     * { box-sizing: border-box; }
     body { margin: 0; background: #0a0d1a; color: #e8eaff; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
 
-    /* ⚠️ FICHA TOPBAR/BOTTOM-NAV YA ZONEPLAY-SHELL.JS (kwa majina yote yanayowezekana) */
+    /* FICHA TU topbar/bottomnav ya zoneplay-shell.js — sio kitu kingine */
     .zp-topbar, .zp-bottomnav, .zp-bottom-nav, .zp-navbar, .zp-header, .zp-topnav,
     .zp-mobile-nav, .zp-shell-topbar, .zp-shell-bottomnav, .zp-appbar, .zp-bottombar,
-    .zp-floating-nav, .zp-top-nav, .zp-bottom-bar, .zp-nav, .zp-menu-bar,
     .zone-topbar, .zone-navbar, .zone-topnav, .zone-header,
     .gh-topbar, .gh-navbar, .gamehub-topbar, .gamehub-navbar,
-    .app-topbar, .app-navbar, .mobile-topbar, .mobile-navbar,
-    #zpTopbar, #zpNavbar, #zpBottomNav, #zpTopNav,
-    #topbar, #navbar, #bottomnav, #bottomNav,
-    [data-topbar], [data-navbar], [data-bottomnav] {
-      display: none !important;
-      visibility: hidden !important;
-      height: 0 !important;
-      overflow: hidden !important;
-    }
-
-    /* FICHA pia topbar/bottomnav zilizopo moja kwa moja chini ya body */
-    body > *:not(.hm2-wrap):not(.hm2-mobile-toggle):not(script):not(style):not(link):not(noscript) {
+    #zpTopbar, #zpNavbar, #zpBottomNav, #zpTopNav {
       display: none !important;
     }
 
-    /* FICHA pia zilizopo ndani ya .main au wrapper yoyote */
-    .main > .zp-topbar, .main > .navbar, .main > .topbar,
-    .wrapper > .zp-topbar, .wrapper > .navbar, .wrapper > .topbar,
-    .app > .zp-topbar, .app > .navbar, .app > .topbar {
+    /* FICHA pia .zp-hero, .zp-trust n.k. za zoneplay-shell */
+    .zp-hero, .zp-trust, .zp-sec, .zp-cats, .zp-grid, .zp-strips, .zp-ai, .zp-pay {
       display: none !important;
     }
 
@@ -177,9 +163,6 @@
     .hm2-course b { font-size: 12.5px; display: block; margin-bottom: 2px; }
     .hm2-course small { font-size: 10.5px; color: #969dbb; display: block; }
     .hm2-course .view { margin-left: auto; padding: 7px 12px; border-radius: 7px; background: #7c3aed; color: #fff; text-decoration: none; font-size: 11px; font-weight: 700; }
-
-    /* HIDE OLD ZP SECTIONS */
-    .zp-hero, .zp-trust, .zp-sec, .zp-cats, .zp-grid, .zp-strips, .zp-ai, .zp-pay { display: none !important; }
 
     .hm2-mobile-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 100; width: 38px; height: 38px; border-radius: 10px; background: #7c3aed; border: none; color: #fff; font-size: 17px; cursor: pointer; }
     @media (max-width: 900px) { .hm2-mobile-toggle { display: grid; place-items: center; } }
