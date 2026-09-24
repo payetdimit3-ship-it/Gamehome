@@ -11,7 +11,7 @@
     * { box-sizing: border-box; }
     body { margin: 0; background: #0a0d1a; color: #e8eaff; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
 
-    /* FICHA TU topbar/bottomnav ya zoneplay-shell.js — sio kitu kingine */
+    /* FICHA TU topbar/bottomnav ya zoneplay-shell.js */
     .zp-topbar, .zp-bottomnav, .zp-bottom-nav, .zp-navbar, .zp-header, .zp-topnav,
     .zp-mobile-nav, .zp-shell-topbar, .zp-shell-bottomnav, .zp-appbar, .zp-bottombar,
     .zone-topbar, .zone-navbar, .zone-topnav, .zone-header,
@@ -19,8 +19,6 @@
     #zpTopbar, #zpNavbar, #zpBottomNav, #zpTopNav {
       display: none !important;
     }
-
-    /* FICHA pia .zp-hero, .zp-trust n.k. za zoneplay-shell */
     .zp-hero, .zp-trust, .zp-sec, .zp-cats, .zp-grid, .zp-strips, .zp-ai, .zp-pay {
       display: none !important;
     }
@@ -29,8 +27,8 @@
     @media (max-width: 900px) { .hm2-wrap { grid-template-columns: 1fr; } }
 
     /* SIDEBAR */
-    .hm2-side { background: #0d1020; border-right: 1px solid rgba(139,92,246,.12); padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-    @media (max-width: 900px) { .hm2-side { position: fixed; z-index: 99; width: 220px; display: none; height: 100vh; } .hm2-side.on { display: block; } }
+    .hm2-side { background: #0d1020; border-right: 1px solid rgba(139,92,246,.12); padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; z-index: 200; }
+    @media (max-width: 900px) { .hm2-side { position: fixed; top: 0; left: 0; z-index: 200; width: 240px; display: none; height: 100vh; box-shadow: 4px 0 20px rgba(0,0,0,.5); } .hm2-side.on { display: block; } }
     .hm2-logo { display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin-bottom: 20px; font-weight: 800; font-size: 16px; }
     .hm2-logo .ic { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 18px; }
     .hm2-menu-h { font-size: 10px; color: #6b7290; letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 10px 6px; font-weight: 700; }
@@ -44,16 +42,21 @@
     /* MAIN */
     .hm2-main { padding: 0; overflow-x: hidden; }
     .hm2-topbar { display: flex; align-items: center; gap: 12px; padding: 14px 20px; background: rgba(10,13,26,.95); border-bottom: 1px solid rgba(255,255,255,.06); position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px); }
+    /* Ongeza padding kwa mobile ili tusisumbuliwe na kitufe cha menu */
+    @media (max-width: 900px) { .hm2-topbar { padding-left: 64px; } }
+
     .hm2-search { flex: 1; max-width: 500px; position: relative; }
     .hm2-search input { width: 100%; padding: 11px 14px 11px 40px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); color: #fff; font-size: 13px; }
     .hm2-search::before { content: '🔍'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 13px; }
     .hm2-top-actions { display: flex; gap: 8px; margin-left: auto; align-items: center; }
-    .hm2-top-btn { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); display: grid; place-items: center; font-size: 15px; cursor: pointer; position: relative; }
+    .hm2-top-btn { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); display: grid; place-items: center; font-size: 15px; cursor: pointer; position: relative; flex-shrink: 0; }
     .hm2-top-btn .dot { position: absolute; top: 5px; right: 5px; width: 15px; height: 15px; border-radius: 50%; background: #ff3d71; color: #fff; font-size: 9px; display: grid; place-items: center; font-weight: 700; border: 2px solid #0a0d1a; }
-    .hm2-profile { display: flex; align-items: center; gap: 8px; padding: 5px 10px 5px 5px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); cursor: pointer; }
+    .hm2-profile { display: flex; align-items: center; gap: 8px; padding: 5px 10px 5px 5px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); cursor: pointer; flex-shrink: 0; }
     .hm2-profile .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
     .hm2-profile b { font-size: 12px; display: block; }
     .hm2-profile small { font-size: 10px; color: #969dbb; }
+    /* On mobile ficha profile text, baki avatar tu */
+    @media (max-width: 700px) { .hm2-profile > div:last-child { display: none; } .hm2-profile { padding: 5px; } }
 
     /* HERO ROW */
     .hm2-row1 { display: grid; grid-template-columns: 1.7fr 1fr 1fr; gap: 14px; padding: 16px 20px; }
@@ -164,17 +167,38 @@
     .hm2-course small { font-size: 10.5px; color: #969dbb; display: block; }
     .hm2-course .view { margin-left: auto; padding: 7px 12px; border-radius: 7px; background: #7c3aed; color: #fff; text-decoration: none; font-size: 11px; font-weight: 700; }
 
-    .hm2-mobile-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 100; width: 38px; height: 38px; border-radius: 10px; background: #7c3aed; border: none; color: #fff; font-size: 17px; cursor: pointer; }
+    /* MENU BUTTON — position maalum ili isiingiliane na search */
+    .hm2-mobile-toggle {
+      display: none;
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 300;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #7c3aed;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(124,58,237,.4);
+    }
     @media (max-width: 900px) { .hm2-mobile-toggle { display: grid; place-items: center; } }
+
+    /* Overlay kwa sidebar on mobile */
+    .hm2-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 150; }
+    .hm2-overlay.on { display: block; }
   </style>
 </head>
 <body>
 
-<button class="hm2-mobile-toggle" onclick="document.querySelector('.hm2-side').classList.toggle('on')">☰</button>
+<button class="hm2-mobile-toggle" onclick="toggleSidebar()">☰</button>
+<div class="hm2-overlay" id="sideOverlay" onclick="toggleSidebar()"></div>
 
 <div class="hm2-wrap">
 
-  <aside class="hm2-side">
+  <aside class="hm2-side" id="sidebar">
     <div class="hm2-logo">
       <span class="ic">🎮</span>
       <span>LIFEIS<span style="color:#a78bfa">GAME</span>TZ</span>
@@ -219,11 +243,11 @@
   <main class="hm2-main">
 
     <div class="hm2-topbar">
-      <div class="hm2-search"><input type="text" placeholder="Tafuta game, filamu, kozi, bidhaa..."></div>
+      <div class="hm2-search"><input type="text" placeholder="Tafuta game..."></div>
       <div class="hm2-top-actions">
         <div class="hm2-top-btn" title="Notifications">🔔<span class="dot">3</span></div>
         <div class="hm2-top-btn" title="Cart" onclick="location.href='cart.html'">🛒<span class="dot" id="cartCount">0</span></div>
-        <div class="hm2-profile">
+        <div class="hm2-profile" onclick="location.href='profile.html'">
           <div class="avatar" id="avatarLetter">K</div>
           <div><b id="profileName">Mgeni</b><small>Karibu!</small></div>
         </div>
@@ -404,6 +428,14 @@
 <script src="app.js"></script>
 <script src="chat.js"></script>
 <script>
+/* Sidebar toggle */
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('sideOverlay');
+  if (sb) sb.classList.toggle('on');
+  if (ov) ov.classList.toggle('on');
+}
+
 (function(){
   var esc = (window.ZP && ZP.esc) ? ZP.esc : function(s){ return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
   var money = (window.ZP && ZP.money) ? ZP.money : function(n){ return 'Tsh ' + Number(n||0).toLocaleString(); };
@@ -458,7 +490,6 @@
     localStorage.setItem('gamehubWishlist', JSON.stringify(w));
   };
 
-  /* ===== UPDATE BADGE ===== */
   function updateBadge() {
     try {
       var cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
