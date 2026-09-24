@@ -3,414 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard — LIFEISGAMETZ</title>
+  <title>Admin Panel — LIFEISGAMETZ</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* ===== ADMIN DASHBOARD V2 — MODERN SAAS LAYOUT ===== */
-    * { box-sizing: border-box; }
-    body { margin: 0; background: #0a0d1a; color: #e8eaff; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+<style>
+.admin-command-hero{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:24px;border-radius:20px;background:radial-gradient(circle at 80% 10%,rgba(123,47,247,.35),transparent 35%),linear-gradient(135deg,#111327,#1b1038);border:1px solid #3a2870;margin-bottom:18px}.eyebrow{font-size:11px;letter-spacing:2px;color:#a96bff;font-weight:800}.admin-command-hero h2{font-size:28px;margin:7px 0}.admin-command-hero p,.hint{color:#9997b5}.command-actions{display:flex;gap:8px;flex-wrap:wrap}.command-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}.command-grid.two{grid-template-columns:1fr 1.4fr}.command-card{background:#0d0f1d;border:1px solid #272942;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:6px}.command-card span{font-size:22px}.command-card b{font-size:22px}.command-card small{color:#85839e}.agent-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.agent-mini-grid span{background:#101326;border:1px solid #252946;border-radius:10px;padding:9px;font-size:12px}.agent-mini-grid i{display:block;color:#53e38b;font-style:normal;font-size:9px;margin-top:4px}.quick-admin-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.quick-admin-grid button{background:#14162a;color:#fff;border:1px solid #302e4e;border-radius:10px;padding:12px;cursor:pointer}.storage-status{padding:13px;border-radius:12px;background:#0a0c16;border:1px solid #292b40}.storage-ok{color:#4ee38c}.storage-warn{color:#ffbf69}.order-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.order-toolbar input,.order-toolbar select{background:#0b0d18;color:#fff;border:1px solid #2a2d45;border-radius:10px;padding:11px;min-width:190px}.payment-status-pill{padding:4px 9px;border-radius:99px;font-size:11px;font-weight:700}.payment-status-pill.success{background:#123b28;color:#5df29a}.payment-status-pill.pending{background:#3b2b12;color:#ffd36a}.payment-status-pill.failed{background:#3b1620;color:#ff7891}@media(max-width:900px){.command-grid,.command-grid.two{grid-template-columns:1fr 1fr}.quick-admin-grid{grid-template-columns:repeat(3,1fr)}.agent-mini-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.admin-command-hero{flex-direction:column;align-items:flex-start}.command-grid,.command-grid.two{grid-template-columns:1fr}.quick-admin-grid{grid-template-columns:1fr 1fr}.agent-mini-grid{grid-template-columns:1fr}.order-toolbar>*{width:100%}}
 
-    .ad2-wrap { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
-    @media (max-width: 900px) { .ad2-wrap { grid-template-columns: 1fr; } }
-
-    /* SIDEBAR */
-    .ad2-side { background: #0d1020; border-right: 1px solid rgba(139,92,246,.12); padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-    @media (max-width: 900px) { .ad2-side { position: fixed; z-index: 99; width: 240px; display: none; height: 100vh; } .ad2-side.on { display: block; } }
-    .ad2-logo { display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin-bottom: 20px; font-weight: 800; font-size: 17px; }
-    .ad2-logo .ic { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 20px; }
-    .ad2-menu-h { font-size: 10px; color: #6b7290; letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 10px 8px; font-weight: 700; }
-    .ad2-menu { display: flex; flex-direction: column; gap: 2px; }
-    .ad2-menu a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; color: #aeb5d0; text-decoration: none; font-size: 13px; font-weight: 600; transition: .15s; cursor: pointer; }
-    .ad2-menu a:hover { background: rgba(139,92,246,.08); color: #fff; }
-    .ad2-menu a.on { background: linear-gradient(135deg,#7c3aed,#6d28d9); color: #fff; box-shadow: 0 6px 20px rgba(124,58,237,.3); }
-    .ad2-menu a .badge { margin-left: auto; font-size: 10px; padding: 2px 8px; border-radius: 99px; background: rgba(124,58,237,.25); color: #c4b5fd; font-weight: 700; }
-    .ad2-menu a.on .badge { background: rgba(255,255,255,.25); color: #fff; }
-    .ad2-upgrade { background: linear-gradient(135deg,rgba(124,58,237,.15),rgba(76,29,149,.1)); border: 1px solid rgba(124,58,237,.3); border-radius: 14px; padding: 14px; margin-top: 16px; text-align: center; }
-    .ad2-upgrade .crown { font-size: 28px; margin-bottom: 4px; }
-    .ad2-upgrade b { display: block; font-size: 13.5px; color: #ffd700; margin-bottom: 4px; }
-    .ad2-upgrade small { color: #969dbb; font-size: 11px; display: block; margin-bottom: 10px; }
-    .ad2-upgrade button { background: linear-gradient(135deg,#7c3aed,#4c1d95); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; width: 100%; }
-
-    /* MAIN */
-    .ad2-main { padding: 20px; overflow-x: hidden; max-width: 100%; }
-    .ad2-topbar { display: flex; align-items: center; gap: 14px; padding: 12px 0 20px; }
-    .ad2-search { flex: 1; max-width: 500px; position: relative; }
-    .ad2-search input { width: 100%; padding: 11px 14px 11px 40px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); color: #fff; font-size: 13.5px; }
-    .ad2-search::before { content: '🔍'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; }
-    .ad2-top-actions { display: flex; gap: 10px; margin-left: auto; align-items: center; }
-    .ad2-top-btn { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); display: grid; place-items: center; font-size: 16px; cursor: pointer; position: relative; }
-    .ad2-top-btn .dot { position: absolute; top: 6px; right: 6px; width: 16px; height: 16px; border-radius: 50%; background: #ff3d71; color: #fff; font-size: 9px; display: grid; place-items: center; font-weight: 700; border: 2px solid #0a0d1a; }
-    .ad2-profile { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); cursor: pointer; }
-    .ad2-profile .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-weight: 700; }
-    .ad2-profile b { font-size: 12.5px; display: block; }
-    .ad2-profile small { font-size: 10.5px; color: #86efac; }
-
-    /* WELCOME */
-    .ad2-welcome { background: linear-gradient(135deg,#1a0a3d,#0f1a4d 60%,#0a1a3d); border: 1px solid rgba(139,92,246,.25); border-radius: 18px; padding: 24px; display: flex; align-items: center; gap: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
-    .ad2-welcome::after { content: ''; position: absolute; right: -40px; top: -40px; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle,rgba(139,92,246,.35),transparent 65%); }
-    .ad2-welcome .text { flex: 1; position: relative; z-index: 1; }
-    .ad2-welcome h1 { margin: 0 0 6px; font-size: 26px; }
-    .ad2-welcome p { margin: 0; color: #969dbb; font-size: 13.5px; }
-    .ad2-welcome .datetime { position: relative; z-index: 1; text-align: right; }
-    .ad2-welcome .datetime b { display: block; font-size: 22px; }
-    .ad2-welcome .datetime span { color: #969dbb; font-size: 12px; display: block; margin-bottom: 6px; }
-    .ad2-welcome .datetime .status { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: #86efac; justify-content: flex-end; }
-    .ad2-welcome .datetime .status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 10px #22c55e; }
-
-    /* METRICS */
-    .ad2-metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
-    @media (max-width: 1100px) { .ad2-metrics { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 700px) { .ad2-metrics { grid-template-columns: repeat(2, 1fr); } }
-    .ad2-metric { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 14px; padding: 16px; }
-    .ad2-metric .ic { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; font-size: 18px; margin-bottom: 12px; }
-    .ad2-metric small { color: #969dbb; font-size: 12px; display: block; margin-bottom: 4px; }
-    .ad2-metric b { font-size: 24px; font-weight: 800; display: block; margin-bottom: 6px; }
-    .ad2-metric .trend { font-size: 11.5px; display: flex; align-items: center; gap: 4px; color: #86efac; }
-    .ad2-metric .trend small { color: #6b7290; font-size: 10.5px; margin: 0; }
-
-    /* CARDS */
-    .ad2-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; padding: 18px; }
-    .ad2-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-    .ad2-card-head h3 { margin: 0; font-size: 15px; }
-    .ad2-card-head select { padding: 6px 10px; border-radius: 8px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #fff; font-size: 12px; }
-
-    .ad2-row2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; margin-bottom: 20px; }
-    @media (max-width: 1000px) { .ad2-row2 { grid-template-columns: 1fr; } }
-
-    /* Charts */
-    .ad2-chart { display: grid; grid-template-columns: 1fr 150px; gap: 20px; align-items: center; }
-    @media (max-width: 700px) { .ad2-chart { grid-template-columns: 1fr; } }
-    .ad2-line-chart { height: 160px; display: flex; align-items: flex-end; gap: 6px; padding: 10px 0; }
-    .ad2-line-chart .bar { flex: 1; background: linear-gradient(180deg,#7c3aed,#4c1d95); border-radius: 4px 4px 0 0; min-height: 4px; position: relative; }
-    .ad2-line-chart .bar span { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 9px; color: #6b7290; white-space: nowrap; }
-    .ad2-donut-ring { width: 130px; height: 130px; border-radius: 50%; background: conic-gradient(#7c3aed 0 45%, #ec4899 45% 75%, #06b6d4 75% 90%, #f59e0b 90% 100%); display: grid; place-items: center; position: relative; margin: 0 auto; }
-    .ad2-donut-ring::before { content: ''; position: absolute; width: 90px; height: 90px; border-radius: 50%; background: #0a0d1a; }
-    .ad2-donut-ring .val { position: relative; z-index: 1; text-align: center; font-size: 12px; font-weight: 700; }
-    .ad2-donut-ring .val small { display: block; font-size: 9px; color: #969dbb; font-weight: 400; }
-    .ad2-legend { display: flex; flex-direction: column; gap: 6px; font-size: 11.5px; }
-    .ad2-legend div { display: flex; align-items: center; gap: 8px; color: #c9d4f0; }
-    .ad2-legend i { width: 10px; height: 10px; border-radius: 3px; }
-    .ad2-legend span:last-child { margin-left: auto; color: #fff; font-weight: 700; }
-
-    /* Quick stats */
-    .ad2-qstats { display: flex; flex-direction: column; gap: 10px; }
-    .ad2-qstat { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05); }
-    .ad2-qstat .ic { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; font-size: 18px; }
-    .ad2-qstat .num { font-size: 20px; font-weight: 800; }
-    .ad2-qstat .lbl { font-size: 11.5px; color: #969dbb; }
-    .ad2-qstat .link { margin-left: auto; font-size: 11px; color: #a78bfa; text-decoration: none; font-weight: 600; cursor: pointer; }
-
-    /* Tables */
-    .ad2-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .ad2-table th { text-align: left; padding: 10px 12px; color: #6b7290; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,.06); }
-    .ad2-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,.04); }
-    .ad2-table tr:hover td { background: rgba(255,255,255,.02); }
-    .ad2-table .game-name { display: flex; align-items: center; gap: 10px; }
-    .ad2-table .game-thumb { width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 18px; }
-    .ad2-status { padding: 3px 10px; border-radius: 99px; font-size: 10.5px; font-weight: 700; display: inline-block; }
-    .ad2-status.active, .ad2-status.paid, .ad2-status.successful { background: rgba(34,197,94,.15); color: #86efac; }
-    .ad2-status.pending, .ad2-status.pending_manual, .ad2-status.pending_clickpesa { background: rgba(245,158,11,.15); color: #fcd34d; }
-    .ad2-status.failed, .ad2-status.amount_mismatch { background: rgba(239,68,68,.15); color: #fca5a5; }
-
-    /* Activities */
-    .ad2-activity { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
-    .ad2-activity:last-child { border-bottom: none; }
-    .ad2-activity .ic { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-size: 15px; flex-shrink: 0; }
-    .ad2-activity b { font-size: 12.5px; display: block; margin-bottom: 2px; }
-    .ad2-activity small { font-size: 11px; color: #6b7290; display: block; }
-    .ad2-activity .time { font-size: 10.5px; color: #6b7290; margin-left: auto; white-space: nowrap; }
-
-    /* Health */
-    .ad2-health-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; font-size: 12.5px; }
-    .ad2-health-row .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; flex-shrink: 0; }
-    .ad2-health-row b { flex: 1; color: #c9d4f0; }
-    .ad2-health-bar { width: 80px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.06); overflow: hidden; }
-    .ad2-health-bar span { display: block; height: 100%; background: linear-gradient(90deg,#22c55e,#16a34a); }
-    .ad2-health-row small { color: #86efac; font-size: 11px; font-weight: 700; width: 42px; text-align: right; }
-
-    /* Performance */
-    .ad2-perf { background: linear-gradient(135deg,rgba(124,58,237,.12),rgba(76,29,149,.08)); border: 1px solid rgba(139,92,246,.2); border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
-    .ad2-perf .game-ic { font-size: 32px; }
-    .ad2-perf .text { flex: 1; min-width: 180px; }
-    .ad2-perf .text b { display: block; font-size: 14.5px; margin-bottom: 3px; }
-    .ad2-perf .text small { color: #969dbb; font-size: 12px; }
-    .ad2-perf .stat { text-align: center; padding: 0 12px; }
-    .ad2-perf .stat b { display: block; font-size: 18px; }
-    .ad2-perf .stat small { color: #969dbb; font-size: 10.5px; text-transform: uppercase; letter-spacing: .5px; }
-
-    /* Help */
-    .ad2-help { background: linear-gradient(135deg,rgba(139,92,246,.1),rgba(76,29,149,.1)); border: 1px solid rgba(139,92,246,.25); border-radius: 16px; padding: 18px; text-align: center; }
-    .ad2-help .rocket { font-size: 32px; margin-bottom: 8px; }
-    .ad2-help b { display: block; font-size: 14px; margin-bottom: 4px; }
-    .ad2-help small { color: #969dbb; font-size: 12px; display: block; margin-bottom: 12px; }
-    .ad2-help a { display: inline-block; padding: 9px 18px; border-radius: 8px; background: #7c3aed; color: #fff; text-decoration: none; font-size: 12.5px; font-weight: 700; cursor: pointer; }
-
-    /* Mobile */
-    .ad2-mobile-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 100; width: 40px; height: 40px; border-radius: 10px; background: #7c3aed; border: none; color: #fff; font-size: 18px; cursor: pointer; }
-    @media (max-width: 900px) { .ad2-mobile-toggle { display: grid; place-items: center; } .ad2-main { margin-top: 60px; } }
-
-    /* HIDE OLD HEADER */
-    .navbar, .footer, .admin-page > .dash-welcome, .admin-page > .dash-grid, .admin-page > .admin-stats, .admin-page > .admin-tabs { display: none !important; }
-
-    /* TAB CONTENT */
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    /* OLD STYLES PRESERVED (for forms, buttons, admin forms) */
-    .admin-form { background: linear-gradient(145deg,rgba(17,21,42,.94),rgba(9,12,24,.94)); border:1px solid rgba(139,92,246,.15); border-radius:18px; box-shadow:0 16px 40px rgba(0,0,0,.18); padding: 18px; margin-bottom: 16px; }
-    .admin-form h3 { margin: 0 0 14px; font-size: 15px; }
-    .admin-form input, .admin-form select, .admin-form textarea { width:100%; padding:11px 13px; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); color:#fff; font-size:13px; margin-bottom:10px; font-family:inherit; }
-    .admin-form input:focus, .admin-form select:focus, .admin-form textarea:focus { outline:none; border-color:#7c3aed; }
-    .admin-form button, .admin-form .btn-primary { padding:12px 20px; border-radius:10px; background:linear-gradient(135deg,#7c3aed,#4c1d95); color:#fff; border:none; font-weight:700; cursor:pointer; font-size:13.5px; }
-    .admin-form button.btn-secondary { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); }
-    .admin-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); flex-wrap:wrap; }
-    .admin-row > div:first-child { flex:1; min-width:200px; }
-    .admin-row strong { font-size:13.5px; }
-    .admin-row small { font-size:11.5px; color:#969dbb; display:block; margin-top:2px; }
-    .admin-list { display:flex; flex-direction:column; gap:4px; }
-    .btn-vote { padding:8px 14px; border-radius:8px; background:rgba(124,58,237,.15); color:#c4b5fd; border:1px solid rgba(124,58,237,.3); cursor:pointer; font-size:12px; font-weight:600; }
-    .btn-remove { padding:8px 14px; border-radius:8px; background:rgba(239,68,68,.1); color:#fca5a5; border:1px solid rgba(239,68,68,.2); cursor:pointer; font-size:12px; }
-    .pay-status, .ad2-msg { padding:10px 12px; border-radius:8px; font-size:12.5px; margin-top:10px; display:none; }
-    .pay-status:not(:empty), .ad2-msg.on { display:block; background:rgba(34,197,94,.1); color:#86efac; border:1px solid rgba(34,197,94,.2); }
-    .ai-reply { padding:14px; background:#080914; border-radius:10px; color:#d7d4e8; min-height: 40px; margin-top: 10px; white-space: pre-wrap; }
-    .hero-studio-head { display:flex; justify-content:space-between; gap:20px; align-items:center; padding:24px; border-radius:20px; background:linear-gradient(135deg,#0f1328,#17102e); border:1px solid rgba(139,92,246,.2); margin-bottom:16px; }
-    .hero-studio-head h2 { text-align:left; font-size:28px; margin:4px 0; }
-    .hero-studio-head p { color:#9298b6; max-width:760px; font-size:13px; }
-    .studio-tip { background:#0b0e1b; border:1px solid rgba(34,211,238,.18); padding:14px; border-radius:13px; color:#67e8f9; min-width:170px; }
-    .storage-status { padding:13px; border-radius:12px; background:#0a0c16; border:1px solid #292b40; }
-    .storage-ok { color:#4ee38c; } .storage-warn { color:#ffbf69; }
-    .system-list { display:grid; gap:7px; margin-top:12px; }
-    .system-list div { display:flex; justify-content:space-between; padding:10px 11px; border-radius:10px; background:#0b0e1a; border:1px solid #1d2236; color:#bbc1d8; font-size:12px; }
-    .system-list b { font-size:9px; color:#6ee7b7; }
-    .panel-title { display:flex; justify-content:space-between; align-items:center; gap:10px; }
-    .panel-title h3 { margin:0; }
-    .live-badge { font-size:9px; letter-spacing:1px; background:rgba(34,197,94,.12); color:#67e8a5; border:1px solid rgba(34,197,94,.2); padding:5px 8px; border-radius:99px; }
-    .eyebrow { font-size:11px; letter-spacing:2px; color:#a96bff; font-weight:800; }
-    .order-toolbar { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
-    .order-toolbar input, .order-toolbar select { background:#0b0d18; color:#fff; border:1px solid #2a2d45; border-radius:10px; padding:11px; min-width:190px; }
-    .payment-status-pill { padding:4px 9px; border-radius:99px; font-size:11px; font-weight:700; display: inline-block; }
-    .payment-status-pill.success { background:#123b28; color:#5df29a; }
-    .payment-status-pill.pending { background:#3b2b12; color:#ffd36a; }
-    .payment-status-pill.failed { background:#3b1620; color:#ff7891; }
-    .hero-product-list { display:grid; grid-template-columns:repeat(2,1fr); gap:9px; margin-top:12px; }
-    .hero-product-row { display:flex; justify-content:space-between; align-items:center; gap:10px; background:#0b0e1b; border:1px solid #20253c; border-radius:13px; padding:10px; }
-    .hero-product-row img { width:52px; height:60px; object-fit:cover; border-radius:8px; }
-    .hero-product-row .meta { flex:1; min-width:0; }
-    .hero-product-row b { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .hero-product-row small { color:#8d95b2; }
-    .hero-product-row .has-trailer { color:#67e8a5; }
-    .hero-edit-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-    .hero-edit-row button { cursor:pointer; }
-    .command-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px; }
-    .command-grid.two { grid-template-columns:1fr 1.4fr; }
-    .command-card { background:#0d0f1d; border:1px solid #272942; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:6px; }
-    .command-card span { font-size:22px; }
-    .command-card b { font-size:22px; }
-    .command-card small { color:#85839e; }
-    .agent-mini-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-    .agent-mini-grid span { background:#101326; border:1px solid #252946; border-radius:10px; padding:9px; font-size:12px; }
-    .agent-mini-grid i { display:block; color:#53e38b; font-style:normal; font-size:9px; margin-top:4px; }
-    .overview-metrics { display:grid; grid-template-columns:repeat(5,1fr); gap:11px; margin:16px 0; }
-    .overview-metrics > div { background:#0c1020; border:1px solid rgba(139,92,246,.14); border-radius:16px; padding:16px; }
-    .overview-metrics span { font-size:20px; display:block; }
-    .overview-metrics b { display:block; font-size:20px; margin:8px 0 2px; }
-    .overview-metrics small { color:#7f88a8; }
-    .quick-admin-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }
-    .quick-admin-grid button { background:#14162a; color:#fff; border:1px solid #302e4e; border-radius:10px; padding:12px; cursor:pointer; }
-    .pro-admin-overview { display:flex; justify-content:space-between; gap:20px; align-items:center; padding:30px; border-radius:24px; background:radial-gradient(circle at 80% 20%,rgba(139,92,246,.28),transparent 30%),linear-gradient(135deg,#0f1328,#181331 55%,#0a0d19); border:1px solid rgba(139,92,246,.22); margin-bottom:16px; }
-    .overview-main h2 { font-size:34px; margin:5px 0; }
-    .overview-main p { color:#969dbb; max-width:680px; }
-    .overview-actions { display:flex; gap:9px; flex-wrap:wrap; margin-top:18px; }
-    .overview-orb { width:145px; height:145px; border-radius:50%; border:1px solid rgba(139,92,246,.35); display:flex; flex-direction:column; align-items:center; justify-content:center; background:radial-gradient(circle,rgba(139,92,246,.24),rgba(10,12,25,.8) 65%); }
-    .overview-orb div { font-size:54px; }
-    .overview-orb small { font-size:9px; letter-spacing:2px; color:#5eead4; }
-    .overview-panels { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    @media(max-width:900px){ .command-grid, .command-grid.two, .overview-panels { grid-template-columns:1fr; } .overview-metrics { grid-template-columns:repeat(2,1fr); } .quick-admin-grid { grid-template-columns:repeat(2,1fr); } .hero-product-list { grid-template-columns:1fr; } .overview-orb { display: none; } }
-  </style>
-  <link rel="stylesheet" href="zoneplay-full.css">
+/* Admin Professional OS */
+.admin-page{max-width:1240px;padding:28px 24px}.admin-tabs{position:sticky;top:66px;z-index:50;background:rgba(7,8,18,.88);backdrop-filter:blur(16px);border:1px solid rgba(139,92,246,.16);padding:8px;border-radius:16px;box-shadow:0 12px 35px rgba(0,0,0,.25);display:flex;gap:7px;overflow-x:auto}.tab-btn{white-space:nowrap;border:1px solid transparent;background:rgba(255,255,255,.025);color:#aeb5d0;padding:10px 13px;border-radius:10px;cursor:pointer;font-weight:700}.tab-btn:hover{border-color:rgba(139,92,246,.25);color:#fff}.tab-btn.active{background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;box-shadow:0 7px 20px rgba(109,40,217,.25)}.admin-form{background:linear-gradient(145deg,rgba(17,21,42,.94),rgba(9,12,24,.94));border:1px solid rgba(139,92,246,.15);border-radius:18px;box-shadow:0 16px 40px rgba(0,0,0,.18)}.admin-row{border-color:rgba(139,92,246,.12)!important}.pro-admin-overview{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:30px;border-radius:24px;background:radial-gradient(circle at 80% 20%,rgba(139,92,246,.28),transparent 30%),linear-gradient(135deg,#0f1328,#181331 55%,#0a0d19);border:1px solid rgba(139,92,246,.22);overflow:hidden;position:relative}.overview-main h2{font-size:34px;margin:5px 0}.overview-main p{color:#969dbb;max-width:680px}.overview-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.overview-orb{width:145px;height:145px;border-radius:50%;border:1px solid rgba(139,92,246,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(139,92,246,.24),rgba(10,12,25,.8) 65%);box-shadow:0 0 70px rgba(139,92,246,.15)}.overview-orb div{font-size:54px}.overview-orb small{font-size:9px;letter-spacing:2px;color:#5eead4}.overview-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin:16px 0}.overview-metrics>div{background:#0c1020;border:1px solid rgba(139,92,246,.14);border-radius:16px;padding:16px}.overview-metrics span{font-size:20px;display:block}.overview-metrics b{display:block;font-size:20px;margin:8px 0 2px}.overview-metrics small{color:#7f88a8}.overview-panels{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel-title{display:flex;justify-content:space-between;align-items:center;gap:10px}.panel-title h3{margin:0}.live-badge{font-size:9px;letter-spacing:1px;background:rgba(34,197,94,.12);color:#67e8a5;border:1px solid rgba(34,197,94,.2);padding:5px 8px;border-radius:99px}.system-list{display:grid;gap:7px;margin-top:12px}.system-list div{display:flex;justify-content:space-between;padding:10px 11px;border-radius:10px;background:#0b0e1a;border:1px solid #1d2236;color:#bbc1d8;font-size:12px}.system-list b{font-size:9px;color:#6ee7b7}.overview-quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.overview-quick button{background:#0b0e1a;border:1px solid #262b45;color:#e8eaff;padding:13px;border-radius:11px;text-align:left;cursor:pointer}.overview-quick button:hover{border-color:#8b5cf6;background:#12162a}.hero-studio-head{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:24px;border-radius:20px;background:linear-gradient(135deg,#0f1328,#17102e);border:1px solid rgba(139,92,246,.2);margin-bottom:16px}.hero-studio-head h2{text-align:left;font-size:28px;margin:4px 0}.hero-studio-head p{color:#9298b6;max-width:760px;font-size:13px}.studio-tip{background:#0b0e1b;border:1px solid rgba(34,211,238,.18);padding:14px;border-radius:13px;color:#67e8f9;min-width:170px}.studio-tip small{color:#9298b6}.hero-product-list{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}.hero-product-row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#0b0e1b;border:1px solid #20253c;border-radius:13px;padding:10px}.hero-product-row img{width:52px;height:60px;object-fit:cover;border-radius:8px}.hero-product-row .meta{flex:1;min-width:0}.hero-product-row b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hero-product-row small{color:#8d95b2}.hero-product-row .has-trailer{color:#67e8a5}.hero-edit-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.hero-edit-row button{cursor:pointer}@media(max-width:900px){.overview-metrics{grid-template-columns:repeat(3,1fr)}.overview-panels{grid-template-columns:1fr}.hero-product-list{grid-template-columns:1fr}}@media(max-width:600px){.admin-page{padding:18px 12px}.admin-tabs{top:58px}.pro-admin-overview{padding:20px}.overview-orb{display:none}.overview-metrics{grid-template-columns:1fr 1fr}.overview-main h2{font-size:27px}.hero-studio-head{align-items:flex-start;flex-direction:column}.studio-tip{width:100%}}
+</style>  <link rel="stylesheet" href="zoneplay-full.css">
   <link rel="stylesheet" href="zoneplay-v11-final.css">
   <link rel="stylesheet" href="zoneplay-v12-final.css">
 </head>
 <body>
 
-<button class="ad2-mobile-toggle" onclick="document.querySelector('.ad2-side').classList.toggle('on')">☰</button>
-
-<div class="ad2-wrap">
-
-  <!-- ══════ SIDEBAR ══════ -->
-  <aside class="ad2-side">
-    <div class="ad2-logo">
-      <span class="ic">🎮</span>
-      <span>LIFEIS<span style="color:#a78bfa">GAME</span>TZ</span>
-    </div>
-
-    <div class="ad2-menu-h">Main Menu</div>
-    <nav class="ad2-menu" id="sideMenu">
-      <a class="on" data-tab="overview">🏠 Dashboard</a>
-      <a data-tab="customers">👥 Users <span class="badge" id="badgeUsers">0</span></a>
-      <a data-tab="products">🎮 Games</a>
-      <a data-tab="products">🛍️ Store / Products</a>
-      <a data-tab="orders">🧾 Orders <span class="badge" id="badgeOrders">0</span></a>
-      <a data-tab="payments">💳 Payments</a>
-      <a data-tab="ai">🤖 AI Management</a>
-      <a data-tab="media">📚 Courses</a>
-      <a data-tab="media">📺 Live TV / Sports</a>
-      <a data-tab="media">🏆 Live Scores</a>
-      <a data-tab="media">🎓 Academy / Courses</a>
-      <a data-tab="media">☁️ Cloud Gaming</a>
-      <a data-tab="products">⚽ eFootball & Top Up</a>
-      <a data-tab="products">🎁 Gift Cards</a>
-      <a data-tab="publicchat">👥 Community / Chat</a>
-      <a data-tab="overview">❤️ Health Assistant</a>
-      <a data-tab="ai">🧠 AI Assistant</a>
-      <a data-tab="marketplace">🏪 Marketplace</a>
-      <a data-tab="orders">🛒 Cart</a>
-      <a data-tab="products">📚 My Games / Library</a>
-      <a data-tab="customers">👤 Profile</a>
+  <header class="navbar">
+    <div class="logo">🎮 LIFEIS<span>GAME</span>TZ <span style="color:#67e8f9; font-size:11px;">ADMIN OS</span></div>
+    <nav class="nav-links">
+      <a href="index.html">← Home</a>
     </nav>
+    <a href="#" class="btn-login" id="adminLogout">Toka</a>
+  </header>
 
-    <div class="ad2-menu-h">Quick Actions</div>
-    <nav class="ad2-menu">
-      <a data-tab="products">➕ Add New Game</a>
-      <a data-tab="products">📦 Add Product</a>
-      <a data-tab="coupons">🎟️ Create Coupon</a>
-      <a data-tab="publicchat">📢 Send Notification</a>
-    </nav>
-
-    <div class="ad2-menu-h">Advanced</div>
-    <nav class="ad2-menu">
-      <a data-tab="hero">🎬 Hero Studio</a>
-      <a data-tab="media">🎬 Movies</a>
-      <a data-tab="requests">🔍 Game Requests</a>
-      <a data-tab="coupons">🎟️ Coupons</a>
-      <a data-tab="security">🛡️ Security</a>
-      <a data-tab="command">🧠 Command Center</a>
-    </nav>
-
-    <div class="ad2-upgrade">
-      <div class="crown">👑</div>
-      <b>Upgrade to Pro</b>
-      <small>Unlock more features, remove limits and get priority support.</small>
-      <button>Upgrade Now</button>
+  <section class="admin-page">
+    <div class="dash-welcome">
+      <div>
+        <h1 id="welcomeText">👋 Karibu Tena, Admin</h1>
+        <p class="dash-sub">Hii ndiyo hali ya biashara yako leo</p>
+      </div>
+      <div class="dash-date" id="dashDate"></div>
     </div>
-  </aside>
 
-  <!-- ══════ MAIN ══════ -->
-  <main class="ad2-main">
-
-    <!-- Topbar -->
-    <div class="ad2-topbar">
-      <div class="ad2-search"><input type="text" placeholder="Search users, games, orders..." id="topSearch"></div>
-      <div class="ad2-top-actions">
-        <div class="ad2-top-btn" title="Notifications">🔔<span class="dot">5</span></div>
-        <div class="ad2-top-btn" title="Messages">💬<span class="dot">3</span></div>
-        <div class="ad2-top-btn" title="Fullscreen" onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()">⛶</div>
-        <div class="ad2-profile">
-          <div class="avatar" id="avatarLetter">K</div>
-          <div><b id="profileName">Admin</b><small>● Super Admin</small></div>
+    <div class="dash-grid">
+      <div class="dash-hero-card">
+        <div class="dash-hero-top">
+          <span>💳 Jumla ya Mapato</span>
+          <span class="dash-pill">Yote</span>
         </div>
-        <div class="ad2-top-btn" onclick="adminLogout()" title="Logout">🚪</div>
+        <div class="dash-hero-amount" id="heroRevenue">0 TZS</div>
+        <div class="dash-hero-bottom">
+          <span id="heroOrdersCount">0 mauzo</span>
+          <span id="heroCustomersCount">0 wateja</span>
+        </div>
+      </div>
+
+      <div class="dash-mini-col">
+        <div class="dash-mini-card">
+          <div class="dash-mini-icon">📦</div>
+          <div><div class="dash-mini-num" id="miniOrders">0</div><div class="dash-mini-label">Mauzo (Orders)</div></div>
+        </div>
+        <div class="dash-mini-card">
+          <div class="dash-mini-icon">🎮</div>
+          <div><div class="dash-mini-num" id="miniProducts">0</div><div class="dash-mini-label">Bidhaa</div></div>
+        </div>
       </div>
     </div>
 
-    <!-- ══════════════ TAB: OVERVIEW ══════════════ -->
-    <div class="tab-content active" id="tab-overview">
-      <div class="ad2-welcome">
-        <div class="text">
-          <span style="font-size:11px;color:#a78bfa;letter-spacing:1.5px;font-weight:700">✨ ADMIN DASHBOARD</span>
-          <h1>Welcome back, <span id="welcomeName">Admin</span> 👋</h1>
-          <p>Here's what's happening with your platform today.</p>
-        </div>
-        <div class="datetime">
-          <span id="dashDate">—</span>
-          <b id="dashTime">—</b>
-          <div class="status">System Online</div>
-        </div>
-      </div>
-
-      <div class="ad2-metrics">
-        <div class="ad2-metric"><div class="ic" style="background:rgba(124,58,237,.15);color:#a78bfa">👥</div><small>Total Users</small><b id="mUsers">0</b><div class="trend">↑ 12.5% <small>vs last 7 days</small></div></div>
-        <div class="ad2-metric"><div class="ic" style="background:rgba(236,72,153,.15);color:#f472b6">📦</div><small>Total Orders</small><b id="mOrders">0</b><div class="trend">↑ 18.2% <small>vs last 7 days</small></div></div>
-        <div class="ad2-metric"><div class="ic" style="background:rgba(34,197,94,.15);color:#86efac">💰</div><small>Total Revenue</small><b id="mRevenue">TSh 0</b><div class="trend">↑ 24.8% <small>vs last 7 days</small></div></div>
-        <div class="ad2-metric"><div class="ic" style="background:rgba(245,158,11,.15);color:#fcd34d">🎮</div><small>Active Games</small><b id="mGames">0</b><div class="trend">↑ 6.7% <small>vs last 7 days</small></div></div>
-        <div class="ad2-metric"><div class="ic" style="background:rgba(6,182,212,.15);color:#67e8f9">📚</div><small>Total Courses</small><b id="mCourses">0</b><div class="trend">↑ 14.3% <small>vs last 7 days</small></div></div>
-      </div>
-
-      <div class="ad2-row2">
-        <div class="ad2-card">
-          <div class="ad2-card-head"><h3>📈 Revenue Overview</h3><select><option>7 Days</option><option>14 Days</option></select></div>
-          <div class="ad2-chart">
-            <div class="ad2-line-chart" id="revenueChart"></div>
-            <div class="ad2-donut-ring"><div class="val">TSh<br><span id="donutTotal" style="color:#a78bfa">0</span><small>Total</small></div></div>
-          </div>
-          <div class="ad2-legend" style="margin-top:14px">
-            <div><i style="background:#7c3aed"></i><span>Games</span><span>45%</span></div>
-            <div><i style="background:#ec4899"></i><span>Courses</span><span>30%</span></div>
-            <div><i style="background:#06b6d4"></i><span>Store</span><span>15%</span></div>
-            <div><i style="background:#f59e0b"></i><span>Others</span><span>10%</span></div>
-          </div>
-        </div>
-
-        <div class="ad2-card">
-          <div class="ad2-card-head"><h3>📊 Quick Statistics</h3></div>
-          <div class="ad2-qstats">
-            <div class="ad2-qstat"><div class="ic" style="background:rgba(245,158,11,.15);color:#fcd34d">⏳</div><div><div class="num" id="qPending">0</div><div class="lbl">Pending Orders</div></div><a class="link" onclick="showTab('orders')">View All →</a></div>
-            <div class="ad2-qstat"><div class="ic" style="background:rgba(239,68,68,.15);color:#fca5a5">📦</div><div><div class="num" id="qLowStock">0</div><div class="lbl">Low Stock Products</div></div><a class="link" onclick="showTab('products')">Restock</a></div>
-            <div class="ad2-qstat"><div class="ic" style="background:rgba(124,58,237,.15);color:#a78bfa">💬</div><div><div class="num" id="qTickets">0</div><div class="lbl">Support Tickets</div></div><a class="link" onclick="showTab('publicchat')">View All →</a></div>
-            <div class="ad2-qstat"><div class="ic" style="background:rgba(236,72,153,.15);color:#f472b6">⭐</div><div><div class="num" id="qReviews">0</div><div class="lbl">New Reviews</div></div><a class="link" onclick="showTab('products')">View All →</a></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="ad2-row2">
-        <div class="ad2-card">
-          <div class="ad2-card-head"><h3>🏆 Top Games</h3><a onclick="showTab('products')" style="color:#a78bfa;font-size:12px;text-decoration:none;cursor:pointer">View All →</a></div>
-          <table class="ad2-table">
-            <thead><tr><th>#</th><th>Game</th><th>Sales</th><th>Revenue</th><th>Status</th></tr></thead>
-            <tbody id="topGamesTable"><tr><td colspan="5" style="text-align:center;color:#6b7290">Inapakia...</td></tr></tbody>
-          </table>
-        </div>
-        <div class="ad2-card">
-          <div class="ad2-card-head"><h3>🧾 Recent Orders</h3><a onclick="showTab('orders')" style="color:#a78bfa;font-size:12px;text-decoration:none;cursor:pointer">View All →</a></div>
-          <table class="ad2-table">
-            <thead><tr><th>#</th><th>User</th><th>Product</th><th>Amount</th><th>Status</th></tr></thead>
-            <tbody id="recentOrdersTable"><tr><td colspan="5" style="text-align:center;color:#6b7290">Inapakia...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="ad2-row2">
-        <div class="ad2-card">
-          <div class="ad2-card-head"><h3>📊 System Health</h3></div>
-          <div class="ad2-health-row"><span class="dot"></span><b>All Systems Operational</b></div>
-          <div class="ad2-health-row"><span class="dot"></span><b>Database</b><div class="ad2-health-bar"><span style="width:99%"></span></div><small>99.9%</small></div>
-          <div class="ad2-health-row"><span class="dot"></span><b>API Services</b><div class="ad2-health-bar"><span style="width:99%"></span></div><small>99.8%</small></div>
-          <div class="ad2-health-row"><span class="dot"></span><b>Payment Gateway</b><div class="ad2-health-bar"><span style="width:99%"></span></div><small>99.7%</small></div>
-          <div class="ad2-health-row"><span class="dot"></span><b>File Storage</b><div class="ad2-health-bar"><span style="width:99%"></span></div><small>99.9%</small></div>
-          <div class="ad2-health-row"><span class="dot"></span><b>CDN</b><div class="ad2-health-bar"><span style="width:99%"></span></div><small>99.8%</small></div>
-        </div>
-        <div class="ad2-card">
-          <div class="ad2-card-head"><h3>🕒 Recent Activities</h3></div>
-          <div class="ad2-activity"><div class="ic" style="background:rgba(124,58,237,.15)">👤</div><div><b>New user registered</b><small>New customer joined</small></div><div class="time">2 min</div></div>
-          <div class="ad2-activity"><div class="ic" style="background:rgba(34,197,94,.15)">🛒</div><div><b>Order placed</b><small>Payment received</small></div><div class="time">5 min</div></div>
-          <div class="ad2-activity"><div class="ic" style="background:rgba(245,158,11,.15)">🎮</div><div><b>New game added</b><small>Kwenye duka</small></div><div class="time">12 min</div></div>
-          <div class="ad2-activity"><div class="ic" style="background:rgba(236,72,153,.15)">🎓</div><div><b>Course purchased</b><small>Academy</small></div><div class="time">18 min</div></div>
-          <div class="ad2-activity"><div class="ic" style="background:rgba(6,182,212,.15)">💰</div><div><b>Payment received</b><small>MoMo</small></div><div class="time">25 min</div></div>
-        </div>
-      </div>
-
-      <div class="ad2-perf">
-        <div class="game-ic">🎮</div>
-        <div class="text"><b>Platform Performance</b><small>Your platform is running smoothly and efficiently.</small></div>
-        <div class="stat"><b>99.98%</b><small>Uptime</small></div>
-        <div class="stat"><b>245ms</b><small>Response Time</small></div>
-        <div class="stat"><b>12,493</b><small>Total Visitors</small></div>
-      </div>
+    <div class="admin-stats" id="adminStats" style="display:none;">
+      <div class="stat-card"><h3>0</h3><p>Mauzo (Orders)</p></div>
+      <div class="stat-card"><h3>0 TZS</h3><p>Jumla ya Mapato</p></div>
+      <div class="stat-card"><h3>0</h3><p>Wateja</p></div>
+      <div class="stat-card"><h3>0</h3><p>Bidhaa</p></div>
     </div>
 
-    <!-- ══════════════ TAB: COMMAND CENTER ══════════════ -->
-    <div class="tab-content" id="tab-command">
-      <h2 style="margin:0 0 16px">🧠 Command Center</h2>
+    <div class="admin-tabs">
+      <button class="tab-btn active" data-tab="overview">▦ Dashboard</button>
+      <button class="tab-btn" data-tab="command">🧠 Command Center</button>
+      <button class="tab-btn" data-tab="orders">📦 Mauzo</button>
+      <button class="tab-btn" data-tab="payments">💳 Payments</button>
+      <button class="tab-btn" data-tab="publicchat">💬 Public Chat</button>
+      <button class="tab-btn" data-tab="customers">👥 Wateja</button>
+      <button class="tab-btn" data-tab="products">🎮 Bidhaa</button>
+      <button class="tab-btn" data-tab="hero">🎬 Hero Studio</button>
+      <button class="tab-btn" data-tab="requests">🔍 Requests</button>
+      <button class="tab-btn" data-tab="marketplace">🏪 Marketplace</button>
+      <button class="tab-btn" data-tab="coupons">🎟️ Coupons</button>
+      <button class="tab-btn" data-tab="security">🛡️ Usalama</button>
+      <button class="tab-btn" data-tab="media">📺 Media & Live</button>
+      <button class="tab-btn" data-tab="ai">🤖 AI</button>
+    </div>
+
+
+    <div class="tab-content" id="tab-overview">
+      <div class="pro-admin-overview"><div class="overview-main"><span class="eyebrow">LIFEISGAMETZ • ADMIN OS</span><h2>Dashboard ya Biashara</h2><p>Simamia games, trailers, orders, customers, live football, movies, Academy, security na AI kutoka sehemu moja.</p><div class="overview-actions"><button class="btn-primary" onclick="refreshAll()">↻ Refresh Everything</button><a class="btn-secondary" href="index.html">🌐 Live Store</a></div></div><div class="overview-orb"><div>🎮</div><small>STORE ONLINE</small></div></div>
+      <div class="overview-metrics"><div><span>💰</span><b id="ovRevenue">0 TZS</b><small>Confirmed revenue</small></div><div><span>🧾</span><b id="ovOrders">0</b><small>Orders</small></div><div><span>👥</span><b id="ovCustomers">0</b><small>Customers</small></div><div><span>🎮</span><b id="ovProducts">0</b><small>Products</small></div><div><span>⏳</span><b id="ovPending">0</b><small>Pending payments</small></div></div>
+      <div class="overview-panels"><div class="admin-form"><div class="panel-title"><h3>🧭 System Modules</h3><span class="live-badge">LIVE</span></div><div class="system-list"><div>🎮 Games & Store <b>ACTIVE</b></div><div>🎬 Hero Trailers <b>ACTIVE</b></div><div>⚽ Live Football <b>READY</b></div><div>🎓 Academy & Videos <b>READY</b></div><div>🎬 Movies <b>READY</b></div><div>🤖 AI Team <b>ONLINE</b></div><div>🛡️ Security <b>PROTECTED</b></div><div>☁️ Persistent Storage <b id="ovStorageBadge">CHECKING</b></div></div></div><div class="admin-form"><div class="panel-title"><h3>⚡ Quick Management</h3></div><div class="overview-quick"><button onclick="document.querySelector('[data-tab=products]').click()">🎮 Add Game</button><button onclick="document.querySelector('[data-tab=hero]').click()">🎬 Manage Trailer</button><button onclick="document.querySelector('[data-tab=media]').click()">⚽ Add Live</button><button onclick="document.querySelector('[data-tab=media]').click()">🎬 Add Movie</button><button onclick="document.querySelector('[data-tab=media]').click()">🎓 Add Course</button><button onclick="document.querySelector('[data-tab=ai]').click()">🧠 AI Builder</button></div></div></div>
+    </div>
+
+    <div class="tab-content" id="tab-command" style="display:none;">
+      <div class="admin-command-hero">
+        <div><span class="eyebrow">GAMEHUB CONTROL CENTER</span><h2>👑 Boss Command Center</h2><p>Sehemu moja ya kusimamia biashara, wateja, content, payments, security na AI Team.</p></div>
+        <div class="command-actions"><button class="btn-primary" onclick="refreshAll()">↻ Refresh Data</button><a class="btn-secondary" href="index.html">🌐 Fungua Website</a></div>
+      </div>
       <div class="command-grid" id="commandMetrics">
         <div class="command-card"><span>💰</span><b id="cmRevenue">0 TZS</b><small>Revenue iliyothibitishwa</small></div>
         <div class="command-card"><span>🧾</span><b id="cmPaid">0</b><small>Successful orders</small></div>
@@ -423,85 +106,109 @@
           <span>👑 Business Manager <i>ONLINE</i></span><span>🧑‍💻 Web Builder <i>READY</i></span><span>💬 Customer Support <i>ONLINE</i></span><span>🎮 Game Advisor <i>ONLINE</i></span><span>🩺 Health Safety <i>ISOLATED</i></span><span>🛡️ Security Guardian <i>ACTIVE</i></span><span>⚽ Tournament Manager <i>READY</i></span><span>📊 Finance Analyst <i>ONLINE</i></span><span>📢 Content Agent <i>READY</i></span>
         </div></div>
       </div>
-      <div class="admin-form"><h3>⚡ Quick Actions</h3><div class="quick-admin-grid"><button onclick="showTab('products')">➕ Add Game</button><button onclick="showTab('media')">📺 Add Live</button><button onclick="showTab('media')">🎬 Add Movie</button><button onclick="showTab('media')">🎓 Academy</button><button onclick="showTab('ai')">🤖 AI Builder</button><button onclick="showTab('security')">🛡️ Security</button></div></div>
+      <div class="admin-form"><h3>⚡ Quick Actions</h3><div class="quick-admin-grid"><button onclick="document.querySelector('[data-tab=products]').click()">➕ Add Game</button><button onclick="document.querySelector('[data-tab=media]').click()">📺 Add Live</button><button onclick="document.querySelector('[data-tab=media]').click()">🎬 Add Movie</button><button onclick="document.querySelector('[data-tab=media]').click()">🎓 Academy</button><button onclick="document.querySelector('[data-tab=ai]').click()">🤖 AI Builder</button><button onclick="document.querySelector('[data-tab=security]').click()">🛡️ Security</button></div></div>
     </div>
 
-    <!-- ══════════════ TAB: ORDERS ══════════════ -->
-    <div class="tab-content" id="tab-orders">
+    <div class="tab-content" id="tab-orders" style="display:none;">
       <h2>📦 Mauzo Yote</h2>
+
       <div class="admin-form" style="margin-bottom:20px;">
         <h3>📊 Mauzo — Siku 14 Zilizopita</h3>
         <div id="salesChart" style="display:flex; align-items:flex-end; gap:4px; height:120px; margin:14px 0 6px;"></div>
         <div id="topProducts" style="margin-top:10px; font-size:13px; color:#c9c9e0;"></div>
         <a href="/api/admin/backup" id="backupLink" class="btn-secondary" style="display:inline-block; margin-top:14px; text-align:center;">💾 Pakua Backup ya Data Yote</a>
       </div>
-      <div class="dash-recent-header"><h3>🧾 Historia ya Malipo</h3><span id="recentCustomersStrip" class="dash-avatar-strip"></span></div>
+
+      <div class="dash-recent-header">
+        <h3>🧾 Historia ya Malipo</h3>
+        <span id="recentCustomersStrip" class="dash-avatar-strip"></span>
+      </div>
       <div class="order-toolbar"><input id="orderSearch" placeholder="🔎 Tafuta customer, TX ref au bidhaa..." oninput="renderOrderFilters()"><select id="orderStatus" onchange="renderOrderFilters()"><option value="all">Status zote</option><option value="successful">Successful</option><option value="pending_azampay">Pending Auto</option><option value="pending_manual">Pending Manual</option><option value="failed">Failed</option></select><button class="btn-secondary" onclick="exportOrdersCSV()">⬇️ Export CSV</button></div><div id="ordersList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
     </div>
 
-    <!-- ══════════════ TAB: PAYMENTS ══════════════ -->
-    <div class="tab-content" id="tab-payments">
-      <div class="hero-studio-head"><div><span class="eyebrow">PAYMENT CONTROL</span><h2>💳 Payment Center</h2><p>Angalia hali ya gateway, automatic checkout na manual payment.</p></div><div class="studio-tip"><b id="paymentEnvBadge">CHECKING</b><br><small>Gateway environment</small></div></div>
+    <div class="tab-content" id="tab-payments" style="display:none;">
+      <div class="hero-studio-head"><div><span class="eyebrow">PAYMENT CONTROL</span><h2>💳 Payment Center</h2><p>Angalia hali ya AzamPay, automatic checkout na manual payment. Hakuna secret key inayoonyeshwa hapa.</p></div><div class="studio-tip"><b id="paymentEnvBadge">CHECKING</b><br><small>Gateway environment</small></div></div>
       <div class="overview-panels">
         <div class="admin-form"><h3>⚡ Automatic Payments</h3><div id="paymentAutoStatus" class="storage-status">Inapima gateway...</div><div class="system-list" style="margin-top:12px"><div>Mobile Money Push <b id="paymentMnoStatus">CHECKING</b></div><div>Callback endpoint <b>READY</b></div><div>Manual fallback <b>ACTIVE</b></div></div></div>
-        <div class="admin-form"><h3>🧩 Render Environment</h3><p class="hint">Weka credentials hizi kwenye Render Environment Variables:</p><div class="system-list"><div>CLICKPESA_CLIENT_ID <b>REQUIRED</b></div><div>CLICKPESA_API_KEY <b>REQUIRED</b></div></div></div>
+        <div class="admin-form"><h3>🧩 Render Environment</h3><p class="hint">Weka credentials hizi kwenye Render Environment Variables:</p><div class="system-list"><div>AZAMPAY_ENVIRONMENT <b>sandbox / production</b></div><div>AZAMPAY_APP_NAME <b>REQUIRED</b></div><div>AZAMPAY_CLIENT_ID <b>REQUIRED</b></div><div>AZAMPAY_CLIENT_SECRET <b>REQUIRED</b></div><div>AZAMPAY_API_KEY <b>IF PROVIDED</b></div><div>AZAMPAY_CALLBACK_TOKEN <b>OPTIONAL</b></div></div></div>
       </div>
-      <div class="admin-form" style="margin-top:14px"><h3>📌 Flow ya Malipo</h3><p class="hint">Mteja anaweka namba + mtandao → ClickPesa inaanzisha push → mteja anaingiza PIN → webhook inathibitisha order → bidhaa inaonekana My Orders.</p><button class="btn-secondary" type="button" onclick="loadPaymentStatus()">↻ Check Gateway Again</button></div>
+      <div class="admin-form" style="margin-top:14px"><h3>📌 Flow ya Malipo</h3><p class="hint">Mteja anaweka namba + mtandao → AzamPay inaanzisha push → mteja anaingiza PIN → callback inathibitisha order → bidhaa inaonekana My Orders. Kama gateway haijasanidiwa, checkout inaonyesha Manual Payment badala ya kujifanya automatic imefanikiwa.</p><button class="btn-secondary" type="button" onclick="loadPaymentStatus()">↻ Check Gateway Again</button></div>
     </div>
 
-    <!-- ══════════════ TAB: PUBLIC CHAT ══════════════ -->
-    <div class="tab-content" id="tab-publicchat">
+    <div class="tab-content" id="tab-publicchat" style="display:none;">
       <div class="hero-studio-head"><div><span class="eyebrow">COMMUNITY MODERATION</span><h2>💬 Public Chat</h2><p>Angalia ujumbe wa public community chat na ondoa spam/ujumbe usiofaa.</p></div><div class="studio-tip"><b>PUBLIC</b><br><small>Login haihitajiki kwa visitors</small></div></div>
       <div class="admin-form"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3>Latest Messages</h3><button class="btn-secondary" type="button" onclick="loadPublicChatAdmin()">↻ Refresh</button></div><div id="publicChatAdminList" style="margin-top:12px"></div></div>
     </div>
 
-    <!-- ══════════════ TAB: CUSTOMERS ══════════════ -->
-    <div class="tab-content" id="tab-customers">
+    <div class="tab-content" id="tab-customers" style="display:none;">
       <h2>👥 Wateja Wote</h2>
       <div id="customersList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
     </div>
 
-    <!-- ══════════════ TAB: PRODUCTS ══════════════ -->
-    <div class="tab-content" id="tab-products">
+    <div class="tab-content" id="tab-products" style="display:none;">
       <h2>🎮 Bidhaa Zako</h2>
+
       <div class="admin-form">
         <h3 id="productFormTitle">➕ Ongeza Bidhaa Mpya</h3>
         <input type="hidden" id="pId" value="">
+
         <select id="pSection">
           <option value="shop">Sehemu: Duka la Kawaida (Shop)</option>
           <option value="steam">Sehemu: Steam Accounts</option>
           <option value="efootball">Sehemu: eFootball Vikosi</option>
         </select>
+
         <input type="text" id="pName" placeholder="Jina la bidhaa (mfano: FIFA 26)">
         <input type="number" id="pPrice" placeholder="Bei kwa TZS (mfano: 45000)">
         <input type="text" id="pImage" placeholder="Image URL (link ya picha halisi - mfano kutoka imgbb.com)">
+
+        <!-- Fields za Shop pekee -->
         <div id="fieldsShop">
           <input type="text" id="pType" placeholder="Aina (mfano: Game Key • PC)">
           <input type="text" id="pEmoji" placeholder="Emoji (mfano: ⚽)">
           <input type="text" id="pDesc" placeholder="Maelezo mafupi">
           <input type="text" id="pTrailer" placeholder="Trailer URL (link ya YouTube - hiari)">
-          <select id="pCategory"><option value="Zote">Category: Zote</option><option value="Action">Action</option><option value="Adventure">Adventure</option><option value="Sports">Sports</option><option value="RPG">RPG</option><option value="Racing">Racing</option><option value="Shooter">Shooter</option><option value="Strategy">Strategy</option></select>
-          <input type="text" id="pDownload" placeholder="Link ya Kudownload (hiari)">
+          <select id="pCategory">
+            <option value="Zote">Category: Zote</option>
+            <option value="Action">Action</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Sports">Sports</option>
+            <option value="RPG">RPG</option>
+            <option value="Racing">Racing</option>
+            <option value="Shooter">Shooter</option>
+            <option value="Strategy">Strategy</option>
+          </select>
+          <input type="text" id="pDownload" placeholder="Link ya Kudownload (hiari - kwa games za kudownload, si GeForce)">
         </div>
-        <div id="fieldsSteam" style="display:none;"><input type="text" id="pAccUserSteam" placeholder="📧 Email ya Akaunti ya Steam"><input type="text" id="pAccPassSteam" placeholder="🔑 Password ya Akaunti"></div>
-        <div id="fieldsEfootball" style="display:none;"><input type="text" id="pAccUserEf" placeholder="👤 PSN ID / Username"><input type="text" id="pAccPassEf" placeholder="🔑 Password"></div>
+
+        <!-- Fields za Steam Accounts -->
+        <div id="fieldsSteam" style="display:none;">
+          <input type="text" id="pAccUserSteam" placeholder="📧 Email ya Akaunti ya Steam">
+          <input type="text" id="pAccPassSteam" placeholder="🔑 Password ya Akaunti">
+        </div>
+
+        <!-- Fields za eFootball -->
+        <div id="fieldsEfootball" style="display:none;">
+          <input type="text" id="pAccUserEf" placeholder="👤 PSN ID / Username">
+          <input type="text" id="pAccPassEf" placeholder="🔑 Password">
+        </div>
+
         <button class="btn-primary" id="addProductBtn">➕ Ongeza</button>
         <button class="btn-secondary" id="cancelEditBtn" type="button" style="display:none;">✖ Ghairi Uhariri</button>
         <p id="productMsg" class="pay-status"></p>
       </div>
+
       <h3 style="margin-top:20px;">Bidhaa Zilizopo</h3>
       <div id="productsList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
     </div>
 
-    <!-- ══════════════ TAB: REQUESTS ══════════════ -->
-    <div class="tab-content" id="tab-requests">
+    <div class="tab-content" id="tab-requests" style="display:none;">
       <h2>🔍 Game Requests</h2>
-      <p style="color:#8f8faa; margin-bottom:12px;">Games zinazoombwa na wateja — zilizopangwa kwa kura nyingi kwanza.</p>
+      <p style="color:#8f8faa; margin-bottom:12px;">Games zinazoombwa na wateja — zilizopangwa kwa kura nyingi kwanza. Wengi wakiomba = mahitaji makubwa = ongeza dukani!</p>
       <div id="adminRequestsList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
     </div>
 
-    <!-- ══════════════ TAB: MARKETPLACE ══════════════ -->
-    <div class="tab-content" id="tab-marketplace">
+    <div class="tab-content" id="tab-marketplace" style="display:none;">
       <h2>🏪 Marketplace — Biashara Zingine</h2>
       <div class="admin-form">
         <h3>➕ Ongeza Biashara Mpya</h3>
@@ -509,7 +216,7 @@
         <input type="text" id="bizCategory" placeholder="Category (mfano: Simu, Nguo, Chakula)">
         <input type="text" id="bizDesc" placeholder="Maelezo mafupi">
         <input type="text" id="bizImage" placeholder="Image URL (hiari)">
-        <input type="text" id="bizContact" placeholder="Namba ya WhatsApp au email">
+        <input type="text" id="bizContact" placeholder="Namba ya WhatsApp (mfano 255...) au email">
         <button class="btn-primary" id="addBizBtn">➕ Ongeza Biashara</button>
         <p id="bizMsg" class="pay-status"></p>
       </div>
@@ -517,8 +224,7 @@
       <div id="marketplaceList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
     </div>
 
-    <!-- ══════════════ TAB: COUPONS ══════════════ -->
-    <div class="tab-content" id="tab-coupons">
+    <div class="tab-content" id="tab-coupons" style="display:none;">
       <h2>🎟️ Discount Codes</h2>
       <div class="admin-form">
         <h3>➕ Tengeneza Kodi Mpya</h3>
@@ -532,49 +238,57 @@
       <div id="couponsList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
     </div>
 
-    <!-- ══════════════ TAB: SECURITY ══════════════ -->
-    <div class="tab-content" id="tab-security">
+    <div class="tab-content" id="tab-security" style="display:none;">
       <h2>🛡️ HackerAI — Usalama wa Website</h2>
-      <p style="color:#8f8faa; margin-bottom:12px;">Mlinzi wa website yako.</p>
-      <div class="overview-metrics" id="securityStats">
-        <div><span>📊</span><b>0</b><small>Matukio Yote</small></div>
-        <div><span>🔴</span><b>0</b><small>HIGH</small></div>
-        <div><span>🟡</span><b>0</b><small>MEDIUM</small></div>
-        <div><span>🚫</span><b>0</b><small>IP Zilizofungwa</small></div>
-        <div><span>✅</span><b>0</b><small>LOW</small></div>
+      <p style="color:#8f8faa; margin-bottom:12px;">Mlinzi wa website yako. Hapa unaona mashambulizi yaliyogunduliwa, IP zilizofungwa, na ripoti.</p>
+
+      <div class="admin-stats" id="securityStats">
+        <div class="stat-card"><h3>0</h3><p>Matukio Yote</p></div>
+        <div class="stat-card"><h3>0</h3><p>HIGH (Hatari)</p></div>
+        <div class="stat-card"><h3>0</h3><p>MEDIUM</p></div>
+        <div class="stat-card"><h3>0</h3><p>IP Zilizofungwa</p></div>
       </div>
+
       <div class="admin-form" style="margin-bottom:20px;">
         <h3>🔒 Funga IP Kwa Mikono</h3>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <input type="text" id="blockIpInput" placeholder="IP (mfano: 123.45.67.89)" style="flex:1;min-width:200px">
+        <div class="custom-row">
+          <input type="text" id="blockIpInput" placeholder="IP (mfano: 123.45.67.89)">
           <button class="btn-primary" id="blockIpBtn">🔒 Funga</button>
         </div>
         <p id="blockIpMsg" class="pay-status"></p>
       </div>
+
       <h3>🧾 Ripoti ya Usalama</h3>
       <div class="admin-form" style="margin-bottom:20px;">
         <button class="btn-primary" id="genReportBtn">📄 Tengeneza Ripoti</button>
         <div id="securityReport" class="ai-reply">Bonyeza kutengeneza ripoti...</div>
       </div>
+
       <h3>🕵️ Matukio Yote (Log)</h3>
       <div id="securityEvents" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
+
       <h3 style="margin-top:20px;">🚫 IP Zilizofungwa</h3>
       <div id="blockedList" class="admin-list"><p style="color:#8f8faa;">Hakuna IP zilizofungwa.</p></div>
     </div>
 
-    <!-- ══════════════ TAB: AI ══════════════ -->
-    <div class="tab-content" id="tab-ai">
+    <div class="tab-content" id="tab-ai" style="display:none;">
       <h2>🤖 AI Msaidizi wa Admin</h2>
-      <p style="color:#8f8faa; margin-bottom:12px;">Niambie kwa maneno unachotaka kufanya. Mifano:<br>• "ongeza game FIFA 26 bei 50000"<br>• "futa bidhaa GTA"<br>• "nionyeshe mauzo"</p>
+      <p style="color:#8f8faa; margin-bottom:12px;">Niambie kwa maneno unachotaka kufanya. Mifano:<br>
+      • "ongeza game FIFA 26 bei 50000"<br>
+      • "futa bidhaa GTA"<br>
+      • "nionyeshe mauzo"<br>
+      • "wateja wangapi"<br>
+      • "bidhaa zote"<br>
+      • "maombi ya games"</p>
       <div class="admin-form">
         <input type="text" id="aiCommand" placeholder="Andika amri yako hapa...">
         <button class="btn-primary" id="aiSendBtn">🚀 Tumia Amri</button>
         <div id="aiReply" class="ai-reply"></div>
       </div>
       <div class="admin-form" style="margin-top:18px;border-color:#7b2ff7;">
-        <h3>🧠 AI Web Developer & Manager — Claude Sonnet</h3>
-        <p style="color:#8f8faa">Andika amri ya website kwa lugha ya kawaida. AI hutengeneza JSON actions salama.</p>
-        <textarea id="builderCommand" rows="5" placeholder="Mfano: Ongeza banner ya Tournament ya eFootball ya wiki hii kwenye Home Page."></textarea>
+        <h3>🧠 AI Web Developer & Manager — Claude 3.5 Sonnet</h3>
+        <p style="color:#8f8faa">Andika amri ya website kwa lugha ya kawaida. AI hutengeneza <b>JSON actions salama</b> na inaweza ku-update catalog, banner, movie, course video au live match kwenye data ya website. Haitekelezi raw JavaScript/SQL moja kwa moja.</p>
+        <textarea id="builderCommand" rows="5" placeholder="Mfano: Ongeza banner ya Tournament ya eFootball ya wiki hii kwenye Home Page yenye kitufe cha Kujiunga."></textarea>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn-primary" id="builderPreview">👁️ Tengeneza Preview</button>
           <button class="btn-primary" id="builderExecute">🚀 Tekeleza Mabadiliko</button>
@@ -583,27 +297,24 @@
       </div>
     </div>
 
-    <!-- ══════════════ TAB: HERO STUDIO ══════════════ -->
-    <div class="tab-content" id="tab-hero">
-      <div class="hero-studio-head"><div><span class="eyebrow">HOME • FEATURED MEDIA</span><h2>🎬 Hero Studio</h2><p>Weka Trailer URL kwenye game. Kila trailer itaonekana chini ya Hero Home ikiwa na Buy Now + bei ya Admin.</p></div><div class="studio-tip">💡 Tip<br><small>YouTube URL au direct MP4/WebM</small></div></div>
+    <div class="tab-content" id="tab-hero" style="display:none;">
+      <div class="hero-studio-head"><div><span class="eyebrow">HOME • FEATURED MEDIA</span><h2>🎬 Hero Studio</h2><p>Weka Trailer URL kwenye game. Kila trailer itaonekana chini ya Hero Home ikiwa na <b>Buy Now + bei ya Admin</b>. Bei haitengenezwi hapa; inasomwa moja kwa moja kutoka kwenye bidhaa.</p></div><div class="studio-tip">💡 Tip<br><small>YouTube URL au direct MP4/WebM</small></div></div>
       <div class="admin-form"><div class="panel-title"><h3>🎮 Games zenye Trailer</h3><span id="heroCount" class="live-badge">0</span></div><div id="heroProductsList" class="hero-product-list"><p class="hint">Inapakia...</p></div></div>
       <div class="admin-form" style="margin-top:16px"><h3>➕ Haraka: Chagua Game</h3><select id="heroProductSelect"><option value="">Chagua product...</option></select><input id="heroTrailerUrl" placeholder="Trailer URL — YouTube / MP4 / WebM"><div class="hero-edit-row"><button class="btn-primary" id="saveHeroTrailerBtn">💾 Hifadhi Trailer</button><button class="btn-secondary" id="removeHeroTrailerBtn">🗑️ Ondoa Trailer</button></div><p id="heroMsg" class="pay-status"></p></div>
     </div>
-
-    <!-- ══════════════ TAB: MEDIA (Live + Movies + Courses) ══════════════ -->
-    <div class="tab-content" id="tab-media">
+    <div class="tab-content" id="tab-media" style="display:none;">
       <h2>📺 Media, Live Matches, Courses & Movies</h2>
-      <p style="color:#8f8faa;margin-bottom:16px;">Hapa ndipo admin anaweka streams, movie uploads na video za kila course.</p>
+      <p style="color:#8f8faa;margin-bottom:16px;">Hapa ndipo admin anaweka streams, movie uploads na video za kila course. Production inapendelea Supabase Storage; local fallback ni ya majaribio.</p>
 
       <div class="admin-form">
         <h3>⚽ Ongeza Live Match / Stream</h3>
         <input id="liveTitle" placeholder="Jina la mechi">
-        <input id="liveLeague" placeholder="League">
+        <input id="liveLeague" placeholder="League (mfano NBC Premier League)">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="homeTeam" placeholder="Home Team"><input id="awayTeam" placeholder="Away Team"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><input id="liveHomeScore" type="number" min="0" max="99" placeholder="Goli Home"><input id="liveAwayScore" type="number" min="0" max="99" placeholder="Goli Away"><input id="liveMinute" placeholder="Dakika"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><input id="liveHomeScore" type="number" min="0" max="99" placeholder="Goli Home"><input id="liveAwayScore" type="number" min="0" max="99" placeholder="Goli Away"><input id="liveMinute" placeholder="Dakika (mf. 67)"></div>
         <select id="liveStatus"><option>LIVE</option><option>UPCOMING</option><option>ENDED</option></select>
-        <input id="streamUrl" placeholder="Stream/Embed URL — YouTube link">
-        <input id="liveVideoUrl" placeholder="Direct Video URL — MP4/WebM">
+        <input id="streamUrl" placeholder="Stream/Embed URL — YouTube link au embed URL (mfano https://www.youtube.com/watch?v=...)">
+        <input id="liveVideoUrl" placeholder="Direct Video URL — MP4/WebM au .m3u8 (HLS)">
         <input id="startTime" placeholder="Muda/Tarehe">
         <textarea id="liveDesc" rows="3" placeholder="Maelezo"></textarea>
         <button class="btn-primary" id="addLiveBtn">➕ Weka Match</button>
@@ -618,7 +329,7 @@
         <input id="moviePoster" placeholder="Poster URL (hiari)">
         <textarea id="movieDesc" rows="3" placeholder="Maelezo ya movie"></textarea>
         <input id="movieFile" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v,.mp4,.webm,.mov,.m4v">
-        <input id="movieVideoUrl" placeholder="Au video URL (YouTube embed/direct MP4/WebM)">
+        <input id="movieVideoUrl" placeholder="Au video URL (YouTube embed/direct MP4/WebM) — hiari, kama hutaki kupakia file">
         <div id="movieUploadStatus" class="pay-status"></div>
         <button class="btn-primary" id="uploadMovieBtn">⬆️ Upload / Save Movie</button>
         <div id="movieList" style="margin-top:12px"></div>
@@ -635,610 +346,149 @@
         <div id="courseList" style="margin-top:12px"></div>
       </div>
     </div>
+  </section>
 
-  </main>
-</div>
+  <footer class="footer">
+    <p class="copyright">© 2026 LifeIsGameTZ — Admin OS</p>
+  </footer>
 
-<footer class="footer" style="display:block;text-align:center;padding:20px;color:#6b7290;font-size:12px;border-top:1px solid rgba(255,255,255,.06);margin-top:20px;">
-  <p>© 2026 LifeIsGameTZ — Admin OS</p>
-</footer>
+  <script>
+    const token = localStorage.getItem('gamehubToken');
+    let currentRole = 'admin'; // 'admin' | 'staff'
 
-<script>
-  /* ============ STATE ============ */
-  const token = localStorage.getItem('gamehubToken');
-  let currentRole = 'admin';
-
-  /* ============ AUTH ============ */
-  async function checkAdmin() {
-    if (!token) { document.body.innerHTML = '<div style="text-align:center; padding:60px;"><h2>🔒 Sehemu ya siri</h2><p>Ingia kwanza.</p><a href="login.html" class="btn-primary">Ingia</a></div>'; return false; }
-    try {
-      const res = await fetch('/api/auth/me', { headers: { 'Authorization': token } });
-      const data = await res.json();
-      if (!data.success || (!data.user.isAdmin && !data.user.isStaff)) {
-        document.body.innerHTML = '<div style="text-align:center; padding:60px;"><h2>⛔ Huwezi kufika hapa</h2><p>Ukurasa huu ni wa Admin pekee.</p><a href="index.html" class="btn-primary">← Home</a></div>';
-        return false;
-      }
-      currentRole = data.user.isAdmin ? 'admin' : 'staff';
-      const name = data.user.name || 'Admin';
-      const welcomeEl = document.getElementById('welcomeName');
-      const profileEl = document.getElementById('profileName');
-      const avatarEl = document.getElementById('avatarLetter');
-      if (welcomeEl) welcomeEl.textContent = name;
-      if (profileEl) profileEl.textContent = name;
-      if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
-      if (currentRole === 'staff') applyStaffRestrictions();
-      return true;
-    } catch (e) { return false; }
-  }
-
-  function applyStaffRestrictions() {
-    document.querySelectorAll('.ad2-menu a').forEach(a => {
-      const allowed = ['products', 'requests'];
-      if (!allowed.includes(a.dataset.tab)) a.style.display = 'none';
-    });
-    document.querySelector('.ad2-upgrade').style.display = 'none';
-  }
-
-  /* ============ NAVIGATION ============ */
-  function showTab(name) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    const tab = document.getElementById('tab-' + name);
-    if (tab) tab.classList.add('active');
-    document.querySelectorAll('.ad2-menu a').forEach(a => a.classList.remove('on'));
-    document.querySelectorAll('.ad2-menu a[data-tab="' + name + '"]').forEach(a => a.classList.add('on'));
-    document.querySelector('.ad2-side').classList.remove('on');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    if (name === 'orders') loadOrders();
-    if (name === 'products') loadProducts();
-    if (name === 'customers') loadCustomers();
-    if (name === 'payments') loadPaymentStatus();
-    if (name === 'publicchat') loadPublicChatAdmin();
-    if (name === 'coupons') loadCoupons();
-    if (name === 'marketplace') loadMarketplace();
-    if (name === 'requests') loadAdminRequests();
-    if (name === 'security') { loadSecurityStats(); loadSecurityEvents(); }
-    if (name === 'hero') loadHeroStudio();
-    if (name === 'command') loadCommandCenter();
-    if (name === 'media') loadMediaData();
-  }
-
-  document.querySelectorAll('.ad2-menu a[data-tab]').forEach(a => {
-    a.addEventListener('click', () => showTab(a.dataset.tab));
-  });
-
-  /* ============ DATE/TIME ============ */
-  function setDateTime() {
-    const now = new Date();
-    const d = document.getElementById('dashDate');
-    const t = document.getElementById('dashTime');
-    if (d) d.textContent = now.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    if (t) t.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  /* ============ LOAD STATS ============ */
-  async function loadStats() {
-    try {
-      const res = await fetch('/api/admin/stats', { headers: { 'Authorization': token } });
-      const d = await res.json();
-      if (!d.success) return;
-      const s = d.stats;
-      document.getElementById('mUsers').textContent = (s.customers || 0).toLocaleString();
-      document.getElementById('mOrders').textContent = (s.orders || 0).toLocaleString();
-      document.getElementById('mRevenue').textContent = 'TSh ' + (s.total || 0).toLocaleString();
-      document.getElementById('mGames').textContent = (s.products || 0).toLocaleString();
-      document.getElementById('mCourses').textContent = Math.min(s.products || 0, 48);
-      document.getElementById('donutTotal').textContent = 'TSh ' + ((s.total || 0) / 1000).toFixed(0) + 'K';
-      document.getElementById('badgeUsers').textContent = s.customers || 0;
-      document.getElementById('badgeOrders').textContent = s.orders || 0;
-    } catch(e) {}
-  }
-
-  async function loadOverview() {
-    try {
-      const res = await fetch('/api/admin/overview', { headers: { 'Authorization': token } });
-      const d = await res.json();
-      if (!d.success) return;
-      document.getElementById('qPending').textContent = d.pendingOrders || 0;
-      document.getElementById('qLowStock').textContent = Math.max(0, (d.products || 0) - 10);
-      document.getElementById('cmRevenue').textContent = 'TSh ' + (d.revenue || 0).toLocaleString();
-      document.getElementById('cmPaid').textContent = d.paidOrders || 0;
-      document.getElementById('cmPending').textContent = d.pendingOrders || 0;
-      document.getElementById('cmCustomers').textContent = d.customers || 0;
-    } catch(e) {}
-  }
-
-  async function loadAnalytics() {
-    try {
-      const res = await fetch('/api/admin/analytics', { headers: { 'Authorization': token } });
-      const d = await res.json();
-      if (!d.success) return;
-      const max = Math.max(1, ...d.days.map(x => x.total));
-      const chart = document.getElementById('revenueChart');
-      if (chart) {
-        chart.innerHTML = d.days.map(day => {
-          const h = Math.max(4, (day.total / max) * 100);
-          return '<div class="bar" style="height:' + h + '%"><span>' + day.label + '</span></div>';
-        }).join('');
-      }
-    } catch(e) {}
-  }
-
-  /* ============ LOAD PRODUCTS ============ */
-  async function loadProducts() {
-    try {
-      const res = await fetch('/api/products');
-      const d = await res.json();
-      const products = d.products || [];
-      window.__products = products;
-
-      // Top Games
-      const top = products.slice(0, 5);
-      const tbody = document.getElementById('topGamesTable');
-      if (tbody) {
-        tbody.innerHTML = top.length ? top.map((p, i) => '<tr><td>' + (i+1) + '</td><td><div class="game-name"><div class="game-thumb">' + (p.emoji || '🎮') + '</div><b>' + escAdmin(p.name) + '</b></div></td><td>' + (Math.floor(Math.random() * 400) + 50) + '</td><td>TSh ' + Number(p.price || 0).toLocaleString() + '</td><td><span class="ad2-status active">Active</span></td></tr>').join('') : '<tr><td colspan="5" style="text-align:center;color:#6b7290">Hakuna bidhaa.</td></tr>';
-      }
-
-      // Products list
-      const list = document.getElementById('productsList');
-      if (list) {
-        if (!products.length) { list.innerHTML = '<p style="color:#6b7290">Hakuna bidhaa.</p>'; }
-        else {
-          list.innerHTML = products.map(p => '<div class="admin-row"><div style="display:flex;align-items:center;gap:10px">' + (p.imageUrl ? '<img src="' + escAdmin(p.imageUrl) + '" style="width:40px;height:40px;object-fit:cover;border-radius:8px" onerror="this.style.display=\'none\'">' : '<span style="font-size:26px">' + escAdmin(p.emoji || '🎮') + '</span>') + '<div><strong>' + escAdmin(p.name) + '</strong><small>' + escAdmin(p.type || '') + ' — ' + Number(p.price).toLocaleString() + ' TZS</small></div></div><div style="display:flex;gap:6px"><button class="btn-vote" onclick="editProduct(\'' + p.id + '\')">✏️ Hariri</button><button class="btn-remove" onclick="deleteProduct(\'' + p.id + '\')">🗑️</button></div></div>').join('');
+    async function checkAdmin() {
+      if (!token) { document.body.innerHTML = '<div style="text-align:center; padding:60px;"><h2>🔒 Sehemu ya siri</h2><p>Ingia kwanza.</p><a href="login.html" class="btn-primary">Ingia</a></div>'; return false; }
+      try {
+        const res = await fetch('/api/auth/me', { headers: { 'Authorization': token } });
+        const data = await res.json();
+        if (!data.success || (!data.user.isAdmin && !data.user.isStaff)) {
+          document.body.innerHTML = '<div style="text-align:center; padding:60px;"><h2>⛔ Huwezi kufika hapa</h2><p>Ukurasa huu ni wa Admin pekee.</p><a href="index.html" class="btn-primary">← Home</a></div>';
+          return false;
         }
-      }
+        currentRole = data.user.isAdmin ? 'admin' : 'staff';
+        document.getElementById('welcomeText').textContent = '👋 Karibu Tena, ' + (data.user.name || 'Admin');
+        if (currentRole === 'staff') applyStaffRestrictions();
+        return true;
+      } catch (e) { return false; }
+    }
 
-      // Hero select
-      const sel = document.getElementById('heroProductSelect');
-      if (sel) {
-        sel.innerHTML = '<option value="">Chagua game...</option>' + products.filter(p => p.section === 'shop').map(p => '<option value="' + p.id + '">' + escAdmin(p.name) + '</option>').join('');
-      }
-    } catch(e) {}
-  }
+    // Staff anaona tab za Bidhaa na Requests pekee — kificha vingine
+    function applyStaffRestrictions() {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        if (!['products', 'requests'].includes(btn.dataset.tab)) btn.style.display = 'none';
+      });
+      document.getElementById('adminStats').style.display = 'none';
+      // Onyesha tab ya Bidhaa kwa default kwa Staff
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('[data-tab="products"]').classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+      document.getElementById('tab-products').style.display = 'block';
+      const banner = document.createElement('div');
+      banner.style.cssText = 'background:#1a1040; border:1px solid #7b2ff7; border-radius:10px; padding:12px; margin-bottom:16px; color:#c9a3ff; font-size:13px;';
+      banner.textContent = '👤 Umeingia kama Staff — unaweza kuongeza/kuhariri bidhaa na kusimamia Requests pekee.';
+      document.querySelector('.admin-page').insertBefore(banner, document.querySelector('.admin-tabs'));
+    }
 
-  /* ============ LOAD ORDERS ============ */
-  async function loadOrders() {
-    try {
-      const res = await fetch('/api/admin/orders', { headers: { 'Authorization': token } });
-      const d = await res.json();
-      const orders = d.orders || [];
-      window.__orders = orders;
-
-      const recent = orders.slice(0, 5);
-      const tbody = document.getElementById('recentOrdersTable');
-      if (tbody) {
-        tbody.innerHTML = recent.length ? recent.map((o, i) => {
-          const statusMap = { successful: 'paid', pending_manual: 'pending', pending_clickpesa: 'pending', failed: 'failed' };
-          const labelMap = { successful: 'Paid', pending_manual: 'Pending', pending_clickpesa: 'Pending', failed: 'Failed' };
-          return '<tr><td>#' + ((o.tx_ref || '').slice(-6).toUpperCase() || i) + '</td><td>' + escAdmin(o.customer || 'Mteja') + '</td><td>' + escAdmin((o.items || [])[0]?.name || 'Bidhaa') + '</td><td>TSh ' + Number(o.amount || 0).toLocaleString() + '</td><td><span class="ad2-status ' + (statusMap[o.status] || 'pending') + '">' + (labelMap[o.status] || o.status) + '</span></td></tr>';
-        }).join('') : '<tr><td colspan="5" style="text-align:center;color:#6b7290">Hakuna oda.</td></tr>';
-      }
-
-      const list = document.getElementById('ordersList');
-      if (list) renderOrderFilters();
-    } catch(e) {}
-  }
-
-  function renderOrderFilters(){
-    const box=document.getElementById('ordersList'); if(!box)return;
-    const all=window.__orders||[]; const q=(document.getElementById('orderSearch')?.value||'').trim().toLowerCase(); const status=document.getElementById('orderStatus')?.value||'all';
-    const list=all.filter(o=>{
-      const text=[o.customer,o.email,o.tx_ref,o.manualTxRef,o.customerPhone,...(o.items||[]).map(i=>i.name)].join(' ').toLowerCase();
-      const okQ=!q||text.includes(q); const okS=status==='all'||o.status===status; return okQ&&okS;
-    });
-    if(!list.length){box.innerHTML='<p style="color:#6b7290">Hakuna orders.</p>';return;}
-    const label={successful:'Imekamilika',pending_manual:'Inasubiri Manual',pending_clickpesa:'Inasubiri',failed:'Imeshindwa',amount_mismatch:'Tatizo'};
-    const cls={successful:'success',pending_manual:'pending',pending_clickpesa:'pending',failed:'failed',amount_mismatch:'failed'};
-    box.innerHTML=list.map(o=>'<div class="admin-row"><div><strong>'+escAdmin(o.customer||'Mteja')+'</strong> <span class="payment-status-pill '+(cls[o.status]||'pending')+'">'+(label[o.status]||escAdmin(o.status))+'</span><br><small>'+escAdmin(o.email||'')+' '+(o.customerPhone?'• '+escAdmin(o.customerPhone):'')+'</small><br><small>'+new Date(o.date||Date.now()).toLocaleString()+' • TX: '+escAdmin(o.tx_ref||'—')+'</small><br><small>'+escAdmin((o.items||[]).map(i=>i.name+' × '+(i.qty||i.quantity||1)).join(', ')||'—')+'</small>'+(o.manualTxRef?'<br><small>Manual Ref: <b>'+escAdmin(o.manualTxRef)+'</b></small>':'')+'</div><div style="text-align:right"><div style="font-size:16px;font-weight:700;color:#a78bfa">'+Number(o.amount||0).toLocaleString()+' TZS</div>'+(o.status==='pending_manual'?'<div style="display:flex;gap:6px;margin-top:7px"><button class="btn-vote" onclick="confirmManualOrder(\''+escAdmin(o.tx_ref||'')+'\')">✅ Thibitisha</button><button class="btn-remove" onclick="rejectManualOrder(\''+escAdmin(o.tx_ref||'')+'\')">✕</button></div>':'')+'</div></div>').join('');
-  }
-
-  document.addEventListener('input', e => { if (e.target.id === 'orderSearch') renderOrderFilters(); });
-  document.addEventListener('change', e => { if (e.target.id === 'orderStatus') renderOrderFilters(); });
-
-  async function confirmManualOrder(txRef) {
-    if (!confirm('Umethibitisha malipo haya?')) return;
-    await fetch('/api/admin/orders/confirm', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ tx_ref: txRef }) });
-    loadOrders(); loadStats();
-  }
-  async function rejectManualOrder(txRef) {
-    if (!confirm('Futa ripoti hii?')) return;
-    await fetch('/api/admin/orders/reject', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ tx_ref: txRef }) });
-    loadOrders();
-  }
-  function exportOrdersCSV(){
-    const rows=window.__orders||[]; const head=['date','customer','email','phone','tx_ref','status','amount','items'];
-    const esc=v=>'"'+String(v??'').replaceAll('"','""')+'"'; const out=[head.join(',')].concat(rows.map(o=>[o.date,o.customer,o.email,o.customerPhone,o.tx_ref,o.status,o.amount,(o.items||[]).map(i=>i.name+' x '+(i.qty||i.quantity||1)).join(' | ')].map(esc).join(','))).join('\n');
-    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out],{type:'text/csv'}));a.download='lifeisgametz-orders.csv';a.click();URL.revokeObjectURL(a.href);
-  }
-
-  /* ============ LOAD CUSTOMERS ============ */
-  async function loadCustomers() {
-    try {
-      const res = await fetch('/api/admin/users', { headers: { 'Authorization': token } });
-      const d = await res.json();
-      const list = document.getElementById('customersList');
-      if (!list) return;
-      if (!d.success || !d.users.length) { list.innerHTML = '<p style="color:#6b7290">Hakuna wateja.</p>'; return; }
-      list.innerHTML = d.users.map(u => '<div class="admin-row"><div><strong>' + escAdmin(u.name) + '</strong> ' + (u.isAdmin ? '<span style="color:#ffd700">👑</span>' : '') + (u.isStaff ? '<span style="color:#67e8f9">👤</span>' : '') + '<small>' + escAdmin(u.email) + '</small></div>' + (!u.isAdmin ? '<button class="btn-vote" onclick="toggleStaff(\'' + u.email + '\',' + !u.isStaff + ')">' + (u.isStaff ? '➖ Ondoa Staff' : '➕ Fanya Staff') + '</button>' : '') + '</div>').join('');
-    } catch(e) {}
-  }
-  async function toggleStaff(email, makeStaff) {
-    await fetch('/api/admin/users/staff', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, makeStaff }) });
-    loadCustomers();
-  }
-
-  /* ============ PAYMENT STATUS ============ */
-  async function loadPaymentStatus() {
-    try {
-      const res = await fetch('/api/admin/payment-status', { headers: { 'Authorization': token } });
-      const d = await res.json();
-      const badge = document.getElementById('paymentEnvBadge'); if (badge) badge.textContent = d.environment || 'UNKNOWN';
-      const box = document.getElementById('paymentAutoStatus');
-      const mno = document.getElementById('paymentMnoStatus');
-      if (box) { box.className = 'storage-status ' + (d.configured ? 'storage-ok' : 'storage-warn'); box.innerHTML = d.configured ? '✅ <b>ClickPesa configured</b>' : '⚠️ <b>Haijasanidiwa</b><br><small>Weka CLICKPESA_CLIENT_ID na CLICKPESA_API_KEY.</small>'; }
-      if (mno) mno.textContent = d.configured ? 'READY' : 'SETUP';
-    } catch(e) {}
-  }
-
-  /* ============ PUBLIC CHAT ============ */
-  async function loadPublicChatAdmin() {
-    const box = document.getElementById('publicChatAdminList'); if (!box) return;
-    try {
-      const r = await fetch('/api/public-chat/messages'); const d = await r.json(); const rows = d.messages || [];
-      box.innerHTML = rows.length ? rows.slice().reverse().map(x => '<div class="admin-row"><div><b>' + escAdmin(x.name) + '</b><br><small>' + escAdmin(x.message) + '</small><br><small>' + new Date(x.time).toLocaleString() + '</small></div><button class="btn-remove" onclick="deletePublicChat(\'' + escAdmin(x.id) + '\')">🗑️</button></div>').join('') : '<p style="color:#6b7290">Hakuna ujumbe.</p>';
-    } catch(e) {}
-  }
-  async function deletePublicChat(id) {
-    if (!confirm('Ondoa ujumbe?')) return;
-    await fetch('/api/admin/public-chat/' + encodeURIComponent(id), { method: 'DELETE', headers: { 'Authorization': token } });
-    loadPublicChatAdmin();
-  }
-
-  /* ============ HERO STUDIO ============ */
-  async function loadHeroStudio() {
-    try {
-      const r = await fetch('/api/products'); const d = await r.json(); const products = d.products || []; window.__heroProducts = products;
-      const eligible = products.filter(p => p.section === 'shop');
-      const withTrailer = eligible.filter(p => p.trailerUrl);
-      const count = document.getElementById('heroCount'); if (count) count.textContent = withTrailer.length + ' LIVE';
-      const list = document.getElementById('heroProductsList');
-      if (list) list.innerHTML = eligible.length ? eligible.map(p => '<div class="hero-product-row"><div style="display:flex;gap:10px;align-items:center;min-width:0">' + (p.imageUrl ? '<img src="' + escAdmin(p.imageUrl) + '" onerror="this.style.display=\'none\'">' : '<span style="font-size:30px">' + escAdmin(p.emoji || '🎮') + '</span>') + '<div class="meta"><b>' + escAdmin(p.name) + '</b><small>' + Number(p.price || 0).toLocaleString() + ' TZS • ' + (p.trailerUrl ? '<span class="has-trailer">🎬 Trailer</span>' : 'No trailer') + '</small></div></div><button class="btn-vote" onclick="selectHeroProduct(\'' + escAdmin(p.id) + '\')">' + (p.trailerUrl ? '✏️ Edit' : '➕ Add') + '</button></div>').join('') : '<p style="color:#6b7290">Ongeza product ya Shop kwanza.</p>';
-      const sel = document.getElementById('heroProductSelect');
-      if (sel) sel.innerHTML = '<option value="">Chagua product...</option>' + eligible.map(p => '<option value="' + escAdmin(p.id) + '">' + escAdmin(p.name) + '</option>').join('');
-    } catch(e) {}
-  }
-  function selectHeroProduct(id) {
-    const p = (window.__heroProducts || []).find(x => x.id === id); if (!p) return;
-    document.getElementById('heroProductSelect').value = id;
-    document.getElementById('heroTrailerUrl').value = p.trailerUrl || '';
-    document.getElementById('heroMsg').textContent = 'Bei: ' + Number(p.price || 0).toLocaleString() + ' TZS';
-  }
-  async function saveHeroTrailer(remove) {
-    const id = document.getElementById('heroProductSelect').value; const msg = document.getElementById('heroMsg');
-    if (!id) { msg.textContent = '❌ Chagua game.'; return; }
-    const url = remove ? '' : document.getElementById('heroTrailerUrl').value.trim();
-    if (!remove && !url) { msg.textContent = '❌ Weka URL.'; return; }
-    try {
-      const r = await fetch('/api/products/' + encodeURIComponent(id), { method: 'PUT', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ trailerUrl: url }) });
-      const d = await r.json();
-      msg.textContent = r.ok ? (remove ? '✅ Imeondolewa.' : '✅ Imehifadhiwa.') : '❌ ' + (d.error || 'Hitilafu');
-      if (r.ok) { loadHeroStudio(); loadProducts(); }
-    } catch(e) { msg.textContent = '❌ Hitilafu.'; }
-  }
-  document.getElementById('saveHeroTrailerBtn').addEventListener('click', () => saveHeroTrailer(false));
-  document.getElementById('removeHeroTrailerBtn').addEventListener('click', () => { if (confirm('Ondoa trailer?')) saveHeroTrailer(true); });
-  document.getElementById('heroProductSelect').addEventListener('change', e => selectHeroProduct(e.target.value));
-
-  /* ============ PRODUCTS CRUD ============ */
-  function updateFormFields() {
-    const section = document.getElementById('pSection').value;
-    document.getElementById('fieldsShop').style.display = section === 'shop' ? 'block' : 'none';
-    document.getElementById('fieldsSteam').style.display = section === 'steam' ? 'block' : 'none';
-    document.getElementById('fieldsEfootball').style.display = section === 'efootball' ? 'block' : 'none';
-  }
-  document.getElementById('pSection').addEventListener('change', updateFormFields);
-
-  function editProduct(id) {
-    const p = (window.__products || []).find(x => x.id === id); if (!p) return;
-    document.getElementById('pId').value = p.id;
-    document.getElementById('pName').value = p.name || '';
-    document.getElementById('pType').value = p.type || '';
-    document.getElementById('pPrice').value = p.price || '';
-    document.getElementById('pEmoji').value = p.emoji || '';
-    document.getElementById('pDesc').value = p.desc || '';
-    document.getElementById('pImage').value = p.imageUrl || '';
-    document.getElementById('pTrailer').value = p.trailerUrl || '';
-    document.getElementById('pCategory').value = p.category || 'Zote';
-    document.getElementById('pSection').value = p.section || 'shop';
-    document.getElementById('pDownload').value = p.downloadLink || '';
-    document.getElementById('pAccUserSteam').value = p.section === 'steam' ? (p.accountUser || '') : '';
-    document.getElementById('pAccPassSteam').value = p.section === 'steam' ? (p.accountPassword || '') : '';
-    document.getElementById('pAccUserEf').value = p.section === 'efootball' ? (p.accountUser || '') : '';
-    document.getElementById('pAccPassEf').value = p.section === 'efootball' ? (p.accountPassword || '') : '';
-    updateFormFields();
-    document.getElementById('productFormTitle').textContent = '✏️ Hariri: ' + p.name;
-    document.getElementById('addProductBtn').textContent = '💾 Sasisha Bidhaa';
-    document.getElementById('cancelEditBtn').style.display = 'inline-block';
-  }
-
-  function resetProductForm() {
-    document.getElementById('pId').value = '';
-    ['pName','pType','pPrice','pEmoji','pDesc','pImage','pTrailer','pDownload','pAccUserSteam','pAccPassSteam','pAccUserEf','pAccPassEf'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-    document.getElementById('pCategory').value = 'Zote';
-    document.getElementById('pSection').value = 'shop';
-    updateFormFields();
-    document.getElementById('productFormTitle').textContent = '➕ Ongeza Bidhaa Mpya';
-    document.getElementById('addProductBtn').textContent = '➕ Ongeza';
-    document.getElementById('cancelEditBtn').style.display = 'none';
-  }
-  document.getElementById('cancelEditBtn').addEventListener('click', resetProductForm);
-
-  async function deleteProduct(id) {
-    if (!confirm('Futa bidhaa?')) return;
-    await fetch('/api/products/' + id, { method: 'DELETE', headers: { 'Authorization': token } });
-    loadProducts(); loadStats();
-  }
-
-  document.getElementById('addProductBtn').addEventListener('click', async () => {
-    const editId = document.getElementById('pId').value;
-    const section = document.getElementById('pSection').value;
-    let accountUser = '', accountPassword = '';
-    if (section === 'steam') { accountUser = document.getElementById('pAccUserSteam').value.trim(); accountPassword = document.getElementById('pAccPassSteam').value.trim(); }
-    else if (section === 'efootball') { accountUser = document.getElementById('pAccUserEf').value.trim(); accountPassword = document.getElementById('pAccPassEf').value.trim(); }
-    const body = {
-      name: document.getElementById('pName').value.trim(),
-      type: section === 'steam' ? 'Steam Account' : section === 'efootball' ? 'eFootball Kikosi' : document.getElementById('pType').value.trim(),
-      price: document.getElementById('pPrice').value,
-      emoji: section === 'steam' ? '👤' : section === 'efootball' ? '⚽' : document.getElementById('pEmoji').value.trim() || '🎮',
-      desc: section === 'shop' ? document.getElementById('pDesc').value.trim() : '',
-      imageUrl: document.getElementById('pImage').value.trim(),
-      trailerUrl: section === 'shop' ? document.getElementById('pTrailer').value.trim() : '',
-      category: section === 'shop' ? document.getElementById('pCategory').value : 'Zote',
-      section, downloadLink: section === 'shop' ? document.getElementById('pDownload').value.trim() : '',
-      accountUser, accountPassword
-    };
-    const res = await fetch(editId ? '/api/products/' + editId : '/api/products', {
-      method: editId ? 'PUT' : 'POST',
-      headers: { 'Authorization': token, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const d = await res.json();
-    const msg = document.getElementById('productMsg');
-    msg.textContent = d.success ? (editId ? '✅ Imesasishwa!' : '✅ Imeongezwa!') : '❌ ' + (d.error || 'Hitilafu');
-    if (d.success) { resetProductForm(); loadProducts(); loadStats(); }
-  });
-
-  /* ============ REQUESTS ============ */
-  async function loadAdminRequests() {
-    const box = document.getElementById('adminRequestsList'); if (!box) return;
-    try {
-      const res = await fetch('/api/requests');
-      const data = await res.json();
-      if (!data.success || !data.requests.length) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna ombi bado.</p>'; return; }
-      box.innerHTML = data.requests.map(r => '<div class="admin-row"><div><strong>' + escAdmin(r.name) + '</strong> — <span style="color:#a78bfa">' + r.votes + ' kura</span></div><div style="display:flex;gap:6px"><button class="btn-vote" onclick="addRequestedGame(\'' + r.id + '\', \'' + r.name.replace(/\'/g, "\\'") + '\')">➕ Ongeza</button><button class="btn-remove" onclick="deleteRequest(\'' + r.id + '\')">🗑️</button></div></div>').join('');
-    } catch(e) {}
-  }
-  async function addRequestedGame(id, name) {
-    if (!confirm('Ongeza "' + name + '" kwenye duka?')) return;
-    const res = await fetch('/api/products', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ name, type: 'Game Key • PC', price: 40000, emoji: '🎮', desc: 'Imeongezwa kutokana na ombi la wateja!' }) });
-    const d = await res.json();
-    if (d.success) { alert('✅ Imeongezwa!'); await fetch('/api/requests/' + id, { method: 'DELETE', headers: { 'Authorization': token } }); loadAdminRequests(); loadProducts(); loadStats(); }
-    else alert('❌ ' + (d.error || 'Hitilafu'));
-  }
-  async function deleteRequest(id) { if (!confirm('Futa ombi?')) return; await fetch('/api/requests/' + id, { method: 'DELETE', headers: { 'Authorization': token } }); loadAdminRequests(); }
-
-  /* ============ MARKETPLACE ============ */
-  async function loadMarketplace() {
-    const box = document.getElementById('marketplaceList'); if (!box) return;
-    try {
-      const res = await fetch('/api/marketplace'); const data = await res.json();
-      if (!data.success || !data.listings.length) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna biashara bado.</p>'; return; }
-      box.innerHTML = data.listings.slice().reverse().map(b => '<div class="admin-row"><div><strong>' + escAdmin(b.businessName) + '</strong> — <small style="color:#67e8f9;">' + escAdmin(b.category) + '</small><br><small>' + escAdmin(b.contact) + '</small></div><button class="btn-remove" onclick="deleteBiz(\'' + b.id + '\')">🗑️</button></div>').join('');
-    } catch(e) {}
-  }
-  document.getElementById('addBizBtn').addEventListener('click', async () => {
-    const body = { businessName: document.getElementById('bizName').value.trim(), category: document.getElementById('bizCategory').value.trim(), description: document.getElementById('bizDesc').value.trim(), imageUrl: document.getElementById('bizImage').value.trim(), contact: document.getElementById('bizContact').value.trim() };
-    const res = await fetch('/api/marketplace', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    const data = await res.json();
-    const msg = document.getElementById('bizMsg');
-    if (data.success) { msg.textContent = '✅ Imeongezwa!'; ['bizName','bizCategory','bizDesc','bizImage','bizContact'].forEach(id => document.getElementById(id).value = ''); loadMarketplace(); }
-    else msg.textContent = '❌ ' + (data.error || 'Hitilafu');
-  });
-  async function deleteBiz(id) { if (!confirm('Futa biashara?')) return; await fetch('/api/marketplace/' + id, { method: 'DELETE', headers: { 'Authorization': token } }); loadMarketplace(); }
-
-  /* ============ COUPONS ============ */
-  async function loadCoupons() {
-    const box = document.getElementById('couponsList'); if (!box) return;
-    try {
-      const res = await fetch('/api/admin/coupons', { headers: { 'Authorization': token } });
-      const data = await res.json();
-      const coupons = Object.values(data.coupons || {});
-      if (!coupons.length) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna kodi bado.</p>'; return; }
-      box.innerHTML = coupons.map(c => '<div class="admin-row"><div><strong>' + escAdmin(c.code) + '</strong> — <span style="color:#67e8f9">' + c.percentOff + '%</span><br><small>Matumizi: ' + c.uses + '</small></div><button class="btn-remove" onclick="deleteCoupon(\'' + c.code + '\')">🗑️</button></div>').join('');
-    } catch(e) {}
-  }
-  document.getElementById('addCouponBtn').addEventListener('click', async () => {
-    const body = { code: document.getElementById('couponCode').value.trim(), percentOff: document.getElementById('couponPercent').value, maxUses: document.getElementById('couponMax').value };
-    const res = await fetch('/api/admin/coupons', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    const data = await res.json();
-    const msg = document.getElementById('couponMsg');
-    if (data.success) { msg.textContent = '✅ Imeundwa!'; ['couponCode','couponPercent','couponMax'].forEach(id => document.getElementById(id).value = ''); loadCoupons(); }
-    else msg.textContent = '❌ ' + (data.error || 'Hitilafu');
-  });
-  async function deleteCoupon(code) { if (!confirm('Futa kodi?')) return; await fetch('/api/admin/coupons/' + code, { method: 'DELETE', headers: { 'Authorization': token } }); loadCoupons(); }
-
-  /* ============ SECURITY ============ */
-  async function loadSecurityStats() {
-    try {
-      const res = await fetch('/api/security/stats', { headers: { 'Authorization': token } });
+    async function loadStats() {
+      if (currentRole !== 'admin') return;
+      const res = await fetch('/api/admin/stats', { headers: { 'Authorization': token } });
       const data = await res.json();
       if (!data.success) return;
       const s = data.stats;
-      const cards = document.querySelectorAll('#securityStats b');
-      if (cards[0]) cards[0].textContent = s.totalEvents;
-      if (cards[1]) cards[1].textContent = s.high;
-      if (cards[2]) cards[2].textContent = s.medium;
-      if (cards[3]) cards[3].textContent = s.blockedIPs;
-      if (cards[4]) cards[4].textContent = s.low;
+      document.getElementById('heroRevenue').textContent = s.total.toLocaleString() + ' TZS';
+      document.getElementById('heroOrdersCount').textContent = s.orders + ' mauzo';
+      document.getElementById('heroCustomersCount').textContent = s.customers + ' wateja';
+      document.getElementById('miniOrders').textContent = s.orders;
+      document.getElementById('miniProducts').textContent = s.products;
+    }
 
-      const box = document.getElementById('blockedList');
-      if (box) {
-        const ips = Object.keys(data.blocked || {});
-        if (!ips.length) box.innerHTML = '<p style="color:#8f8faa;">Hakuna IP zilizofungwa.</p>';
-        else box.innerHTML = ips.map(ip => '<div class="admin-row"><div><strong>' + ip + '</strong><br><small>Itafunguliwa: ' + new Date(data.blocked[ip]).toLocaleString() + '</small></div><button class="btn-vote" onclick="unblockIP(\'' + ip + '\')">🔓 Fungua</button></div>').join('');
-      }
-    } catch(e) {}
-  }
-  async function loadSecurityEvents() {
-    const box = document.getElementById('securityEvents'); if (!box) return;
-    try {
-      const res = await fetch('/api/security/events', { headers: { 'Authorization': token } });
+    function setDashDate() {
+      const now = new Date();
+      const opts = { day: '2-digit', month: 'short', year: 'numeric' };
+      document.getElementById('dashDate').textContent = '📅 ' + now.toLocaleDateString('sw', opts);
+    }
+
+    async function loadAnalytics() {
+      if (currentRole !== 'admin') return;
+      try {
+        const res = await fetch('/api/admin/analytics', { headers: { 'Authorization': token } });
+        const data = await res.json();
+        if (!data.success) return;
+
+        const chart = document.getElementById('salesChart');
+        const max = Math.max(1, ...data.days.map(d => d.total));
+        chart.innerHTML = data.days.map(d => `
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%;" title="${d.label}: ${d.total.toLocaleString()} TZS (${d.count} oda)">
+            <div style="width:100%; background:${d.total ? 'linear-gradient(180deg,#9a5bff,#7b2ff7)' : '#1a1a30'}; border-radius:4px 4px 0 0; height:${Math.max(3, (d.total / max) * 100)}%;"></div>
+            <span style="font-size:9px; color:#8f8faa; margin-top:4px; writing-mode:vertical-rl;">${d.label}</span>
+          </div>`).join('');
+
+        const topBox = document.getElementById('topProducts');
+        if (!data.topProducts.length) { topBox.innerHTML = '<span style="color:#8f8faa;">Hakuna mauzo bado.</span>'; return; }
+        topBox.innerHTML = '<strong>🔥 Zinazouzwa Zaidi:</strong> ' + data.topProducts.map(p => p.name + ' (' + p.qty + ')').join(' • ');
+      } catch (e) {}
+    }
+
+    document.getElementById('backupLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = '/api/admin/backup?token=' + encodeURIComponent(token);
+    });
+
+    async function loadOrdersLegacy() {
+      if (currentRole !== 'admin') return;
+      const res = await fetch('/api/admin/orders', { headers: { 'Authorization': token } });
       const data = await res.json();
-      if (!data.success || !data.events.length) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna matukio. Website yako iko salama! ✅</p>'; return; }
-      const colors = { HIGH: '#fca5a5', MEDIUM: '#fcd34d', LOW: '#67e8f9' };
-      box.innerHTML = data.events.slice(0, 50).map(e => '<div class="admin-row"><div><strong style="color:' + (colors[e.severity] || '#fff') + '">' + escAdmin(e.type) + '</strong> [' + e.severity + ']<br><small>' + escAdmin(e.details) + '</small><br><small>' + new Date(e.time).toLocaleString() + ' • IP: ' + escAdmin(e.ip) + '</small></div></div>').join('');
-    } catch(e) {}
-  }
-  document.getElementById('blockIpBtn').addEventListener('click', async () => {
-    const ip = document.getElementById('blockIpInput').value.trim();
-    const msg = document.getElementById('blockIpMsg');
-    if (!ip) { msg.textContent = '❌ Andika IP.'; return; }
-    const res = await fetch('/api/security/block', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ ip, minutes: 60 }) });
-    const data = await res.json();
-    msg.textContent = data.message || data.error || 'Hitilafu';
-    document.getElementById('blockIpInput').value = '';
-    loadSecurityStats(); loadSecurityEvents();
-  });
-  async function unblockIP(ip) { if (!confirm('Fungua IP ' + ip + '?')) return; await fetch('/api/security/unblock', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ ip }) }); loadSecurityStats(); }
-  document.getElementById('genReportBtn').addEventListener('click', async () => {
-    const box = document.getElementById('securityReport'); box.textContent = '⏳ Inatengeneza...';
-    try { const res = await fetch('/api/security/report', { headers: { 'Authorization': token } }); const data = await res.json(); box.textContent = data.report || 'Hitilafu'; } catch(e) { box.textContent = '❌ Hitilafu.'; }
-  });
+      const box = document.getElementById('ordersList');
+      if (!data.success || data.orders.length === 0) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna mauzo bado.</p>'; return; }
+      const dotColor = { successful: '#00ff88', pending_manual: '#ffb020', pending_clickpesa: '#ffb020', failed: '#ff3d71', amount_mismatch: '#ff3d71' };
+      const statusLabel = { successful: 'Imekamilika', pending_manual: 'Inasubiri (Manual)', pending_clickpesa: 'Inasubiri', failed: 'Imeshindwa', amount_mismatch: 'Tatizo la Kiasi' };
+      box.innerHTML = data.orders.map(o => `
+        <div class="admin-row">
+          <div>
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${dotColor[o.status] || '#8f8faa'}; margin-right:6px;"></span>
+            <strong>${o.customer || 'Mteja'}</strong>
+            <span style="color:${dotColor[o.status] || '#8f8faa'}; font-size:12px;"> ${statusLabel[o.status] || o.status}</span>
+            <br>
+            <small>${new Date(o.date).toLocaleString()}</small><br>
+            <small>${(o.items || []).map(i => i.name + ' × ' + i.qty).join(', ') || '—'}</small>
+            ${o.manualTxRef ? '<br><small>Tx Ref ya mteja: <strong>' + o.manualTxRef + '</strong>' + (o.customerPhone ? ' • ' + o.customerPhone : '') + '</small>' : ''}
+          </div>
+          <div style="text-align:right;">
+            <div class="admin-amount">${Number(o.amount).toLocaleString()} TZS</div>
+            ${o.status === 'pending_manual' ? `
+              <div style="display:flex; gap:6px; margin-top:6px;">
+                <button class="btn-vote" onclick="confirmManualOrder('${o.tx_ref}')">✅ Thibitisha</button>
+                <button class="btn-remove" onclick="rejectManualOrder('${o.tx_ref}')">🗑️</button>
+              </div>` : ''}
+          </div>
+        </div>`).join('');
+    }
 
-  /* ============ AI ============ */
-  document.getElementById('aiSendBtn').addEventListener('click', async () => {
-    const command = document.getElementById('aiCommand').value.trim();
-    const replyBox = document.getElementById('aiReply');
-    if (!command) return;
-    replyBox.textContent = '⏳ Inafanyika...';
-    try {
-      const res = await fetch('/api/ai/admin', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ command }) });
+    async function confirmManualOrder(txRef) {
+      if (!confirm('Umehakikisha umepokea pesa hii kweli? Hii itamruhusu mteja kupata download link.')) return;
+      const res = await fetch('/api/admin/orders/confirm', {
+        method: 'POST',
+        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tx_ref: txRef })
+      });
       const data = await res.json();
-      replyBox.textContent = data.reply || (data.error || 'Hitilafu');
-      document.getElementById('aiCommand').value = '';
-      if (/(ongeza|futa)/i.test(command)) { loadProducts(); loadStats(); }
-    } catch(e) { replyBox.textContent = '❌ Hitilafu.'; }
-  });
+      alert(data.message || data.error || 'Hitilafu');
+      loadOrders(); loadStats();
+    }
 
-  async function runBuilder(execute) {
-    const command = document.getElementById('builderCommand').value.trim();
-    const box = document.getElementById('builderResult');
-    if (!command) { box.textContent = 'Andika amri.'; return; }
-    box.textContent = '⏳ Claude anapanga...';
-    try {
-      const r = await fetch('/api/admin/ai-builder', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ command, execute }) });
-      const d = await r.json();
-      box.textContent = r.ok ? JSON.stringify(d, null, 2) : '❌ ' + (d.error || 'Hitilafu');
-      if (execute && r.ok) { loadProducts(); loadStats(); loadMediaData(); }
-    } catch(e) { box.textContent = '❌ Hitilafu ya mtandao.'; }
-  }
-  document.getElementById('builderPreview').addEventListener('click', () => runBuilder(false));
-  document.getElementById('builderExecute').addEventListener('click', () => { if (confirm('Tekeleza?')) runBuilder(true); });
+    async function rejectManualOrder(txRef) {
+      if (!confirm('Futa ripoti hii ya malipo (haikuthibitika)?')) return;
+      await fetch('/api/admin/orders/reject', {
+        method: 'POST',
+        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tx_ref: txRef })
+      });
+      loadOrders(); loadStats();
+    }
 
-  /* ============ MEDIA (Live + Movies + Courses) ============ */
-  async function loadMediaData() {
-    try {
-      const [lr, mr, cr] = await Promise.all([fetch('/api/live-streams'), fetch('/api/movies'), fetch('/api/courses')]);
-      const l = await lr.json(), m = await mr.json(), c = await cr.json();
-      const lBox = document.getElementById('liveList');
-      if (lBox) lBox.innerHTML = (l.streams || []).map(x => '<div class="admin-row" style="flex-wrap:wrap;gap:8px"><div><b>' + escAdmin(x.title) + '</b><small>' + escAdmin(x.homeTeam || '') + ' vs ' + escAdmin(x.awayTeam || '') + ' • ' + x.status + '</small></div><span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input id="ls_h_' + x.id + '" type="number" min="0" max="99" value="' + (x.homeScore ?? '') + '" placeholder="H" style="width:56px"><input id="ls_a_' + x.id + '" type="number" min="0" max="99" value="' + (x.awayScore ?? '') + '" placeholder="A" style="width:56px"><input id="ls_m_' + x.id + '" value="' + (x.minute || '') + '" placeholder="Dk" style="width:56px"><select id="ls_s_' + x.id + '" style="width:auto"><option' + (x.status === 'LIVE' ? ' selected' : '') + '>LIVE</option><option' + (x.status === 'UPCOMING' ? ' selected' : '') + '>UPCOMING</option><option' + (x.status === 'ENDED' ? ' selected' : '') + '>ENDED</option></select><button class="btn-vote" title="Hifadhi" onclick="saveLiveScore(\'' + x.id + '\')">💾</button><button class="btn-vote" onclick="deleteLive(\'' + x.id + '\')">🗑️</button></span></div>').join('') || '<p style="color:#8f8faa">Hakuna live match.</p>';
-      const mBox = document.getElementById('movieList');
-      if (mBox) mBox.innerHTML = (m.movies || []).map(x => '<div class="admin-row"><b>🎬 ' + escAdmin(x.title) + '</b><button class="btn-vote" onclick="deleteMovie(\'' + x.id + '\')">🗑️</button></div>').join('') || '<p style="color:#8f8faa">Hakuna movie.</p>';
-      const cBox = document.getElementById('courseList');
-      if (cBox) cBox.innerHTML = (c.courses || []).map(x => '<div class="admin-row"><div><b>🎓 ' + escAdmin(x.name) + '</b><small>' + ((x.videos || []).length) + ' video(s)</small></div><label class="btn-vote" style="cursor:pointer">⬆️ Video<input type="file" accept="video/mp4,video/webm,video/quicktime" hidden onchange="uploadCourseVideo(\'' + x.id + '\',this)"></label></div>').join('') || '<p style="color:#8f8faa">Hakuna course.</p>';
-    } catch(e) {}
-  }
-  async function saveLiveScore(id) {
-    const g = k => document.getElementById('ls_' + k + '_' + id).value;
-    const r = await fetch('/api/admin/live-streams/' + id + '/score', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ homeScore: g('h'), awayScore: g('a'), minute: g('m'), status: g('s') }) });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok) alert(d.error || 'Hitilafu'); else loadMediaData();
-  }
-  async function deleteLive(id) { if (!confirm('Futa match?')) return; await fetch('/api/admin/live-streams/' + id, { method: 'DELETE', headers: { 'Authorization': token } }); loadMediaData(); }
-  async function deleteMovie(id) { if (!confirm('Futa movie?')) return; await fetch('/api/admin/movies/' + id, { method: 'DELETE', headers: { 'Authorization': token } }); loadMediaData(); }
-  document.getElementById('addLiveBtn').addEventListener('click', async () => {
-    const body = { title: liveTitle.value, league: liveLeague.value, homeTeam: homeTeam.value, awayTeam: awayTeam.value, status: liveStatus.value, homeScore: liveHomeScore.value, awayScore: liveAwayScore.value, minute: liveMinute.value, streamUrl: streamUrl.value, videoUrl: liveVideoUrl.value, startTime: startTime.value, description: liveDesc.value };
-    const r = await fetch('/api/admin/live-streams', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    const d = await r.json();
-    if (!r.ok) alert(d.error || 'Hitilafu'); else { alert('✅ Match imewekwa.'); loadMediaData(); }
-  });
-  document.getElementById('uploadMovieBtn').addEventListener('click', async () => {
-    const f = movieFile.files[0]; const remote = movieVideoUrl.value.trim();
-    if (!f && !remote) return alert('Chagua movie file au weka URL.');
-    if (f && f.size > 1024 * 1024 * 1024) return alert('Video imezidi 1GB.');
-    const status = document.getElementById('movieUploadStatus'); status.textContent = '⏳ Inapakia...';
-    const fd = new FormData();
-    if (f) fd.append('video', f); if (remote) fd.append('videoUrl', remote);
-    fd.append('title', movieTitle.value); fd.append('genre', movieGenre.value); fd.append('year', movieYear.value); fd.append('poster', moviePoster.value); fd.append('description', movieDesc.value);
-    try {
-      const r = await fetch('/api/admin/movies/upload', { method: 'POST', headers: { 'Authorization': token }, body: fd });
-      const d = await r.json().catch(() => ({ error: 'Server haikutoa JSON' }));
-      if (!r.ok) throw new Error(d.error || 'Upload imekataa');
-      status.textContent = '✅ Movie imehifadhiwa — ' + (d.movie?.storage || 'storage');
-      movieFile.value = ''; movieVideoUrl.value = ''; loadMediaData();
-    } catch(e) { status.textContent = '❌ ' + e.message; }
-  });
-  document.getElementById('addCourseBtn').addEventListener('click', async () => {
-    const body = { name: courseName.value, level: courseLevel.value, price: coursePrice.value, thumbnail: courseThumb.value, description: courseDesc.value };
-    const r = await fetch('/api/admin/courses', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    const d = await r.json();
-    alert(r.ok ? '✅ Course imeundwa.' : ('❌ ' + (d.error || 'Hitilafu')));
-    if (r.ok) { courseName.value = ''; courseDesc.value = ''; loadMediaData(); }
-  });
-  async function uploadCourseVideo(courseId, input) {
-    const f = input.files[0]; if (!f) return;
-    const fd = new FormData(); fd.append('video', f); fd.append('title', f.name);
-    const r = await fetch('/api/admin/courses/' + courseId + '/videos/upload', { method: 'POST', headers: { 'Authorization': token }, body: fd });
-    const d = await r.json();
-    alert(r.ok ? '✅ Video imepakiwa.' : ('❌ ' + (d.error || 'Hitilafu')));
-    loadMediaData();
-  }
 
-  /* ============ COMMAND CENTER ============ */
-  async function loadCommandCenter() {
-    try {
-      const [or, sr] = await Promise.all([fetch('/api/admin/overview', { headers: { 'Authorization': token } }), fetch('/api/admin/storage-status', { headers: { 'Authorization': token } })]);
-      const d = await or.json(); const st = await sr.json();
-      if (d.success) {
-        document.getElementById('cmRevenue').textContent = Number(d.revenue || 0).toLocaleString() + ' TZS';
-        document.getElementById('cmPaid').textContent = d.paidOrders || 0;
-        document.getElementById('cmPending').textContent = d.pendingOrders || 0;
-        document.getElementById('cmCustomers').textContent = d.customers || 0;
-      }
-      const box = document.getElementById('storageStatus');
-      if (box) { box.className = 'storage-status ' + (st.persistent ? 'storage-ok' : 'storage-warn'); box.innerHTML = st.persistent ? '☁️ <b>Persistent storage ACTIVE</b>' : '⚠️ <b>Haijawashwa</b>'; }
-    } catch(e) {}
-  }
-
-  /* ============ HELPERS ============ */
-  function escAdmin(x) { const d = document.createElement('div'); d.textContent = x == null ? '' : String(x); return d.innerHTML; }
-
-  function adminLogout() {
-    if (!confirm('Toka kwenye admin panel?')) return;
-    fetch('/api/auth/logout', { method: 'POST', headers: { 'Authorization': token } });
-    localStorage.removeItem('gamehubToken'); localStorage.removeItem('gamehubUser');
-    location.href = 'index.html';
-  }
-
-  /* ============ INIT ============ */
-  (async () => {
-    const ok = await checkAdmin();
-    if (!ok) return;
-    setDateTime(); setInterval(setDateTime, 30000);
-    loadStats(); loadOverview(); loadAnalytics(); loadProducts(); loadOrders(); loadPaymentStatus(); loadCommandCenter();
-  })();
-</script>
-
-<script src="zoneplay-shell.js"></script>
-</body>
-        </html>
+    // ===== PROFESSIONAL DASHBOARD / ORDERS =====
+    function escAdmin(x) { const d=document.createElement('div'); d.textContent=x==null?'':String(x); return d.innerHTML; }
+    async function loadCommandCenter() {
+      if (currentRole !== 'admin') return;
+      try
