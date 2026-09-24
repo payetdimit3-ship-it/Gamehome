@@ -11,21 +11,9 @@
     * { box-sizing: border-box; }
     body { margin: 0; background: #0a0d1a; color: #e8eaff; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
 
-    /* ⚠️ FICHA TOPBAR NA BOTTOM NAV YA ZONEPLAY-SHELL.JS */
-    /* Hii inazuia kurudiwa kwa search/cart/profile */
-    body > .zp-topbar,
-    body > .zp-bottom-nav,
-    body > .zp-navbar,
-    body > .zp-header,
-    body > .zp-topnav,
-    body > .zp-mobile-nav,
-    body > .topbar,
-    body > .bottom-nav,
-    .zp-shell-topbar,
-    .zp-shell-bottomnav,
-    .zp-appbar,
-    .zp-bottombar,
-    .zp-floating-nav {
+    /* ⚠️ FICHA KILA KITU KILICHOPO JUU YA .hm2-wrap */
+    /* Hii inaficha topbar/bottomnav ya zoneplay-shell.js na kuruhusu yetu pekee */
+    body > *:not(.hm2-wrap):not(.hm2-mobile-toggle):not(script):not(style):not(link):not(noscript) {
       display: none !important;
     }
 
@@ -591,4 +579,4 @@
 })();
 </script>
 </body>
-              </html>
+</html>
