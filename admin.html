@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel — LIFEISGAMETZ</title>
+  <title>Admin Panel — GameHub</title>
   <link rel="stylesheet" href="style.css">
 <style>
 .admin-command-hero{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:24px;border-radius:20px;background:radial-gradient(circle at 80% 10%,rgba(123,47,247,.35),transparent 35%),linear-gradient(135deg,#111327,#1b1038);border:1px solid #3a2870;margin-bottom:18px}.eyebrow{font-size:11px;letter-spacing:2px;color:#a96bff;font-weight:800}.admin-command-hero h2{font-size:28px;margin:7px 0}.admin-command-hero p,.hint{color:#9997b5}.command-actions{display:flex;gap:8px;flex-wrap:wrap}.command-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}.command-grid.two{grid-template-columns:1fr 1.4fr}.command-card{background:#0d0f1d;border:1px solid #272942;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:6px}.command-card span{font-size:22px}.command-card b{font-size:22px}.command-card small{color:#85839e}.agent-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.agent-mini-grid span{background:#101326;border:1px solid #252946;border-radius:10px;padding:9px;font-size:12px}.agent-mini-grid i{display:block;color:#53e38b;font-style:normal;font-size:9px;margin-top:4px}.quick-admin-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.quick-admin-grid button{background:#14162a;color:#fff;border:1px solid #302e4e;border-radius:10px;padding:12px;cursor:pointer}.storage-status{padding:13px;border-radius:12px;background:#0a0c16;border:1px solid #292b40}.storage-ok{color:#4ee38c}.storage-warn{color:#ffbf69}.order-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.order-toolbar input,.order-toolbar select{background:#0b0d18;color:#fff;border:1px solid #2a2d45;border-radius:10px;padding:11px;min-width:190px}.payment-status-pill{padding:4px 9px;border-radius:99px;font-size:11px;font-weight:700}.payment-status-pill.success{background:#123b28;color:#5df29a}.payment-status-pill.pending{background:#3b2b12;color:#ffd36a}.payment-status-pill.failed{background:#3b1620;color:#ff7891}@media(max-width:900px){.command-grid,.command-grid.two{grid-template-columns:1fr 1fr}.quick-admin-grid{grid-template-columns:repeat(3,1fr)}.agent-mini-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.admin-command-hero{flex-direction:column;align-items:flex-start}.command-grid,.command-grid.two{grid-template-columns:1fr}.quick-admin-grid{grid-template-columns:1fr 1fr}.agent-mini-grid{grid-template-columns:1fr}.order-toolbar>*{width:100%}}
@@ -11,8 +11,6 @@
 /* Admin Professional OS */
 .admin-page{max-width:1240px;padding:28px 24px}.admin-tabs{position:sticky;top:66px;z-index:50;background:rgba(7,8,18,.88);backdrop-filter:blur(16px);border:1px solid rgba(139,92,246,.16);padding:8px;border-radius:16px;box-shadow:0 12px 35px rgba(0,0,0,.25);display:flex;gap:7px;overflow-x:auto}.tab-btn{white-space:nowrap;border:1px solid transparent;background:rgba(255,255,255,.025);color:#aeb5d0;padding:10px 13px;border-radius:10px;cursor:pointer;font-weight:700}.tab-btn:hover{border-color:rgba(139,92,246,.25);color:#fff}.tab-btn.active{background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;box-shadow:0 7px 20px rgba(109,40,217,.25)}.admin-form{background:linear-gradient(145deg,rgba(17,21,42,.94),rgba(9,12,24,.94));border:1px solid rgba(139,92,246,.15);border-radius:18px;box-shadow:0 16px 40px rgba(0,0,0,.18)}.admin-row{border-color:rgba(139,92,246,.12)!important}.pro-admin-overview{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:30px;border-radius:24px;background:radial-gradient(circle at 80% 20%,rgba(139,92,246,.28),transparent 30%),linear-gradient(135deg,#0f1328,#181331 55%,#0a0d19);border:1px solid rgba(139,92,246,.22);overflow:hidden;position:relative}.overview-main h2{font-size:34px;margin:5px 0}.overview-main p{color:#969dbb;max-width:680px}.overview-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.overview-orb{width:145px;height:145px;border-radius:50%;border:1px solid rgba(139,92,246,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(139,92,246,.24),rgba(10,12,25,.8) 65%);box-shadow:0 0 70px rgba(139,92,246,.15)}.overview-orb div{font-size:54px}.overview-orb small{font-size:9px;letter-spacing:2px;color:#5eead4}.overview-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin:16px 0}.overview-metrics>div{background:#0c1020;border:1px solid rgba(139,92,246,.14);border-radius:16px;padding:16px}.overview-metrics span{font-size:20px;display:block}.overview-metrics b{display:block;font-size:20px;margin:8px 0 2px}.overview-metrics small{color:#7f88a8}.overview-panels{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel-title{display:flex;justify-content:space-between;align-items:center;gap:10px}.panel-title h3{margin:0}.live-badge{font-size:9px;letter-spacing:1px;background:rgba(34,197,94,.12);color:#67e8a5;border:1px solid rgba(34,197,94,.2);padding:5px 8px;border-radius:99px}.system-list{display:grid;gap:7px;margin-top:12px}.system-list div{display:flex;justify-content:space-between;padding:10px 11px;border-radius:10px;background:#0b0e1a;border:1px solid #1d2236;color:#bbc1d8;font-size:12px}.system-list b{font-size:9px;color:#6ee7b7}.overview-quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.overview-quick button{background:#0b0e1a;border:1px solid #262b45;color:#e8eaff;padding:13px;border-radius:11px;text-align:left;cursor:pointer}.overview-quick button:hover{border-color:#8b5cf6;background:#12162a}.hero-studio-head{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:24px;border-radius:20px;background:linear-gradient(135deg,#0f1328,#17102e);border:1px solid rgba(139,92,246,.2);margin-bottom:16px}.hero-studio-head h2{text-align:left;font-size:28px;margin:4px 0}.hero-studio-head p{color:#9298b6;max-width:760px;font-size:13px}.studio-tip{background:#0b0e1b;border:1px solid rgba(34,211,238,.18);padding:14px;border-radius:13px;color:#67e8f9;min-width:170px}.studio-tip small{color:#9298b6}.hero-product-list{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}.hero-product-row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#0b0e1b;border:1px solid #20253c;border-radius:13px;padding:10px}.hero-product-row img{width:52px;height:60px;object-fit:cover;border-radius:8px}.hero-product-row .meta{flex:1;min-width:0}.hero-product-row b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hero-product-row small{color:#8d95b2}.hero-product-row .has-trailer{color:#67e8a5}.hero-edit-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.hero-edit-row button{cursor:pointer}@media(max-width:900px){.overview-metrics{grid-template-columns:repeat(3,1fr)}.overview-panels{grid-template-columns:1fr}.hero-product-list{grid-template-columns:1fr}}@media(max-width:600px){.admin-page{padding:18px 12px}.admin-tabs{top:58px}.pro-admin-overview{padding:20px}.overview-orb{display:none}.overview-metrics{grid-template-columns:1fr 1fr}.overview-main h2{font-size:27px}.hero-studio-head{align-items:flex-start;flex-direction:column}.studio-tip{width:100%}}
 </style>  <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
 </head>
 <body>
 
@@ -491,4 +489,583 @@
     function escAdmin(x) { const d=document.createElement('div'); d.textContent=x==null?'':String(x); return d.innerHTML; }
     async function loadCommandCenter() {
       if (currentRole !== 'admin') return;
-      try
+      try {
+        const [or, sr] = await Promise.all([
+          fetch('/api/admin/overview', {headers:{'Authorization':token}}),
+          fetch('/api/admin/storage-status', {headers:{'Authorization':token}})
+        ]);
+        const d=await or.json(); const st=await sr.json();
+        if(d.success){
+          const money=Number(d.revenue||0).toLocaleString()+' TZS';
+          ['cmRevenue','ovRevenue'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=money});
+          ['cmPaid','ovOrders'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=d.paidOrders||0});
+          ['cmPending','ovPending'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=d.pendingOrders||0});
+          ['cmCustomers','ovCustomers'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=d.customers||0});
+          const op=document.getElementById('ovProducts'); if(op)op.textContent=d.products||0;
+        }
+        const box=document.getElementById('storageStatus');
+        if(box){box.className='storage-status '+(st.persistent?'storage-ok':'storage-warn');box.innerHTML=st.persistent?'☁️ <b>Persistent storage ACTIVE</b><br><small>'+escAdmin(st.provider||'Supabase')+'</small>':'⚠️ <b>Persistent storage haijawashwa</b><br><small>'+escAdmin(st.warning||'Weka Supabase KV kwenye Render.')+'</small>'}
+        const badge=document.getElementById('ovStorageBadge');if(badge){badge.textContent=st.persistent?'ACTIVE':'CHECK';badge.style.color=st.persistent?'#6ee7b7':'#ffd166'}
+      } catch(e) {}
+    }
+    async function loadOrders() {
+      if (currentRole !== 'admin') return;
+      try {
+        const res=await fetch('/api/admin/orders',{headers:{'Authorization':token}}); const data=await res.json();
+        if(!data.success) return;
+        window.__orders=data.orders||[]; renderOrderFilters();
+      } catch(e) {}
+    }
+    function renderOrderFilters(){
+      const box=document.getElementById('ordersList'); if(!box)return;
+      const all=window.__orders||[]; const q=(document.getElementById('orderSearch')?.value||'').trim().toLowerCase(); const status=document.getElementById('orderStatus')?.value||'all';
+      const list=all.filter(o=>{
+        const text=[o.customer,o.email,o.tx_ref,o.manualTxRef,o.customerPhone,...(o.items||[]).map(i=>i.name)].join(' ').toLowerCase();
+        const okQ=!q||text.includes(q); const okS=status==='all'||o.status===status||(status==='pending_azampay'&&o.status==='pending_clickpesa'); return okQ&&okS;
+      });
+      if(!list.length){box.innerHTML='<p class="hint">Hakuna orders zinazolingana na filter.</p>';return;}
+      const label={successful:'Imekamilika',pending_manual:'Inasubiri Manual',pending_azampay:'Inasubiri Auto',pending_clickpesa:'Inasubiri Auto',failed:'Imeshindwa',amount_mismatch:'Tatizo la Kiasi'};
+      const cls={successful:'success',pending_manual:'pending',pending_azampay:'pending',pending_clickpesa:'pending',failed:'failed',amount_mismatch:'failed'};
+      box.innerHTML=list.map(o=>`<div class="admin-row"><div><strong>${escAdmin(o.customer||'Mteja')}</strong> <span class="payment-status-pill ${cls[o.status]||'pending'}">${label[o.status]||escAdmin(o.status)}</span><br><small>${escAdmin(o.email||'')} ${o.customerPhone?'• '+escAdmin(o.customerPhone):''}</small><br><small>${new Date(o.date||Date.now()).toLocaleString()} • TX: ${escAdmin(o.tx_ref||'—')}</small><br><small>${escAdmin((o.items||[]).map(i=>i.name+' × '+(i.qty||i.quantity||1)).join(', ')||'—')}</small>${o.manualTxRef?'<br><small>Manual Ref: <b>'+escAdmin(o.manualTxRef)+'</b></small>':''}</div><div style="text-align:right"><div class="admin-amount">${Number(o.amount||0).toLocaleString()} TZS</div>${o.status==='pending_manual'?'<div style="display:flex;gap:6px;margin-top:7px"><button class="btn-vote" onclick="confirmManualOrder(\''+escAdmin(o.tx_ref||'')+'\')">✅ Thibitisha</button><button class="btn-remove" onclick="rejectManualOrder(\''+escAdmin(o.tx_ref||'')+'\')">✕</button></div>':''}</div></div>`).join('');
+    }
+    function exportOrdersCSV(){
+      const rows=window.__orders||[]; const head=['date','customer','email','phone','tx_ref','status','amount','items'];
+      const esc=v=>'"'+String(v??'').replaceAll('"','""')+'"'; const out=[head.join(',')].concat(rows.map(o=>[o.date,o.customer,o.email,o.customerPhone,o.tx_ref,o.status,o.amount,(o.items||[]).map(i=>i.name+' x '+(i.qty||i.quantity||1)).join(' | ')].map(esc).join(','))).join('\n');
+      const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out],{type:'text/csv'}));a.download='lifeisgametz-orders.csv';a.click();URL.revokeObjectURL(a.href);
+    }
+    async function refreshAll(){
+      await Promise.all([loadStats(),loadOrders(),loadCustomers(),loadProducts(),loadAdminRequests(),loadAnalytics(),loadCommandCenter(),loadMediaData(),loadHeroStudio(),loadPaymentStatus()]);
+      const btn=document.querySelector('.admin-tabs .tab-btn.active'); if(btn&&btn.dataset.tab==='overview') loadCommandCenter();
+    }
+
+    async function loadPaymentStatus(){
+      if(currentRole!=='admin')return;
+      try{const r=await fetch('/api/admin/payment-status',{headers:{'Authorization':token}});const d=await r.json();
+        const badge=document.getElementById('paymentEnvBadge'); if(badge) badge.textContent=d.environment||'UNKNOWN';
+        const box=document.getElementById('paymentAutoStatus'); const mno=document.getElementById('paymentMnoStatus');
+        if(box){box.className='storage-status '+(d.configured?'storage-ok':'storage-warn');box.innerHTML=d.configured?'✅ <b>AzamPay credentials zipo</b><br><small>Automatic checkout iko tayari kujaribiwa.</small>':'⚠️ <b>Automatic payment haijasanidiwa</b><br><small>Weka APP_NAME, CLIENT_ID na CLIENT_SECRET kwenye Render.</small>';}
+        if(mno)mno.textContent=d.configured?'READY':'SETUP';
+      }catch(e){const box=document.getElementById('paymentAutoStatus');if(box)box.innerHTML='⚠️ Imeshindwa kusoma payment status.';}
+    }
+
+    async function loadPublicChatAdmin(){
+      if(currentRole!=='admin')return;
+      const box=document.getElementById('publicChatAdminList');if(!box)return;
+      try{const r=await fetch('/api/public-chat/messages');const d=await r.json();const rows=d.messages||[];box.innerHTML=rows.length?rows.slice().reverse().map(x=>`<div class="admin-row"><div><b>${escAdmin(x.name)}</b><br><small>${escAdmin(x.message)}</small><br><small>${new Date(x.time).toLocaleString()}</small></div><button class="btn-remove" onclick="deletePublicChat('${escAdmin(x.id)}')">🗑️</button></div>`).join(''):'<p class="hint">Hakuna ujumbe.</p>';}catch(e){box.innerHTML='<p class="hint">Imeshindikana kupakia chat.</p>';}
+    }
+    async function deletePublicChat(id){if(!confirm('Ondoa ujumbe huu kwenye public chat?'))return;const r=await fetch('/api/admin/public-chat/'+encodeURIComponent(id),{method:'DELETE',headers:{'Authorization':token}});if(r.ok)loadPublicChatAdmin();}
+
+    // ===== HERO STUDIO =====
+    async function loadHeroStudio(){
+      if(currentRole!=='admin')return;
+      try{
+        const r=await fetch('/api/products'); const d=await r.json(); const products=d.products||[]; window.__heroProducts=products;
+        const eligible=products.filter(p=>p.section==='shop');
+        const withTrailer=eligible.filter(p=>p.trailerUrl);
+        const count=document.getElementById('heroCount');if(count)count.textContent=withTrailer.length+' LIVE';
+        const list=document.getElementById('heroProductsList');
+        if(list)list.innerHTML=eligible.length?eligible.map(p=>`<div class="hero-product-row"><div style="display:flex;gap:10px;align-items:center;min-width:0">${p.imageUrl?'<img src="'+escAdmin(p.imageUrl)+'" onerror="this.style.display=\'none\'">':'<span style="font-size:30px">'+escAdmin(p.emoji||'🎮')+'</span>'}<div class="meta"><b>${escAdmin(p.name)}</b><small>${Number(p.price||0).toLocaleString()} TZS • ${p.trailerUrl?'<span class="has-trailer">🎬 Trailer active</span>':'No trailer'}</small></div></div><button class="btn-vote" onclick="selectHeroProduct('${escAdmin(p.id)}')">${p.trailerUrl?'✏️ Edit':'➕ Add'}</button></div>`).join(''):'<p class="hint">Ongeza product ya Shop kwanza.</p>';
+        const sel=document.getElementById('heroProductSelect'); if(sel){sel.innerHTML='<option value="">Chagua product...</option>'+eligible.map(p=>'<option value="'+escAdmin(p.id)+'">'+escAdmin(p.name)+' — '+Number(p.price||0).toLocaleString()+' TZS</option>').join('');}
+      }catch(e){}
+    }
+    function selectHeroProduct(id){const p=(window.__heroProducts||[]).find(x=>x.id===id);if(!p)return;document.getElementById('heroProductSelect').value=id;document.getElementById('heroTrailerUrl').value=p.trailerUrl||'';document.getElementById('heroMsg').textContent='Bei ya bidhaa: '+Number(p.price||0).toLocaleString()+' TZS — hii ndiyo itaonekana kwenye Home.';document.getElementById('heroTrailerUrl').focus();}
+    async function saveHeroTrailer(remove=false){
+      const id=document.getElementById('heroProductSelect').value; const msg=document.getElementById('heroMsg'); if(!id){msg.textContent='❌ Chagua game kwanza.';return;}
+      const p=(window.__heroProducts||[]).find(x=>x.id===id); if(!p)return; const url=remove?'':document.getElementById('heroTrailerUrl').value.trim(); if(!remove&&!url){msg.textContent='❌ Weka Trailer URL.';return;}
+      msg.textContent='⏳ Inahifadhi...';
+      try{const r=await fetch('/api/products/'+encodeURIComponent(id),{method:'PUT',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify({trailerUrl:url})});const d=await r.json();if(!r.ok){msg.textContent='❌ '+(d.error||'Imeshindikana');return;}msg.textContent=remove?'✅ Trailer imeondolewa.':'✅ Trailer imehifadhiwa. Bei inasomwa moja kwa moja kutoka product.';loadHeroStudio();loadProducts();}catch(e){msg.textContent='❌ Hitilafu ya mtandao.';}
+    }
+    document.getElementById('saveHeroTrailerBtn').addEventListener('click',()=>saveHeroTrailer(false));
+    document.getElementById('removeHeroTrailerBtn').addEventListener('click',()=>{if(confirm('Ondoa trailer ya game hii?'))saveHeroTrailer(true)});
+    document.getElementById('heroProductSelect').addEventListener('change',e=>selectHeroProduct(e.target.value));
+
+    async function loadCustomers() {
+      if (currentRole !== 'admin') return;
+      const res = await fetch('/api/admin/users', { headers: { 'Authorization': token } });
+      const data = await res.json();
+      const box = document.getElementById('customersList');
+      if (!data.success || data.users.length === 0) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna wateja bado.</p>'; return; }
+      box.innerHTML = data.users.map(u => `
+        <div class="admin-row">
+          <div>
+            <strong>${u.name}</strong> ${u.isAdmin ? '<span style="color:#ff3d71;">👑 ADMIN</span>' : ''}${u.isStaff ? '<span style="color:#00e5ff;"> 👤 STAFF</span>' : ''}<br>
+            <small>${u.email} ${u.phone ? '• ' + u.phone : ''}</small>
+          </div>
+          ${!u.isAdmin ? `<button class="btn-vote" onclick="toggleStaff('${u.email}', ${!u.isStaff})">${u.isStaff ? '➖ Ondoa Staff' : '➕ Fanya Staff'}</button>` : ''}
+        </div>`).join('');
+
+      // Avatar strip ya wateja wa hivi karibuni (kwenye tab ya Mauzo)
+      const strip = document.getElementById('recentCustomersStrip');
+      if (strip) {
+        const recent = data.users.slice().reverse().slice(0, 5);
+        const colors = ['#7b2ff7','#00c853','#ff3eb5','#00e5ff','#ffb020'];
+        strip.innerHTML = recent.map((u, i) => `
+          <span class="dash-avatar" style="background:${colors[i % colors.length]};" title="${u.name}">${(u.name || '?').charAt(0).toUpperCase()}</span>`).join('');
+      }
+    }
+
+    async function toggleStaff(email, makeStaff) {
+      const res = await fetch('/api/admin/users/staff', {
+        method: 'POST',
+        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, makeStaff })
+      });
+      const data = await res.json();
+      alert(data.message || data.error || 'Hitilafu');
+      loadCustomers();
+    }
+
+    async function loadProducts() {
+      const res = await fetch('/api/products');
+      const data = await res.json();
+      const box = document.getElementById('productsList');
+      if (!data.success || data.products.length === 0) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna bidhaa zilizoongezwa. Ongeza ya kwanza hapo juu!</p>'; return; }
+      window.__products = data.products;
+      box.innerHTML = data.products.map(p => `
+        <div class="admin-row">
+          <div style="display:flex; align-items:center; gap:10px;">
+            ${p.imageUrl ? `<img src="${p.imageUrl}" style="width:40px; height:40px; object-fit:cover; border-radius:8px;" onerror="this.style.display='none'">` : `<span style="font-size:26px;">${p.emoji}</span>`}
+            <div><strong>${p.name}</strong><br><small>${p.type || ''} — ${Number(p.price).toLocaleString()} TZS</small>${p.downloadLink ? '<br><small style="color:#00e5ff;">⬇️ Ina download link</small>' : ''}${p.accountUser ? '<br><small style="color:#00e5ff;">🔑 Ina account credentials</small>' : ''}${p.section && p.section !== 'shop' ? '<br><small style="color:#ffb020;">📍 ' + p.section + '</small>' : ''}</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn-vote" onclick="editProduct('${p.id}')">✏️ Hariri</button>
+            <button class="btn-remove" onclick="deleteProduct('${p.id}')">🗑️</button>
+          </div>
+        </div>`).join('');
+    }
+
+    // ===== FOMU INAYOBADILIKA KULINGANA NA SEHEMU =====
+    function updateFormFields() {
+      const section = document.getElementById('pSection').value;
+      document.getElementById('fieldsShop').style.display = section === 'shop' ? 'block' : 'none';
+      document.getElementById('fieldsSteam').style.display = section === 'steam' ? 'block' : 'none';
+      document.getElementById('fieldsEfootball').style.display = section === 'efootball' ? 'block' : 'none';
+    }
+    document.getElementById('pSection').addEventListener('change', updateFormFields);
+    updateFormFields();
+
+    function editProduct(id) {
+      const p = (window.__products || []).find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('pId').value = p.id;
+      document.getElementById('pName').value = p.name || '';
+      document.getElementById('pType').value = p.type || '';
+      document.getElementById('pPrice').value = p.price || '';
+      document.getElementById('pEmoji').value = p.emoji || '';
+      document.getElementById('pDesc').value = p.desc || '';
+      document.getElementById('pImage').value = p.imageUrl || '';
+      document.getElementById('pTrailer').value = p.trailerUrl || '';
+      document.getElementById('pCategory').value = p.category || 'Zote';
+      document.getElementById('pSection').value = p.section || 'shop';
+      document.getElementById('pDownload').value = p.downloadLink || '';
+      document.getElementById('pAccUserSteam').value = p.section === 'steam' ? (p.accountUser || '') : '';
+      document.getElementById('pAccPassSteam').value = p.section === 'steam' ? (p.accountPassword || '') : '';
+      document.getElementById('pAccUserEf').value = p.section === 'efootball' ? (p.accountUser || '') : '';
+      document.getElementById('pAccPassEf').value = p.section === 'efootball' ? (p.accountPassword || '') : '';
+      updateFormFields();
+      document.getElementById('productFormTitle').textContent = '✏️ Hariri: ' + p.name;
+      document.getElementById('addProductBtn').textContent = '💾 Sasisha Bidhaa';
+      document.getElementById('cancelEditBtn').style.display = 'inline-block';
+      document.querySelector('.admin-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetProductForm() {
+      document.getElementById('pId').value = '';
+      ['pName','pType','pPrice','pEmoji','pDesc','pImage','pTrailer','pDownload','pAccUserSteam','pAccPassSteam','pAccUserEf','pAccPassEf'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('pCategory').value = 'Zote';
+      document.getElementById('pSection').value = 'shop';
+      updateFormFields();
+      document.getElementById('productFormTitle').textContent = '➕ Ongeza Bidhaa Mpya';
+      document.getElementById('addProductBtn').textContent = '➕ Ongeza';
+      document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
+    document.getElementById('cancelEditBtn').addEventListener('click', resetProductForm);
+
+    async function deleteProduct(id) {
+      if (!confirm('Futa bidhaa hii?')) return;
+      await fetch('/api/products/' + id, { method: 'DELETE', headers: { 'Authorization': token } });
+      loadProducts();
+    }
+
+    document.getElementById('addProductBtn').addEventListener('click', async () => {
+      const editId = document.getElementById('pId').value;
+      const section = document.getElementById('pSection').value;
+
+      let accountUser = '', accountPassword = '';
+      if (section === 'steam') {
+        accountUser = document.getElementById('pAccUserSteam').value.trim();
+        accountPassword = document.getElementById('pAccPassSteam').value.trim();
+      } else if (section === 'efootball') {
+        accountUser = document.getElementById('pAccUserEf').value.trim();
+        accountPassword = document.getElementById('pAccPassEf').value.trim();
+      }
+
+      const body = {
+        name: document.getElementById('pName').value.trim(),
+        type: section === 'steam' ? 'Steam Account' : section === 'efootball' ? 'eFootball Kikosi' : document.getElementById('pType').value.trim(),
+        price: document.getElementById('pPrice').value,
+        emoji: section === 'steam' ? '👤' : section === 'efootball' ? '⚽' : document.getElementById('pEmoji').value.trim() || '🎮',
+        desc: section === 'shop' ? document.getElementById('pDesc').value.trim() : '',
+        imageUrl: document.getElementById('pImage').value.trim(),
+        trailerUrl: section === 'shop' ? document.getElementById('pTrailer').value.trim() : '',
+        category: section === 'shop' ? document.getElementById('pCategory').value : 'Zote',
+        section: section,
+        downloadLink: section === 'shop' ? document.getElementById('pDownload').value.trim() : '',
+        accountUser, accountPassword
+      };
+      const res = await fetch(editId ? '/api/products/' + editId : '/api/products', {
+        method: editId ? 'PUT' : 'POST',
+        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      const msg = document.getElementById('productMsg');
+      if (data.success) {
+        msg.textContent = editId ? '✅ Bidhaa imesasishwa!' : '✅ Bidhaa imeongezwa!';
+        resetProductForm();
+        loadProducts(); loadStats();
+      } else {
+        msg.textContent = '❌ ' + (data.error || 'Hitilafu');
+      }
+    });
+
+    // 🔍 GAME REQUESTS
+    async function loadAdminRequests() {
+      const box = document.getElementById('adminRequestsList');
+      try {
+        const res = await fetch('/api/requests');
+        const data = await res.json();
+        if (!data.success || data.requests.length === 0) {
+          box.innerHTML = '<p style="color:#8f8faa;">Hakuna ombi bado.</p>';
+          return;
+        }
+        box.innerHTML = data.requests.map(r => `
+          <div class="admin-row">
+            <div>
+              <strong>${r.name}</strong> — <span style="color:#00e5ff;">${r.votes} kura</span><br>
+              <small>Imeombwa: ${new Date(r.date).toLocaleDateString()}</small>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn-vote" onclick="addRequestedGame('${r.id}', '${r.name.replace(/'/g, "\\'")}')">➕ Ongeza Dukani</button>
+              <button class="btn-remove" onclick="deleteRequest('${r.id}')">🗑️</button>
+            </div>
+          </div>`).join('');
+      } catch (e) {
+        box.innerHTML = '<p style="color:#ff3d71;">Hitilafu.</p>';
+      }
+    }
+
+    async function addRequestedGame(id, name) {
+      if (!confirm('Ongeza "' + name + '" kwenye duka?')) return;
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, type: 'Game Key • PC', price: 40000, emoji: '🎮', desc: 'Imeongezwa kutokana na ombi la wateja!' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ ' + name + ' imeongezwa dukani! (Bei: 40,000 TZS — badilisha kama unavyotaka)');
+        await fetch('/api/requests/' + id, { method: 'DELETE', headers: { 'Authorization': token } });
+        loadAdminRequests(); loadProducts(); loadStats();
+      } else {
+        alert('❌ ' + (data.error || 'Hitilafu'));
+      }
+    }
+
+    async function deleteRequest(id) {
+      if (!confirm('Futa ombi hili?')) return;
+      await fetch('/api/requests/' + id, { method: 'DELETE', headers: { 'Authorization': token } });
+      loadAdminRequests();
+    }
+
+    // 🏪 MARKETPLACE
+    async function loadMarketplace() {
+      if (currentRole !== 'admin') return;
+      const box = document.getElementById('marketplaceList');
+      try {
+        const res = await fetch('/api/marketplace');
+        const data = await res.json();
+        if (!data.success || !data.listings.length) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna biashara bado.</p>'; return; }
+        box.innerHTML = data.listings.slice().reverse().map(b => `
+          <div class="admin-row">
+            <div><strong>${b.businessName}</strong> — <small style="color:#00e5ff;">${b.category}</small><br><small>${b.contact}</small></div>
+            <button class="btn-remove" onclick="deleteBiz('${b.id}')">🗑️</button>
+          </div>`).join('');
+      } catch (e) { box.innerHTML = '<p style="color:#ff3d71;">Hitilafu.</p>'; }
+    }
+
+    document.getElementById('addBizBtn').addEventListener('click', async () => {
+      const body = {
+        businessName: document.getElementById('bizName').value.trim(),
+        category: document.getElementById('bizCategory').value.trim(),
+        description: document.getElementById('bizDesc').value.trim(),
+        imageUrl: document.getElementById('bizImage').value.trim(),
+        contact: document.getElementById('bizContact').value.trim()
+      };
+      const res = await fetch('/api/marketplace', {
+        method: 'POST',
+        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      const msg = document.getElementById('bizMsg');
+      if (data.success) {
+        msg.textContent = '✅ Biashara imeongezwa!';
+        ['bizName','bizCategory','bizDesc','bizImage','bizContact'].forEach(id => document.getElementById(id).value = '');
+        loadMarketplace();
+      } else { msg.textContent = '❌ ' + (data.error || 'Hitilafu'); }
+    });
+
+    async function deleteBiz(id) {
+      if (!confirm('Futa biashara hii?')) return;
+      await fetch('/api/marketplace/' + id, { method: 'DELETE', headers: { 'Authorization': token } });
+      loadMarketplace();
+    }
+
+    // 🎟️ COUPONS
+    async function loadCoupons() {
+      if (currentRole !== 'admin') return;
+      const box = document.getElementById('couponsList');
+      try {
+        const res = await fetch('/api/admin/coupons', { headers: { 'Authorization': token } });
+        const data = await res.json();
+        const coupons = Object.values(data.coupons || {});
+        if (!coupons.length) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna kodi bado.</p>'; return; }
+        box.innerHTML = coupons.map(c => `
+          <div class="admin-row">
+            <div><strong>${c.code}</strong> — <span style="color:#00e5ff;">${c.percentOff}% punguzo</span><br><small>Matumizi: ${c.uses}${c.maxUses ? ' / ' + c.maxUses : ' (bila kikomo)'}</small></div>
+            <button class="btn-remove" onclick="deleteCoupon('${c.code}')">🗑️</button>
+          </div>`).join('');
+      } catch (e) { box.innerHTML = '<p style="color:#ff3d71;">Hitilafu.</p>'; }
+    }
+
+    document.getElementById('addCouponBtn').addEventListener('click', async () => {
+      const body = {
+        code: document.getElementById('couponCode').value.trim(),
+        percentOff: document.getElementById('couponPercent').value,
+        maxUses: document.getElementById('couponMax').value
+      };
+      const res = await fetch('/api/admin/coupons', {
+        method: 'POST',
+        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      const msg = document.getElementById('couponMsg');
+      if (data.success) {
+        msg.textContent = '✅ Kodi imetengenezwa!';
+        ['couponCode','couponPercent','couponMax'].forEach(id => document.getElementById(id).value = '');
+        loadCoupons();
+      } else { msg.textContent = '❌ ' + (data.error || 'Hitilafu'); }
+    });
+
+    async function deleteCoupon(code) {
+      if (!confirm('Futa kodi hii?')) return;
+      await fetch('/api/admin/coupons/' + code, { method: 'DELETE', headers: { 'Authorization': token } });
+      loadCoupons();
+    }
+
+    // 🛡️ SECURITY (HACKERAI)
+    async function loadSecurityStats() {
+      if (currentRole !== 'admin') return;
+      try {
+        const res = await fetch('/api/security/stats', { headers: { 'Authorization': token } });
+        const data = await res.json();
+        if (!data.success) return;
+        const s = data.stats;
+        const cards = document.querySelectorAll('#securityStats .stat-card h3');
+        cards[0].textContent = s.totalEvents;
+        cards[1].textContent = s.high;
+        cards[2].textContent = s.medium;
+        cards[3].textContent = s.blockedIPs;
+
+        const box = document.getElementById('blockedList');
+        const ips = Object.keys(data.blocked || {});
+        if (!ips.length) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna IP zilizofungwa.</p>'; }
+        else {
+          box.innerHTML = ips.map(ip => `
+            <div class="admin-row">
+              <div><strong>${ip}</strong><br><small>Itafunguliwa: ${new Date(data.blocked[ip]).toLocaleString()}</small></div>
+              <button class="btn-vote" onclick="unblockIP('${ip}')">🔓 Fungua</button>
+            </div>`).join('');
+        }
+      } catch (e) {}
+    }
+
+    async function loadSecurityEvents() {
+      if (currentRole !== 'admin') return;
+      try {
+        const res = await fetch('/api/security/events', { headers: { 'Authorization': token } });
+        const data = await res.json();
+        const box = document.getElementById('securityEvents');
+        if (!data.success || data.events.length === 0) { box.innerHTML = '<p style="color:#8f8faa;">Hakuna matukio bado. Website yako iko salama! ✅</p>'; return; }
+        const colors = { HIGH: '#ff3d71', MEDIUM: '#ffb020', LOW: '#00e5ff' };
+        box.innerHTML = data.events.slice(0, 50).map(e => `
+          <div class="admin-row">
+            <div>
+              <strong style="color:${colors[e.severity] || '#fff'};">${e.type}</strong>
+              <span style="color:${colors[e.severity] || '#fff'}; font-size:11px;">[${e.severity}]</span><br>
+              <small>${e.details}</small><br>
+              <small style="color:#5a5a75;">${new Date(e.time).toLocaleString()} • IP: ${e.ip}</small>
+            </div>
+          </div>`).join('');
+      } catch (e) {}
+    }
+
+    document.getElementById('blockIpBtn').addEventListener('click', async () => {
+      const ip = document.getElementById('blockIpInput').value.trim();
+      const msg = document.getElementById('blockIpMsg');
+      if (!ip) { msg.textContent = '❌ Andika IP kwanza.'; return; }
+      const res = await fetch('/api/security/block', {
+        method: 'POST',
+        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ip: ip, minutes: 60 })
+      });
+      const data = await res.json();
+      msg.textContent = data.message || data.error || 'Hitilafu';
+      document.getElementById('blockIpInput').value = '';
+      loadSecurityStats(); loadSecurityEvents(); loadPaymentStatus(); loadPublicChatAdmin(); loadMediaData();
+    });
+
+    async function unblockIP(ip) {
+      if (!confirm('Fungua IP ' + ip + '?')) return;
+      await fetch('/api/security/unblock', {
+        method: 'POST',
+        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ip: ip })
+      });
+      loadSecurityStats();
+    }
+
+    document.getElementById('genReportBtn').addEventListener('click', async () => {
+      const box = document.getElementById('securityReport');
+      box.textContent = '⏳ Inatengeneza ripoti...';
+      try {
+        const res = await fetch('/api/security/report', { headers: { 'Authorization': token } });
+        const data = await res.json();
+        box.textContent = data.report || 'Hitilafu';
+      } catch (e) { box.textContent = '❌ Hitilafu ya mtandao.'; }
+    });
+
+    // 🤖 AI ADMIN
+    document.getElementById('aiSendBtn').addEventListener('click', async () => {
+      const command = document.getElementById('aiCommand').value.trim();
+      const replyBox = document.getElementById('aiReply');
+      if (!command) return;
+      replyBox.textContent = '⏳ Inafanyika...';
+      try {
+        const res = await fetch('/api/ai/admin', {
+          method: 'POST',
+          headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ command })
+        });
+        const data = await res.json();
+        replyBox.textContent = data.reply || (data.error || 'Hitilafu');
+        document.getElementById('aiCommand').value = '';
+        if (/(ongeza|futa)/i.test(command)) { loadProducts(); loadStats(); }
+      } catch (e) {
+        replyBox.textContent = '❌ Hitilafu ya mtandao.';
+      }
+    });
+
+
+    // 🧠 INTERNAL AI WEB DEVELOPER & MANAGER
+    async function runBuilder(execute) {
+      const command=document.getElementById('builderCommand').value.trim();
+      const box=document.getElementById('builderResult');
+      if(!command){box.textContent='Andika amri kwanza.';return;}
+      box.textContent='⏳ Claude anapanga mabadiliko...';
+      try{
+        const r=await fetch('/api/admin/ai-builder',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify({command,execute})});
+        const d=await r.json();
+        if(!r.ok){box.textContent='❌ '+(d.error||'Hitilafu');return;}
+        box.textContent=JSON.stringify(d,null,2);
+        if(execute){loadProducts();loadStats();loadMediaData();}
+      }catch(e){box.textContent='❌ Hitilafu ya mtandao.';}
+    }
+    document.getElementById('builderPreview').addEventListener('click',()=>runBuilder(false));
+    document.getElementById('builderExecute').addEventListener('click',()=>{if(confirm('Tekeleza mabadiliko haya kwenye website data?'))runBuilder(true);});
+
+    async function loadMediaData(){
+      if(currentRole!=='admin')return;
+      try{
+        const [lr,mr,cr]=await Promise.all([fetch('/api/live-streams'),fetch('/api/movies'),fetch('/api/courses')]);
+        const l=await lr.json(),m=await mr.json(),c=await cr.json();
+        document.getElementById('liveList').innerHTML=(l.streams||[]).map(x=>`<div class="admin-row" style="flex-wrap:wrap;gap:8px"><div><b>${x.title}</b><small>${x.homeTeam||''} vs ${x.awayTeam||''} • ${x.status}</small></div><span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input id="ls_h_${x.id}" type="number" min="0" max="99" value="${x.homeScore??''}" placeholder="H" style="width:56px"><input id="ls_a_${x.id}" type="number" min="0" max="99" value="${x.awayScore??''}" placeholder="A" style="width:56px"><input id="ls_m_${x.id}" value="${x.minute||''}" placeholder="Dk" style="width:56px"><select id="ls_s_${x.id}" style="width:auto"><option${x.status==='LIVE'?' selected':''}>LIVE</option><option${x.status==='UPCOMING'?' selected':''}>UPCOMING</option><option${x.status==='ENDED'?' selected':''}>ENDED</option></select><button class="btn-vote" title="Hifadhi matokeo" onclick="saveLiveScore('${x.id}')">💾</button><button class="btn-vote" onclick="deleteLive('${x.id}')">🗑️</button></span></div>`).join('')||'<p style="color:#8f8faa">Hakuna live match.</p>';
+        document.getElementById('movieList').innerHTML=(m.movies||[]).map(x=>`<div class="admin-row"><b>🎬 ${x.title}</b><button class="btn-vote" onclick="deleteMovie('${x.id}')">🗑️</button></div>`).join('')||'<p style="color:#8f8faa">Hakuna movie.</p>';
+        document.getElementById('courseList').innerHTML=(c.courses||[]).map(x=>`<div class="admin-row"><div><b>🎓 ${x.name}</b><small>${(x.videos||[]).length} video(s)</small></div><label class="btn-vote" style="cursor:pointer">⬆️ Video<input type="file" accept="video/mp4,video/webm,video/quicktime" hidden onchange="uploadCourseVideo('${x.id}',this)"></label></div>`).join('')||'<p style="color:#8f8faa">Hakuna course.</p>';
+      }catch(e){}
+    }
+    async function saveLiveScore(id){
+      const g=k=>document.getElementById('ls_'+k+'_'+id).value;
+      const r=await fetch('/api/admin/live-streams/'+id+'/score',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify({homeScore:g('h'),awayScore:g('a'),minute:g('m'),status:g('s')})});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok)alert(d.error||'Hitilafu'); else loadMediaData();
+    }
+    async function deleteLive(id){if(!confirm('Futa match?'))return;await fetch('/api/admin/live-streams/'+id,{method:'DELETE',headers:{'Authorization':token}});loadMediaData();}
+    async function deleteMovie(id){if(!confirm('Futa movie?'))return;await fetch('/api/admin/movies/'+id,{method:'DELETE',headers:{'Authorization':token}});loadMediaData();}
+    document.getElementById('addLiveBtn').addEventListener('click',async()=>{
+      const body={title:liveTitle.value,league:liveLeague.value,homeTeam:homeTeam.value,awayTeam:awayTeam.value,status:liveStatus.value,homeScore:liveHomeScore.value,awayScore:liveAwayScore.value,minute:liveMinute.value,streamUrl:streamUrl.value,videoUrl:liveVideoUrl.value,startTime:startTime.value,description:liveDesc.value};
+      const r=await fetch('/api/admin/live-streams',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)alert(d.error||'Hitilafu');else{alert('✅ Match imewekwa.');loadMediaData();}
+    });
+    document.getElementById('uploadMovieBtn').addEventListener('click',async()=>{
+      const f=movieFile.files[0]; const remote=movieVideoUrl.value.trim();
+      if(!f && !remote)return alert('Chagua movie file au weka video URL.');
+      if(f && f.size > 1024*1024*1024)return alert('Video imezidi 1GB. Tumia video ndogo au weka Video URL.');
+      const status=document.getElementById('movieUploadStatus'); status.textContent='⏳ Inapakia movie...';
+      const fd=new FormData(); if(f)fd.append('video',f); if(remote)fd.append('videoUrl',remote); fd.append('title',movieTitle.value);fd.append('genre',movieGenre.value);fd.append('year',movieYear.value);fd.append('poster',moviePoster.value);fd.append('description',movieDesc.value);
+      try{const r=await fetch('/api/admin/movies/upload',{method:'POST',headers:{'Authorization':token},body:fd});const d=await r.json().catch(()=>({error:'Server haikutoa JSON'})); if(!r.ok)throw new Error(d.error||'Upload imekataa'); status.textContent='✅ Movie imehifadhiwa — '+(d.movie?.storage||'storage'); movieFile.value=''; movieVideoUrl.value=''; loadMediaData();}catch(e){status.textContent='❌ '+e.message;}
+    });
+    document.getElementById('addCourseBtn').addEventListener('click',async()=>{
+      const body={name:courseName.value,level:courseLevel.value,price:coursePrice.value,thumbnail:courseThumb.value,description:courseDesc.value};
+      const r=await fetch('/api/admin/courses',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();alert(r.ok?'✅ Course imeundwa.':('❌ '+(d.error||'Hitilafu')));if(r.ok){courseName.value='';courseDesc.value='';loadMediaData();}
+    });
+    async function uploadCourseVideo(courseId,input){
+      const f=input.files[0];if(!f)return;const fd=new FormData();fd.append('video',f);fd.append('title',f.name);
+      const r=await fetch('/api/admin/courses/'+courseId+'/videos/upload',{method:'POST',headers:{'Authorization':token},body:fd});const d=await r.json();alert(r.ok?'✅ Video ya course imepakiwa.':('❌ '+(d.error||'Hitilafu')));loadMediaData();
+    }
+
+    // VICHUPO (TABS)
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+        document.getElementById('tab-' + btn.dataset.tab).style.display = 'block';
+        if (location.hash !== '#tab-' + btn.dataset.tab) location.hash = 'tab-' + btn.dataset.tab;
+        if (btn.dataset.tab === 'requests') loadAdminRequests();
+        if (btn.dataset.tab === 'marketplace') loadMarketplace();
+        if (btn.dataset.tab === 'coupons') loadCoupons();
+        if (btn.dataset.tab === 'security') { loadSecurityStats(); loadSecurityEvents(); }
+        if (btn.dataset.tab === 'payments') loadPaymentStatus();
+        if (btn.dataset.tab === 'publicchat') loadPublicChatAdmin();
+        if (btn.dataset.tab === 'media') loadMediaData();
+        if (btn.dataset.tab === 'hero') loadHeroStudio();
+        if (btn.dataset.tab === 'overview' || btn.dataset.tab === 'command') loadCommandCenter();
+      });
+    });
+
+    document.getElementById('adminLogout').addEventListener('click', () => {
+      fetch('/api/auth/logout', { method: 'POST', headers: { 'Authorization': token } });
+      localStorage.removeItem('gamehubToken');
+      localStorage.removeItem('gamehubUser');
+      window.location.href = 'index.html';
+    });
+
+    (async () => {
+      const ok = await checkAdmin();
+      if (!ok) return;
+      setDashDate();
+      document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');
+      document.getElementById('tab-overview').style.display='block';
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelector('[data-tab="overview"]').classList.add('active');
+      loadStats(); loadOrders(); loadCustomers(); loadProducts(); loadAdminRequests(); loadAnalytics(); loadCommandCenter(); loadHeroStudio();
+      loadSecurityStats(); loadSecurityEvents(); loadPaymentStatus(); loadPublicChatAdmin();
+    })();
+  </script>
+
+  <script src="zoneplay-shell.js"></script>
+</body>
+</html>
