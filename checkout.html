@@ -44,14 +44,19 @@
     .ck2-f textarea { min-height: 80px; resize: vertical; }
     .ck2-h3 { font-size: 15px; margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.06); }
     .ck2-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin: 10px 0; }
-    .ck2-check input { width: 18px; height: 18px; }
+    .ck2-check input { width: 18px; height: 18px; accent-color: #7c3aed; }
+
+    /* Shipping box — hidden by default */
+    .ck2-ship-box { margin-top: 10px; padding: 16px; border-radius: 12px; background: rgba(124,58,237,.06); border: 1px dashed rgba(124,58,237,.3); display: none; }
+    .ck2-ship-box.on { display: block; }
+    .ck2-ship-box .ck2-h3 { margin-top: 0; }
 
     /* Order Summary */
     .ck2-sum-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
     .ck2-sum-h h3 { margin: 0; font-size: 16px; }
     .ck2-edit { color: #7c3aed; font-size: 13px; text-decoration: none; }
     .ck2-item { display: grid; grid-template-columns: 60px 1fr auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.05); align-items: center; }
-    .ck2-item img, .ck2-item .art { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; display: grid; place-items: center; font-size: 28px; }
+    .ck2-item .art { width: 60px; height: 60px; border-radius: 10px; display: grid; place-items: center; font-size: 28px; }
     .ck2-item b { font-size: 14px; display: block; }
     .ck2-item small { color: var(--muted); font-size: 12px; }
     .ck2-item .qty { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
@@ -61,6 +66,7 @@
     .ck2-r { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13.5px; color: var(--muted); }
     .ck2-r.total { border-top: 1px solid rgba(255,255,255,.1); margin-top: 8px; padding-top: 12px; font-size: 18px; font-weight: 700; color: #fff; }
     .ck2-r.total span:last-child { color: #a78bfa; }
+    .ck2-r.discount-free span:last-child { color: #86efac; }
 
     /* Payment Methods */
     .ck2-pay-opt { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,.08); margin-bottom: 8px; cursor: pointer; transition: .15s; }
@@ -128,7 +134,7 @@
         <div class="ck2-card">
           <div class="ck2-card-h">
             <i>🛍️</i>
-            <div><h2>Shipping &amp; Billing Information</h2><p>Taarifa zako za usafirishaji na malipo.</p></div>
+            <div><h2>Billing Information</h2><p>Taarifa zako za malipo na usafirishaji.</p></div>
           </div>
 
           <h3 class="ck2-h3">1. Personal Information</h3>
@@ -138,32 +144,42 @@
           </div>
           <div class="ck2-f"><label>Phone Number <span>*</span></label><input type="tel" id="phone" placeholder="+255 712 345 678" autocomplete="tel"></div>
 
-          <h3 class="ck2-h3" style="margin-top:20px">2. Shipping Address</h3>
-          <div class="ck2-row">
-            <div class="ck2-f"><label>Address <span>*</span></label><input type="text" id="address" placeholder="Dar es Salaam, Tanzania"></div>
-            <div class="ck2-f"><label>City <span>*</span></label><input type="text" id="city" placeholder="Dar es Salaam"></div>
-          </div>
-          <div class="ck2-row">
-            <div class="ck2-f"><label>Region <span>*</span></label>
-              <select id="region">
-                <option value="">Chagua mkoa...</option>
-                <option>Dar es Salaam</option>
-                <option>Arusha</option>
-                <option>Mwanza</option>
-                <option>Dodoma</option>
-                <option>Mbeya</option>
-                <option>Tanga</option>
-                <option>Morogoro</option>
-                <option>Zanzibar</option>
-                <option>Nyingine</option>
-              </select>
+          <!-- ====== SHIPPING OPTION (CHECKBOX) ====== -->
+          <h3 class="ck2-h3" style="margin-top:20px">2. Shipping (Optional)</h3>
+          <label class="ck2-check">
+            <input type="checkbox" id="wantShipping">
+            Nataka bidhaa zisafirishwe nyumbani (Shipping: TZS 5,000)
+          </label>
+
+          <!-- Shipping details — hidden by default, on when checkbox checked -->
+          <div class="ck2-ship-box" id="shipBox">
+            <h3 class="ck2-h3">Shipping Address</h3>
+            <div class="ck2-row">
+              <div class="ck2-f"><label>Address <span>*</span></label><input type="text" id="address" placeholder="Dar es Salaam, Tanzania"></div>
+              <div class="ck2-f"><label>City <span>*</span></label><input type="text" id="city" placeholder="Dar es Salaam"></div>
             </div>
-            <div class="ck2-f"><label>Postal Code (Optional)</label><input type="text" id="postal" placeholder="14112"></div>
+            <div class="ck2-row">
+              <div class="ck2-f"><label>Region <span>*</span></label>
+                <select id="region">
+                  <option value="">Chagua mkoa...</option>
+                  <option>Dar es Salaam</option>
+                  <option>Arusha</option>
+                  <option>Mwanza</option>
+                  <option>Dodoma</option>
+                  <option>Mbeya</option>
+                  <option>Tanga</option>
+                  <option>Morogoro</option>
+                  <option>Zanzibar</option>
+                  <option>Nyingine</option>
+                </select>
+              </div>
+              <div class="ck2-f"><label>Postal Code (Optional)</label><input type="text" id="postal" placeholder="14112"></div>
+            </div>
+            <label class="ck2-check"><input type="checkbox" id="saveAddr" checked> Tumia anwani hii kwa risiti</label>
           </div>
-          <label class="ck2-check"><input type="checkbox" id="saveAddr" checked> Tumia anwani hii kwa risiti</label>
 
           <h3 class="ck2-h3" style="margin-top:20px">3. Additional Notes (Optional)</h3>
-          <div class="ck2-f"><textarea id="notes" placeholder="Maelezo yoyote ya ziada kwa mchukuzi..."></textarea></div>
+          <div class="ck2-f"><textarea id="notes" placeholder="Maelezo yoyote ya ziada..."></textarea></div>
         </div>
 
         <div class="ck2-card">
@@ -250,7 +266,7 @@
           <div class="ck2-rows">
             <div class="ck2-r"><span>Subtotal</span><span id="subtotal">Tsh 0</span></div>
             <div class="ck2-r"><span>Discount</span><span id="discount">- Tsh 0</span></div>
-            <div class="ck2-r"><span>Shipping</span><span>Tsh 5,000</span></div>
+            <div class="ck2-r" id="shippingRow"><span>Shipping</span><span id="shippingBox">Tsh 0</span></div>
             <div class="ck2-r total"><span>Total</span><span id="totalBox">Tsh 0</span></div>
           </div>
 
@@ -282,9 +298,12 @@
   var user = null; try { user = JSON.parse(localStorage.getItem('gamehubUser') || 'null'); } catch(e){}
   var token = localStorage.getItem('gamehubToken');
 
-  var baseTotal = 0, discount = 0, couponCode = '', SHIPPING = 5000;
+  var baseTotal = 0, discount = 0, couponCode = '', SHIPPING = 5000, wantsShipping = false;
   function money(n){ return 'Tsh ' + Number(n||0).toLocaleString(); }
-  function finalTotal(){ return Math.round(baseTotal * (1 - discount/100)) + SHIPPING; }
+  function finalTotal(){
+    var sub = Math.round(baseTotal * (1 - discount/100));
+    return sub + (wantsShipping ? SHIPPING : 0);
+  }
   function discountedItems(){
     return discount ? items.map(function(i){ return Object.assign({}, i, { num: Math.round(i.num * (1 - discount/100)) }); }) : items;
   }
@@ -320,11 +339,21 @@
   function renderTotals(){
     document.getElementById('subtotal').textContent = money(baseTotal);
     document.getElementById('discount').textContent = discount > 0 ? '- ' + money(baseTotal * discount / 100) : '- Tsh 0';
+    document.getElementById('shippingBox').textContent = wantsShipping ? money(SHIPPING) : 'Tsh 0';
     document.getElementById('totalBox').textContent = money(finalTotal());
     document.getElementById('payAmt').textContent = money(finalTotal());
     document.getElementById('manualTotal').textContent = money(finalTotal());
   }
   renderTotals();
+
+  /* ============ SHIPPING CHECKBOX ============ */
+  var wantShip = document.getElementById('wantShipping');
+  var shipBox = document.getElementById('shipBox');
+  wantShip.addEventListener('change', function(){
+    wantsShipping = wantShip.checked;
+    shipBox.classList.toggle('on', wantsShipping);
+    renderTotals();
+  });
 
   /* ============ PAYMENT METHOD SELECTION ============ */
   var payMethods = document.querySelectorAll('input[name="payMethod"]');
@@ -385,7 +414,7 @@
     if (!/^255\d{9}$/.test(phoneFull)) { showStatus(pStatus, 'Namba ya simu si sahihi. Tumia mfano 0786095758 au 255786095758.', 'err'); return; }
 
     var total = finalTotal();
-    showStatus(pStatus, ''); 
+    showStatus(pStatus, '');
     payBtn.disabled = true;
     document.querySelector('#payBtn span').textContent = '⏳ Inaandaa malipo...';
 
@@ -475,13 +504,13 @@
   /* ============ COPY PHONE NUMBER ============ */
   document.getElementById('copyNum').addEventListener('click', function(){
     var n = document.getElementById('payNum').textContent.replace(/\s/g, '');
-    if (navigator.clipboard) navigator.clipboard.writeText(n).then(function(){ 
-      var b = document.getElementById('copyNum'); b.textContent = '✓ Imenakiliwa'; 
-      setTimeout(function(){ b.textContent = '📋 Nakili'; }, 1500); 
+    if (navigator.clipboard) navigator.clipboard.writeText(n).then(function(){
+      var b = document.getElementById('copyNum'); b.textContent = '✓ Imenakiliwa';
+      setTimeout(function(){ b.textContent = '📋 Nakili'; }, 1500);
     });
   });
 
 })();
 </script>
 </body>
-  </html>
+                </html>
