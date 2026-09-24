@@ -6,421 +6,83 @@
   <title>LIFEISGAMETZ — Play • Learn • Earn</title>
   <meta name="description" content="Duka la gaming la Tanzania: game keys, top-up, gift cards, live football, Academy na AI assistants.">
   <link rel="stylesheet" href="zoneplay-full.css">
-  <style>
-    /* ===== HOME V2 — MODERN SAAS LAYOUT ===== */
-    * { box-sizing: border-box; }
-    body { margin: 0; background: #0a0d1a; color: #e8eaff; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-
-    /* FICHA TU topbar/bottomnav ya zoneplay-shell.js */
-    .zp-topbar, .zp-bottomnav, .zp-bottom-nav, .zp-navbar, .zp-header, .zp-topnav,
-    .zp-mobile-nav, .zp-shell-topbar, .zp-shell-bottomnav, .zp-appbar, .zp-bottombar,
-    .zone-topbar, .zone-navbar, .zone-topnav, .zone-header,
-    .gh-topbar, .gh-navbar, .gamehub-topbar, .gamehub-navbar,
-    #zpTopbar, #zpNavbar, #zpBottomNav, #zpTopNav {
-      display: none !important;
-    }
-    .zp-hero, .zp-trust, .zp-sec, .zp-cats, .zp-grid, .zp-strips, .zp-ai, .zp-pay {
-      display: none !important;
-    }
-
-    .hm2-wrap { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
-    @media (max-width: 900px) { .hm2-wrap { grid-template-columns: 1fr; } }
-
-    /* SIDEBAR */
-    .hm2-side { background: #0d1020; border-right: 1px solid rgba(139,92,246,.12); padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; z-index: 200; }
-    @media (max-width: 900px) { .hm2-side { position: fixed; top: 0; left: 0; z-index: 200; width: 240px; display: none; height: 100vh; box-shadow: 4px 0 20px rgba(0,0,0,.5); } .hm2-side.on { display: block; } }
-    .hm2-logo { display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin-bottom: 20px; font-weight: 800; font-size: 16px; }
-    .hm2-logo .ic { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 18px; }
-    .hm2-menu-h { font-size: 10px; color: #6b7290; letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 10px 6px; font-weight: 700; }
-    .hm2-menu { display: flex; flex-direction: column; gap: 1px; }
-    .hm2-menu a { display: flex; align-items: center; gap: 10px; padding: 8px 11px; border-radius: 9px; color: #aeb5d0; text-decoration: none; font-size: 12.5px; font-weight: 600; cursor: pointer; }
-    .hm2-menu a:hover { background: rgba(139,92,246,.08); color: #fff; }
-    .hm2-menu a.on { background: linear-gradient(135deg,#7c3aed,#6d28d9); color: #fff; }
-    .hm2-menu a .badge { margin-left: auto; font-size: 10px; padding: 2px 7px; border-radius: 99px; background: rgba(124,58,237,.25); color: #c4b5fd; font-weight: 700; }
-    .hm2-menu a.on .badge { background: rgba(255,255,255,.25); color: #fff; }
-
-    /* MAIN */
-    .hm2-main { padding: 0; overflow-x: hidden; }
-    .hm2-topbar { display: flex; align-items: center; gap: 12px; padding: 14px 20px; background: rgba(10,13,26,.95); border-bottom: 1px solid rgba(255,255,255,.06); position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px); }
-    /* Ongeza padding kwa mobile ili tusisumbuliwe na kitufe cha menu */
-    @media (max-width: 900px) { .hm2-topbar { padding-left: 64px; } }
-
-    .hm2-search { flex: 1; max-width: 500px; position: relative; }
-    .hm2-search input { width: 100%; padding: 11px 14px 11px 40px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); color: #fff; font-size: 13px; }
-    .hm2-search::before { content: '🔍'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 13px; }
-    .hm2-top-actions { display: flex; gap: 8px; margin-left: auto; align-items: center; }
-    .hm2-top-btn { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); display: grid; place-items: center; font-size: 15px; cursor: pointer; position: relative; flex-shrink: 0; }
-    .hm2-top-btn .dot { position: absolute; top: 5px; right: 5px; width: 15px; height: 15px; border-radius: 50%; background: #ff3d71; color: #fff; font-size: 9px; display: grid; place-items: center; font-weight: 700; border: 2px solid #0a0d1a; }
-    .hm2-profile { display: flex; align-items: center; gap: 8px; padding: 5px 10px 5px 5px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); cursor: pointer; flex-shrink: 0; }
-    .hm2-profile .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
-    .hm2-profile b { font-size: 12px; display: block; }
-    .hm2-profile small { font-size: 10px; color: #969dbb; }
-    /* On mobile ficha profile text, baki avatar tu */
-    @media (max-width: 700px) { .hm2-profile > div:last-child { display: none; } .hm2-profile { padding: 5px; } }
-
-    /* HERO ROW */
-    .hm2-row1 { display: grid; grid-template-columns: 1.7fr 1fr 1fr; gap: 14px; padding: 16px 20px; }
-    @media (max-width: 1100px) { .hm2-row1 { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 700px) { .hm2-row1 { grid-template-columns: 1fr; padding: 12px; } }
-
-    /* HERO SLIDER */
-    .hm2-hero { position: relative; border-radius: 16px; overflow: hidden; min-height: 280px; background: linear-gradient(120deg,#1a0a3d,#0a1a4d); display: flex; align-items: flex-end; padding: 20px; }
-    .hm2-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: .65; }
-    .hm2-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg,transparent 30%,rgba(10,13,26,.9)); }
-    .hm2-hero-body { position: relative; z-index: 1; width: 100%; }
-    .hm2-hero-tag { display: inline-block; padding: 4px 10px; border-radius: 6px; background: #7c3aed; color: #fff; font-size: 11px; font-weight: 700; margin-bottom: 10px; }
-    .hm2-hero h1 { margin: 0 0 8px; font-size: 26px; line-height: 1.1; }
-    .hm2-hero p { margin: 0 0 12px; color: #c9d4f0; font-size: 12.5px; }
-    .hm2-hero-price { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-    .hm2-hero-price .now { font-size: 22px; font-weight: 800; color: #fff; }
-    .hm2-hero-price .old { font-size: 13px; color: #969dbb; text-decoration: line-through; }
-    .hm2-hero-price .off { padding: 3px 8px; border-radius: 6px; background: rgba(34,197,94,.2); color: #86efac; font-size: 11px; font-weight: 700; }
-    .hm2-hero-btns { display: flex; gap: 10px; }
-    .hm2-hero-btns a { padding: 11px 20px; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
-    .hm2-buy { background: linear-gradient(135deg,#7c3aed,#4c1d95); color: #fff; }
-    .hm2-dots { position: absolute; bottom: 14px; right: 16px; display: flex; gap: 6px; z-index: 2; }
-    .hm2-dots button { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.4); border: none; cursor: pointer; padding: 0; }
-    .hm2-dots button.on { background: #7c3aed; width: 20px; border-radius: 4px; }
-
-    /* SIDE CARDS */
-    .hm2-side-cards { display: flex; flex-direction: column; gap: 10px; }
-    .hm2-scard { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; color: #fff; transition: .15s; }
-    .hm2-scard:hover { border-color: #7c3aed; transform: translateY(-2px); }
-    .hm2-scard .ic { width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
-    .hm2-scard b { display: block; font-size: 13px; margin-bottom: 2px; }
-    .hm2-scard small { font-size: 11px; color: #969dbb; }
-    .hm2-scard .arr { margin-left: auto; color: #a78bfa; font-size: 16px; }
-
-    /* PROMO PANEL */
-    .hm2-promo { background: linear-gradient(135deg,#3b0a5c,#0a2a6b); border-radius: 16px; padding: 16px; color: #fff; text-align: center; position: relative; overflow: hidden; }
-    .hm2-promo::after { content: ''; position: absolute; right: -30px; top: -30px; width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle,rgba(236,72,153,.4),transparent 65%); }
-    .hm2-promo h3 { margin: 0 0 6px; font-size: 15px; line-height: 1.2; position: relative; z-index: 1; }
-    .hm2-promo p { margin: 0 0 12px; font-size: 11.5px; color: #c9d4f0; position: relative; z-index: 1; }
-    .hm2-promo-ic { font-size: 40px; margin-bottom: 8px; }
-    .hm2-promo-icons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; position: relative; z-index: 1; }
-    .hm2-promo-icons div { text-align: center; font-size: 10.5px; color: #c9d4f0; }
-    .hm2-promo-icons div span { display: block; font-size: 18px; margin-bottom: 3px; }
-
-    /* SECTION */
-    .hm2-sec { padding: 0 20px 16px; }
-    @media (max-width: 700px) { .hm2-sec { padding: 0 12px 14px; } }
-    .hm2-sec-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .hm2-sec-h h2 { margin: 0; font-size: 17px; }
-    .hm2-sec-h a { color: #a78bfa; text-decoration: none; font-size: 12px; font-weight: 600; }
-
-    /* GRID GAMES */
-    .hm2-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
-    @media (max-width: 1200px) { .hm2-grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (max-width: 900px) { .hm2-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 600px) { .hm2-grid { grid-template-columns: repeat(2, 1fr); } }
-    .hm2-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 12px; padding: 10px; text-decoration: none; color: #fff; transition: .15s; }
-    .hm2-card:hover { border-color: #7c3aed; transform: translateY(-2px); }
-    .hm2-card .thumb { aspect-ratio: 16/9; border-radius: 8px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 36px; margin-bottom: 8px; position: relative; overflow: hidden; }
-    .hm2-card .thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block; }
-    .hm2-card .plats { display: flex; gap: 3px; margin-bottom: 5px; flex-wrap: wrap; }
-    .hm2-card .plats span { font-size: 9px; padding: 2px 5px; border-radius: 4px; background: rgba(124,58,237,.15); color: #a78bfa; font-weight: 600; }
-    .hm2-card b { display: block; font-size: 12px; margin-bottom: 4px; line-height: 1.3; }
-    .hm2-card .price { font-size: 13px; font-weight: 700; color: #a78bfa; margin-bottom: 8px; }
-    .hm2-card .btns { display: flex; gap: 6px; }
-    .hm2-card .btns button, .hm2-card .btns a { flex: 1; padding: 7px 4px; border-radius: 7px; border: none; font-size: 10.5px; font-weight: 700; cursor: pointer; text-decoration: none; text-align: center; }
-    .hm2-card .buy { background: linear-gradient(135deg,#10b981,#047857); color: #fff; }
-    .hm2-card .add { background: linear-gradient(135deg,#7c3aed,#4c1d95); color: #fff; }
-    .hm2-card .wish { background: rgba(255,255,255,.05); color: #fff; border: 1px solid rgba(255,255,255,.1); flex: 0 0 auto !important; width: 30px; }
-
-    /* CATEGORIES */
-    .hm2-cats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
-    @media (max-width: 900px) { .hm2-cats { grid-template-columns: repeat(3, 1fr); } }
-    .hm2-cat { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 12px; padding: 12px; text-align: center; text-decoration: none; color: #fff; transition: .15s; }
-    .hm2-cat:hover { border-color: #7c3aed; }
-    .hm2-cat .ic { font-size: 26px; margin-bottom: 6px; }
-    .hm2-cat b { font-size: 11.5px; }
-    .hm2-cat small { display: block; font-size: 10px; color: #969dbb; margin-top: 2px; }
-
-    /* SPECIAL OFFERS */
-    .hm2-offer { background: linear-gradient(135deg,#831843,#4c1d95); border-radius: 14px; padding: 16px; color: #fff; display: flex; align-items: center; gap: 14px; }
-    .hm2-offer .ic { font-size: 44px; }
-    .hm2-offer b { display: block; font-size: 14px; margin-bottom: 4px; }
-    .hm2-offer .price { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; }
-    .hm2-offer .price .now { font-size: 20px; font-weight: 800; }
-    .hm2-offer .price .old { font-size: 12px; color: #f9a8d4; text-decoration: line-through; }
-    .hm2-offer .price .off { padding: 2px 7px; border-radius: 5px; background: rgba(34,197,94,.25); color: #86efac; font-size: 10px; font-weight: 700; }
-    .hm2-offer .view { margin-left: auto; padding: 9px 16px; border-radius: 8px; background: rgba(255,255,255,.15); color: #fff; text-decoration: none; font-size: 12px; font-weight: 700; }
-
-    /* TWO COLUMN */
-    .hm2-row2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; padding: 0 20px 16px; }
-    @media (max-width: 900px) { .hm2-row2 { grid-template-columns: 1fr; padding: 0 12px 14px; } }
-
-    /* LIVE FOOTBALL */
-    .hm2-live { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; }
-    .hm2-live-card { min-width: 220px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 12px; padding: 12px; flex-shrink: 0; }
-    .hm2-live-card .status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; color: #86efac; margin-bottom: 8px; }
-    .hm2-live-card .status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-    .hm2-live-teams { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; margin-bottom: 4px; }
-    .hm2-live-teams b { font-weight: 700; }
-    .hm2-live-score { font-size: 18px; font-weight: 800; text-align: center; color: #a78bfa; }
-    .hm2-live-time { text-align: center; font-size: 10.5px; color: #969dbb; }
-
-    /* COURSES */
-    .hm2-course { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 10px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); }
-    .hm2-course .ic { width: 50px; height: 50px; border-radius: 8px; background: linear-gradient(135deg,#06b6d4,#0a4d8a); display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
-    .hm2-course b { font-size: 12.5px; display: block; margin-bottom: 2px; }
-    .hm2-course small { font-size: 10.5px; color: #969dbb; display: block; }
-    .hm2-course .view { margin-left: auto; padding: 7px 12px; border-radius: 7px; background: #7c3aed; color: #fff; text-decoration: none; font-size: 11px; font-weight: 700; }
-
-    /* MENU BUTTON — position maalum ili isiingiliane na search */
-    .hm2-mobile-toggle {
-      display: none;
-      position: fixed;
-      top: 14px;
-      left: 14px;
-      z-index: 300;
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: #7c3aed;
-      border: none;
-      color: #fff;
-      font-size: 18px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(124,58,237,.4);
-    }
-    @media (max-width: 900px) { .hm2-mobile-toggle { display: grid; place-items: center; } }
-
-    /* Overlay kwa sidebar on mobile */
-    .hm2-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 150; }
-    .hm2-overlay.on { display: block; }
-  </style>
 </head>
 <body>
+<div class="main">
 
-<button class="hm2-mobile-toggle" onclick="toggleSidebar()">☰</button>
-<div class="hm2-overlay" id="sideOverlay" onclick="toggleSidebar()"></div>
-
-<div class="hm2-wrap">
-
-  <aside class="hm2-side" id="sidebar">
-    <div class="hm2-logo">
-      <span class="ic">🎮</span>
-      <span>LIFEIS<span style="color:#a78bfa">GAME</span>TZ</span>
+  <!-- HERO -->
+  <section class="zp-hero" aria-label="Matangazo makuu">
+    <div class="zp-slider" id="zpSlider" role="region" aria-roledescription="carousel" aria-label="Featured">
+      <div id="zpSlides"></div>
+      <button class="zp-arrow prev" id="zpPrev" aria-label="Iliyotangulia"></button>
+      <button class="zp-arrow next" id="zpNext" aria-label="Inayofuata"></button>
+      <div class="zp-dots" id="zpDots"></div>
     </div>
-
-    <nav class="hm2-menu">
-      <a class="on">🏠 Home</a>
-      <a href="shop.html">🛍️ Store</a>
-      <a href="shop.html?cat=games">🎮 Games</a>
-      <a href="shop.html?cat=psp">🎮 PSP Gaming</a>
-      <a href="shop.html?cat=ps2">🎮 PS2 Gaming</a>
-      <a href="shop.html?cat=ps3">🎮 PS3 Gaming</a>
-      <a href="shop.html?cat=switch">🎮 Nintendo Switch</a>
-      <a href="shop.html?cat=android">📱 Android Gaming</a>
-      <a href="shop.html?cat=pc">💻 PC Gaming</a>
-    </nav>
-
-    <div class="hm2-menu-h">More</div>
-    <nav class="hm2-menu">
-      <a href="movies.html">🎬 Movies</a>
-      <a href="live.html">📺 Live TV / Sports</a>
-      <a href="livescores.html">🏆 Live Scores</a>
-      <a href="academy.html">🎓 Academy / Courses</a>
-      <a href="cloudgaming.html">☁️ Cloud Gaming</a>
-      <a href="efootball.html">⚽ eFootball & Top Up</a>
-      <a href="giftcards.html">🎁 Gift Cards</a>
-      <a href="community.html">👥 Community / Chat</a>
-      <a href="health.html">❤️ Health Assistant</a>
-      <a href="ai.html">🧠 AI Assistant</a>
-      <a href="marketplace.html">🏪 Marketplace</a>
-    </nav>
-
-    <div class="hm2-menu-h">You</div>
-    <nav class="hm2-menu">
-      <a href="wishlist.html">❤️ Wishlist</a>
-      <a href="cart.html">🛒 Cart <span class="badge" id="cartBadge">0</span></a>
-      <a href="mygames.html">📚 My Games / Library</a>
-      <a href="profile.html">👤 Profile</a>
-    </nav>
-  </aside>
-
-  <main class="hm2-main">
-
-    <div class="hm2-topbar">
-      <div class="hm2-search"><input type="text" placeholder="Tafuta game..."></div>
-      <div class="hm2-top-actions">
-        <div class="hm2-top-btn" title="Notifications">🔔<span class="dot">3</span></div>
-        <div class="hm2-top-btn" title="Cart" onclick="location.href='cart.html'">🛒<span class="dot" id="cartCount">0</span></div>
-        <div class="hm2-profile" onclick="location.href='profile.html'">
-          <div class="avatar" id="avatarLetter">K</div>
-          <div><b id="profileName">Mgeni</b><small>Karibu!</small></div>
-        </div>
-      </div>
+    <div class="zp-promos">
+      <a class="zp-promo" href="rental.html" style="--art:linear-gradient(140deg,#0e7490,#1e1b4b)">
+        <span class="zp-pi" data-ic="cloud"></span>
+        <small>GEFORCE NOW</small><h3>Kodisha Muda</h3><span>Cheza PC games bila kudownload — kuanzia 300 TZS.</span>
+      </a>
+      <a class="zp-promo" href="efootball.html" style="--art:linear-gradient(140deg,#6d28d9,#831843)">
+        <span class="zp-pi" data-ic="ball"></span>
+        <small>EFOOTBALL</small><h3>Coins &amp; Vikosi</h3><span>Top-up salama, delivery papo hapo.</span>
+      </a>
     </div>
+  </section>
 
-    <div class="hm2-row1">
+  <div class="zp-trust">
+    <div><span data-ic="bolt"></span><p style="margin:0"><b>Delivery ya haraka</b><span>Bidhaa zinafika baada ya malipo</span></p></div>
+    <div><span data-ic="shield"></span><p style="margin:0"><b>100% Salama</b><span>Malipo yaliyolindwa</span></p></div>
+    <div><span data-ic="wallet"></span><p style="margin:0"><b>Bei nafuu</b><span>Kwa kila mchezaji</span></p></div>
+    <div><span data-ic="headset"></span><p style="margin:0"><b>Msaada 24/7</b><span>AI na WhatsApp</span></p></div>
+  </div>
 
-      <div class="hm2-hero" id="heroSlider">
-        <div class="hm2-hero-bg" id="heroBg" style="background:linear-gradient(120deg,#1a0a3d,#0a1a4d)"></div>
-        <div class="hm2-hero-body">
-          <span class="hm2-hero-tag" id="heroTag">Bestseller</span>
-          <h1 id="heroTitle">Inapakia...</h1>
-          <p id="heroDesc">Inapakia bidhaa...</p>
-          <div class="hm2-hero-price" id="heroPrice"></div>
-          <div class="hm2-hero-btns">
-            <a class="hm2-buy" href="shop.html" id="heroBuyBtn">🛒 Buy Now</a>
-          </div>
-        </div>
-        <div class="hm2-dots" id="heroDots"></div>
+  <div id="dynamicBanners" hidden></div>
+
+  <!-- CATEGORIES -->
+  <div class="zp-sec"><h2>Chagua Platform</h2><a href="categories.html">Zote <span data-ic="chevr"></span></a></div>
+  <div class="zp-cats" id="zpCats"></div>
+
+  <!-- POPULAR -->
+  <div class="zp-sec"><h2>Games Maarufu</h2><a href="shop.html">Angalia Zote <span data-ic="chevr"></span></a></div>
+  <div class="zp-grid c5 hscroll" id="featuredGames" aria-live="polite">
+    <div class="zp-empty"><p>Inapakia...</p></div>
+  </div>
+
+  <!-- MORE WORLDS -->
+  <div class="zp-sec"><h2>Zaidi ya Gaming</h2></div>
+  <div class="zp-strips">
+    <a class="zp-strip" href="live.html" style="--art:linear-gradient(120deg,#0f3d91,#0a1240)"><span class="zp-pi">📺</span><h3>Live TV / Sports</h3><span>Mechi na matukio live, na matokeo ya papo hapo.</span></a>
+    <a class="zp-strip" href="movies.html" style="--art:linear-gradient(120deg,#7a1fa2,#1b0d4a)"><span class="zp-pi">🎬</span><h3>Movies</h3><span>Filamu na video zilizopakiwa na admin.</span></a>
+    <a class="zp-strip" href="academy.html" style="--art:linear-gradient(120deg,#0e7490,#0a1a4a)"><span class="zp-pi">🎓</span><h3>Academy</h3><span>Jifunze coding, design, AI na biashara ya kidijitali.</span></a>
+    <a class="zp-strip" href="opportunities.html" style="--art:linear-gradient(120deg,#b45309,#4a0d3a)"><span class="zp-pi">💼</span><h3>Youth Opportunities</h3><span>Kazi, creator work, testing na tournaments.</span></a>
+    <a class="zp-strip" href="marketplace.html" style="--art:linear-gradient(120deg,#166534,#0a2a4a)"><span class="zp-pi">🏪</span><h3>Creator Marketplace</h3><span>Uza guides, graphics, templates na huduma.</span></a>
+    <a class="zp-strip" href="community.html" style="--art:linear-gradient(120deg,#be185d,#1b0d4a)"><span class="zp-pi">🤝</span><h3>Community Help</h3><span>Elimu ya afya, usalama mtandaoni na ushauri kwa vijana.</span></a>
+  </div>
+
+  <!-- AI -->
+  <div class="zp-sec"><h2>Msaidizi wa AI</h2></div>
+  <section class="zp-ai" id="ai">
+    <div>
+      <span class="zp-slide-tag">AI MSAIDIZI WA GAMEHUB</span>
+      <h2>Uliza Chochote — Jibu Papo Hapo</h2>
+      <p>AI inajua bei, bidhaa na mfumo wa malipo. Inakusaidia kununua, kuomba game au kutatua tatizo — kwa Kiswahili, wakati wowote.</p>
+      <div class="zp-ai-ex" id="aiExamples">
+        <button class="zp-chip" type="button">FIFA 25 bei gani?</button>
+        <button class="zp-chip" type="button">Naomba muda wa masaa 3 GeForce</button>
+        <button class="zp-chip" type="button">Sijapata bidhaa yangu</button>
       </div>
-
-      <div class="hm2-side-cards">
-        <a class="hm2-scard" href="shop.html?cat=ps5">
-          <span class="ic" style="background:rgba(59,130,246,.15)">🎮</span>
-          <div><b>PlayStation</b><small>PS5 Games</small></div>
-          <span class="arr">→</span>
-        </a>
-        <a class="hm2-scard" href="shop.html?cat=switch">
-          <span class="ic" style="background:rgba(239,68,68,.15)">🎮</span>
-          <div><b>Nintendo Switch</b><small>Switch Games</small></div>
-          <span class="arr">→</span>
-        </a>
-        <a class="hm2-scard" href="shop.html?cat=pc">
-          <span class="ic" style="background:rgba(6,182,212,.15)">💻</span>
-          <div><b>PC Games</b><small>High Performance</small></div>
-          <span class="arr">→</span>
-        </a>
-      </div>
-
-      <div class="hm2-promo">
-        <div class="hm2-promo-ic">🎮</div>
-        <h3>GAMING<br>IS NOT JUST A GAME<br><span style="color:#a78bfa">IT'S A LIFESTYLE</span></h3>
-        <p>Explore everything you love — all in one place.</p>
-        <div class="hm2-promo-icons">
-          <div><span>🎮</span>Games</div>
-          <div><span>🎬</span>Movies</div>
-          <div><span>📺</span>Live</div>
-          <div><span>🎓</span>Courses</div>
-          <div><span>🤖</span>AI</div>
-          <div><span>❤️</span>Health</div>
-          <div><span>👥</span>Community</div>
-          <div><span>•••</span>More</div>
-        </div>
-      </div>
-
+      <p style="margin:16px 0 0;display:flex;gap:10px;flex-wrap:wrap"><button class="zp-btn" id="openAiBtn" type="button"><span data-ic="bot"></span>Zungumza na AI</button><a class="zp-btn ghost" href="ai.html"><span data-ic="chevr"></span>Fungua AI Assistant</a></p>
     </div>
+    <div class="zp-ai-orb" data-ic="bot"></div>
+  </section>
 
-    <div class="hm2-sec">
-      <div class="hm2-sec-h">
-        <h2>🔥 Trending Games</h2>
-        <a href="shop.html">Explore All →</a>
-      </div>
-      <div class="hm2-grid" id="trendingGrid">
-        <div style="grid-column:1/-1;text-align:center;color:#6b7290;padding:30px">Inapakia...</div>
-      </div>
-    </div>
-
-    <div class="hm2-row2">
-      <div>
-        <div class="hm2-sec-h">
-          <h2>🎮 Browse By Categories</h2>
-          <a href="shop.html">Explore All →</a>
-        </div>
-        <div class="hm2-cats">
-          <a class="hm2-cat" href="shop.html?cat=action"><div class="ic">⚔️</div><b>Action & Adventure</b></a>
-          <a class="hm2-cat" href="shop.html?cat=racing"><div class="ic">🏎️</div><b>Racing</b></a>
-          <a class="hm2-cat" href="shop.html?cat=sports"><div class="ic">⚽</div><b>Sports</b></a>
-          <a class="hm2-cat" href="shop.html?cat=rpg"><div class="ic">🗡️</div><b>RPG</b></a>
-          <a class="hm2-cat" href="shop.html?cat=strategy"><div class="ic">♟️</div><b>Strategy</b></a>
-          <a class="hm2-cat" href="shop.html?cat=shooting"><div class="ic">🔫</div><b>Shooting</b></a>
-        </div>
-      </div>
-
-      <div>
-        <div class="hm2-sec-h"><h2>🎁 Special Offers</h2></div>
-        <div class="hm2-offer">
-          <div class="ic">🕸️</div>
-          <div style="flex:1">
-            <b>Marvel's Spider-Man 2</b>
-            <div class="price">
-              <span class="now">Tsh 52,99</span>
-              <span class="old">Tsh 70,000</span>
-              <span class="off">-25%</span>
-            </div>
-          </div>
-          <a class="view" href="shop.html">View Deal →</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="hm2-row2">
-      <div>
-        <div class="hm2-sec-h"><h2>⚽ Live Football</h2><a href="live.html">View All Matches →</a></div>
-        <div class="hm2-live">
-          <div class="hm2-live-card">
-            <div class="status">LIVE</div>
-            <div class="hm2-live-teams"><b>Man City</b><span>⚽</span><b>Arsenal</b></div>
-            <div class="hm2-live-score">2 - 1</div>
-            <div class="hm2-live-time">72:34</div>
-          </div>
-          <div class="hm2-live-card">
-            <div class="status">20:45</div>
-            <div class="hm2-live-teams"><b>Real Madrid</b><span>⚽</span><b>Barcelona</b></div>
-            <div class="hm2-live-score">—</div>
-            <div class="hm2-live-time">Tonight</div>
-          </div>
-          <div class="hm2-live-card">
-            <div class="status">21:00</div>
-            <div class="hm2-live-teams"><b>Bayern</b><span>⚽</span><b>Dortmund</b></div>
-            <div class="hm2-live-score">—</div>
-            <div class="hm2-live-time">Tonight</div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div class="hm2-sec-h"><h2>📚 Popular Courses</h2><a href="academy.html">Explore All →</a></div>
-        <div class="hm2-course">
-          <div class="ic">💻</div>
-          <div>
-            <b>Web Development</b>
-            <small>Learn HTML, CSS, JavaScript</small>
-            <small style="color:#ffb020">★ 4.8 (1.2k)</small>
-          </div>
-          <a class="view" href="academy.html">View Course</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="hm2-sec">
-      <section style="background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(76,29,149,.08));border:1px solid rgba(139,92,246,.25);border-radius:16px;padding:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
-        <div style="flex:1;min-width:250px">
-          <span style="font-size:11px;color:#a78bfa;letter-spacing:1.5px;font-weight:700">🤖 AI MSAIDIZI WA GAMEHUB</span>
-          <h2 style="margin:8px 0 8px;font-size:22px">Uliza Chochote — Jibu Papo Hapo</h2>
-          <p style="color:#969dbb;font-size:13px;margin:0 0 16px">AI inajua bei, bidhaa na mfumo wa malipo. Inakusaidia kununua, kuomba game au kutatua tatizo — kwa Kiswahili.</p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button type="button" class="zp-chip" style="padding:7px 12px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:12px;cursor:pointer">FIFA 25 bei gani?</button>
-            <button type="button" class="zp-chip" style="padding:7px 12px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:12px;cursor:pointer">Naomba muda wa masaa 3 GeForce</button>
-          </div>
-          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
-            <button class="zp-btn" id="openAiBtn" style="padding:11px 20px;border-radius:10px;background:#7c3aed;color:#fff;border:none;font-weight:700;font-size:13px;cursor:pointer">🤖 Zungumza na AI</button>
-            <a class="zp-btn ghost" href="ai.html" style="padding:11px 20px;border-radius:10px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.1);font-weight:700;font-size:13px;text-decoration:none">Fungua AI Assistant →</a>
-          </div>
-        </div>
-        <div style="font-size:90px">🤖</div>
-      </section>
-    </div>
-
-    <div class="hm2-sec">
-      <div class="hm2-sec-h"><h2>💳 Njia za Malipo</h2></div>
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-          <span style="padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:12px;color:#fff;font-weight:600">M-Pesa</span>
-          <span style="padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:12px;color:#fff;font-weight:600">Tigo Pesa</span>
-          <span style="padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:12px;color:#fff;font-weight:600">Airtel Money</span>
-          <span style="padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:12px;color:#fff;font-weight:600">Halotel</span>
-        </div>
-        <p style="margin:0;color:#969dbb;font-size:12.5px">Malipo ni automatic kupitia ClickPesa. Ukipata tatizo, tuma pesa moja kwa moja kwa <strong style="color:#fff">0786 095 758 — Amina Mwinyi</strong>.</p>
-      </div>
-    </div>
-
-  </main>
+  <!-- PAYMENTS -->
+  <div class="zp-sec"><h2>Njia za Malipo</h2></div>
+  <section class="zp-pay">
+    <div class="chips"><span>M-Pesa (Vodacom)</span><span>Tigo Pesa</span><span>Airtel Money</span><span>Halotel</span></div>
+    <p>Malipo ni automatic kupitia AzamPay. Ukipata tatizo, tuma pesa moja kwa moja kwa <strong>0786 095 758 — Amina Mwinyi</strong>, kisha wasiliana nasi WhatsApp na namba ya muamala (ref) kupata bidhaa yako.</p>
+  </section>
 </div>
 
 <script src="zoneplay-shell.js"></script>
@@ -428,190 +90,123 @@
 <script src="app.js"></script>
 <script src="chat.js"></script>
 <script>
-/* Sidebar toggle */
-function toggleSidebar() {
-  var sb = document.getElementById('sidebar');
-  var ov = document.getElementById('sideOverlay');
-  if (sb) sb.classList.toggle('on');
-  if (ov) ov.classList.toggle('on');
-}
-
 (function(){
-  var esc = (window.ZP && ZP.esc) ? ZP.esc : function(s){ return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
-  var money = (window.ZP && ZP.money) ? ZP.money : function(n){ return 'Tsh ' + Number(n||0).toLocaleString(); };
+  var esc = ZP.esc;
+  // Fill icon placeholders
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  document.getElementById('zpPrev').innerHTML = ZP.icon('chevl');
+  document.getElementById('zpNext').innerHTML = ZP.icon('chevr');
 
-  /* ===== USER ===== */
-  try {
-    var u = JSON.parse(localStorage.getItem('gamehubUser') || 'null');
-    if (u && u.name) {
-      var el = document.getElementById('profileName');
-      if (el) el.textContent = u.name;
-      var av = document.getElementById('avatarLetter');
-      if (av) av.textContent = u.name.charAt(0).toUpperCase();
-    }
-  } catch(e) {}
-
-  /* ===== HELPERS ===== */
-  window.addToCartFromHome = function(id) {
-    if (!id) return;
-    var cart = {};
-    try { cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}'); } catch(e){}
-    if (cart[id]) cart[id].qty = (cart[id].qty || 1) + 1;
-    else cart[id] = { id: id, qty: 1 };
-    localStorage.setItem('gamehubCart', JSON.stringify(cart));
-    if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
-    if (window.ZP && ZP.updateCart) ZP.updateCart();
-    updateBadge();
-    alert('✅ Imeongezwa kwenye kikapu!');
-  };
-
-  window.buyNowFromHome = function(id) {
-    if (!id) return;
-    fetch('/api/products').then(function(r){ return r.json(); }).then(function(d){
-      var p = (d.products || []).find(function(x){ return String(x.id) === String(id); });
-      if (!p) { alert('Bidhaa haipatikani.'); return; }
-      var item = {
-        id: p.id, name: p.name, emoji: p.emoji || '🎮',
-        price: p.price, num: Number(p.price || 0), qty: 1,
-        downloadLink: p.downloadLink || '', accountUser: p.accountUser || '',
-        accountPassword: p.accountPassword || '', imageUrl: p.imageUrl || ''
-      };
-      localStorage.setItem('gamehubQuickBuy', JSON.stringify(item));
-      location.href = 'checkout.html?quick=1';
-    }).catch(function(){ alert('Hitilafu ya mtandao.'); });
-  };
-
-  window.wishFromHome = function(id) {
-    if (!id) return;
-    var w = {};
-    try { w = JSON.parse(localStorage.getItem('gamehubWishlist') || '{}'); } catch(e){}
-    if (w[id]) { delete w[id]; alert('🤍 Imeondolewa kwenye Wishlist.'); }
-    else { w[id] = { id: id, addedAt: new Date().toISOString() }; alert('❤️ Imeongezwa kwenye Wishlist!'); }
-    localStorage.setItem('gamehubWishlist', JSON.stringify(w));
-  };
-
-  function updateBadge() {
-    try {
-      var cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
-      var count = Object.values(cart).reduce(function(t, i){ return t + (i.qty || 1); }, 0);
-      var b1 = document.getElementById('cartBadge');
-      var b2 = document.getElementById('cartCount');
-      if (b1) b1.textContent = count;
-      if (b2) b2.textContent = count;
-    } catch(e) {}
+  /* ---------- Categories ---------- */
+  var catsEl = document.getElementById('zpCats');
+  function renderCats(list){
+    var counts = {};
+    (list||[]).forEach(function(p){ if(p.platform) counts[p.platform]=(counts[p.platform]||0)+1; });
+    catsEl.innerHTML = ZP.PLATFORMS.map(function(pl){
+      var n = counts[pl.key]||0;
+      return '<a class="zp-cat" href="shop.html?cat='+pl.key+'"><span class="zp-ci" style="--art:'+pl.art+'">'+ZP.icon(pl.icon)+'</span><b>'+esc(pl.label)+'</b><small>'+(n? n+' bidhaa':'Angalia')+'</small></a>';
+    }).join('') +
+    '<a class="zp-cat" href="giftcards.html"><span class="zp-ci" style="--art:linear-gradient(135deg,#f59e0b,#c2255c)">'+ZP.icon('gift')+'</span><b>Gift Cards</b><small>Steam • PSN</small></a>'+
+    '<a class="zp-cat" href="efootball.html"><span class="zp-ci" style="--art:linear-gradient(135deg,#16a34a,#0b5a8a)">'+ZP.icon('ball')+'</span><b>Top-Up</b><small>eFootball</small></a>';
   }
-  updateBadge();
+  renderCats([]);
 
-  /* ===== HERO SLIDER ===== */
-  var heroIndex = 0, heroTimer = null, heroSlides = [];
-
-  function renderHero(i) {
-    if (!heroSlides.length) return;
-    var s = heroSlides[i % heroSlides.length];
-    document.getElementById('heroTag').textContent = s.tag;
-    document.getElementById('heroTitle').textContent = s.title;
-    document.getElementById('heroDesc').textContent = s.desc;
-    var off = s.old > s.price ? Math.round(((s.old - s.price) / s.old) * 100) : 0;
-    document.getElementById('heroPrice').innerHTML = '<span class="now">' + money(s.price) + '</span>' + (s.old > s.price ? '<span class="old">' + money(s.old) + '</span><span class="off">-' + off + '%</span>' : '');
-    var btn = document.getElementById('heroBuyBtn');
-    btn.href = s.href || 'shop.html';
-    if (s.imageUrl) {
-      document.getElementById('heroBg').style.background = 'linear-gradient(180deg,rgba(10,13,26,.2),rgba(10,13,26,.8)),url(' + JSON.stringify(s.imageUrl) + ') center/cover';
-    } else {
-      document.getElementById('heroBg').style.background = s.art || 'linear-gradient(120deg,#1a0a3d,#0a1a4d)';
-    }
-    document.querySelectorAll('#heroDots button').forEach(function(b, n) { b.classList.toggle('on', n === (i % heroSlides.length)); });
-  }
-
-  function startHeroTimer() {
-    clearInterval(heroTimer);
-    if (heroSlides.length <= 1) return;
-    heroTimer = setInterval(function() {
-      heroIndex = (heroIndex + 1) % heroSlides.length;
-      renderHero(heroIndex);
-    }, 7000);
-  }
-
-  function buildHeroDots() {
-    var dots = document.getElementById('heroDots');
-    dots.innerHTML = heroSlides.map(function(_, n){ return '<button' + (n === 0 ? ' class="on"' : '') + '></button>'; }).join('');
-    dots.querySelectorAll('button').forEach(function(b, n) {
-      b.addEventListener('click', function() { heroIndex = n; renderHero(n); startHeroTimer(); });
-    });
-  }
-
-  /* ===== LOAD PRODUCTS ===== */
-  fetch('/api/products').then(function(r){ return r.json(); }).then(function(d){
-    var products = (d.products || []).filter(function(p){ return p.section === 'shop' || !p.section; });
-
-    heroSlides = products.slice(0, 4).map(function(p, idx) {
-      var price = Number(p.price || 0);
-      var oldPrice = Math.round(price * 1.35);
-      return {
-        tag: idx === 0 ? 'Bestseller' : (idx === 1 ? 'New Release' : 'Top Seller'),
-        title: p.name,
-        desc: p.type || 'Digital Product',
-        price: price,
-        old: oldPrice,
-        imageUrl: p.imageUrl || '',
-        art: (window.ZP && ZP.art) ? ZP.art(p.name) : 'linear-gradient(120deg,#1a0a3d,#0a1a4d)',
-        href: 'product.html?id=' + encodeURIComponent(p.id)
-      };
-    });
-    if (!heroSlides.length) {
-      heroSlides = [
-        { tag: 'Karibu', title: 'LIFEISGAMETZ', desc: 'Duka la gaming la Tanzania', price: 0, old: 0, art: 'linear-gradient(120deg,#1a0a3d,#0a1a4d)', href: 'shop.html' }
-      ];
-    }
-    buildHeroDots();
-    renderHero(0);
-    startHeroTimer();
-
-    var grid = document.getElementById('trendingGrid');
-    var top = products.slice(0, 6);
-    if (!top.length) {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#6b7290;padding:30px">Hakuna bidhaa bado. Admin akiongeza zitaonekana hapa.</div>';
-    } else {
-      grid.innerHTML = top.map(function(p) {
-        var price = Number(p.price || 0);
-        var plats = ['PS5','Xbox','PC'];
-        var art = (window.ZP && ZP.art) ? ZP.art(p.name) : 'linear-gradient(135deg,#7c3aed,#4c1d95)';
-        var imgHtml = p.imageUrl
-          ? '<img src="' + esc(p.imageUrl) + '" alt="' + esc(p.name) + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'' + esc(p.emoji || '🎮') + '\'">'
-          : esc(p.emoji || '🎮');
-        return '<div class="hm2-card">' +
-          '<a href="product.html?id=' + encodeURIComponent(p.id) + '" style="text-decoration:none;color:inherit">' +
-            '<div class="thumb" style="background:' + art + '">' + imgHtml + '</div>' +
-            '<div class="plats">' + plats.map(function(x){ return '<span>' + x + '</span>'; }).join('') + '</div>' +
-            '<b>' + esc(p.name) + '</b>' +
-            '<div class="price">' + money(price) + '</div>' +
-          '</a>' +
-          '<div class="btns">' +
-            '<button class="buy" onclick="buyNowFromHome(\'' + esc(p.id) + '\')">⚡ Buy Now</button>' +
-            '<button class="add" onclick="addToCartFromHome(\'' + esc(p.id) + '\')">🛒</button>' +
-            '<button class="wish" onclick="wishFromHome(\'' + esc(p.id) + '\')">🤍</button>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-    }
-  }).catch(function(){
-    document.getElementById('trendingGrid').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ff7891;padding:30px">Hitilafu ya mtandao.</div>';
+  /* ---------- Featured games ---------- */
+  var grid = document.getElementById('featuredGames');
+  ZP.loadProducts().then(function(list){
+    renderCats(list);
+    grid.innerHTML = list.slice(0,10).map(ZP.card).join('') || '<div class="zp-empty"><h3>Bado hakuna bidhaa</h3><p>Admin akiongeza bidhaa zitaonekana hapa.</p></div>';
   });
 
-  /* ===== AI HELPERS ===== */
-  document.getElementById('openAiBtn')?.addEventListener('click', function() {
-    var b = document.getElementById('ghChatBtn');
-    if (b) b.click();
-  });
-  document.querySelectorAll('.zp-chip').forEach(function(c) {
-    c.addEventListener('click', function() {
-      var i = document.getElementById('ghChatInput');
-      if (i) { i.value = c.textContent; i.focus(); }
-      var b = document.getElementById('ghChatBtn');
-      if (b) b.click();
+  /* ---------- Hero ---------- */
+  function ytId(u){ var m=(u||'').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/); return m?m[1]:null; }
+  function safeUrl(u){ u=String(u||''); return /^(https?:\/\/|\/|[\w-]+\.html)/i.test(u) ? u : 'shop.html'; }
+  var DEFAULT_SLIDES = [
+    {tag:'LIFEISGAMETZ', title:'CHEZA. JIFUNZE. SHINDA.', desc:'Duka la gaming la Tanzania lenye games, digital products, tournaments, live football, Academy na AI assistants — yote sehemu moja.', emoji:'🎮', art:'linear-gradient(120deg,#1a0a56,#0a1f6b 60%,#062a5c)', cta:['Explore Games','shop.html'], cta2:['Gaming Academy','academy.html']},
+    {tag:'DUKA', title:'GAME KEYS & GIFT CARDS', desc:'Games za kudownload moja kwa moja, gift cards na Steam accounts. Lipa kwa M-Pesa, Tigo Pesa, Airtel Money au Halotel.', emoji:'🎁', art:'linear-gradient(120deg,#3b0a5c,#141a6b 60%,#0a2a5c)', cta:['Nunua Sasa','shop.html'], cta2:['Gift Cards','giftcards.html']},
+    {tag:'LIVE', title:'TAZAMA LIVE FOOTBALL', desc:'Mechi live, matokeo ya papo hapo, filamu na video — kila kitu ndani ya LIFEISGAMETZ.', emoji:'⚽', art:'linear-gradient(120deg,#0a3a5c,#0a1a6b 60%,#2a0a5c)', cta:['Watch Live','live.html'], cta2:['Live Scores','livescores.html']}
+  ];
+  var slidesEl=document.getElementById('zpSlides'), dotsEl=document.getElementById('zpDots'), slider=document.getElementById('zpSlider');
+  var slides=[], cur=0, timer=null, paused=false;
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function slideHtml(s,i){
+    var media='';
+    if (s.yt) media='<iframe data-yt="'+s.yt+'" title="'+esc(s.title)+'" allow="autoplay; encrypted-media" tabindex="-1"></iframe>';
+    else if (s.video) media='<video muted loop playsinline preload="metadata"'+(s.poster?' poster="'+esc(s.poster)+'"':'')+'><source src="'+esc(s.video)+'"></video>';
+    else if (s.image) media='<img src="'+esc(s.image)+'" alt="" onerror="this.remove()">';
+    var big = (!media && s.emoji) ? '<span class="zp-bigemoji" aria-hidden="true">'+esc(s.emoji)+'</span>' : '';
+    var price = s.price ? '<span class="zp-price">'+ZP.money(s.price)+'<small>TZS</small></span>' : '';
+    return '<div class="zp-slide'+(i===0?' on':'')+'" role="group" aria-roledescription="slide" aria-label="'+(i+1)+'">'+
+      '<div class="zp-slide-bg" style="--art:'+(s.art||ZP.art(s.title))+'">'+media+big+'</div>'+
+      '<div class="zp-slide-body"><span class="zp-slide-tag">'+esc(s.tag||'FEATURED')+'</span><h2>'+esc(s.title)+'</h2>'+(s.desc?'<p>'+esc(s.desc)+'</p>':'')+
+      '<div class="zp-slide-cta">'+price+'<a class="zp-btn" href="'+esc(s.cta[1])+'">'+esc(s.cta[0])+'</a>'+(s.cta2?'<a class="zp-btn ghost" href="'+esc(s.cta2[1])+'">'+esc(s.cta2[0])+'</a>':'')+'</div></div></div>';
+  }
+  var startedSlides={};
+  function playOverlay(el,i){
+    if (el.querySelector('.zp-ds-play')) return;
+    var b=document.createElement('button'); b.type='button'; b.className='zp-ds-play';
+    b.innerHTML=ZP.icon('play')+'<span>Data Saver iko wazi — bonyeza kucheza</span>';
+    b.addEventListener('click',function(e){ e.stopPropagation(); startedSlides[i]=true; b.remove(); media(i,true); });
+    el.appendChild(b);
+  }
+  function media(i,on){
+    var el=slidesEl.children[i]; if(!el) return;
+    var hasEmbed=el.querySelector('iframe,video');
+    if (on && ZP.dataSaver() && hasEmbed && !startedSlides[i]){ playOverlay(el,i); return; }
+    var f=el.querySelector('iframe'); if(f){ if(on){ var id=f.dataset.yt; f.src='https://www.youtube.com/embed/'+id+'?autoplay=1&mute=1&controls=0&loop=1&playlist='+id+'&rel=0&modestbranding=1&playsinline=1'; } else f.removeAttribute('src'); }
+    var v=el.querySelector('video'); if(v){ if(on && !reduce){ v.muted=true; var p=v.play(); p&&p.catch&&p.catch(function(){}); } else v.pause(); }
+  }
+  function show(i){
+    if(!slides.length) return;
+    media(cur,false); cur=(i+slides.length)%slides.length;
+    Array.prototype.forEach.call(slidesEl.children,function(el,n){ el.classList.toggle('on',n===cur); });
+    Array.prototype.forEach.call(dotsEl.children,function(el,n){ el.classList.toggle('on',n===cur); el.setAttribute('aria-current',n===cur?'true':'false'); });
+    media(cur,true);
+  }
+  function tick(){ clearInterval(timer); if(slides.length>1 && !reduce) timer=setInterval(function(){ if(!paused && !document.hidden) show(cur+1); },8000); }
+  function build(list){
+    slides=list;
+    slidesEl.innerHTML=slides.map(slideHtml).join('');
+    dotsEl.innerHTML=slides.map(function(s,i){ return '<button type="button" aria-label="Slide '+(i+1)+'" class="'+(i===0?'on':'')+'"></button>'; }).join('');
+    dotsEl.querySelectorAll('button').forEach(function(b,i){ b.addEventListener('click',function(){ show(i); tick(); }); });
+    var multi=slides.length>1; document.getElementById('zpPrev').style.display=multi?'':'none'; document.getElementById('zpNext').style.display=multi?'':'none'; dotsEl.style.display=multi?'':'none';
+    cur=0; media(0,true); tick();
+  }
+  build(DEFAULT_SLIDES);
+  document.getElementById('zpPrev').addEventListener('click',function(){ show(cur-1); tick(); });
+  document.getElementById('zpNext').addEventListener('click',function(){ show(cur+1); tick(); });
+  slider.addEventListener('mouseenter',function(){ paused=true; });
+  slider.addEventListener('mouseleave',function(){ paused=false; });
+  slider.addEventListener('focusin',function(){ paused=true; });
+  slider.addEventListener('focusout',function(){ paused=false; });
+  var x0=null;
+  slider.addEventListener('touchstart',function(e){ x0=e.touches[0].clientX; },{passive:true});
+  slider.addEventListener('touchend',function(e){ if(x0==null) return; var dx=e.changedTouches[0].clientX-x0; x0=null; if(Math.abs(dx)>45){ show(cur+(dx<0?1:-1)); tick(); } });
+
+  // Admin-fed slides: product trailers + banners, then the defaults
+  Promise.all([
+    ZP.loadProducts(),
+    fetch('/api/banners').then(function(r){ return r.json(); }).catch(function(){ return {}; })
+  ]).then(function(res){
+    var prods=res[0]||[], banners=(res[1]&&res[1].banners)||[];
+    var fromProducts=prods.filter(function(p){ return p.admin && (p.trailerUrl||p.imageUrl); }).slice(0,4).map(function(p){
+      var id=ytId(p.trailerUrl);
+      return {tag:(p.type||'GAME').toUpperCase(), title:p.name, desc:p.desc, price:p.price, yt:id, video:(!id&&p.trailerUrl)?p.trailerUrl:'', image:(!p.trailerUrl)?p.imageUrl:'', poster:p.imageUrl, emoji:p.emoji, art:ZP.art(p.name), cta:['Nunua Sasa',ZP.href(p)]};
     });
+    var fromBanners=banners.slice(0,3).map(function(b){ return {tag:'GAMEHUB UPDATE', title:b.title||'Habari mpya', desc:b.description, emoji:'📢', art:'linear-gradient(120deg,#3b0a5c,#0a2a6b)', cta:[b.buttonText||'Angalia',safeUrl(b.buttonUrl)]}; });
+    var all=fromProducts.concat(fromBanners);
+    if (all.length) build(all.concat(DEFAULT_SLIDES.slice(0, Math.max(0,3-all.length))));
   });
 
+  /* ---------- AI helpers ---------- */
+  function openChat(text){
+    var b=document.getElementById('ghChatBtn'), box=document.getElementById('ghChatBox');
+    if(box && box.style.display!=='block' && b) b.click();
+    if(text){ var i=document.getElementById('ghChatInput'); if(i){ i.value=text; i.focus(); } }
+  }
+  document.getElementById('openAiBtn').addEventListener('click',function(){ openChat(); });
+  document.querySelectorAll('#aiExamples .zp-chip').forEach(function(c){ c.addEventListener('click',function(){ openChat(c.textContent); }); });
 })();
 </script>
 </body>
