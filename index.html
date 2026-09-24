@@ -11,6 +11,24 @@
     * { box-sizing: border-box; }
     body { margin: 0; background: #0a0d1a; color: #e8eaff; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
 
+    /* ⚠️ FICHA TOPBAR NA BOTTOM NAV YA ZONEPLAY-SHELL.JS */
+    /* Hii inazuia kurudiwa kwa search/cart/profile */
+    body > .zp-topbar,
+    body > .zp-bottom-nav,
+    body > .zp-navbar,
+    body > .zp-header,
+    body > .zp-topnav,
+    body > .zp-mobile-nav,
+    body > .topbar,
+    body > .bottom-nav,
+    .zp-shell-topbar,
+    .zp-shell-bottomnav,
+    .zp-appbar,
+    .zp-bottombar,
+    .zp-floating-nav {
+      display: none !important;
+    }
+
     .hm2-wrap { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
     @media (max-width: 900px) { .hm2-wrap { grid-template-columns: 1fr; } }
 
@@ -150,7 +168,7 @@
     .hm2-course small { font-size: 10.5px; color: #969dbb; display: block; }
     .hm2-course .view { margin-left: auto; padding: 7px 12px; border-radius: 7px; background: #7c3aed; color: #fff; text-decoration: none; font-size: 11px; font-weight: 700; }
 
-    /* HIDE OLD ZP */
+    /* HIDE OLD ZP SECTIONS */
     .zp-hero, .zp-trust, .zp-sec, .zp-cats, .zp-grid, .zp-strips, .zp-ai, .zp-pay { display: none !important; }
 
     .hm2-mobile-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 100; width: 38px; height: 38px; border-radius: 10px; background: #7c3aed; border: none; color: #fff; font-size: 17px; cursor: pointer; }
@@ -221,7 +239,6 @@
 
     <div class="hm2-row1">
 
-      <!-- HERO SLIDER — picha zinatoka kwenye bidhaa zilizo na imageUrl -->
       <div class="hm2-hero" id="heroSlider">
         <div class="hm2-hero-bg" id="heroBg" style="background:linear-gradient(120deg,#1a0a3d,#0a1a4d)"></div>
         <div class="hm2-hero-body">
@@ -461,7 +478,7 @@
   }
   updateBadge();
 
-  /* ===== HERO SLIDER (picha kutoka bidhaa) ===== */
+  /* ===== HERO SLIDER ===== */
   var heroIndex = 0, heroTimer = null, heroSlides = [];
 
   function renderHero(i) {
@@ -475,7 +492,6 @@
     var btn = document.getElementById('heroBuyBtn');
     btn.href = s.href || 'shop.html';
     if (s.imageUrl) {
-      document.getElementById('heroBg').style.backgroundImage = 'linear-gradient(180deg,rgba(10,13,26,.2),rgba(10,13,26,.8)),url(' + JSON.stringify(s.imageUrl) + ')';
       document.getElementById('heroBg').style.background = 'linear-gradient(180deg,rgba(10,13,26,.2),rgba(10,13,26,.8)),url(' + JSON.stringify(s.imageUrl) + ') center/cover';
     } else {
       document.getElementById('heroBg').style.background = s.art || 'linear-gradient(120deg,#1a0a3d,#0a1a4d)';
@@ -504,7 +520,6 @@
   fetch('/api/products').then(function(r){ return r.json(); }).then(function(d){
     var products = (d.products || []).filter(function(p){ return p.section === 'shop' || !p.section; });
 
-    /* Hero slides kutoka bidhaa zenye imageUrl au emoji */
     heroSlides = products.slice(0, 4).map(function(p, idx) {
       var price = Number(p.price || 0);
       var oldPrice = Math.round(price * 1.35);
@@ -528,7 +543,6 @@
     renderHero(0);
     startHeroTimer();
 
-    /* Trending grid na picha zote */
     var grid = document.getElementById('trendingGrid');
     var top = products.slice(0, 6);
     if (!top.length) {
@@ -577,4 +591,4 @@
 })();
 </script>
 </body>
-</html>
+              </html>
