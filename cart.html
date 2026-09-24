@@ -36,7 +36,8 @@
     }
 
     .ct2-prod { display: flex; align-items: center; gap: 14px; }
-    .ct2-thumb { width: 70px; height: 70px; border-radius: 10px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 34px; flex-shrink: 0; }
+    .ct2-thumb { width: 70px; height: 70px; border-radius: 10px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 34px; flex-shrink: 0; overflow: hidden; }
+    .ct2-thumb img { width: 100%; height: 100%; object-fit: cover; }
     .ct2-prod-info b { display: block; font-size: 14px; margin-bottom: 4px; }
     .ct2-plats { display: flex; gap: 4px; margin-bottom: 4px; flex-wrap: wrap; }
     .ct2-plats span { font-size: 9.5px; padding: 2px 6px; border-radius: 4px; background: rgba(124,58,237,.15); color: #a78bfa; font-weight: 600; }
@@ -103,7 +104,7 @@
         <div class="ct2-head-icon">🛒</div>
         <div>
           <h1>Your Cart</h1>
-          <p id="sub">Umeweka bidhaa 5 kwenye kikapu chako.</p>
+          <p id="sub">Umeweka bidhaa kwenye kikapu chako.</p>
         </div>
       </div>
       <a href="shop.html" class="ct2-continue">← Continue Shopping</a>
@@ -142,7 +143,8 @@
           <div class="ct2-sum-row"><span>Usafirishaji</span><span id="shipping">TSh 0</span></div>
           <div class="ct2-sum-row total"><span>Jumla Kuu</span><span id="totalBox">TSh 0</span></div>
 
-          <a class="ct2-pay-cta" href="checkout.html" id="payBtn">🔒 Endelea Kulipa →</a>
+          <!-- BUTTON ILIYOREKEBISHWA — inaenda checkout.html moja kwa moja -->
+          <a class="ct2-pay-cta" href="checkout.html" id="payBtn" onclick="return goCheckout(event)">🔒 Endelea Kulipa →</a>
           <div class="ct2-ssl">🔒 Malipo Salama • Inatumia SSL Encryption</div>
         </div>
 
@@ -192,6 +194,24 @@
 (function(){
   var esc = (window.ZP && ZP.esc) ? ZP.esc : function(s){ return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
   var MAXQ = 99;
+
+  /* ===== GO TO CHECKOUT (bila validation ya namba ya simu) ===== */
+  window.goCheckout = function(e) {
+    try {
+      // Angalia kama cart ina bidhaa
+      var cart = readCart();
+      var keys = Object.keys(cart);
+      if (!keys.length) {
+        if (e) e.preventDefault();
+        alert('Kikapu chako ni tupu. Ongeza bidhaa kwanza.');
+        return false;
+      }
+      // Ruhusu kwa checkout.html — validation itafanyika huko
+      return true;
+    } catch(err) {
+      return true;
+    }
+  };
 
   function readCart(){
     try {
@@ -253,9 +273,13 @@
       var q = qtyOf(i), n = numOf(i); total += n * q; count += q;
       var art = (window.ZP && ZP.art) ? ZP.art(i.name) : 'linear-gradient(135deg,#7c3aed,#4c1d95)';
       var plats = ['PS5', 'PS4', 'Xbox', 'PC'];
+      // Picha kama ipo
+      var thumbHtml = i.imageUrl
+        ? '<img src="' + esc(i.imageUrl) + '" alt="' + esc(i.name) + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'' + esc(i.emoji || '🎮') + '\'">'
+        : esc(i.emoji || '🎮');
       return '<div class="ct2-item" data-id="' + esc(i.id) + '">' +
         '<div class="ct2-prod">' +
-          '<div class="ct2-thumb" style="background:' + art + '">' + esc(i.emoji || '🎮') + '</div>' +
+          '<div class="ct2-thumb" style="background:' + art + '">' + thumbHtml + '</div>' +
           '<div class="ct2-prod-info">' +
             '<b>' + esc(i.name || 'Bidhaa') + '</b>' +
             '<div class="ct2-plats">' + plats.map(function(p){ return '<span>' + p + '</span>'; }).join('') + '</div>' +
