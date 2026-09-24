@@ -3,72 +3,266 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Malipo — LIFEISGAMETZ</title>
+  <title>Checkout — LIFEISGAMETZ</title>
   <link rel="stylesheet" href="zoneplay-full.css">
+  <style>
+    /* ===== CHECKOUT V2 — MODERN LAYOUT ===== */
+    .ck2-wrap { max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .ck2-head { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .ck2-head h1 { margin: 0; font-size: 26px; }
+    .ck2-head p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .ck2-back { width: 42px; height: 42px; border-radius: 12px; background: rgba(255,255,255,.05); display: grid; place-items: center; color: #fff; text-decoration: none; }
+    .ck2-steps { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+    .ck2-step { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+    .ck2-step b { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.08); display: grid; place-items: center; color: #fff; }
+    .ck2-step.on b { background: #7c3aed; color: #fff; }
+    .ck2-step.on { color: #fff; }
+    .ck2-line { width: 40px; height: 2px; background: rgba(255,255,255,.1); }
+
+    .ck2-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; }
+    @media (max-width: 900px) { .ck2-grid { grid-template-columns: 1fr; } }
+
+    .ck2-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+    .ck2-card-h { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .ck2-card-h i { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-style: normal; }
+    .ck2-card-h h2 { margin: 0; font-size: 18px; }
+    .ck2-card-h p { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+
+    .ck2-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 600px) { .ck2-row { grid-template-columns: 1fr; } }
+    .ck2-f { margin-bottom: 14px; }
+    .ck2-f label { display: block; font-size: 13px; margin-bottom: 6px; color: #c9d4f0; font-weight: 600; }
+    .ck2-f label span { color: #ff3eb5; }
+    .ck2-f input, .ck2-f select, .ck2-f textarea {
+      width: 100%; padding: 12px 14px; border-radius: 10px;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1);
+      color: #fff; font-size: 14px; font-family: inherit;
+    }
+    .ck2-f input:focus, .ck2-f select:focus, .ck2-f textarea:focus {
+      outline: none; border-color: #7c3aed; background: rgba(124,58,237,.08);
+    }
+    .ck2-f textarea { min-height: 80px; resize: vertical; }
+    .ck2-h3 { font-size: 15px; margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .ck2-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin: 10px 0; }
+    .ck2-check input { width: 18px; height: 18px; }
+
+    /* Order Summary */
+    .ck2-sum-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .ck2-sum-h h3 { margin: 0; font-size: 16px; }
+    .ck2-edit { color: #7c3aed; font-size: 13px; text-decoration: none; }
+    .ck2-item { display: grid; grid-template-columns: 60px 1fr auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.05); align-items: center; }
+    .ck2-item img, .ck2-item .art { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; display: grid; place-items: center; font-size: 28px; }
+    .ck2-item b { font-size: 14px; display: block; }
+    .ck2-item small { color: var(--muted); font-size: 12px; }
+    .ck2-item .qty { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+    .ck2-item .qty button { width: 24px; height: 24px; border-radius: 6px; background: rgba(255,255,255,.08); border: none; color: #fff; cursor: pointer; }
+    .ck2-item .price { text-align: right; font-weight: 700; }
+    .ck2-rows { padding-top: 12px; }
+    .ck2-r { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13.5px; color: var(--muted); }
+    .ck2-r.total { border-top: 1px solid rgba(255,255,255,.1); margin-top: 8px; padding-top: 12px; font-size: 18px; font-weight: 700; color: #fff; }
+    .ck2-r.total span:last-child { color: #a78bfa; }
+
+    /* Payment Methods */
+    .ck2-pay-opt { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,.08); margin-bottom: 8px; cursor: pointer; transition: .15s; }
+    .ck2-pay-opt:hover { background: rgba(255,255,255,.03); }
+    .ck2-pay-opt.on { border-color: #7c3aed; background: rgba(124,58,237,.08); }
+    .ck2-pay-opt input[type="radio"] { width: 18px; height: 18px; accent-color: #7c3aed; }
+    .ck2-pay-opt .ico { width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; font-size: 18px; }
+    .ck2-pay-opt .info { flex: 1; }
+    .ck2-pay-opt .info b { font-size: 14px; }
+    .ck2-pay-opt .info small { color: var(--muted); display: block; font-size: 11.5px; }
+    .ck2-pay-opt .tag { font-size: 10px; padding: 3px 8px; border-radius: 6px; background: rgba(124,58,237,.15); color: #a78bfa; font-weight: 600; }
+
+    .ck2-paynow {
+      width: 100%; padding: 16px; border-radius: 12px; border: none; margin-top: 14px;
+      background: linear-gradient(135deg,#7c3aed,#4c1d95); color: #fff; font-weight: 700; font-size: 15px;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    }
+    .ck2-paynow:disabled { opacity: .6; cursor: wait; }
+    .ck2-paynow .amt { font-size: 18px; }
+
+    .ck2-trust { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
+    @media (max-width: 700px) { .ck2-trust { grid-template-columns: repeat(2, 1fr); } }
+    .ck2-trust div { padding: 12px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; font-size: 11px; }
+    .ck2-trust div b { display: block; color: #fff; font-size: 12.5px; margin-bottom: 2px; }
+    .ck2-trust div span { color: var(--muted); }
+
+    .ck2-msg { padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 12px; display: none; }
+    .ck2-msg.on { display: block; }
+    .ck2-msg.err { background: rgba(239,68,68,.1); color: #fca5a5; border: 1px solid rgba(239,68,68,.2); }
+    .ck2-msg.ok  { background: rgba(34,197,94,.1); color: #86efac; border: 1px solid rgba(34,197,94,.2); }
+    .ck2-msg.wait { background: rgba(59,130,246,.1); color: #93c5fd; border: 1px solid rgba(59,130,246,.2); }
+  </style>
 </head>
 <body>
 <div class="main">
+  <div class="ck2-wrap">
 
-  <header class="zp-page-head">
-    <div class="zp-ph-ic" data-ic="wallet"></div>
-    <div><h1>Malipo</h1><p>Hakiki oda yako kisha ukamilishe malipo kwa usalama.</p></div>
-    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="cart.html"><span data-ic="chevl"></span>Rudi Kikapuni</a></div>
-  </header>
-
-  <div id="empty" hidden>
-    <div class="zp-empty"><h3>Kikapu chako ni tupu</h3><p>Ongeza bidhaa kwanza kisha urudi hapa kulipa.</p><a class="zp-btn" href="shop.html" id="shopBtn"></a></div>
-  </div>
-
-  <div class="ck-layout" id="layout" hidden>
-    <div>
-      <div class="ck-login" id="loginBanner" hidden><span data-ic="user" style="font-size:22px"></span><span>Unahitaji kuingia kwenye akaunti yako ili kulipa.</span><a class="zp-btn sm" id="loginBtn" href="login.html?return=checkout.html">Ingia</a></div>
-
-      <div class="ck-tabs" role="tablist" aria-label="Njia ya malipo">
-        <button class="ck-tab" id="tabAuto" role="tab" aria-selected="true" type="button"><span data-ic="bolt"></span><span><b>Malipo Automatic</b><span>PIN push kwenye simu yako</span></span></button>
-        <button class="ck-tab" id="tabManual" role="tab" aria-selected="false" type="button"><span data-ic="wallet"></span><span><b>Malipo Manual</b><span>Tuma kisha uthibitishe</span></span></button>
+    <header class="ck2-head">
+      <a class="ck2-back" href="cart.html" aria-label="Rudi kwenye kikapu">←</a>
+      <div>
+        <h1>Checkout</h1>
+        <p>Kamilisha ununuzi wako kwa usalama na urahisi.</p>
       </div>
+      <div class="ck2-steps">
+        <div class="ck2-step on"><b>1</b> Shipping Address</div>
+        <div class="ck2-line"></div>
+        <div class="ck2-step"><b>2</b> Payment Method</div>
+        <div class="ck2-line"></div>
+        <div class="ck2-step"><b>3</b> Confirmation</div>
+      </div>
+    </header>
 
-      <form class="ck-form" id="paymentForm" novalidate>
-        <p style="margin:0;font-size:13.5px;line-height:1.55;color:var(--muted)">Ukichagua Automatic, utapokea ombi la malipo (PIN push) kwenye wallet yako. Ingiza PIN yako kuthibitisha.</p>
-        <div class="ck-acct" id="acctBox" hidden><span data-ic="mail"></span><span id="acctText"></span></div>
-        <div class="ck-field"><label for="fullname">Jina Kamili</label><input type="text" id="fullname" required placeholder="mfano: Juma Juma" autocomplete="name"></div>
-        <div class="ck-field"><label for="phone">Namba ya Simu (255 + namba 9)</label><input type="tel" id="phone" required placeholder="2557XXXXXXXX" inputmode="numeric" autocomplete="tel"></div>
-        <div class="ck-field"><label for="provider">Mtandao wa Malipo</label>
-          <select id="provider" required>
-            <option value="">Chagua mtandao...</option>
-            <option value="Mpesa">M-Pesa</option>
-            <option value="Tigo">Mixx by Yas / Tigo</option>
-            <option value="Airtel">Airtel Money</option>
-            <option value="Halopesa">HaloPesa</option>
-            <option value="Azampesa">AzamPesa</option>
-          </select>
-          <small>Chagua mtandao unaolingana na namba uliyoweka ili push ya PIN itume kwenye wallet sahihi.</small>
-        </div>
-        <button type="submit" class="zp-btn ck-pay" id="payBtn"></button>
-        <p class="ck-status" id="payStatus" role="status" aria-live="polite"></p>
-      </form>
-
-      <section class="ck-form" id="manualSection" hidden>
-        <h3>Lipa Moja kwa Moja</h3>
-        <p style="margin:0;text-align:center;color:#c9d4f0;font-size:14px">Tuma jumla ya <strong id="manualTotal" style="color:var(--cyan)">0 TZS</strong> kwenye namba hii:</p>
-        <div class="ck-num"><strong id="payNum">0786 095 758</strong><button class="zp-btn ghost sm" id="copyNum" type="button"></button><small>Jina: <strong style="color:#fff">Amina Mwinyi</strong></small></div>
-        <p style="margin:0;color:var(--muted);font-size:13px;line-height:1.55">Baada ya kutuma, jaza fomu hii na namba ya muamala (tx ref / SMS reference) uliyopewa — admin atathibitisha na bidhaa yako itaonekana kwenye "My Orders".</p>
-        <div class="ck-field"><label for="manualName">Jina Kamili</label><input type="text" id="manualName" placeholder="mfano: Juma Juma" autocomplete="name"></div>
-        <div class="ck-field"><label for="manualPhone">Namba ya Simu</label><input type="tel" id="manualPhone" placeholder="2557XXXXXXXX" inputmode="numeric" autocomplete="tel"></div>
-        <div class="ck-field"><label for="manualTxRef">Namba ya Muamala (Tx Ref / Reference)</label><input type="text" id="manualTxRef" placeholder="mfano: MP240816.1234.A12345" autocomplete="off"></div>
-        <button type="button" class="zp-btn ck-pay" id="manualPayBtn"></button>
-        <p class="ck-status" id="manualStatus" role="status" aria-live="polite"></p>
-      </section>
+    <div id="empty" hidden>
+      <div class="ck2-card" style="text-align:center;padding:40px">
+        <h3>Kikapu chako ni tupu</h3>
+        <p style="color:var(--muted)">Ongeza bidhaa kwanza kisha urudi hapa kulipa.</p>
+        <a class="zp-btn" href="shop.html">Nenda Dukani</a>
+      </div>
     </div>
 
-    <aside class="ck-sum" aria-label="Muhtasari wa oda">
-      <header><h3>Oda Yako</h3><span class="ck-quick" id="quickBadge" hidden>⚡ NUNUA SASA</span></header>
-      <div class="ck-items" id="items"></div>
-      <div class="ck-coupon"><input type="text" id="couponInput" placeholder="Discount code" aria-label="Discount code" autocomplete="off"><button type="button" class="zp-btn ghost sm" id="applyCouponBtn" style="height:40px">Tumia</button></div>
-      <p class="ck-cmsg" id="couponMsg" role="status" aria-live="polite"></p>
-      <div class="ck-total"><span>JUMLA</span><strong id="totalBox">0 TZS</strong></div>
-      <div class="ck-trust"><span data-ic="shield"></span>Malipo salama kupitia ClickPesa</div>
-    </aside>
+    <div class="ck2-grid" id="layout" hidden>
+
+      <!-- LEFT: FORMS -->
+      <div>
+        <div class="ck2-card">
+          <div class="ck2-card-h">
+            <i>🛍️</i>
+            <div><h2>Shipping &amp; Billing Information</h2><p>Taarifa zako za usafirishaji na malipo.</p></div>
+          </div>
+
+          <h3 class="ck2-h3">1. Personal Information</h3>
+          <div class="ck2-row">
+            <div class="ck2-f"><label>Full Name <span>*</span></label><input type="text" id="fullname" placeholder="Kelvin Fred" autocomplete="name"></div>
+            <div class="ck2-f"><label>Email Address <span>*</span></label><input type="email" id="email" placeholder="kelvin@example.com" autocomplete="email"></div>
+          </div>
+          <div class="ck2-f"><label>Phone Number <span>*</span></label><input type="tel" id="phone" placeholder="+255 712 345 678" autocomplete="tel"></div>
+
+          <h3 class="ck2-h3" style="margin-top:20px">2. Shipping Address</h3>
+          <div class="ck2-row">
+            <div class="ck2-f"><label>Address <span>*</span></label><input type="text" id="address" placeholder="Dar es Salaam, Tanzania"></div>
+            <div class="ck2-f"><label>City <span>*</span></label><input type="text" id="city" placeholder="Dar es Salaam"></div>
+          </div>
+          <div class="ck2-row">
+            <div class="ck2-f"><label>Region <span>*</span></label>
+              <select id="region">
+                <option value="">Chagua mkoa...</option>
+                <option>Dar es Salaam</option>
+                <option>Arusha</option>
+                <option>Mwanza</option>
+                <option>Dodoma</option>
+                <option>Mbeya</option>
+                <option>Tanga</option>
+                <option>Morogoro</option>
+                <option>Zanzibar</option>
+                <option>Nyingine</option>
+              </select>
+            </div>
+            <div class="ck2-f"><label>Postal Code (Optional)</label><input type="text" id="postal" placeholder="14112"></div>
+          </div>
+          <label class="ck2-check"><input type="checkbox" id="saveAddr" checked> Tumia anwani hii kwa risiti</label>
+
+          <h3 class="ck2-h3" style="margin-top:20px">3. Additional Notes (Optional)</h3>
+          <div class="ck2-f"><textarea id="notes" placeholder="Maelezo yoyote ya ziada kwa mchukuzi..."></textarea></div>
+        </div>
+
+        <div class="ck2-card">
+          <div class="ck2-card-h">
+            <i>💳</i>
+            <div><h2>Payment Method</h2><p>Chagua njia ya malipo unayokufaa.</p></div>
+          </div>
+
+          <div id="payMethods">
+            <label class="ck2-pay-opt on">
+              <input type="radio" name="payMethod" value="Mpesa" checked>
+              <span class="ico" style="background:rgba(239,68,68,.15)">📱</span>
+              <span class="info"><b>M-Pesa</b><small>Lipa kwa M-Pesa (Tanzania)</small></span>
+              <span class="tag">Fast &amp; Secure</span>
+            </label>
+            <label class="ck2-pay-opt">
+              <input type="radio" name="payMethod" value="Airtel">
+              <span class="ico" style="background:rgba(220,38,38,.15)">🔴</span>
+              <span class="info"><b>Airtel Money</b><small>Lipa kwa Airtel Money</small></span>
+              <span class="tag">Fast &amp; Secure</span>
+            </label>
+            <label class="ck2-pay-opt">
+              <input type="radio" name="payMethod" value="Tigo">
+              <span class="ico" style="background:rgba(59,130,246,.15)">🔵</span>
+              <span class="info"><b>Tigo Pesa</b><small>Lipa kwa Tigo Pesa</small></span>
+              <span class="tag">Fast &amp; Secure</span>
+            </label>
+            <label class="ck2-pay-opt">
+              <input type="radio" name="payMethod" value="Halopesa">
+              <span class="ico" style="background:rgba(34,197,94,.15)">🟢</span>
+              <span class="info"><b>HaloPesa</b><small>Lipa kwa HaloPesa</small></span>
+              <span class="tag">Fast &amp; Secure</span>
+            </label>
+            <label class="ck2-pay-opt">
+              <input type="radio" name="payMethod" value="Manual">
+              <span class="ico" style="background:rgba(245,158,11,.15)">💵</span>
+              <span class="info"><b>Malipo ya Manual</b><small>Tuma pesa kisha uthibitishe</small></span>
+              <span class="tag">Refundable</span>
+            </label>
+          </div>
+
+          <p class="ck2-msg" id="payStatus" role="status"></p>
+          <button class="ck2-paynow" id="payBtn" type="button">
+            <span>🔒 Pay Now</span>
+            <span class="amt" id="payAmt">Tsh 0</span>
+          </button>
+
+          <!-- Manual section (hidden by default) -->
+          <div id="manualSection" hidden style="margin-top:16px;padding:16px;border-radius:12px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2)">
+            <h3 style="margin:0 0 10px;font-size:15px">Lipa Moja kwa Moja</h3>
+            <p style="margin:0 0 12px;font-size:13px;color:var(--muted)">Tuma jumla ya <strong id="manualTotal" style="color:#fbbf24">Tsh 0</strong> kwenye namba hii:</p>
+            <div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;background:rgba(0,0,0,.3);margin-bottom:12px">
+              <strong style="flex:1;font-size:16px" id="payNum">0786 095 758</strong>
+              <button class="zp-btn ghost sm" id="copyNum" type="button">📋 Nakili</button>
+            </div>
+            <p style="margin:0 0 12px;font-size:12px;color:var(--muted)">Jina: <strong style="color:#fff">Amina Mwinyi</strong></p>
+            <div class="ck2-f"><label>Jina Kamili</label><input type="text" id="manualName" placeholder="Juma Juma"></div>
+            <div class="ck2-f"><label>Namba ya Simu</label><input type="tel" id="manualPhone" placeholder="2557XXXXXXXX"></div>
+            <div class="ck2-f"><label>Namba ya Muamala (Tx Ref)</label><input type="text" id="manualTxRef" placeholder="mfano: MP240816.1234.A12345"></div>
+            <button class="ck2-paynow" id="manualPayBtn" type="button" style="background:linear-gradient(135deg,#f59e0b,#b45309)">
+              <span>📤 Tuma Ripoti ya Malipo</span>
+            </button>
+            <p class="ck2-msg" id="manualStatus"></p>
+          </div>
+        </div>
+
+        <div class="ck2-trust">
+          <div>🛡️ <b>Usalama wa Malipo</b><span>Taarifa zako zinalindwa</span></div>
+          <div>✅ <b>100% Original</b><span>Bidhaa halisi za kidijitali</span></div>
+          <div>🎧 <b>Msaada 24/7</b><span>Tuko hapa kukusaidia</span></div>
+          <div>💸 <b>Rudisha Pesa</b><span>Sera ya kurejesha</span></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: ORDER SUMMARY -->
+      <aside>
+        <div class="ck2-card">
+          <div class="ck2-sum-h">
+            <h3>🛍️ Order Summary</h3>
+            <a class="ck2-edit" href="cart.html">Edit Cart ✏️</a>
+          </div>
+          <div id="items"></div>
+
+          <div class="ck2-rows">
+            <div class="ck2-r"><span>Subtotal</span><span id="subtotal">Tsh 0</span></div>
+            <div class="ck2-r"><span>Discount</span><span id="discount">- Tsh 0</span></div>
+            <div class="ck2-r"><span>Shipping</span><span>Tsh 5,000</span></div>
+            <div class="ck2-r total"><span>Total</span><span id="totalBox">Tsh 0</span></div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <input type="text" id="couponInput" placeholder="Discount code" style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:13px">
+            <button type="button" class="zp-btn ghost sm" id="applyCouponBtn">Tumia</button>
+          </div>
+          <p class="ck2-msg" id="couponMsg"></p>
+        </div>
+      </aside>
+    </div>
+
   </div>
 </div>
 
@@ -78,133 +272,216 @@
 <script src="chat.js"></script>
 <script>
 (function(){
-  var esc=ZP.esc;
-  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
-  document.getElementById('shopBtn').innerHTML=ZP.icon('bag')+'Nenda Dukani';
-  document.getElementById('copyNum').innerHTML=ZP.icon('file')+'Nakili';
+  var esc = ZP.esc;
 
-  /* ----- order data: exactly the same sources and shapes as before ----- */
-  var isQuickBuy=new URLSearchParams(location.search).get('quick')==='1';
-  var quickItem=isQuickBuy?JSON.parse(localStorage.getItem('gamehubQuickBuy')||'null'):null;
-  var cart={}; try{ cart=JSON.parse(localStorage.getItem('gamehubCart')||'{}')||{}; }catch(e){}
-  var items=quickItem?[quickItem]:Object.values(cart);
-  var user=null; try{ user=JSON.parse(localStorage.getItem('gamehubUser')||'null'); }catch(e){}
-  var token=localStorage.getItem('gamehubToken');
+  /* ============ ORDER DATA ============ */
+  var isQuickBuy = new URLSearchParams(location.search).get('quick') === '1';
+  var quickItem = isQuickBuy ? JSON.parse(localStorage.getItem('gamehubQuickBuy') || 'null') : null;
+  var cart = {}; try { cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}') || {}; } catch(e){}
+  var items = quickItem ? [quickItem] : Object.values(cart);
+  var user = null; try { user = JSON.parse(localStorage.getItem('gamehubUser') || 'null'); } catch(e){}
+  var token = localStorage.getItem('gamehubToken');
 
-  var baseTotal=0, discount=0, couponCode='';
-  function finalTotal(){ return Math.round(baseTotal*(1-discount/100)); }
-  function discountedItems(){ return discount ? items.map(function(i){ return Object.assign({},i,{num:Math.round(i.num*(1-discount/100))}); }) : items; }
-  function money(n){ return Number(n||0).toLocaleString()+' TZS'; }
-
-  if (!items.length){ document.getElementById('empty').hidden=false; return; }
-  document.getElementById('layout').hidden=false;
-  if (isQuickBuy && quickItem) document.getElementById('quickBadge').hidden=false;
-  if (!token) document.getElementById('loginBanner').hidden=false;
-
-  /* prefill from the logged-in account */
-  if (user && user.name){ document.getElementById('fullname').value=user.name; document.getElementById('manualName').value=user.name; }
-  if (user && user.email){ document.getElementById('acctBox').hidden=false; document.getElementById('acctText').textContent='Oda yako itaunganishwa na akaunti: '+user.email; }
-
-  /* ----- summary ----- */
-  document.getElementById('items').innerHTML=items.map(function(i){
-    baseTotal+=(Number(i.num)||0)*(Number(i.qty)||1);
-    return '<div class="ck-item"><span class="t" style="--art:'+ZP.art(i.name)+'" aria-hidden="true">'+esc(i.emoji||'🎮')+'</span><span><b>'+esc(i.name)+'</b><small>× '+esc(i.qty||1)+'</small></span><span class="p">'+money((Number(i.num)||0)*(Number(i.qty)||1))+'</span></div>';
-  }).join('');
-  var payBtn=document.getElementById('payBtn'), manualBtn=document.getElementById('manualPayBtn');
-  function payLabel(){ return ZP.icon('wallet')+'Lipa '+money(finalTotal()); }
-  function renderTotal(){
-    var f=finalTotal(), box=document.getElementById('totalBox');
-    box.innerHTML=discount>0 ? '<s>'+money(baseTotal)+'</s>'+money(f)+' <span style="font:600 12px var(--font-b);color:#7ff0b0">(-'+discount+'%)</span>' : money(f);
-    document.getElementById('manualTotal').textContent=money(f);
-    if(!payBtn.dataset.busy) payBtn.innerHTML=payLabel();
-    if(!manualBtn.dataset.busy) manualBtn.innerHTML=ZP.icon('arrow')+'Tuma Ripoti ya Malipo';
+  var baseTotal = 0, discount = 0, couponCode = '', SHIPPING = 5000;
+  function money(n){ return 'Tsh ' + Number(n||0).toLocaleString(); }
+  function finalTotal(){ return Math.round(baseTotal * (1 - discount/100)) + SHIPPING; }
+  function discountedItems(){
+    return discount ? items.map(function(i){ return Object.assign({}, i, { num: Math.round(i.num * (1 - discount/100)) }); }) : items;
   }
-  renderTotal();
 
-  /* ----- coupon ----- */
-  document.getElementById('applyCouponBtn').addEventListener('click',function(){
-    var code=document.getElementById('couponInput').value.trim(), msg=document.getElementById('couponMsg');
-    msg.className='ck-cmsg';
-    if (!code){ msg.textContent='Andika kodi kwanza.'; return; }
-    fetch('/api/coupons/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code})})
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if (d.success){ discount=d.percentOff; couponCode=d.code; msg.className='ck-cmsg ok'; msg.textContent='Kodi "'+d.code+'" imetumika — punguzo la '+d.percentOff+'%!'; renderTotal(); }
-        else { msg.textContent=d.error||'Kodi si sahihi'; }
-      }).catch(function(){ msg.textContent='Hitilafu ya mtandao.'; });
+  if (!items.length) { document.getElementById('empty').hidden = false; return; }
+  document.getElementById('layout').hidden = false;
+
+  /* ============ PREFILL ============ */
+  if (user && user.name) { document.getElementById('fullname').value = user.name; document.getElementById('manualName').value = user.name; }
+  if (user && user.email) { document.getElementById('email').value = user.email; }
+
+  /* ============ RENDER ITEMS ============ */
+  var itemsBox = document.getElementById('items');
+  itemsBox.innerHTML = items.map(function(i){
+    var lineTotal = (Number(i.num)||0) * (Number(i.qty)||1);
+    baseTotal += lineTotal;
+    var art = ZP.art ? ZP.art(i.name) : 'linear-gradient(135deg,#7c3aed,#4c1d95)';
+    return '<div class="ck2-item">' +
+      '<span class="art" style="background:' + art + '">' + esc(i.emoji || '🎮') + '</span>' +
+      '<div>' +
+        '<b>' + esc(i.name) + '</b>' +
+        '<small>' + esc(i.type || 'Game') + '</small>' +
+        '<div class="qty">' +
+          '<button type="button" data-act="dec" data-id="' + esc(i.id) + '">−</button>' +
+          '<span>' + (i.qty||1) + '</span>' +
+          '<button type="button" data-act="inc" data-id="' + esc(i.id) + '">+</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="price">' + money(lineTotal) + '</div>' +
+    '</div>';
+  }).join('');
+
+  function renderTotals(){
+    document.getElementById('subtotal').textContent = money(baseTotal);
+    document.getElementById('discount').textContent = discount > 0 ? '- ' + money(baseTotal * discount / 100) : '- Tsh 0';
+    document.getElementById('totalBox').textContent = money(finalTotal());
+    document.getElementById('payAmt').textContent = money(finalTotal());
+    document.getElementById('manualTotal').textContent = money(finalTotal());
+  }
+  renderTotals();
+
+  /* ============ PAYMENT METHOD SELECTION ============ */
+  var payMethods = document.querySelectorAll('input[name="payMethod"]');
+  var manualSection = document.getElementById('manualSection');
+  var payBtn = document.getElementById('payBtn');
+
+  payMethods.forEach(function(r){
+    r.addEventListener('change', function(){
+      document.querySelectorAll('.ck2-pay-opt').forEach(function(el){ el.classList.remove('on'); });
+      r.closest('.ck2-pay-opt').classList.add('on');
+      if (r.value === 'Manual') {
+        manualSection.hidden = false;
+        payBtn.style.display = 'none';
+      } else {
+        manualSection.hidden = true;
+        payBtn.style.display = 'flex';
+      }
+    });
   });
 
-  /* ----- tabs ----- */
-  var tabA=document.getElementById('tabAuto'), tabM=document.getElementById('tabManual'), formA=document.getElementById('paymentForm'), formM=document.getElementById('manualSection');
-  function tab(auto){ tabA.setAttribute('aria-selected',auto); tabM.setAttribute('aria-selected',!auto); formA.hidden=!auto; formM.hidden=auto; }
-  tabA.addEventListener('click',function(){ tab(true); }); tabM.addEventListener('click',function(){ tab(false); });
-  document.getElementById('copyNum').addEventListener('click',function(){
-    var b=this, n=document.getElementById('payNum').textContent.replace(/\s/g,'');
-    if (navigator.clipboard) navigator.clipboard.writeText(n).then(function(){ b.textContent='Imenakiliwa'; setTimeout(function(){ b.innerHTML=ZP.icon('file')+'Nakili'; },1500); });
+  /* ============ COUPON ============ */
+  document.getElementById('applyCouponBtn').addEventListener('click', function(){
+    var code = document.getElementById('couponInput').value.trim();
+    var msg = document.getElementById('couponMsg');
+    msg.className = 'ck2-msg'; msg.textContent = '';
+    if (!code) { msg.className = 'ck2-msg err on'; msg.textContent = 'Andika kodi kwanza.'; return; }
+
+    fetch('/api/coupons/check', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: code })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.success) {
+        discount = d.percentOff; couponCode = d.code;
+        msg.className = 'ck2-msg ok on'; msg.textContent = 'Kodi "' + d.code + '" imetumika — punguzo la ' + d.percentOff + '%!';
+        renderTotals();
+      } else {
+        msg.className = 'ck2-msg err on'; msg.textContent = d.error || 'Kodi si sahihi';
+      }
+    })
+    .catch(function(){ msg.className = 'ck2-msg err on'; msg.textContent = 'Hitilafu ya mtandao.'; });
   });
 
-  function say(el,msg,cls){ el.textContent=msg||''; el.className='ck-status'+(cls?' '+cls:''); }
-  function busy(btn,on,label){ if(on){ btn.dataset.busy='1'; btn.disabled=true; btn.textContent=label; } else { delete btn.dataset.busy; btn.disabled=false; renderTotal(); } }
-  function clearOrder(){ if(isQuickBuy) localStorage.removeItem('gamehubQuickBuy'); else localStorage.removeItem('gamehubCart'); }
+  /* ============ AUTO PAYMENT (ClickPesa) ============ */
+  var pStatus = document.getElementById('payStatus');
+  var poll = null;
 
-  /* ----- manual payment report ----- */
-  var mStatus=document.getElementById('manualStatus');
-  manualBtn.addEventListener('click',function(){
-    if (!token){ say(mStatus,'Ingia kwanza kutuma ripoti ya malipo.'); setTimeout(function(){ location.href='login.html?return=checkout.html'; },1200); return; }
-    var name=document.getElementById('manualName').value.trim(), phone=document.getElementById('manualPhone').value.trim(), txRef=document.getElementById('manualTxRef').value.trim();
-    if (!name||!phone||!txRef){ say(mStatus,'Jaza taarifa zote.'); return; }
-    say(mStatus,''); busy(manualBtn,true,'⏳ Inatuma...');
-    fetch('/api/manual-pay',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify({items:discountedItems(),total:finalTotal(),txRef:txRef,phone:phone})})
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if (d.success){ clearOrder(); say(mStatus,d.message||'Ripoti imepokelewa.','ok'); manualBtn.textContent='✅ Imetumwa'; setTimeout(function(){ location.href='myorders.html'; },2000); }
-        else { say(mStatus,d.error||'Hitilafu'); busy(manualBtn,false); }
-      }).catch(function(){ say(mStatus,'Hitilafu ya mtandao. Jaribu tena.'); busy(manualBtn,false); });
-  });
+  payBtn.addEventListener('click', function(){
+    if (!token) { showStatus(pStatus, 'Ingia kwanza kulipa. Tunakurudisha kwenye login...', 'err'); setTimeout(function(){ location.href='login.html?return=checkout.html'; }, 900); return; }
 
-  /* ----- automatic payment (ClickPesa push + polling) ----- */
-  var pStatus=document.getElementById('payStatus'), poll=null;
-  formA.addEventListener('submit',function(e){
-    e.preventDefault();
-    if (!token){ say(pStatus,'Ingia kwanza kulipa. Tunakurudisha kwenye login...'); setTimeout(function(){ location.href='login.html?return=checkout.html'; },900); return; }
-    var name=document.getElementById('fullname').value.trim(), phone=document.getElementById('phone').value.trim(), provider=document.getElementById('provider').value;
-    if (!name){ say(pStatus,'Andika jina lako kamili.'); return; }
-    var phoneFull=phone; if (!phoneFull.startsWith('255')) phoneFull='255'+phoneFull.replace(/^0/,'');
-    if (!/^255\d{9}$/.test(phoneFull)){ say(pStatus,'Namba ya simu si sahihi. Tumia mfano 0786095758 au 255786095758.'); return; }
-    if (!provider){ say(pStatus,'Chagua mtandao wa malipo kwanza.'); return; }
+    var name = document.getElementById('fullname').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var provider = document.querySelector('input[name="payMethod"]:checked').value;
 
-    var total=finalTotal();
-    say(pStatus,''); busy(payBtn,true,'⏳ Inaandaa malipo...');
+    if (!name) { showStatus(pStatus, 'Andika jina lako kamili.', 'err'); return; }
+    var phoneFull = phone; if (!phoneFull.startsWith('255')) phoneFull = '255' + phoneFull.replace(/^0/, '');
+    if (!/^255\d{9}$/.test(phoneFull)) { showStatus(pStatus, 'Namba ya simu si sahihi. Tumia mfano 0786095758 au 255786095758.', 'err'); return; }
 
-    // ✅ CLICKPESA — endpoint mpya (bila provider)
-    fetch('/api/clickpesa-pay',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify({total:total,phone:phoneFull,name:name,items:discountedItems()})})
-      .then(function(r){ return r.json(); })
-      .then(function(data){
-        if (!data.success){ say(pStatus,data.error||'Malipo hayakuanza. Jaribu tena.'); busy(payBtn,false); return; }
-        say(pStatus,'📲 Umepokea ombi kwenye simu yako ('+phoneFull+'). Ingiza PIN yako kuthibitisha, kisha subiri hapa...','wait');
-        payBtn.textContent='⏳ Inasubiri uthibitisho...';
-        var attempts=0;
-        poll=setInterval(function(){
-          attempts++;
-          // ✅ CLICKPESA — endpoint mpya ya kuangalia hali
-          fetch('/api/clickpesa-check/'+data.tx_ref,{headers:{'Authorization':token}}).then(function(r){ return r.json(); }).then(function(v){
-            if (v.success && v.status==='successful'){
+    var total = finalTotal();
+    showStatus(pStatus, ''); 
+    payBtn.disabled = true;
+    document.querySelector('#payBtn span').textContent = '⏳ Inaandaa malipo...';
+
+    fetch('/api/clickpesa-pay', {
+      method: 'POST',
+      headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ total: total, phone: phoneFull, name: name, items: discountedItems() })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (!data.success) {
+        showStatus(pStatus, data.error || 'Malipo hayakuanza. Jaribu tena.', 'err');
+        payBtn.disabled = false;
+        document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
+        return;
+      }
+      showStatus(pStatus, '📲 Umepokea ombi kwenye simu yako (' + phoneFull + '). Ingiza PIN yako kuthibitisha, kisha subiri hapa...', 'wait');
+      document.querySelector('#payBtn span').textContent = '⏳ Inasubiri uthibitisho...';
+
+      var attempts = 0;
+      poll = setInterval(function(){
+        attempts++;
+        fetch('/api/clickpesa-check/' + data.tx_ref, { headers: { 'Authorization': token } })
+          .then(function(r){ return r.json(); })
+          .then(function(v){
+            if (v.success && v.status === 'successful') {
               clearInterval(poll);
-              localStorage.setItem('gamehubLastOrder',JSON.stringify({tx_ref:data.tx_ref,items:discountedItems(),total:total,date:new Date().toISOString()}));
-              clearOrder(); location.href='success.html';
-            } else if (v.status==='amount_mismatch'){
-              clearInterval(poll); say(pStatus,'Kiasi kilicholipwa hakikamilika sahihi. Wasiliana WhatsApp na tx ref: '+data.tx_ref); busy(payBtn,false);
-            } else if (v.status==='failed'){
-              clearInterval(poll); say(pStatus,'Malipo hayakufanikiwa (umekataa au muda umeisha). Jaribu tena.'); busy(payBtn,false);
-            } else if (attempts>=36){
-              clearInterval(poll); say(pStatus,'Muda umeisha. Kama umelipa, wasiliana nasi WhatsApp na tx ref: '+data.tx_ref); busy(payBtn,false);
+              localStorage.setItem('gamehubLastOrder', JSON.stringify({ tx_ref: data.tx_ref, items: discountedItems(), total: total, date: new Date().toISOString() }));
+              clearOrder(); location.href = 'success.html';
+            } else if (v.status === 'amount_mismatch') {
+              clearInterval(poll); showStatus(pStatus, 'Kiasi kilicholipwa hakikamilika sahihi. Wasiliana WhatsApp na tx ref: ' + data.tx_ref, 'err');
+              payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
+            } else if (v.status === 'failed') {
+              clearInterval(poll); showStatus(pStatus, 'Malipo hayakufanikiwa (umekataa au muda umeisha). Jaribu tena.', 'err');
+              payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
+            } else if (attempts >= 36) {
+              clearInterval(poll); showStatus(pStatus, 'Muda umeisha. Kama umelipa, wasiliana nasi WhatsApp na tx ref: ' + data.tx_ref, 'err');
+              payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
             }
-          }).catch(function(){ /* try again on the next tick */ });
-        },5000);
-      })
-      .catch(function(){ say(pStatus,'Hitilafu ya mtandao. Jaribu tena.'); busy(payBtn,false); });
+          }).catch(function(){});
+      }, 5000);
+    })
+    .catch(function(){ showStatus(pStatus, 'Hitilafu ya mtandao. Jaribu tena.', 'err'); payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now'; });
   });
+
+  /* ============ MANUAL PAYMENT ============ */
+  var mStatus = document.getElementById('manualStatus');
+  document.getElementById('manualPayBtn').addEventListener('click', function(){
+    if (!token) { showStatus(mStatus, 'Ingia kwanza kutuma ripoti ya malipo.', 'err'); setTimeout(function(){ location.href='login.html?return=checkout.html'; }, 1200); return; }
+    var name = document.getElementById('manualName').value.trim();
+    var phone = document.getElementById('manualPhone').value.trim();
+    var txRef = document.getElementById('manualTxRef').value.trim();
+    if (!name || !phone || !txRef) { showStatus(mStatus, 'Jaza taarifa zote.', 'err'); return; }
+
+    showStatus(mStatus, '');
+    this.disabled = true; this.querySelector('span').textContent = '⏳ Inatuma...';
+
+    fetch('/api/manual-pay', {
+      method: 'POST',
+      headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: discountedItems(), total: finalTotal(), txRef: txRef, phone: phone })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.success) {
+        clearOrder(); showStatus(mStatus, d.message || 'Ripoti imepokelewa.', 'ok');
+        setTimeout(function(){ location.href = 'myorders.html'; }, 2000);
+      } else {
+        showStatus(mStatus, d.error || 'Hitilafu', 'err');
+        document.getElementById('manualPayBtn').disabled = false;
+        document.querySelector('#manualPayBtn span').textContent = '📤 Tuma Ripoti ya Malipo';
+      }
+    })
+    .catch(function(){ showStatus(mStatus, 'Hitilafu ya mtandao. Jaribu tena.', 'err'); document.getElementById('manualPayBtn').disabled = false; });
+  });
+
+  /* ============ HELPERS ============ */
+  function showStatus(el, msg, cls) {
+    el.textContent = msg || '';
+    el.className = 'ck2-msg' + (msg ? ' on ' : '') + (cls || '');
+  }
+  function clearOrder() {
+    if (isQuickBuy) localStorage.removeItem('gamehubQuickBuy');
+    else localStorage.removeItem('gamehubCart');
+  }
+
+  /* ============ COPY PHONE NUMBER ============ */
+  document.getElementById('copyNum').addEventListener('click', function(){
+    var n = document.getElementById('payNum').textContent.replace(/\s/g, '');
+    if (navigator.clipboard) navigator.clipboard.writeText(n).then(function(){ 
+      var b = document.getElementById('copyNum'); b.textContent = '✓ Imenakiliwa'; 
+      setTimeout(function(){ b.textContent = '📋 Nakili'; }, 1500); 
+    });
+  });
+
 })();
 </script>
 </body>
-</html>
+  </html>
