@@ -98,16 +98,17 @@
     @media (max-width: 600px) { .hm2-grid { grid-template-columns: repeat(2, 1fr); } }
     .hm2-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 12px; padding: 10px; text-decoration: none; color: #fff; transition: .15s; }
     .hm2-card:hover { border-color: #7c3aed; transform: translateY(-2px); }
-    .hm2-card .thumb { aspect-ratio: 16/9; border-radius: 8px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 36px; margin-bottom: 8px; position: relative; }
-    .hm2-card .thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    .hm2-card .thumb { aspect-ratio: 16/9; border-radius: 8px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 36px; margin-bottom: 8px; position: relative; overflow: hidden; }
+    .hm2-card .thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block; }
     .hm2-card .plats { display: flex; gap: 3px; margin-bottom: 5px; flex-wrap: wrap; }
     .hm2-card .plats span { font-size: 9px; padding: 2px 5px; border-radius: 4px; background: rgba(124,58,237,.15); color: #a78bfa; font-weight: 600; }
     .hm2-card b { display: block; font-size: 12px; margin-bottom: 4px; line-height: 1.3; }
     .hm2-card .price { font-size: 13px; font-weight: 700; color: #a78bfa; margin-bottom: 8px; }
     .hm2-card .btns { display: flex; gap: 6px; }
-    .hm2-card .btns button, .hm2-card .btns a { flex: 1; padding: 7px; border-radius: 7px; border: none; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; text-align: center; }
+    .hm2-card .btns button, .hm2-card .btns a { flex: 1; padding: 7px 4px; border-radius: 7px; border: none; font-size: 10.5px; font-weight: 700; cursor: pointer; text-decoration: none; text-align: center; }
+    .hm2-card .buy { background: linear-gradient(135deg,#10b981,#047857); color: #fff; }
     .hm2-card .add { background: linear-gradient(135deg,#7c3aed,#4c1d95); color: #fff; }
-    .hm2-card .wish { background: rgba(255,255,255,.05); color: #fff; border: 1px solid rgba(255,255,255,.1); flex: 0 0 auto !important; width: 32px; }
+    .hm2-card .wish { background: rgba(255,255,255,.05); color: #fff; border: 1px solid rgba(255,255,255,.1); flex: 0 0 auto !important; width: 30px; }
 
     /* CATEGORIES */
     .hm2-cats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
@@ -142,13 +143,6 @@
     .hm2-live-score { font-size: 18px; font-weight: 800; text-align: center; color: #a78bfa; }
     .hm2-live-time { text-align: center; font-size: 10.5px; color: #969dbb; }
 
-    /* MY GAMES */
-    .hm2-mygames { display: flex; flex-direction: column; gap: 8px; }
-    .hm2-mygame { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); }
-    .hm2-mygame .ic { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 20px; flex-shrink: 0; }
-    .hm2-mygame b { font-size: 12.5px; display: block; }
-    .hm2-mygame small { font-size: 10.5px; color: #969dbb; }
-
     /* COURSES */
     .hm2-course { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 10px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); }
     .hm2-course .ic { width: 50px; height: 50px; border-radius: 8px; background: linear-gradient(135deg,#06b6d4,#0a4d8a); display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
@@ -159,7 +153,6 @@
     /* HIDE OLD ZP */
     .zp-hero, .zp-trust, .zp-sec, .zp-cats, .zp-grid, .zp-strips, .zp-ai, .zp-pay { display: none !important; }
 
-    /* Mobile toggle */
     .hm2-mobile-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 100; width: 38px; height: 38px; border-radius: 10px; background: #7c3aed; border: none; color: #fff; font-size: 17px; cursor: pointer; }
     @media (max-width: 900px) { .hm2-mobile-toggle { display: grid; place-items: center; } }
   </style>
@@ -170,7 +163,6 @@
 
 <div class="hm2-wrap">
 
-  <!-- SIDEBAR -->
   <aside class="hm2-side">
     <div class="hm2-logo">
       <span class="ic">🎮</span>
@@ -207,54 +199,43 @@
     <div class="hm2-menu-h">You</div>
     <nav class="hm2-menu">
       <a href="wishlist.html">❤️ Wishlist</a>
-      <a href="cart.html">🛒 Cart <span class="badge" id="cartBadge">2</span></a>
+      <a href="cart.html">🛒 Cart <span class="badge" id="cartBadge">0</span></a>
       <a href="mygames.html">📚 My Games / Library</a>
       <a href="profile.html">👤 Profile</a>
     </nav>
   </aside>
 
-  <!-- MAIN -->
   <main class="hm2-main">
 
-    <!-- TOP BAR -->
     <div class="hm2-topbar">
       <div class="hm2-search"><input type="text" placeholder="Tafuta game, filamu, kozi, bidhaa..."></div>
       <div class="hm2-top-actions">
         <div class="hm2-top-btn" title="Notifications">🔔<span class="dot">3</span></div>
-        <div class="hm2-top-btn" title="Cart" onclick="location.href='cart.html'">🛒<span class="dot" id="cartCount">2</span></div>
-        <div class="hm2-top-btn" title="Wallet" style="width:auto;padding:0 14px;font-size:12px;font-weight:700">Tsh 12,500 →</div>
+        <div class="hm2-top-btn" title="Cart" onclick="location.href='cart.html'">🛒<span class="dot" id="cartCount">0</span></div>
         <div class="hm2-profile">
           <div class="avatar" id="avatarLetter">K</div>
-          <div><b id="profileName">Kelvin Fred</b><small>Premium User</small></div>
+          <div><b id="profileName">Mgeni</b><small>Karibu!</small></div>
         </div>
       </div>
     </div>
 
-    <!-- HERO ROW -->
     <div class="hm2-row1">
 
-      <!-- Hero slider -->
+      <!-- HERO SLIDER — picha zinatoka kwenye bidhaa zilizo na imageUrl -->
       <div class="hm2-hero" id="heroSlider">
-        <div class="hm2-hero-bg" id="heroBg" style="background-image:linear-gradient(120deg,#1a0a3d,#0a1a4d)"></div>
+        <div class="hm2-hero-bg" id="heroBg" style="background:linear-gradient(120deg,#1a0a3d,#0a1a4d)"></div>
         <div class="hm2-hero-body">
           <span class="hm2-hero-tag" id="heroTag">Bestseller</span>
-          <h1 id="heroTitle">EA SPORTS FC 26</h1>
-          <p id="heroDesc">PS5 | PS4 | Nintendo Switch | PC | Android</p>
-          <div class="hm2-hero-price" id="heroPrice">
-            <span class="now">Tsh 5,000</span>
-            <span class="old">Tsh 7,000</span>
-            <span class="off">-29%</span>
-          </div>
+          <h1 id="heroTitle">Inapakia...</h1>
+          <p id="heroDesc">Inapakia bidhaa...</p>
+          <div class="hm2-hero-price" id="heroPrice"></div>
           <div class="hm2-hero-btns">
             <a class="hm2-buy" href="shop.html" id="heroBuyBtn">🛒 Buy Now</a>
           </div>
         </div>
-        <div class="hm2-dots" id="heroDots">
-          <button class="on"></button><button></button><button></button><button></button>
-        </div>
+        <div class="hm2-dots" id="heroDots"></div>
       </div>
 
-      <!-- Side categories -->
       <div class="hm2-side-cards">
         <a class="hm2-scard" href="shop.html?cat=ps5">
           <span class="ic" style="background:rgba(59,130,246,.15)">🎮</span>
@@ -273,7 +254,6 @@
         </a>
       </div>
 
-      <!-- Promo panel -->
       <div class="hm2-promo">
         <div class="hm2-promo-ic">🎮</div>
         <h3>GAMING<br>IS NOT JUST A GAME<br><span style="color:#a78bfa">IT'S A LIFESTYLE</span></h3>
@@ -292,18 +272,16 @@
 
     </div>
 
-    <!-- TRENDING GAMES -->
     <div class="hm2-sec">
       <div class="hm2-sec-h">
         <h2>🔥 Trending Games</h2>
         <a href="shop.html">Explore All →</a>
       </div>
       <div class="hm2-grid" id="trendingGrid">
-        <!-- Inapakia kutoka JS -->
+        <div style="grid-column:1/-1;text-align:center;color:#6b7290;padding:30px">Inapakia...</div>
       </div>
     </div>
 
-    <!-- BROWSE CATEGORIES + SPECIAL OFFER -->
     <div class="hm2-row2">
       <div>
         <div class="hm2-sec-h">
@@ -337,10 +315,9 @@
       </div>
     </div>
 
-    <!-- MY GAMES + LIVE FOOTBALL + COURSES -->
     <div class="hm2-row2">
       <div>
-        <div class="hm2-sec-h"><h2>🎯 Live Football</h2><a href="live.html">View All Matches →</a></div>
+        <div class="hm2-sec-h"><h2>⚽ Live Football</h2><a href="live.html">View All Matches →</a></div>
         <div class="hm2-live">
           <div class="hm2-live-card">
             <div class="status">LIVE</div>
@@ -377,7 +354,6 @@
       </div>
     </div>
 
-    <!-- AI SECTION -->
     <div class="hm2-sec">
       <section style="background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(76,29,149,.08));border:1px solid rgba(139,92,246,.25);border-radius:16px;padding:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
         <div style="flex:1;min-width:250px">
@@ -397,7 +373,6 @@
       </section>
     </div>
 
-    <!-- PAYMENT METHODS -->
     <div class="hm2-sec">
       <div class="hm2-sec-h"><h2>💳 Njia za Malipo</h2></div>
       <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px">
@@ -423,7 +398,7 @@
   var esc = (window.ZP && ZP.esc) ? ZP.esc : function(s){ return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
   var money = (window.ZP && ZP.money) ? ZP.money : function(n){ return 'Tsh ' + Number(n||0).toLocaleString(); };
 
-  /* ===== USER PROFILE ===== */
+  /* ===== USER ===== */
   try {
     var u = JSON.parse(localStorage.getItem('gamehubUser') || 'null');
     if (u && u.name) {
@@ -434,74 +409,7 @@
     }
   } catch(e) {}
 
-  /* ===== TRENDING GAMES ===== */
-  function renderTrending(list) {
-    var grid = document.getElementById('trendingGrid');
-    if (!grid) return;
-    var top = (list || []).slice(0, 6);
-    if (!top.length) {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#6b7290;padding:30px">Hakuna bidhaa bado. Admin akiongeza zitaonekana hapa.</div>';
-      return;
-    }
-    grid.innerHTML = top.map(function(p) {
-      var price = Number(p.price || 0);
-      var oldPrice = Math.round(price * 1.35);
-      var off = Math.round(((oldPrice - price) / oldPrice) * 100);
-      var plats = ['PS5','Xbox','PC'];
-      var art = (window.ZP && ZP.art) ? ZP.art(p.name) : 'linear-gradient(135deg,#7c3aed,#4c1d95)';
-      var imgHtml = p.imageUrl ? '<img src="' + esc(p.imageUrl) + '" onerror="this.style.display=\'none\'">' : esc(p.emoji || '🎮');
-      return '<div class="hm2-card">' +
-        '<div class="thumb" style="background:' + art + '">' + imgHtml + '</div>' +
-        '<div class="plats">' + plats.map(function(x){ return '<span>' + x + '</span>'; }).join('') + '</div>' +
-        '<b>' + esc(p.name) + '</b>' +
-        '<div class="price">Tsh ' + price.toLocaleString() + '</div>' +
-        '<div class="btns"><button class="add" onclick="addToCartFromHome(\'' + esc(p.id) + '\')">Add to Cart</button><button class="wish" onclick="wishFromHome(\'' + esc(p.id) + '\')">🤍</button></div>' +
-      '</div>';
-    }).join('');
-  }
-
-  /* ===== CATEGORIES ===== */
-  if (window.ZP && ZP.loadProducts) {
-    ZP.loadProducts().then(function(list) {
-      renderTrending(list);
-    }).catch(function() { renderTrending([]); });
-  } else {
-    fetch('/api/products').then(function(r){ return r.json(); }).then(function(d){
-      renderTrending(d.products || []);
-    }).catch(function(){ renderTrending([]); });
-  }
-
-  /* ===== HERO SLIDER (DEFAULT) ===== */
-  var heroSlides = [
-    { tag: 'Bestseller', title: 'EA SPORTS FC 26', desc: 'PS5 | PS4 | Nintendo Switch | PC | Android', price: 5000, old: 7000, cta: 'shop.html' },
-    { tag: 'New Release', title: 'Cyberpunk 2077', desc: 'PC | PS5 | Xbox Series X', price: 35000, old: 55000, cta: 'shop.html' },
-    { tag: 'Top Seller', title: 'GTA V Enhanced', desc: 'PC | PS5 | Xbox', price: 35000, old: 50000, cta: 'shop.html' }
-  ];
-  var heroIndex = 0, heroTimer = null;
-  function renderHero(i) {
-    var s = heroSlides[i % heroSlides.length];
-    document.getElementById('heroTag').textContent = s.tag;
-    document.getElementById('heroTitle').textContent = s.title;
-    document.getElementById('heroDesc').textContent = s.desc;
-    var off = Math.round(((s.old - s.price) / s.old) * 100);
-    document.getElementById('heroPrice').innerHTML = '<span class="now">' + money(s.price) + '</span><span class="old">' + money(s.old) + '</span><span class="off">-' + off + '%</span>';
-    document.getElementById('heroBuyBtn').href = s.cta;
-    document.querySelectorAll('#heroDots button').forEach(function(b, n) { b.classList.toggle('on', n === (i % heroSlides.length)); });
-  }
-  function startHeroTimer() {
-    clearInterval(heroTimer);
-    heroTimer = setInterval(function() {
-      heroIndex = (heroIndex + 1) % heroSlides.length;
-      renderHero(heroIndex);
-    }, 7000);
-  }
-  document.querySelectorAll('#heroDots button').forEach(function(b, n) {
-    b.addEventListener('click', function() { heroIndex = n; renderHero(n); startHeroTimer(); });
-  });
-  renderHero(0);
-  startHeroTimer();
-
-  /* ===== CART HELPERS ===== */
+  /* ===== HELPERS ===== */
   window.addToCartFromHome = function(id) {
     if (!id) return;
     var cart = {};
@@ -511,16 +419,146 @@
     localStorage.setItem('gamehubCart', JSON.stringify(cart));
     if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
     if (window.ZP && ZP.updateCart) ZP.updateCart();
+    updateBadge();
     alert('✅ Imeongezwa kwenye kikapu!');
   };
+
+  window.buyNowFromHome = function(id) {
+    if (!id) return;
+    fetch('/api/products').then(function(r){ return r.json(); }).then(function(d){
+      var p = (d.products || []).find(function(x){ return String(x.id) === String(id); });
+      if (!p) { alert('Bidhaa haipatikani.'); return; }
+      var item = {
+        id: p.id, name: p.name, emoji: p.emoji || '🎮',
+        price: p.price, num: Number(p.price || 0), qty: 1,
+        downloadLink: p.downloadLink || '', accountUser: p.accountUser || '',
+        accountPassword: p.accountPassword || '', imageUrl: p.imageUrl || ''
+      };
+      localStorage.setItem('gamehubQuickBuy', JSON.stringify(item));
+      location.href = 'checkout.html?quick=1';
+    }).catch(function(){ alert('Hitilafu ya mtandao.'); });
+  };
+
   window.wishFromHome = function(id) {
     if (!id) return;
     var w = {};
     try { w = JSON.parse(localStorage.getItem('gamehubWishlist') || '{}'); } catch(e){}
-    if (w[id]) delete w[id]; else w[id] = { id: id, addedAt: new Date().toISOString() };
+    if (w[id]) { delete w[id]; alert('🤍 Imeondolewa kwenye Wishlist.'); }
+    else { w[id] = { id: id, addedAt: new Date().toISOString() }; alert('❤️ Imeongezwa kwenye Wishlist!'); }
     localStorage.setItem('gamehubWishlist', JSON.stringify(w));
-    alert(w[id] ? '❤️ Imeongezwa kwenye Wishlist!' : '🤍 Imeondolewa kwenye Wishlist.');
   };
+
+  /* ===== UPDATE BADGE ===== */
+  function updateBadge() {
+    try {
+      var cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
+      var count = Object.values(cart).reduce(function(t, i){ return t + (i.qty || 1); }, 0);
+      var b1 = document.getElementById('cartBadge');
+      var b2 = document.getElementById('cartCount');
+      if (b1) b1.textContent = count;
+      if (b2) b2.textContent = count;
+    } catch(e) {}
+  }
+  updateBadge();
+
+  /* ===== HERO SLIDER (picha kutoka bidhaa) ===== */
+  var heroIndex = 0, heroTimer = null, heroSlides = [];
+
+  function renderHero(i) {
+    if (!heroSlides.length) return;
+    var s = heroSlides[i % heroSlides.length];
+    document.getElementById('heroTag').textContent = s.tag;
+    document.getElementById('heroTitle').textContent = s.title;
+    document.getElementById('heroDesc').textContent = s.desc;
+    var off = s.old > s.price ? Math.round(((s.old - s.price) / s.old) * 100) : 0;
+    document.getElementById('heroPrice').innerHTML = '<span class="now">' + money(s.price) + '</span>' + (s.old > s.price ? '<span class="old">' + money(s.old) + '</span><span class="off">-' + off + '%</span>' : '');
+    var btn = document.getElementById('heroBuyBtn');
+    btn.href = s.href || 'shop.html';
+    if (s.imageUrl) {
+      document.getElementById('heroBg').style.backgroundImage = 'linear-gradient(180deg,rgba(10,13,26,.2),rgba(10,13,26,.8)),url(' + JSON.stringify(s.imageUrl) + ')';
+      document.getElementById('heroBg').style.background = 'linear-gradient(180deg,rgba(10,13,26,.2),rgba(10,13,26,.8)),url(' + JSON.stringify(s.imageUrl) + ') center/cover';
+    } else {
+      document.getElementById('heroBg').style.background = s.art || 'linear-gradient(120deg,#1a0a3d,#0a1a4d)';
+    }
+    document.querySelectorAll('#heroDots button').forEach(function(b, n) { b.classList.toggle('on', n === (i % heroSlides.length)); });
+  }
+
+  function startHeroTimer() {
+    clearInterval(heroTimer);
+    if (heroSlides.length <= 1) return;
+    heroTimer = setInterval(function() {
+      heroIndex = (heroIndex + 1) % heroSlides.length;
+      renderHero(heroIndex);
+    }, 7000);
+  }
+
+  function buildHeroDots() {
+    var dots = document.getElementById('heroDots');
+    dots.innerHTML = heroSlides.map(function(_, n){ return '<button' + (n === 0 ? ' class="on"' : '') + '></button>'; }).join('');
+    dots.querySelectorAll('button').forEach(function(b, n) {
+      b.addEventListener('click', function() { heroIndex = n; renderHero(n); startHeroTimer(); });
+    });
+  }
+
+  /* ===== LOAD PRODUCTS ===== */
+  fetch('/api/products').then(function(r){ return r.json(); }).then(function(d){
+    var products = (d.products || []).filter(function(p){ return p.section === 'shop' || !p.section; });
+
+    /* Hero slides kutoka bidhaa zenye imageUrl au emoji */
+    heroSlides = products.slice(0, 4).map(function(p, idx) {
+      var price = Number(p.price || 0);
+      var oldPrice = Math.round(price * 1.35);
+      return {
+        tag: idx === 0 ? 'Bestseller' : (idx === 1 ? 'New Release' : 'Top Seller'),
+        title: p.name,
+        desc: p.type || 'Digital Product',
+        price: price,
+        old: oldPrice,
+        imageUrl: p.imageUrl || '',
+        art: (window.ZP && ZP.art) ? ZP.art(p.name) : 'linear-gradient(120deg,#1a0a3d,#0a1a4d)',
+        href: 'product.html?id=' + encodeURIComponent(p.id)
+      };
+    });
+    if (!heroSlides.length) {
+      heroSlides = [
+        { tag: 'Karibu', title: 'LIFEISGAMETZ', desc: 'Duka la gaming la Tanzania', price: 0, old: 0, art: 'linear-gradient(120deg,#1a0a3d,#0a1a4d)', href: 'shop.html' }
+      ];
+    }
+    buildHeroDots();
+    renderHero(0);
+    startHeroTimer();
+
+    /* Trending grid na picha zote */
+    var grid = document.getElementById('trendingGrid');
+    var top = products.slice(0, 6);
+    if (!top.length) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#6b7290;padding:30px">Hakuna bidhaa bado. Admin akiongeza zitaonekana hapa.</div>';
+    } else {
+      grid.innerHTML = top.map(function(p) {
+        var price = Number(p.price || 0);
+        var plats = ['PS5','Xbox','PC'];
+        var art = (window.ZP && ZP.art) ? ZP.art(p.name) : 'linear-gradient(135deg,#7c3aed,#4c1d95)';
+        var imgHtml = p.imageUrl
+          ? '<img src="' + esc(p.imageUrl) + '" alt="' + esc(p.name) + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'' + esc(p.emoji || '🎮') + '\'">'
+          : esc(p.emoji || '🎮');
+        return '<div class="hm2-card">' +
+          '<a href="product.html?id=' + encodeURIComponent(p.id) + '" style="text-decoration:none;color:inherit">' +
+            '<div class="thumb" style="background:' + art + '">' + imgHtml + '</div>' +
+            '<div class="plats">' + plats.map(function(x){ return '<span>' + x + '</span>'; }).join('') + '</div>' +
+            '<b>' + esc(p.name) + '</b>' +
+            '<div class="price">' + money(price) + '</div>' +
+          '</a>' +
+          '<div class="btns">' +
+            '<button class="buy" onclick="buyNowFromHome(\'' + esc(p.id) + '\')">⚡ Buy Now</button>' +
+            '<button class="add" onclick="addToCartFromHome(\'' + esc(p.id) + '\')">🛒</button>' +
+            '<button class="wish" onclick="wishFromHome(\'' + esc(p.id) + '\')">🤍</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+  }).catch(function(){
+    document.getElementById('trendingGrid').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ff7891;padding:30px">Hitilafu ya mtandao.</div>';
+  });
 
   /* ===== AI HELPERS ===== */
   document.getElementById('openAiBtn')?.addEventListener('click', function() {
@@ -536,17 +574,7 @@
     });
   });
 
-  /* ===== CART BADGE ===== */
-  try {
-    var cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
-    var count = Object.values(cart).reduce(function(t, i){ return t + (i.qty || 1); }, 0);
-    var badge = document.getElementById('cartBadge');
-    var cc = document.getElementById('cartCount');
-    if (badge) badge.textContent = count;
-    if (cc) cc.textContent = count;
-  } catch(e) {}
-
 })();
 </script>
 </body>
-  </html>
+</html>
