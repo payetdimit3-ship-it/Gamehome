@@ -11,9 +11,31 @@
     * { box-sizing: border-box; }
     body { margin: 0; background: #0a0d1a; color: #e8eaff; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
 
-    /* ⚠️ FICHA KILA KITU KILICHOPO JUU YA .hm2-wrap */
-    /* Hii inaficha topbar/bottomnav ya zoneplay-shell.js na kuruhusu yetu pekee */
+    /* ⚠️ FICHA TOPBAR/BOTTOM-NAV YA ZONEPLAY-SHELL.JS (kwa majina yote yanayowezekana) */
+    .zp-topbar, .zp-bottomnav, .zp-bottom-nav, .zp-navbar, .zp-header, .zp-topnav,
+    .zp-mobile-nav, .zp-shell-topbar, .zp-shell-bottomnav, .zp-appbar, .zp-bottombar,
+    .zp-floating-nav, .zp-top-nav, .zp-bottom-bar, .zp-nav, .zp-menu-bar,
+    .zone-topbar, .zone-navbar, .zone-topnav, .zone-header,
+    .gh-topbar, .gh-navbar, .gamehub-topbar, .gamehub-navbar,
+    .app-topbar, .app-navbar, .mobile-topbar, .mobile-navbar,
+    #zpTopbar, #zpNavbar, #zpBottomNav, #zpTopNav,
+    #topbar, #navbar, #bottomnav, #bottomNav,
+    [data-topbar], [data-navbar], [data-bottomnav] {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* FICHA pia topbar/bottomnav zilizopo moja kwa moja chini ya body */
     body > *:not(.hm2-wrap):not(.hm2-mobile-toggle):not(script):not(style):not(link):not(noscript) {
+      display: none !important;
+    }
+
+    /* FICHA pia zilizopo ndani ya .main au wrapper yoyote */
+    .main > .zp-topbar, .main > .navbar, .main > .topbar,
+    .wrapper > .zp-topbar, .wrapper > .navbar, .wrapper > .topbar,
+    .app > .zp-topbar, .app > .navbar, .app > .topbar {
       display: none !important;
     }
 
