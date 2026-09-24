@@ -3,42 +3,186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Kikapu Chako — LIFEISGAMETZ</title>
+  <title>Cart — LIFEISGAMETZ</title>
   <link rel="stylesheet" href="zoneplay-full.css">
+  <style>
+    /* ===== CART V2 — MODERN LAYOUT ===== */
+    .ct2-wrap { max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .ct2-breadcrumb { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+    .ct2-breadcrumb a { color: #a78bfa; text-decoration: none; }
+    .ct2-breadcrumb a:hover { text-decoration: underline; }
+
+    .ct2-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
+    .ct2-head-left { display: flex; align-items: center; gap: 14px; }
+    .ct2-head-icon { width: 50px; height: 50px; border-radius: 14px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 24px; }
+    .ct2-head h1 { margin: 0; font-size: 26px; }
+    .ct2-head p { margin: 4px 0 0; color: var(--muted); font-size: 13.5px; }
+    .ct2-continue { color: #a78bfa; font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+
+    .ct2-grid { display: grid; grid-template-columns: 1fr 360px; gap: 20px; }
+    @media (max-width: 1000px) { .ct2-grid { grid-template-columns: 1fr; } }
+
+    /* TABLE HEADER */
+    .ct2-table-head { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr 40px; gap: 12px; padding: 12px 16px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 12px 12px 0 0; font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+    @media (max-width: 900px) { .ct2-table-head { display: none; } }
+
+    /* ITEM ROW */
+    .ct2-list { background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-top: none; border-radius: 0 0 12px 12px; overflow: hidden; }
+    .ct2-item { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr 40px; gap: 12px; padding: 16px; align-items: center; border-top: 1px solid rgba(255,255,255,.05); }
+    .ct2-item:first-child { border-top: none; }
+    @media (max-width: 900px) {
+      .ct2-item { grid-template-columns: 1fr; gap: 10px; padding: 16px; }
+      .ct2-item > * { text-align: left !important; }
+    }
+
+    .ct2-prod { display: flex; align-items: center; gap: 14px; }
+    .ct2-thumb { width: 70px; height: 70px; border-radius: 10px; background: linear-gradient(135deg,#7c3aed,#4c1d95); display: grid; place-items: center; font-size: 34px; flex-shrink: 0; }
+    .ct2-prod-info b { display: block; font-size: 14px; margin-bottom: 4px; }
+    .ct2-plats { display: flex; gap: 4px; margin-bottom: 4px; flex-wrap: wrap; }
+    .ct2-plats span { font-size: 9.5px; padding: 2px 6px; border-radius: 4px; background: rgba(124,58,237,.15); color: #a78bfa; font-weight: 600; }
+    .ct2-prod-info small { color: #86efac; font-size: 11.5px; }
+
+    .ct2-price { font-size: 14px; color: #fff; font-weight: 600; }
+    .ct2-qty-btns { display: inline-flex; align-items: center; gap: 0; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,.1); }
+    .ct2-qty-btns button { width: 32px; height: 32px; background: rgba(255,255,255,.05); border: none; color: #fff; font-size: 15px; cursor: pointer; }
+    .ct2-qty-btns button:disabled { opacity: .4; cursor: not-allowed; }
+    .ct2-qty-btns span { padding: 0 12px; font-size: 13.5px; font-weight: 600; }
+    .ct2-line { font-size: 15px; font-weight: 700; color: #a78bfa; text-align: right; }
+    .ct2-del { width: 32px; height: 32px; border-radius: 8px; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.2); color: #fca5a5; font-size: 14px; cursor: pointer; display: grid; place-items: center; }
+    .ct2-del:hover { background: rgba(239,68,68,.2); }
+
+    /* Summary card */
+    .ct2-sum { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 20px; height: fit-content; position: sticky; top: 20px; }
+    .ct2-sum h3 { margin: 0 0 16px; font-size: 17px; display: flex; align-items: center; gap: 8px; }
+    .ct2-sum-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13.5px; color: #c9d4f0; }
+    .ct2-sum-row.discount span:last-child { color: #86efac; }
+    .ct2-sum-row.total { border-top: 1px solid rgba(255,255,255,.1); margin-top: 10px; padding-top: 14px; font-size: 20px; font-weight: 800; color: #fff; }
+    .ct2-sum-row.total span:last-child { color: #a78bfa; }
+
+    .ct2-pay-cta { display: block; width: 100%; padding: 15px; border-radius: 12px; border: none; margin-top: 16px; background: linear-gradient(135deg,#7c3aed,#4c1d95); color: #fff; font-weight: 700; font-size: 14.5px; text-align: center; text-decoration: none; cursor: pointer; }
+    .ct2-pay-cta:hover { background: linear-gradient(135deg,#6d28d9,#3b0764); }
+    .ct2-ssl { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11.5px; color: var(--muted); margin-top: 10px; }
+
+    .ct2-box { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 18px; margin-top: 16px; }
+    .ct2-box h4 { margin: 0 0 10px; font-size: 14.5px; }
+    .ct2-box p { margin: 0 0 12px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+    .ct2-box .zp-btn { padding: 10px 16px; font-size: 13px; }
+    .ct2-pay-icons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ct2-pay-icons span { padding: 6px 10px; border-radius: 6px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); font-size: 11px; color: #fff; font-weight: 600; }
+    .ct2-premium { background: linear-gradient(135deg,rgba(124,58,237,.15),rgba(76,29,149,.15)); border: 1px solid rgba(124,58,237,.3); }
+    .ct2-premium h4 { color: #ffd700; }
+
+    .ct2-trust { background: rgba(16,185,129,.06); border: 1px solid rgba(16,185,129,.2); border-radius: 12px; padding: 14px; margin-top: 16px; display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+    .ct2-trust b { color: #86efac; display: block; font-size: 13px; }
+    .ct2-trust span { color: #c9d4f0; }
+    .ct2-back { display: inline-flex; align-items: center; gap: 6px; padding: 12px 20px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #fff; text-decoration: none; font-size: 13.5px; font-weight: 600; margin-top: 16px; }
+
+    .ct2-empty { text-align: center; padding: 60px 20px; }
+    .ct2-empty h3 { margin: 0 0 10px; font-size: 22px; }
+    .ct2-empty p { color: var(--muted); margin-bottom: 20px; }
+
+    /* Toast */
+    .ct2-toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a2e; border: 1px solid rgba(124,58,237,.4); padding: 12px 20px; border-radius: 10px; color: #fff; font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.4); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 1000; }
+    .ct2-toast.on { opacity: 1; pointer-events: auto; }
+    .ct2-toast button { background: #7c3aed; color: #fff; border: none; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  </style>
 </head>
 <body>
+
 <div class="main">
+  <div class="ct2-wrap">
 
-  <header class="zp-page-head">
-    <div class="zp-ph-ic" data-ic="cart"></div>
-    <div><h1>Kikapu Chako</h1><p id="sub">Hakiki bidhaa zako kisha uende kulipa.</p></div>
-    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="shop.html"><span data-ic="chevl"></span>Endelea Kununua</a></div>
-  </header>
-
-  <div id="filled" class="ct-layout" hidden>
-    <section class="ct-list" id="items" aria-label="Bidhaa kwenye kikapu"></section>
-    <aside class="ct-sum" aria-label="Muhtasari">
-      <header><h3>Muhtasari</h3></header>
-      <div class="ct-row"><span id="countLbl">Bidhaa</span><span id="countVal"></span></div>
-      <div class="ct-total"><span>JUMLA</span><strong id="total">0 TZS</strong></div>
-      <a class="zp-btn" href="checkout.html" id="payBtn"></a>
-      <button class="zp-btn ghost" id="clearBtn" type="button"></button>
-      <div class="ct-pay"><span>M-Pesa</span><span>Tigo Pesa</span><span>Airtel Money</span><span>Halotel</span></div>
-      <p class="ct-note">💡 Baada ya malipo, bidhaa zako zitatumwa automatic kwenye email yako.</p>
-    </aside>
-  </div>
-
-  <div id="empty" hidden>
-    <div class="zp-empty" style="margin-top:6px">
-      <h3>Kikapu chako ni tupu</h3>
-      <p>Ongeza games, top-up au muda wa kucheza, kisha urudi hapa kulipa.</p>
-      <a class="zp-btn" href="shop.html" id="shopBtn"></a>
+    <!-- Breadcrumb -->
+    <div class="ct2-breadcrumb">
+      <a href="index.html">🏠 Home</a> › <a href="shop.html">Store</a> › <span>Cart</span>
     </div>
-    <div class="zp-sec"><h2>Unaweza Kupenda</h2><a href="shop.html">Zote <span data-ic="chevr"></span></a></div>
-    <section class="zp-grid c5 hscroll" id="suggest"></section>
+
+    <!-- Head -->
+    <div class="ct2-head">
+      <div class="ct2-head-left">
+        <div class="ct2-head-icon">🛒</div>
+        <div>
+          <h1>Your Cart</h1>
+          <p id="sub">Umeweka bidhaa 5 kwenye kikapu chako.</p>
+        </div>
+      </div>
+      <a href="shop.html" class="ct2-continue">← Continue Shopping</a>
+    </div>
+
+    <div id="filled" class="ct2-grid" hidden>
+
+      <!-- LEFT: Items -->
+      <div>
+        <div class="ct2-table-head">
+          <span>Bidhaa</span>
+          <span>Bei</span>
+          <span>Kiasi</span>
+          <span style="text-align:right">Jumla</span>
+          <span></span>
+        </div>
+        <div class="ct2-list" id="items"></div>
+
+        <div class="ct2-trust">
+          <span style="font-size:22px">🛡️</span>
+          <div>
+            <b>Malipo yako ni salama 100%</b>
+            <span>Tunatumia usalama wa kiwango cha juu kulinda maelezo yako.</span>
+          </div>
+        </div>
+
+        <a href="shop.html" class="ct2-back">← Endelea Kununua</a>
+      </div>
+
+      <!-- RIGHT: Summary -->
+      <aside>
+        <div class="ct2-sum">
+          <h3>🛍️ Muhtasari wa Agizo</h3>
+          <div class="ct2-sum-row"><span>Jumla ya Bidhaa (<span id="countItems">0</span>)</span><span id="subtotal">TSh 0</span></div>
+          <div class="ct2-sum-row discount"><span>Punguzo</span><span id="discount">- TSh 0</span></div>
+          <div class="ct2-sum-row"><span>Usafirishaji</span><span id="shipping">TSh 0</span></div>
+          <div class="ct2-sum-row total"><span>Jumla Kuu</span><span id="totalBox">TSh 0</span></div>
+
+          <a class="ct2-pay-cta" href="checkout.html" id="payBtn">🔒 Endelea Kulipa →</a>
+          <div class="ct2-ssl">🔒 Malipo Salama • Inatumia SSL Encryption</div>
+        </div>
+
+        <div class="ct2-box">
+          <h4>🎮 Unataka kuongeza zaidi?</h4>
+          <p>Angalia games zaidi, movies, kozi na bidhaa nyingine.</p>
+          <a class="zp-btn" href="shop.html">Rudi kwenye Duka →</a>
+        </div>
+
+        <div class="ct2-box">
+          <h4>💳 Vifaa vya Kulipa</h4>
+          <div class="ct2-pay-icons">
+            <span>VISA</span><span>Mastercard</span><span>M-PESA</span><span>Airtel Money</span><span>Tigo Pesa</span>
+          </div>
+          <p style="margin-top:12px">Tunakubali njia zote za malipo maarufu.</p>
+        </div>
+
+        <div class="ct2-box ct2-premium">
+          <h4>👑 Ni Mteja wa Premium?</h4>
+          <p>Pata punguzo zaidi, ofa maalum na pointi za loyalty!</p>
+          <a class="zp-btn" href="#">Angalia Faida</a>
+        </div>
+      </aside>
+
+    </div>
+
+    <div id="empty" hidden>
+      <div class="ct2-empty">
+        <h3>🛒 Kikapu chako ni tupu</h3>
+        <p>Ongeza games, top-up au muda wa kucheza, kisha urudi hapa kulipa.</p>
+        <a class="zp-btn" href="shop.html" id="shopBtn">🛍️ Nenda Dukani</a>
+      </div>
+      <div class="zp-sec" style="margin-top:30px"><h2>Unaweza Kupenda</h2><a href="shop.html">Zote →</a></div>
+      <div class="zp-grid c5 hscroll" id="suggest"></div>
+    </div>
+
   </div>
 </div>
-<div class="rn-toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="ct2-toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="zoneplay-shell.js"></script>
 <script src="zp-catalog.js"></script>
@@ -46,76 +190,115 @@
 <script src="chat.js"></script>
 <script>
 (function(){
-  var esc=ZP.esc, MAXQ=99;
-  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
-  document.getElementById('payBtn').innerHTML=ZP.icon('wallet')+'Enda Kulipa';
-  document.getElementById('shopBtn').innerHTML=ZP.icon('bag')+'Nenda Dukani';
-  var clearBtn=document.getElementById('clearBtn'); clearBtn.innerHTML=ZP.icon('x')+'Futa Kikapu';
+  var esc = (window.ZP && ZP.esc) ? ZP.esc : function(s){ return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+  var MAXQ = 99;
 
   function readCart(){
-    try{ var raw=JSON.parse(localStorage.getItem('gamehubCart')||'{}'); return Array.isArray(raw)?Object.fromEntries(raw.map(function(x,i){ return [x.id||('cart-'+i),x]; })):(raw||{}); }
-    catch(e){ return {}; }
+    try {
+      var raw = JSON.parse(localStorage.getItem('gamehubCart') || '{}');
+      if (Array.isArray(raw)) {
+        var out = {};
+        raw.forEach(function(x, i){ out[x.id || ('cart-' + i)] = x; });
+        return out;
+      }
+      return raw || {};
+    } catch(e){ return {}; }
   }
-  function save(c){ try{ localStorage.setItem('gamehubCart',JSON.stringify(c)); }catch(e){} if(typeof window.updateCartBadge==='function') window.updateCartBadge(); ZP.updateCart(); }
-  function qtyOf(i){ return Math.max(1,Number(i.qty!=null?i.qty:i.quantity!=null?i.quantity:1)||1); }
+  function save(c){
+    try { localStorage.setItem('gamehubCart', JSON.stringify(c)); } catch(e){}
+    if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
+    if (window.ZP && ZP.updateCart) ZP.updateCart();
+  }
+  function qtyOf(i){ return Math.max(1, Number(i.qty != null ? i.qty : i.quantity != null ? i.quantity : 1) || 1); }
   function numOf(i){
-    var v=i.num!=null?i.num:i.priceNumber!=null?i.priceNumber:(typeof i.price==='number'?i.price:String(i.price||0).replace(/[^\d.]/g,''));
-    return Number(v)||0;
+    var v = i.num != null ? i.num : i.priceNumber != null ? i.priceNumber : (typeof i.price === 'number' ? i.price : String(i.price || 0).replace(/[^\d.]/g,''));
+    return Number(v) || 0;
   }
-  function money(n){ return Number(n||0).toLocaleString()+' TZS'; }
+  function money(n){ return 'TSh ' + Number(n||0).toLocaleString(); }
 
-  /* undo */
-  var snapshot=null, toastTimer;
-  function toast(msg,undo){
-    var t=document.getElementById('toast'); t.textContent=msg;
-    if (undo){ var b=document.createElement('button'); b.type='button'; b.textContent='Tendua'; b.addEventListener('click',function(){ if(snapshot){ save(snapshot); snapshot=null; render(); } t.classList.remove('on'); }); t.appendChild(b); }
-    t.classList.add('on'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove('on'); },5000);
+  var snapshot = null, toastTimer;
+  function toast(msg, undo){
+    var t = document.getElementById('toast'); t.textContent = msg;
+    if (undo){
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = 'Tendua';
+      b.addEventListener('click', function(){
+        if (snapshot){ save(snapshot); snapshot = null; render(); }
+        t.classList.remove('on');
+      });
+      t.appendChild(b);
+    }
+    t.classList.add('on'); clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove('on'); }, 5000);
   }
 
-  var suggested=false;
   function render(){
-    var cart=readCart(), items=Object.keys(cart).map(function(k){ var i=cart[k]; if(!i.id) i.id=k; return i; });
-    var filled=document.getElementById('filled'), empty=document.getElementById('empty');
-    filled.hidden=!items.length; empty.hidden=!!items.length;
-    document.getElementById('sub').textContent=items.length?'Hakiki bidhaa zako kisha uende kulipa.':'Hakuna bidhaa bado.';
+    var cart = readCart();
+    var items = Object.keys(cart).map(function(k){ var i = cart[k]; if (!i.id) i.id = k; return i; });
+    var filled = document.getElementById('filled'), empty = document.getElementById('empty');
+    filled.hidden = !items.length; empty.hidden = !!items.length;
+    document.getElementById('sub').textContent = items.length ? 'Hakiki bidhaa zako kisha uende kulipa.' : 'Hakuna bidhaa bado.';
+
     if (!items.length){
-      if(!suggested){ suggested=true; ZP.loadProducts().then(function(list){ document.getElementById('suggest').innerHTML=list.slice(0,10).map(ZP.card).join(''); }); }
+      if (window.ZP && ZP.loadProducts){
+        ZP.loadProducts().then(function(list){
+          var el = document.getElementById('suggest');
+          if (el) el.innerHTML = list.slice(0, 10).map(ZP.card).join('');
+        });
+      }
       return;
     }
-    var total=0, count=0;
-    document.getElementById('items').innerHTML=items.map(function(i){
-      var q=qtyOf(i), n=numOf(i); total+=n*q; count+=q;
-      return '<article class="ct-item" data-id="'+esc(i.id)+'">'+
-        '<div class="ct-thumb" style="--art:'+ZP.art(i.name)+'" aria-hidden="true">'+esc(i.emoji||'🎮')+'</div>'+
-        '<div class="ct-info"><h3>'+esc(i.name||'Bidhaa')+'</h3><small>'+money(n)+' kila moja</small></div>'+
-        '<div class="ct-qty" role="group" aria-label="Idadi"><button type="button" data-act="dec" aria-label="Punguza"'+(q<=1?' disabled':'')+'>−</button><output aria-live="polite">'+q+'</output><button type="button" data-act="inc" aria-label="Ongeza"'+(q>=MAXQ?' disabled':'')+'>+</button></div>'+
-        '<div class="ct-line">'+money(n*q)+'</div>'+
-        '<button class="ct-del" type="button" data-act="del" aria-label="Futa '+esc(i.name||'bidhaa')+'">'+ZP.icon('x')+'</button></article>';
+
+    var total = 0, count = 0;
+    document.getElementById('items').innerHTML = items.map(function(i){
+      var q = qtyOf(i), n = numOf(i); total += n * q; count += q;
+      var art = (window.ZP && ZP.art) ? ZP.art(i.name) : 'linear-gradient(135deg,#7c3aed,#4c1d95)';
+      var plats = ['PS5', 'PS4', 'Xbox', 'PC'];
+      return '<div class="ct2-item" data-id="' + esc(i.id) + '">' +
+        '<div class="ct2-prod">' +
+          '<div class="ct2-thumb" style="background:' + art + '">' + esc(i.emoji || '🎮') + '</div>' +
+          '<div class="ct2-prod-info">' +
+            '<b>' + esc(i.name || 'Bidhaa') + '</b>' +
+            '<div class="ct2-plats">' + plats.map(function(p){ return '<span>' + p + '</span>'; }).join('') + '</div>' +
+            '<small>✓ Inapatikana • Digital Download</small>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ct2-price">' + money(n) + '</div>' +
+        '<div><div class="ct2-qty-btns">' +
+          '<button type="button" data-act="dec" ' + (q <= 1 ? 'disabled' : '') + '>−</button>' +
+          '<span>' + q + '</span>' +
+          '<button type="button" data-act="inc" ' + (q >= MAXQ ? 'disabled' : '') + '>+</button>' +
+        '</div></div>' +
+        '<div class="ct2-line">' + money(n * q) + '</div>' +
+        '<button class="ct2-del" type="button" data-act="del" title="Futa">🗑️</button>' +
+      '</div>';
     }).join('');
-    document.getElementById('total').textContent=money(total);
-    document.getElementById('countLbl').textContent=items.length===1?'Bidhaa 1':'Bidhaa '+items.length;
-    document.getElementById('countVal').textContent=count+(count===1?' kipande':' vipande');
+
+    document.getElementById('subtotal').textContent = money(total);
+    document.getElementById('totalBox').textContent = money(total);
+    document.getElementById('countItems').textContent = count;
   }
 
-  document.getElementById('items').addEventListener('click',function(e){
-    var b=e.target.closest('[data-act]'); if(!b) return;
-    var row=b.closest('.ct-item'), id=row.dataset.id, cart=readCart(), it=cart[id]; if(!it) return;
-    var act=b.dataset.act;
-    if (act==='del'){ snapshot=JSON.parse(JSON.stringify(cart)); delete cart[id]; save(cart); render(); toast('Imeondolewa kwenye kikapu',true); return; }
-    var q=qtyOf(it)+(act==='inc'?1:-1); q=Math.min(MAXQ,Math.max(1,q));
-    it.qty=q; delete it.quantity; save(cart); render();
+  document.getElementById('items').addEventListener('click', function(e){
+    var b = e.target.closest('[data-act]'); if (!b) return;
+    var row = b.closest('.ct2-item'); var id = row.dataset.id;
+    var cart = readCart(); var it = cart[id]; if (!it) return;
+    var act = b.dataset.act;
+    if (act === 'del'){
+      snapshot = JSON.parse(JSON.stringify(cart));
+      delete cart[id]; save(cart); render();
+      toast('Imeondolewa kwenye kikapu', true);
+      return;
+    }
+    var q = qtyOf(it) + (act === 'inc' ? 1 : -1);
+    q = Math.min(MAXQ, Math.max(1, q));
+    it.qty = q; delete it.quantity;
+    save(cart); render();
   });
 
-  var armed=false, armTimer;
-  clearBtn.addEventListener('click',function(){
-    if (!armed){ armed=true; clearBtn.textContent='Una uhakika? Bonyeza tena'; clearTimeout(armTimer); armTimer=setTimeout(function(){ armed=false; clearBtn.innerHTML=ZP.icon('x')+'Futa Kikapu'; },3500); return; }
-    armed=false; clearTimeout(armTimer); clearBtn.innerHTML=ZP.icon('x')+'Futa Kikapu';
-    snapshot=readCart(); save({}); render(); toast('Kikapu kimefutwa',true);
-  });
-
-  window.addEventListener('storage',render);
+  window.addEventListener('storage', render);
   render();
 })();
 </script>
+
 </body>
 </html>
