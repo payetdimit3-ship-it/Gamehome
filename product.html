@@ -51,13 +51,15 @@
     .p2-qty-btns button { width: 34px; height: 34px; background: rgba(255,255,255,.05); border: none; color: #fff; font-size: 16px; cursor: pointer; }
     .p2-qty-btns span { padding: 0 14px; font-size: 14px; font-weight: 600; }
 
-    .p2-buttons { display: flex; gap: 8px; margin-bottom: 14px; }
+    .p2-buttons { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
     .p2-buttons button, .p2-buttons a {
-      flex: 1; padding: 14px; border-radius: 10px; border: none; cursor: pointer;
+      padding: 14px; border-radius: 10px; border: none; cursor: pointer;
       font-size: 14px; font-weight: 700; text-decoration: none; text-align: center;
       display: flex; align-items: center; justify-content: center; gap: 6px;
     }
-    .p2-add { background: linear-gradient(135deg,#7c3aed,#4c1d95); color: #fff; }
+    .p2-buy { flex: 1 1 45%; background: linear-gradient(135deg,#10b981,#047857); color: #fff; }
+    .p2-buy:hover { background: linear-gradient(135deg,#059669,#065f46); }
+    .p2-add { flex: 1 1 45%; background: linear-gradient(135deg,#7c3aed,#4c1d95); color: #fff; }
     .p2-wish { background: rgba(255,255,255,.05); color: #fff; border: 1px solid rgba(255,255,255,.1) !important; flex: 0 0 auto !important; width: 50px; }
 
     .p2-trust-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.08); font-size: 10.5px; color: var(--muted); text-align: center; }
@@ -254,6 +256,7 @@
           </div>
 
           <div class="p2-buttons">
+            <button class="p2-buy" id="buyNow">⚡ Buy Now</button>
             <button class="p2-add" id="addCart">🛒 Add to Cart</button>
             <button class="p2-wish" id="wish" title="Wishlist">🤍</button>
           </div>
@@ -352,6 +355,24 @@
     let qty = 1;
     document.getElementById('qtyInc').addEventListener('click', function(){ qty++; document.getElementById('qtyVal').textContent = qty; });
     document.getElementById('qtyDec').addEventListener('click', function(){ if (qty > 1) qty--; document.getElementById('qtyVal').textContent = qty; });
+
+    /* === Buy Now — Ruka moja kwa moja kwenye checkout === */
+    document.getElementById('buyNow').addEventListener('click', function(){
+      const item = {
+        id: id,
+        name: p.name,
+        emoji: p.emoji || '🎮',
+        price: p.price,
+        num: priceNum,
+        qty: qty,
+        downloadLink: p.downloadLink || '',
+        accountUser: p.accountUser || '',
+        accountPassword: p.accountPassword || '',
+        imageUrl: p.imageUrl || ''
+      };
+      localStorage.setItem('gamehubQuickBuy', JSON.stringify(item));
+      window.location.href = 'checkout.html?quick=1';
+    });
 
     /* === Add to cart === */
     document.getElementById('addCart').addEventListener('click', function(){
@@ -487,7 +508,6 @@
     const list = (d.products || []);
     const p = list.find(function(x){ return String(x.id) === String(id); });
     if (p) { render(p); return; }
-    // fallback: default products
     const DEFAULTS = {
       fifa25: { name:'FIFA 25', type:'PC GAMING', price:'45,000 TZS', priceNumber:45000, emoji:'⚽', desc:'Game key halali ya FIFA 25 kwa PC.' },
       gta5: { name:'GTA V', type:'PC GAMING', price:'35,000 TZS', priceNumber:35000, emoji:'🚗', desc:'Game key halali ya GTA V kwa PC.' },
