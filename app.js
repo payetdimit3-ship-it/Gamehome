@@ -15,7 +15,8 @@ function getCart() {
     downloadLink: item.downloadLink || '',
     accountUser: item.accountUser || '',
     accountPassword: item.accountPassword || '',
-    rentalMinutes: item.rentalMinutes || null
+    rentalMinutes: item.rentalMinutes || null,
+    imageUrl: item.imageUrl || ''
   }));
 }
 
@@ -86,8 +87,15 @@ async function processClickPesaCheckout(event) {
   const errorBox = document.getElementById('checkoutError') || document.querySelector('.error-msg');
   const payBtn = document.getElementById('payBtn') || document.querySelector('.buy-btn');
 
-  if (!phoneInput || !phoneInput.value.trim()) {
+  // ⚠️ Fanya validation TU kama tuko kwenye checkout.html
+  if (!phoneInput) {
+    // Hatuko checkout.html — usifanye validation
+    return;
+  }
+
+  if (!phoneInput.value.trim()) {
     showError("Tafadhali weka namba ya simu.", errorBox);
+    if (phoneInput) { phoneInput.focus(); phoneInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     return;
   }
 
@@ -103,11 +111,11 @@ async function processClickPesaCheckout(event) {
   let items = [];
 
   if (cart.length > 0) {
-    amount = cart.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
+    amount = cart.reduce((sum, item) => sum + (Number(item.num) * Number(item.qty || 1)), 0);
     items = cart;
   } else {
     amount = window.currentProductPrice || 1000;
-    items = [{ name: window.currentProductName || 'GameHub Purchase', price: amount }];
+    items = [{ name: window.currentProductName || 'GameHub Purchase', price: amount, num: amount, qty: 1 }];
   }
 
   if (payBtn) {
@@ -208,17 +216,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (href === current) link.classList.add('active');
   });
 
-  const checkoutForm = document.getElementById('checkoutForm');
-  const paymentForm = document.getElementById('paymentForm');
-  if (checkoutForm) {
-    checkoutForm.addEventListener('submit', processClickPesaCheckout);
-  }
-  if (paymentForm) {
-    paymentForm.addEventListener('submit', processClickPesaCheckout);
+  // ⚠️ Fanya validation TU kwenye checkout.html
+  const isCheckoutPage = /checkout\.html/i.test(location.pathname) || location.search.includes('quick=1');
+  const hasPhoneInput = document.getElementById('checkoutPhone');
+  const hasPaymentForm = document.getElementById('paymentForm') || document.getElementById('checkoutForm');
+
+  // Weka event listener TU kama tuko checkout.html au kuna fomu ya malipo
+  if (isCheckoutPage || hasPhoneInput || hasPaymentForm) {
+    const checkoutForm = document.getElementById('checkoutForm');
+    const paymentForm = document.getElementById('paymentForm');
+    if (checkoutForm) {
+      checkoutForm.addEventListener('submit', processClickPesaCheckout);
+    }
+    if (paymentForm) {
+      paymentForm.addEventListener('submit', processClickPesaCheckout);
+    }
+
+    const checkoutBtn = document.getElementById('payBtn');
+    if (checkoutBtn && !checkoutForm && !paymentForm) {
+      checkoutBtn.addEventListener('click', processClickPesaCheckout);
+    }
   }
 
-  const checkoutBtn = document.getElementById('payBtn');
-  if (checkoutBtn && !checkoutForm && !paymentForm) {
-    checkoutBtn.addEventListener('click', processClickPesaCheckout);
-  }
+  // ⚠️ USIWEKE listener kwenye cart.html — ili "Endelea Kulipa" iende checkout.html moja kwa moja
 });
