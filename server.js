@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('.'));
 
-// 🎬 MEDIA STORAGE — Supabase Storage (production) au local uploads (fallback)
+// 🎬 MEDIA STORAGE
 const MEDIA_DIR = path.join(__dirname, 'uploads');
 const TMP_MEDIA_DIR = path.join(MEDIA_DIR, 'tmp');
 if (!fs.existsSync(MEDIA_DIR)) fs.mkdirSync(MEDIA_DIR, { recursive: true });
@@ -102,7 +102,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// 📁 HIFADHI YA DATA (.data folder)
+// 📁 HIFADHI YA DATA
 const DATA_DIR = path.join(__dirname, '.data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
@@ -121,9 +121,7 @@ function readJson(file, fallback) {
     const filePath = path.join(DATA_DIR, file);
     if (!fs.existsSync(filePath)) return fallback;
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch (e) {
-    return fallback;
-  }
+  } catch (e) { return fallback; }
 }
 
 async function writeJson(file, data) {
@@ -132,19 +130,11 @@ async function writeJson(file, data) {
   if (!supabase) return { local: true, cloud: false };
   try {
     const { error } = await supabase.from(process.env.SUPABASE_KV_TABLE || 'kv_store').upsert({
-      file_name: file,
-      data,
-      updated_at: new Date().toISOString()
+      file_name: file, data, updated_at: new Date().toISOString()
     });
-    if (error) {
-      console.error('☁️ Supabase backup error (' + file + '):', error.message);
-      return { local: true, cloud: false, error: error.message };
-    }
+    if (error) { console.error('☁️ Supabase backup error (' + file + '):', error.message); return { local: true, cloud: false, error: error.message }; }
     return { local: true, cloud: true };
-  } catch (err) {
-    console.error('☁️ Supabase backup error (' + file + '):', err.message);
-    return { local: true, cloud: false, error: err.message };
-  }
+  } catch (err) { console.error('☁️ Supabase backup error (' + file + '):', err.message); return { local: true, cloud: false, error: err.message }; }
 }
 
 async function restoreFromSupabase() {
@@ -156,9 +146,7 @@ async function restoreFromSupabase() {
         fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(data.data, null, 2));
         console.log('☁️ Imerudishwa kutoka Supabase: ' + file);
       }
-    } catch (err) {
-      console.error('☁️ Supabase restore error (' + file + '):', err.message);
-    }
+    } catch (err) { console.error('☁️ Supabase restore error (' + file + '):', err.message); }
   }
 }
 
@@ -167,12 +155,12 @@ function ensureTournamentSeed() {
   if (!Array.isArray(current)) {
     writeJson('tournaments.json', [
       { id: 't1', name: 'GameHub eFootball Cup', game: 'eFootball', date: 'Tarehe itawekwa', status: 'OPEN', description: 'Mashindano ya eFootball kwa community ya GameHub.', registrations: [] },
-      { id: 't2', name: 'GameHub FC Challenge', game: 'EA SPORTS FC', date: 'Tarehe itawekwa', status: 'OPEN', description: 'Challenge ya football gaming. Fuata matangazo ya GameHub.', registrations: [] }
+      { id: 't2', name: 'GameHub FC Challenge', game: 'EA SPORTS FC', date: 'Tarehe itawekwa', status: 'OPEN', description: 'Challenge ya football gaming.', registrations: [] }
     ]);
   }
 }
 
-// 💬 PUBLIC COMMUNITY CHAT — haihitaji login
+// 💬 PUBLIC COMMUNITY CHAT
 const publicChatRate = new Map();
 function cleanPublicText(value, max) {
   return String(value || '').replace(/[\u0000-\u001F\u007F]/g, ' ').replace(/<[^>]*>/g, '').trim().slice(0, max);
@@ -219,25 +207,22 @@ function hashPassword(password) {
   const hash = crypto.scryptSync(password, salt, 64).toString('hex');
   return salt + ':' + hash;
 }
-
 function verifyPassword(password, stored) {
   if (!stored || !stored.includes(':')) return false;
   const [salt, hash] = stored.split(':');
   return crypto.scryptSync(password, salt, 64).toString('hex') === hash;
 }
 
-// 🛑 ULINZI WA LOGIN (Rate Limiting)
+// 🛑 ULINZI WA LOGIN
 const loginAttempts = new Map();
 const MAX_ATTEMPTS = 5;
 const BLOCK_MINUTES = 10;
-
 function isBlocked(key) {
   const entry = loginAttempts.get(key);
   if (!entry) return false;
   if (Date.now() - entry.time > BLOCK_MINUTES * 60000) { loginAttempts.delete(key); return false; }
   return entry.count >= MAX_ATTEMPTS;
 }
-
 function recordFail(key) {
   const entry = loginAttempts.get(key) || { count: 0, time: Date.now() };
   entry.count += 1; entry.time = Date.now();
@@ -246,18 +231,15 @@ function recordFail(key) {
 
 // 🛡️ HACKERAI — SECURITY MODULE
 const securityFile = 'security.json';
-
 function logSecurity(type, details, severity, ip) {
   const data = readJson(securityFile, { events: [], blocked: {} });
   data.events.push({ time: new Date().toISOString(), type, details, severity, ip: ip || 'unknown' });
   if (data.events.length > 500) data.events = data.events.slice(-500);
   writeJson(securityFile, data);
 }
-
 function getIP(req) {
   return (req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim();
 }
-
 function blockIP(ip, minutes) {
   const data = readJson(securityFile, { events: [], blocked: {} });
   data.blocked = data.blocked || {};
@@ -265,24 +247,20 @@ function blockIP(ip, minutes) {
   writeJson(securityFile, data);
   logSecurity('IP_BLOCKED', 'IP imefungwa kwa dakika ' + minutes, 'HIGH', ip);
 }
-
 function isSuspicious(input) {
   if (!input || typeof input !== 'string') return false;
   const patterns = /('|"|--|;|\/\*|\*\/|union\s+select|select\s+.*\s+from|insert\s+into|drop\s+table|<\s*script|onerror\s*=|javascript:)/i;
   return patterns.test(input);
 }
 
-// Middleware wa Mlinzi wa API
 app.use('/api', (req, res, next) => {
   const ip = getIP(req);
   const data = readJson(securityFile, { events: [], blocked: {} });
   const blocked = data.blocked || {};
-
   if (blocked[ip] && blocked[ip] > Date.now()) {
     logSecurity('BLOCKED_REQUEST', 'IP iliyofungwa ilijaribu kuingia tena', 'MEDIUM', ip);
     return res.status(403).json({ error: 'IP yako imefungwa. Wasiliana na admin.' });
   }
-
   const checkItems = [req.body, req.query];
   for (const obj of checkItems) {
     if (!obj) continue;
@@ -301,7 +279,6 @@ app.use('/api', (req, res, next) => {
 // 👤 USERS + SESSIONS
 const usersFile = 'users.json';
 const sessionsFile = 'sessions.json';
-
 function getUserByToken(req) {
   const token = req.headers.authorization || req.query.token;
   if (!token) return null;
@@ -312,7 +289,6 @@ function getUserByToken(req) {
   return users[email] || null;
 }
 
-// Kujiunga
 app.post('/api/auth/register', (req, res) => {
   const { name, email, phone, password } = req.body;
   if (!name || !email || !password) return res.status(400).json({ error: 'Jaza jina, email na password' });
@@ -320,31 +296,22 @@ app.post('/api/auth/register', (req, res) => {
   const users = readJson(usersFile, {});
   const cleanEmail = email.trim().toLowerCase();
   if (users[cleanEmail]) return res.status(400).json({ error: 'Email hii tayari iko. Ingia badala yake.' });
-
   const adminEmail = (process.env.ADMIN_EMAIL || 'admin@gamehub.co.tz').toLowerCase();
   users[cleanEmail] = {
     name: name.trim(), email: cleanEmail, phone: phone || '',
     password: hashPassword(password), isAdmin: cleanEmail === adminEmail, isStaff: false,
-    balance: 0, adminEarnings: 0,
-    created: new Date().toISOString()
+    balance: 0, adminEarnings: 0, created: new Date().toISOString()
   };
   writeJson(usersFile, users);
-
   const token = crypto.randomBytes(24).toString('hex');
   const sessions = readJson(sessionsFile, {});
   sessions[token] = cleanEmail;
   writeJson(sessionsFile, sessions);
-
   res.json({ success: true, token, user: { name: name.trim(), email: cleanEmail, isAdmin: users[cleanEmail].isAdmin, isStaff: false } });
 });
 
 app.get('/api/auth/social/config', (req, res) => {
-  res.json({
-    success: true,
-    enabled: !!(SUPABASE_URL && SUPABASE_ANON_KEY),
-    url: SUPABASE_URL || '',
-    anonKey: SUPABASE_ANON_KEY || ''
-  });
+  res.json({ success: true, enabled: !!(SUPABASE_URL && SUPABASE_ANON_KEY), url: SUPABASE_URL || '', anonKey: SUPABASE_ANON_KEY || '' });
 });
 
 app.post('/api/auth/social/complete', async (req, res) => {
@@ -352,9 +319,7 @@ app.post('/api/auth/social/complete', async (req, res) => {
     if (!supabase) return res.status(503).json({ error: 'Social login haijawekwa. Weka SUPABASE_URL na SUPABASE_SERVICE_ROLE_KEY.' });
     const accessToken = String(req.body.accessToken || '').trim();
     const provider = String(req.body.provider || '').trim().toLowerCase();
-    if (!accessToken || !['google','facebook','apple'].includes(provider)) {
-      return res.status(400).json({ error: 'Provider au access token si sahihi.' });
-    }
+    if (!accessToken || !['google','facebook','apple'].includes(provider)) return res.status(400).json({ error: 'Provider au access token si sahihi.' });
     const { data, error } = await supabase.auth.getUser(accessToken);
     if (error || !data?.user?.email) return res.status(401).json({ error: 'Social account haikuthibitishwa.' });
     const authUser = data.user;
@@ -364,12 +329,7 @@ app.post('/api/auth/social/complete', async (req, res) => {
     const users = readJson(usersFile, {});
     const adminEmail = (process.env.ADMIN_EMAIL || 'admin@gamehub.co.tz').toLowerCase();
     if (!users[email]) {
-      users[email] = {
-        name: displayName || 'LIFEISGAMETZ User', email, phone: '',
-        password: null, authProvider: provider, providerId: authUser.id,
-        isAdmin: email === adminEmail, isStaff: false, balance: 0, adminEarnings: 0,
-        created: new Date().toISOString()
-      };
+      users[email] = { name: displayName || 'LIFEISGAMETZ User', email, phone: '', password: null, authProvider: provider, providerId: authUser.id, isAdmin: email === adminEmail, isStaff: false, balance: 0, adminEarnings: 0, created: new Date().toISOString() };
       writeJson(usersFile, users);
     } else {
       users[email].authProvider = users[email].authProvider || provider;
@@ -383,50 +343,36 @@ app.post('/api/auth/social/complete', async (req, res) => {
     writeJson(sessionsFile, sessions);
     const user = users[email];
     res.json({ success:true, token, user:{ name:user.name, email:user.email, isAdmin:!!user.isAdmin, isStaff:!!user.isStaff, provider } });
-  } catch (e) {
-    console.error('Social login:', e);
-    res.status(500).json({ error: 'Social login imeshindikana.' });
-  }
+  } catch (e) { console.error('Social login:', e); res.status(500).json({ error: 'Social login imeshindikana.' }); }
 });
 
-// Kuingia (Login)
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   const cleanEmail = (email || '').trim().toLowerCase();
   const ip = getIP(req);
-
   if (!cleanEmail || !password) return res.status(400).json({ error: 'Jaza email na password' });
   if (isBlocked(cleanEmail) || isBlocked(ip)) return res.status(429).json({ error: 'Jaribio nyingi. Subiri dakika ' + BLOCK_MINUTES + '.' });
-
   const users = readJson(usersFile, {});
   const user = users[cleanEmail];
   if (!user || !user.password || !verifyPassword(password, user.password)) {
-    recordFail(cleanEmail);
-    recordFail(ip);
-    if ((loginAttempts.get(ip) || {}).count >= MAX_ATTEMPTS) {
-      blockIP(ip, 60);
-      logSecurity('BRUTE_FORCE', 'Majaribio mengi ya kuingia kutoka IP ' + ip, 'HIGH', ip);
-    }
+    recordFail(cleanEmail); recordFail(ip);
+    if ((loginAttempts.get(ip) || {}).count >= MAX_ATTEMPTS) { blockIP(ip, 60); logSecurity('BRUTE_FORCE', 'Majaribio mengi ya kuingia kutoka IP ' + ip, 'HIGH', ip); }
     return res.status(401).json({ error: 'Email au password si sahihi' });
   }
-
   loginAttempts.delete(cleanEmail);
   const token = crypto.randomBytes(24).toString('hex');
   const sessions = readJson(sessionsFile, {});
   sessions[token] = cleanEmail;
   writeJson(sessionsFile, sessions);
-
   res.json({ success: true, token, user: { name: user.name, email: user.email, isAdmin: user.isAdmin, isStaff: !!user.isStaff } });
 });
 
-// Mtumiaji aliyeingia
 app.get('/api/auth/me', (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Huna token au token si sahihi' });
   res.json({ success: true, user: { name: user.name, email: user.email, phone: user.phone || '', created: user.created || null, balance: user.balance || 0, adminEarnings: user.adminEarnings || 0, isAdmin: !!user.isAdmin, isStaff: !!user.isStaff } });
 });
 
-// 👤 PROFILE
 app.put('/api/auth/profile', (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Tafadhali ingia kwanza.' });
@@ -434,15 +380,12 @@ app.put('/api/auth/profile', (req, res) => {
   const email = String(user.email || '').trim().toLowerCase();
   const current = users[email];
   if (!current) return res.status(404).json({ error: 'Akaunti haikupatikana.' });
-
   const name = String(req.body?.name || '').trim();
   const phone = String(req.body?.phone || '').trim();
   if (name.length < 2) return res.status(400).json({ error: 'Jina liwe na angalau herufi 2.' });
   if (name.length > 80) return res.status(400).json({ error: 'Jina ni refu sana.' });
   if (phone.length > 30) return res.status(400).json({ error: 'Namba ya simu si sahihi.' });
-
-  current.name = name;
-  current.phone = phone;
+  current.name = name; current.phone = phone;
   users[email] = current;
   writeJson(usersFile, users);
   res.json({ success: true, user: { name: current.name, email: current.email, phone: current.phone || '', balance: current.balance || 0, isAdmin: !!current.isAdmin, isStaff: !!current.isStaff } });
@@ -459,7 +402,6 @@ app.post('/api/auth/change-password', (req, res) => {
   if (newPassword.length < 6) return res.status(400).json({ error: 'Password mpya iwe na angalau herufi 6.' });
   if (newPassword !== confirmPassword) return res.status(400).json({ error: 'Password mpya hazifanani.' });
   if (newPassword === oldPassword) return res.status(400).json({ error: 'Tumia password mpya tofauti na ya zamani.' });
-
   const users = readJson(usersFile, {});
   const email = String(user.email || '').trim().toLowerCase();
   if (!users[email]) return res.status(404).json({ error: 'Akaunti haikupatikana.' });
@@ -468,7 +410,6 @@ app.post('/api/auth/change-password', (req, res) => {
   res.json({ success: true, message: 'Password imebadilishwa kikamilifu.' });
 });
 
-// Admin: Weka au Ondoa Staff
 app.post('/api/admin/users/staff', (req, res) => {
   const admin = getUserByToken(req);
   if (!admin || !admin.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
@@ -479,22 +420,18 @@ app.post('/api/admin/users/staff', (req, res) => {
   if (users[cleanEmail].isAdmin) return res.status(400).json({ error: 'Huyu tayari ni Admin kamili' });
   users[cleanEmail].isStaff = !!makeStaff;
   writeJson(usersFile, users);
-  res.json({ success: true, message: makeStaff ? '✅ ' + cleanEmail + ' sasa ni Staff (ruhusa ndogo).' : '✅ ' + cleanEmail + ' si Staff tena.' });
+  res.json({ success: true, message: makeStaff ? '✅ ' + cleanEmail + ' sasa ni Staff.' : '✅ ' + cleanEmail + ' si Staff tena.' });
 });
 
-// Kutoka (Logout)
 app.post('/api/auth/logout', (req, res) => {
   const token = req.headers.authorization;
   if (token) { const sessions = readJson(sessionsFile, {}); delete sessions[token]; writeJson(sessionsFile, sessions); }
   res.json({ success: true });
 });
 
-// Promote Admin via Secret Key
 app.get('/api/auth/promote', (req, res) => {
   const { email, key } = req.query;
-  if (!process.env.ADMIN_SETUP_KEY || key !== process.env.ADMIN_SETUP_KEY) {
-    return res.status(403).json({ error: 'Ufunguo si sahihi' });
-  }
+  if (!process.env.ADMIN_SETUP_KEY || key !== process.env.ADMIN_SETUP_KEY) return res.status(403).json({ error: 'Ufunguo si sahihi' });
   const users = readJson(usersFile, {});
   const cleanEmail = (email || '').trim().toLowerCase();
   if (!users[cleanEmail]) return res.status(404).json({ error: 'Mtumiaji huyo hajapatikana. Jisajili kwanza kwenye tovuti.' });
@@ -503,40 +440,25 @@ app.get('/api/auth/promote', (req, res) => {
   res.json({ success: true, message: '✅ ' + cleanEmail + ' sasa ni Admin. Toka (logout) na uingie tena ili ibadilike.' });
 });
 
-// 🏆 KUKAMILISHA MECHI NA KUTOA 10% CUT
+// 🏆 KUKAMILISHA MECHI
 async function completeMatchAndPayout(matchId, winnerUserId) {
   const matches = readJson('matches.json', []);
   const match = matches.find(m => m.id === matchId);
-
   if (!match || match.status === 'completed') return { success: false, error: 'Mechi haipatikani au imeshakamilika' };
-
   const totalPool = (match.entryFee || 0) * 2;
   const platformFee = totalPool * 0.10;
   const winnerPrize = totalPool - platformFee;
-
-  match.status = 'completed';
-  match.winnerId = winnerUserId;
-  match.platformCommission = platformFee;
-  match.winnerPayout = winnerPrize;
-
+  match.status = 'completed'; match.winnerId = winnerUserId; match.platformCommission = platformFee; match.winnerPayout = winnerPrize;
   const users = readJson(usersFile, {});
   let winnerKey = Object.keys(users).find(k => k === winnerUserId || users[k].email === winnerUserId);
-  if (winnerKey) {
-    users[winnerKey].balance = (users[winnerKey].balance || 0) + winnerPrize;
-  }
-
+  if (winnerKey) users[winnerKey].balance = (users[winnerKey].balance || 0) + winnerPrize;
   let adminKey = Object.keys(users).find(k => users[k].isAdmin === true);
-  if (adminKey) {
-    users[adminKey].adminEarnings = (users[adminKey].adminEarnings || 0) + platformFee;
-  }
-
+  if (adminKey) users[adminKey].adminEarnings = (users[adminKey].adminEarnings || 0) + platformFee;
   writeJson('matches.json', matches);
   writeJson(usersFile, users);
-
   return { success: true, winnerPrize, platformFee };
 }
 
-// Endpoints za Mechi / Tournaments
 app.get('/api/matches', (req, res) => {
   const matches = readJson('matches.json', []);
   res.json({ success: true, matches });
@@ -547,20 +469,8 @@ app.post('/api/matches', (req, res) => {
   if (!user || (!user.isAdmin && !user.isStaff)) return res.status(403).json({ error: 'Huna ruhusa' });
   const { title, entryFee, player1Id, player2Id } = req.body;
   if (!title || entryFee === undefined) return res.status(400).json({ error: 'Jaza kichwa cha habari na kiingilio' });
-
   const matches = readJson('matches.json', []);
-  const match = {
-    id: 'm_' + Date.now(),
-    title: title.trim(),
-    entryFee: Number(entryFee),
-    player1Id: player1Id || '',
-    player2Id: player2Id || '',
-    status: 'pending',
-    winnerId: null,
-    platformCommission: 0,
-    winnerPayout: 0,
-    date: new Date().toISOString()
-  };
+  const match = { id: 'm_' + Date.now(), title: title.trim(), entryFee: Number(entryFee), player1Id: player1Id || '', player2Id: player2Id || '', status: 'pending', winnerId: null, platformCommission: 0, winnerPayout: 0, date: new Date().toISOString() };
   matches.push(match);
   writeJson('matches.json', matches);
   res.json({ success: true, match });
@@ -571,7 +481,6 @@ app.post('/api/matches/:id/complete', async (req, res) => {
   if (!user || (!user.isAdmin && !user.isStaff)) return res.status(403).json({ error: 'Huna ruhusa' });
   const { winnerUserId } = req.body;
   if (!winnerUserId) return res.status(400).json({ error: 'Weka ID au Email ya mshindi' });
-
   const result = await completeMatchAndPayout(req.params.id, winnerUserId);
   if (!result.success) return res.status(400).json({ error: result.error || 'Imeshindikana kukamilisha mechi' });
   res.json({ success: true, message: '✅ Mechi imekamilishwa na zawadi zimetolewa!', ...result });
@@ -590,12 +499,7 @@ app.post('/api/products', async (req, res) => {
   if (!name || !price) return res.status(400).json({ error: 'Jaza jina na bei' });
   const products = readJson('products.json', {});
   const id = 'p' + Date.now();
-  products[id] = {
-    id, name, type: type || 'Bidhaa', price: Number(price), emoji: emoji || '🎮', desc: desc || '',
-    downloadLink: downloadLink || '', imageUrl: imageUrl || '', trailerUrl: trailerUrl || '',
-    category: category || 'Zote', section: section || 'shop',
-    accountUser: accountUser || '', accountPassword: accountPassword || ''
-  };
+  products[id] = { id, name, type: type || 'Bidhaa', price: Number(price), emoji: emoji || '🎮', desc: desc || '', downloadLink: downloadLink || '', imageUrl: imageUrl || '', trailerUrl: trailerUrl || '', category: category || 'Zote', section: section || 'shop', accountUser: accountUser || '', accountPassword: accountPassword || '' };
   const saved = await writeJson('products.json', products);
   res.json({ success: true, id, persistent: saved.cloud !== false });
 });
@@ -607,21 +511,7 @@ app.put('/api/products/:id', async (req, res) => {
   const existing = products[req.params.id];
   if (!existing) return res.status(404).json({ error: 'Bidhaa haipatikani' });
   const { name, type, price, emoji, desc, downloadLink, imageUrl, trailerUrl, category, section, accountUser, accountPassword } = req.body;
-  products[req.params.id] = {
-    ...existing,
-    name: name || existing.name,
-    type: type || existing.type,
-    price: price ? Number(price) : existing.price,
-    emoji: emoji || existing.emoji,
-    desc: desc !== undefined ? desc : existing.desc,
-    downloadLink: downloadLink !== undefined ? downloadLink : existing.downloadLink,
-    imageUrl: imageUrl !== undefined ? imageUrl : existing.imageUrl,
-    trailerUrl: trailerUrl !== undefined ? trailerUrl : existing.trailerUrl,
-    category: category || existing.category || 'Zote',
-    section: section || existing.section || 'shop',
-    accountUser: accountUser !== undefined ? accountUser : existing.accountUser,
-    accountPassword: accountPassword !== undefined ? accountPassword : existing.accountPassword
-  };
+  products[req.params.id] = { ...existing, name: name || existing.name, type: type || existing.type, price: price ? Number(price) : existing.price, emoji: emoji || existing.emoji, desc: desc !== undefined ? desc : existing.desc, downloadLink: downloadLink !== undefined ? downloadLink : existing.downloadLink, imageUrl: imageUrl !== undefined ? imageUrl : existing.imageUrl, trailerUrl: trailerUrl !== undefined ? trailerUrl : existing.trailerUrl, category: category || existing.category || 'Zote', section: section || existing.section || 'shop', accountUser: accountUser !== undefined ? accountUser : existing.accountUser, accountPassword: accountPassword !== undefined ? accountPassword : existing.accountPassword };
   const saved = await writeJson('products.json', products);
   res.json({ success: true, product: products[req.params.id], persistent: saved.cloud !== false });
 });
@@ -640,44 +530,23 @@ app.get('/api/admin/analytics', (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
   const orders = readJson('orders.json', []).filter(o => o.status === 'successful');
-
   const days = [];
   for (let i = 13; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
+    const d = new Date(); d.setDate(d.getDate() - i);
     const key = d.toISOString().slice(0, 10);
     days.push({ date: key, label: d.toLocaleDateString('sw', { day: '2-digit', month: '2-digit' }), total: 0, count: 0 });
   }
-  orders.forEach(o => {
-    const key = (o.confirmedAt || o.date || '').slice(0, 10);
-    const day = days.find(d => d.date === key);
-    if (day) { day.total += (o.amount || 0); day.count += 1; }
-  });
-
+  orders.forEach(o => { const key = (o.confirmedAt || o.date || '').slice(0, 10); const day = days.find(d => d.date === key); if (day) { day.total += (o.amount || 0); day.count += 1; } });
   const productSales = {};
-  orders.forEach(o => (o.items || []).forEach(i => {
-    const qty = Number(i.quantity || i.qty || 1);
-    productSales[i.name] = (productSales[i.name] || 0) + qty;
-  }));
-  const topProducts = Object.entries(productSales).sort((a, b) => b[1] - a[1]).slice(0, 5)
-    .map(([name, qty]) => ({ name, qty }));
-
+  orders.forEach(o => (o.items || []).forEach(i => { const qty = Number(i.quantity || i.qty || 1); productSales[i.name] = (productSales[i.name] || 0) + qty; }));
+  const topProducts = Object.entries(productSales).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, qty]) => ({ name, qty }));
   res.json({ success: true, days, topProducts });
 });
 
-// 💾 BACKUP
 app.get('/api/admin/backup', (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
-  const backup = {
-    generatedAt: new Date().toISOString(),
-    users: readJson(usersFile, {}),
-    products: readJson('products.json', {}),
-    orders: readJson('orders.json', []),
-    requests: readJson('requests.json', []),
-    matches: readJson('matches.json', []),
-    security: readJson(securityFile, { events: [], blocked: {} })
-  };
+  const backup = { generatedAt: new Date().toISOString(), users: readJson(usersFile, {}), products: readJson('products.json', {}), orders: readJson('orders.json', []), requests: readJson('requests.json', []), matches: readJson('matches.json', []), security: readJson(securityFile, { events: [], blocked: {} }) };
   res.setHeader('Content-Disposition', 'attachment; filename="gamehub-backup-' + Date.now() + '.json"');
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(backup, null, 2));
@@ -695,10 +564,7 @@ app.post('/api/marketplace', (req, res) => {
   const { businessName, description, contact, imageUrl, category } = req.body;
   if (!businessName || !contact) return res.status(400).json({ error: 'Jaza jina la biashara na mawasiliano' });
   const listings = readJson('marketplace.json', []);
-  const listing = {
-    id: 'm' + Date.now(), businessName, description: description || '', contact,
-    imageUrl: imageUrl || '', category: category || 'Nyingine', date: new Date().toISOString()
-  };
+  const listing = { id: 'm' + Date.now(), businessName, description: description || '', contact, imageUrl: imageUrl || '', category: category || 'Nyingine', date: new Date().toISOString() };
   listings.push(listing);
   writeJson('marketplace.json', listings);
   res.json({ success: true, id: listing.id });
@@ -770,9 +636,7 @@ app.post('/api/reviews/:productId', (req, res) => {
   if (!reviews[req.params.productId]) reviews[req.params.productId] = [];
   const already = reviews[req.params.productId].find(x => x.email === user.email);
   if (already) return res.json({ success: false, message: 'Umeshaacha maoni kwenye bidhaa hii.' });
-  reviews[req.params.productId].push({
-    name: user.name, email: user.email, rating: r, comment: (comment || '').trim(), date: new Date().toISOString()
-  });
+  reviews[req.params.productId].push({ name: user.name, email: user.email, rating: r, comment: (comment || '').trim(), date: new Date().toISOString() });
   writeJson('reviews.json', reviews);
   res.json({ success: true, message: '✅ Asante kwa maoni yako!' });
 });
@@ -786,31 +650,16 @@ app.get('/api/requests', (req, res) => {
 app.post('/api/requests', (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza kuomba game' });
-
   const { gameName } = req.body;
   if (!gameName || !gameName.trim()) return res.status(400).json({ error: 'Andika jina la game' });
-
   const requests = readJson('requests.json', []);
   const name = gameName.trim();
   const existing = requests.find(r => r.name.toLowerCase() === name.toLowerCase());
-
   if (existing) {
-    if (!existing.voters.includes(user.email)) {
-      existing.voters.push(user.email);
-      existing.votes += 1;
-      writeJson('requests.json', requests);
-      return res.json({ success: true, message: 'Game hii tayari iko. Tumeongeza kura yako!' });
-    }
+    if (!existing.voters.includes(user.email)) { existing.voters.push(user.email); existing.votes += 1; writeJson('requests.json', requests); return res.json({ success: true, message: 'Game hii tayari iko. Tumeongeza kura yako!' }); }
     return res.json({ success: true, message: 'Game hii tayari iko na umeshaipigia kura.' });
   }
-
-  const newReq = {
-    id: 'r' + Date.now(),
-    name: name,
-    voters: [user.email],
-    votes: 1,
-    date: new Date().toISOString()
-  };
+  const newReq = { id: 'r' + Date.now(), name, voters: [user.email], votes: 1, date: new Date().toISOString() };
   requests.push(newReq);
   writeJson('requests.json', requests);
   res.json({ success: true, message: '✅ Game yako imeongezwa! Wengine wanaweza kuipigia kura.' });
@@ -819,15 +668,11 @@ app.post('/api/requests', (req, res) => {
 app.post('/api/requests/:id/vote', (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza kupiga kura' });
-
   const requests = readJson('requests.json', []);
   const item = requests.find(r => r.id === req.params.id);
   if (!item) return res.status(404).json({ error: 'Game haipatikani' });
-  if (item.voters.includes(user.email)) {
-    return res.json({ success: false, message: 'Umeshapiga kura kwenye game hii' });
-  }
-  item.voters.push(user.email);
-  item.votes += 1;
+  if (item.voters.includes(user.email)) return res.json({ success: false, message: 'Umeshapiga kura kwenye game hii' });
+  item.voters.push(user.email); item.votes += 1;
   writeJson('requests.json', requests);
   res.json({ success: true, message: '✅ Kura yako imeongezwa!' });
 });
@@ -873,7 +718,7 @@ app.get('/api/admin/storage-status', async (req, res) => {
   if (!supabase) return res.json({success:true,persistent:false,provider:'Local .data only',warning:'Weka SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL na SUPABASE_SERVICE_ROLE_KEY kwenye Render ili data isifutike baada ya restart/deploy.',kvTable:table});
   try {
     const { error } = await supabase.from(table).select('file_name').limit(1);
-    if (error) return res.json({success:true,persistent:false,provider:'Supabase configured but KV unavailable',warning:'Supabase imeunganishwa lakini table '+table+' haipatikani au RLS/permissions zimezuia server. Tengeneza/ruhusu table hii.',kvTable:table});
+    if (error) return res.json({success:true,persistent:false,provider:'Supabase configured but KV unavailable',warning:'Supabase imeunganishwa lakini table '+table+' haipatikani au RLS/permissions zimezuia server.',kvTable:table});
     res.json({success:true,persistent:true,provider:'Supabase KV + local cache',warning:null,kvTable:table});
   } catch(e) { res.json({success:true,persistent:false,provider:'Supabase error',warning:e.message,kvTable:table}); }
 });
@@ -884,15 +729,7 @@ app.get('/api/admin/stats', (req, res) => {
   const orders = readJson('orders.json', []);
   const users = readJson(usersFile, {});
   const total = orders.reduce((t, o) => t + (o.amount || 0), 0);
-  res.json({
-    success: true,
-    stats: {
-      orders: orders.length,
-      total: total,
-      customers: Object.keys(users).length,
-      products: Object.keys(readJson('products.json', {})).length
-    }
-  });
+  res.json({ success: true, stats: { orders: orders.length, total, customers: Object.keys(users).length, products: Object.keys(readJson('products.json', {})).length } });
 });
 
 // 🛡️ SECURITY ADMIN ENDPOINTS
@@ -909,20 +746,8 @@ app.get('/api/security/stats', (req, res) => {
   const data = readJson(securityFile, { events: [], blocked: {} });
   const now = Date.now();
   const activeBlocks = {};
-  for (const ip in (data.blocked || {})) {
-    if (data.blocked[ip] > now) activeBlocks[ip] = data.blocked[ip];
-  }
-  res.json({
-    success: true,
-    stats: {
-      totalEvents: data.events.length,
-      high: data.events.filter(e => e.severity === 'HIGH').length,
-      medium: data.events.filter(e => e.severity === 'MEDIUM').length,
-      low: data.events.filter(e => e.severity === 'LOW').length,
-      blockedIPs: Object.keys(activeBlocks).length
-    },
-    blocked: activeBlocks
-  });
+  for (const ip in (data.blocked || {})) { if (data.blocked[ip] > now) activeBlocks[ip] = data.blocked[ip]; }
+  res.json({ success: true, stats: { totalEvents: data.events.length, high: data.events.filter(e => e.severity === 'HIGH').length, medium: data.events.filter(e => e.severity === 'MEDIUM').length, low: data.events.filter(e => e.severity === 'LOW').length, blockedIPs: Object.keys(activeBlocks).length }, blocked: activeBlocks });
 });
 
 app.post('/api/security/block', (req, res) => {
@@ -955,7 +780,6 @@ app.get('/api/security/report', (req, res) => {
   const blockedCount = Object.keys(data.blocked || {}).filter(ip => data.blocked[ip] > now).length;
   const high = events.filter(e => e.severity === 'HIGH').length;
   const attacks = events.filter(e => ['SQLI_XSS', 'BRUTE_FORCE', 'BLOCKED_REQUEST'].includes(e.type));
-
   const lines = [
     '🛡️ RIPOTI YA USALAMA — GameHub',
     'Tarehe: ' + new Date().toLocaleString(),
@@ -972,167 +796,79 @@ app.get('/api/security/report', (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════
-// ⚡ CLICKPESA PAYMENTS — Badala ya AzamPay
+// ⚡ CLICKPESA PAYMENTS
 // ═══════════════════════════════════════════════════════════════
 const CLICKPESA_BASE = 'https://api.clickpesa.com/third-parties';
-
 let clickpesaTokenCache = { token: null, expiresAt: 0 };
 
 async function getClickPesaToken() {
   if (clickpesaTokenCache.token && Date.now() < clickpesaTokenCache.expiresAt - 60_000) {
     return clickpesaTokenCache.token;
   }
-
   const r = await fetch(CLICKPESA_BASE + '/generate-token', {
     method: 'POST',
-    headers: {
-      'client-id': process.env.CLICKPESA_CLIENT_ID,
-      'api-key': process.env.CLICKPESA_API_KEY
-    }
+    headers: { 'client-id': process.env.CLICKPESA_CLIENT_ID, 'api-key': process.env.CLICKPESA_API_KEY }
   });
-
   const data = await r.json();
-  if (!r.ok || !data.token) {
-    throw new Error('ClickPesa: imeshindwa kupata token — ' + (data.message || 'Unknown error'));
-  }
-
-  clickpesaTokenCache = {
-    token: data.token,
-    expiresAt: Date.now() + 55 * 60 * 1000
-  };
+  if (!r.ok || !data.token) throw new Error('ClickPesa: imeshindwa kupata token — ' + (data.message || 'Unknown error'));
+  clickpesaTokenCache = { token: data.token, expiresAt: Date.now() + 55 * 60 * 1000 };
   return clickpesaTokenCache.token;
 }
 
 app.post('/api/clickpesa-pay', async (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza kulipa' });
-
   try {
     const { items, total, phone, name } = req.body;
     if (!items || !items.length || !total) return res.status(400).json({ error: 'Kikapu ni tupu' });
     if (!phone) return res.status(400).json({ error: 'Weka namba ya simu' });
-
     let phoneFull = String(phone).replace(/\D/g, '');
     if (!phoneFull.startsWith('255')) phoneFull = '255' + phoneFull.replace(/^0/, '');
     if (phoneFull.length !== 12) return res.status(400).json({ error: 'Namba ya simu si sahihi. Mfano: 0786095758' });
-
     const orderReference = 'GH' + Date.now().toString().slice(-10);
-
     const orders = readJson('orders.json', []);
-    orders.push({
-      tx_ref: orderReference,
-      customer: user.email,
-      customerPhone: phoneFull,
-      customerName: name || user.name,
-      amount: Number(total),
-      items,
-      provider: 'ClickPesa',
-      status: 'pending_clickpesa',
-      date: new Date().toISOString()
-    });
+    orders.push({ tx_ref: orderReference, customer: user.email, customerPhone: phoneFull, customerName: name || user.name, amount: Number(total), items, provider: 'ClickPesa', status: 'pending_clickpesa', date: new Date().toISOString() });
     await writeJson('orders.json', orders);
-
     const token = await getClickPesaToken();
-
-    const previewRes = await fetch(CLICKPESA_BASE + '/payments/preview-ussd-push-request', {
-      method: 'POST',
-      headers: {
-        'Authorization': token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        amount: String(total),
-        currency: 'TZS',
-        orderReference: orderReference,
-        phoneNumber: phoneFull
-      })
-    });
-
+    const previewRes = await fetch(CLICKPESA_BASE + '/payments/preview-ussd-push-request', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ amount: String(total), currency: 'TZS', orderReference, phoneNumber: phoneFull }) });
     const previewData = await previewRes.json();
-    if (!previewRes.ok || previewData.success === false) {
-      console.error('ClickPesa preview error:', previewData);
-      return res.status(400).json({ error: 'ClickPesa: ' + (previewData.message || 'Malipo hayakuanza') });
-    }
-
-    const payRes = await fetch(CLICKPESA_BASE + '/payments/initiate-ussd-push-request', {
-      method: 'POST',
-      headers: {
-        'Authorization': token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        amount: String(total),
-        currency: 'TZS',
-        orderReference: orderReference,
-        phoneNumber: phoneFull
-      })
-    });
-
+    if (!previewRes.ok || previewData.success === false) { console.error('ClickPesa preview error:', previewData); return res.status(400).json({ error: 'ClickPesa: ' + (previewData.message || 'Malipo hayakuanza') }); }
+    const payRes = await fetch(CLICKPESA_BASE + '/payments/initiate-ussd-push-request', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ amount: String(total), currency: 'TZS', orderReference, phoneNumber: phoneFull }) });
     const payData = await payRes.json();
     if (!payRes.ok || payData.success === false) {
       console.error('ClickPesa payment error:', payData);
-
       const all = readJson('orders.json', []);
       const o = all.find(x => x.tx_ref === orderReference);
       if (o) { o.status = 'failed_to_start'; await writeJson('orders.json', all); }
-
       return res.status(400).json({ error: 'ClickPesa: ' + (payData.message || 'Malipo hayakuanza') });
     }
-
-    res.json({
-      success: true,
-      tx_ref: orderReference,
-      provider: 'ClickPesa',
-      transactionId: payData.id || null
-    });
-  } catch (err) {
-    console.error('ClickPesa error:', err);
-    res.status(500).json({ error: 'Server error: ' + err.message });
-  }
+    res.json({ success: true, tx_ref: orderReference, provider: 'ClickPesa', transactionId: payData.id || null });
+  } catch (err) { console.error('ClickPesa error:', err); res.status(500).json({ error: 'Server error: ' + err.message }); }
 });
 
-// Webhook ya ClickPesa
 app.post('/api/clickpesa-webhook', async (req, res) => {
   try {
     const body = req.body || {};
     const event = body.event || body.eventType;
     const data = body.data || {};
-
     console.log('ClickPesa webhook:', event, JSON.stringify(data).slice(0, 500));
-
     if (event === 'PAYMENT RECEIVED') {
       const orderRef = data.orderReference;
       const orders = readJson('orders.json', []);
       const order = orders.find(o => o.tx_ref === orderRef);
-
       if (order && order.status !== 'successful') {
         const collected = Number(data.collectedAmount || data.amount || 0);
-        if (collected >= (order.amount - 5)) {
-          order.status = 'successful';
-          order.confirmedAt = new Date().toISOString();
-          order.clickpesaRef = data.id || null;
-          await writeJson('orders.json', orders);
-          logSecurity('CLICKPESA_PAYMENT_CONFIRMED', 'Malipo yamethibitishwa: ' + orderRef, 'LOW', getIP(req));
-        } else {
-          order.status = 'amount_mismatch';
-          await writeJson('orders.json', orders);
-        }
+        if (collected >= (order.amount - 5)) { order.status = 'successful'; order.confirmedAt = new Date().toISOString(); order.clickpesaRef = data.id || null; await writeJson('orders.json', orders); logSecurity('CLICKPESA_PAYMENT_CONFIRMED', 'Malipo yamethibitishwa: ' + orderRef, 'LOW', getIP(req)); }
+        else { order.status = 'amount_mismatch'; await writeJson('orders.json', orders); }
       }
     } else if (event === 'PAYMENT FAILED') {
       const orderRef = data.orderReference;
       const orders = readJson('orders.json', []);
       const order = orders.find(o => o.tx_ref === orderRef);
-      if (order && order.status !== 'successful') {
-        order.status = 'failed';
-        await writeJson('orders.json', orders);
-      }
+      if (order && order.status !== 'successful') { order.status = 'failed'; await writeJson('orders.json', orders); }
     }
-
     res.json({ success: true });
-  } catch (err) {
-    console.error('ClickPesa webhook error:', err);
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (err) { console.error('ClickPesa webhook error:', err); res.status(500).json({ error: 'Server error' }); }
 });
 
 app.get('/api/clickpesa-check/:ref', (req, res) => {
@@ -1141,38 +877,21 @@ app.get('/api/clickpesa-check/:ref', (req, res) => {
   const orders = readJson('orders.json', []);
   const o = orders.find(x => x.tx_ref === req.params.ref && x.customer === user.email);
   if (!o) return res.status(404).json({ error: 'Order haipatikani' });
-  res.json({
-    success: true,
-    status: o.status === 'successful' ? 'successful' :
-            (o.status === 'failed' || o.status === 'failed_to_start' ? 'failed' :
-             o.status === 'amount_mismatch' ? 'amount_mismatch' : 'pending')
-  });
+  res.json({ success: true, status: o.status === 'successful' ? 'successful' : (o.status === 'failed' || o.status === 'failed_to_start' ? 'failed' : o.status === 'amount_mismatch' ? 'amount_mismatch' : 'pending') });
 });
 
 // 💵 MALIPO YA MANUAL
 app.post('/api/manual-pay', async (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza kutuma ripoti ya malipo' });
-
   const { items, total, txRef, phone } = req.body;
   if (!items || !items.length || !total) return res.status(400).json({ error: 'Kikapu ni tupu' });
   if (!txRef || !txRef.trim()) return res.status(400).json({ error: 'Andika namba ya muamala (tx ref) uliyopewa baada ya kutuma pesa' });
-
   const orders = readJson('orders.json', []);
   const orderRef = 'MANUAL-' + Date.now();
-  orders.push({
-    tx_ref: orderRef,
-    customer: user.email,
-    customerPhone: phone || '',
-    manualTxRef: txRef.trim(),
-    amount: Number(total),
-    items,
-    status: 'pending_manual',
-    date: new Date().toISOString()
-  });
+  orders.push({ tx_ref: orderRef, customer: user.email, customerPhone: phone || '', manualTxRef: txRef.trim(), amount: Number(total), items, status: 'pending_manual', date: new Date().toISOString() });
   await writeJson('orders.json', orders);
   logSecurity('MANUAL_PAYMENT_SUBMITTED', 'Ripoti ya malipo manual kutoka ' + user.email, 'LOW', getIP(req));
-
   res.json({ success: true, message: '✅ Ripoti imepokelewa! Admin atathibitisha malipo yako hivi karibuni. Angalia "My Orders" baadaye.', tx_ref: orderRef });
 });
 
@@ -1209,15 +928,23 @@ app.get('/api/my-orders', (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════
-// 🤖 AI INTEGRATION — PROVIDERS WOTE 6 (Sept 2026)
+// 🤖 AI INTEGRATION — CEREBRAS + PROVIDERS WOTE
 // ═══════════════════════════════════════════════════════════════
 async function askAI(prompt, preferred) {
   const providers = {
+    // 🥇 CEREBRAS — Bure, kikomo kikubwa (1M tokens/siku)
+    cerebras: {
+      key: process.env.CEREBRAS_API_KEY,
+      model: process.env.NEXUS_CEREBRAS_MODEL || 'gpt-oss-120b',
+      base: 'https://api.cerebras.ai/v1'
+    },
+    // 🥈 GROQ — Bure, haraka sana
     groq: {
       key: process.env.GROQ_API_KEY,
       model: process.env.NEXUS_GROQ_MODEL || 'openai/gpt-oss-120b',
       base: 'https://api.groq.com/openai/v1'
     },
+    // 🥉 GOOGLE GEMINI
     google: {
       key: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY,
       model: process.env.NEXUS_GOOGLE_MODEL || 'gemini-2.0-flash-exp'
@@ -1245,7 +972,7 @@ async function askAI(prompt, preferred) {
 
   const configured = Object.keys(providers).filter(p => providers[p].key);
   if (!configured.length) {
-    return 'AI API key haijawekwa. Weka GROQ_API_KEY au GOOGLE_GENERATIVE_AI_API_KEY kwenye Render.';
+    return 'AI API key haijawekwa. Weka CEREBRAS_API_KEY au GROQ_API_KEY kwenye Render.';
   }
 
   const primary = preferred && providers[preferred] && providers[preferred].key
@@ -1265,7 +992,8 @@ async function askAI(prompt, preferred) {
       const cfg = providers[provider];
       let text = '';
 
-      if (['groq', 'openrouter', 'deepseek', 'openai'].includes(provider)) {
+      // 🟢 CEREBRAS, GROQ, OPENROUTER, DEEPSEEK, OPENAI — OpenAI-compatible format
+      if (['cerebras', 'groq', 'openrouter', 'deepseek', 'openai'].includes(provider)) {
         const base = cfg.base || (provider === 'deepseek' ? 'https://api.deepseek.com' : 'https://api.openai.com');
         const headers = {
           'Content-Type': 'application/json',
@@ -1297,17 +1025,8 @@ async function askAI(prompt, preferred) {
       if (provider === 'anthropic') {
         const response = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': cfg.key,
-            'anthropic-version': '2023-06-01'
-          },
-          body: JSON.stringify({
-            model: cfg.model,
-            max_tokens: 900,
-            temperature: 0.7,
-            messages: [{ role: 'user', content: clean(prompt) }]
-          })
+          headers: { 'Content-Type': 'application/json', 'x-api-key': cfg.key, 'anthropic-version': '2023-06-01' },
+          body: JSON.stringify({ model: cfg.model, max_tokens: 900, temperature: 0.7, messages: [{ role: 'user', content: clean(prompt) }] })
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data?.error?.message || ('HTTP ' + response.status));
@@ -1316,15 +1035,11 @@ async function askAI(prompt, preferred) {
 
       if (provider === 'google') {
         const response = await fetch(
-          'https://generativelanguage.googleapis.com/v1beta/models/' +
-          encodeURIComponent(cfg.model) + ':generateContent?key=' + encodeURIComponent(cfg.key),
+          'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(cfg.model) + ':generateContent?key=' + encodeURIComponent(cfg.key),
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: clean(prompt) }] }],
-              generationConfig: { temperature: 0.7, maxOutputTokens: 900 }
-            })
+            body: JSON.stringify({ contents: [{ parts: [{ text: clean(prompt) }] }], generationConfig: { temperature: 0.7, maxOutputTokens: 900 } })
           }
         );
         const data = await response.json();
@@ -1349,7 +1064,7 @@ async function askGemini(prompt) {
   return askAI(prompt, 'google');
 }
 
-// 🧪 AI DIAGNOSTIC — Jaribu providers wote
+// 🧪 AI DIAGNOSTIC — Jaribu providers wote (Cerebras imeongezwa)
 app.get('/api/ai/test', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
@@ -1358,6 +1073,7 @@ app.get('/api/ai/test', async (req, res) => {
   const testPrompt = 'Sema "AI inafanya kazi" kwa Kiswahili.';
 
   const providers = {
+    cerebras: { key: process.env.CEREBRAS_API_KEY, model: process.env.NEXUS_CEREBRAS_MODEL || 'gpt-oss-120b', base: 'https://api.cerebras.ai/v1' },
     groq: { key: process.env.GROQ_API_KEY, model: process.env.NEXUS_GROQ_MODEL || 'openai/gpt-oss-120b', base: 'https://api.groq.com/openai/v1' },
     google: { key: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY, model: process.env.NEXUS_GOOGLE_MODEL || 'gemini-2.0-flash-exp' },
     openrouter: { key: process.env.OPENROUTER_API_KEY, model: process.env.NEXUS_OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free', base: 'https://openrouter.ai/api/v1' },
@@ -1367,86 +1083,54 @@ app.get('/api/ai/test', async (req, res) => {
   };
 
   for (const [name, cfg] of Object.entries(providers)) {
-    if (!cfg.key) {
-      results[name] = { status: 'NO_KEY', model: cfg.model };
-      continue;
-    }
+    if (!cfg.key) { results[name] = { status: 'NO_KEY', model: cfg.model }; continue; }
     try {
       let text = '';
-      if (['groq', 'openrouter', 'deepseek', 'openai'].includes(name)) {
+      if (['cerebras', 'groq', 'openrouter', 'deepseek', 'openai'].includes(name)) {
         const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.key };
-        if (name === 'openrouter') {
-          headers['HTTP-Referer'] = process.env.RENDER_EXTERNAL_URL || 'https://form-ecosystem.onrender.com';
-          headers['X-Title'] = 'GameHub Tanzania';
-        }
-        const r = await fetch(cfg.base + '/chat/completions', {
-          method: 'POST', headers,
-          body: JSON.stringify({ model: cfg.model, messages: [{ role: 'user', content: testPrompt }], max_tokens: 100 })
-        });
+        if (name === 'openrouter') { headers['HTTP-Referer'] = process.env.RENDER_EXTERNAL_URL || 'https://form-ecosystem.onrender.com'; headers['X-Title'] = 'GameHub Tanzania'; }
+        const r = await fetch(cfg.base + '/chat/completions', { method: 'POST', headers, body: JSON.stringify({ model: cfg.model, messages: [{ role: 'user', content: testPrompt }], max_tokens: 100 }) });
         const data = await r.json();
         if (!r.ok) throw new Error(data?.error?.message || ('HTTP ' + r.status));
         text = data?.choices?.[0]?.message?.content || '';
       } else if (name === 'google') {
-        const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(cfg.model) + ':generateContent?key=' + encodeURIComponent(cfg.key), {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: testPrompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 100 } })
-        });
+        const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(cfg.model) + ':generateContent?key=' + encodeURIComponent(cfg.key), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: testPrompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 100 } }) });
         const data = await r.json();
         if (!r.ok) throw new Error(data?.error?.message || ('HTTP ' + r.status));
         text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
       } else if (name === 'anthropic') {
-        const r = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': cfg.key, 'anthropic-version': '2023-06-01' },
-          body: JSON.stringify({ model: cfg.model, max_tokens: 100, messages: [{ role: 'user', content: testPrompt }] })
-        });
+        const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': cfg.key, 'anthropic-version': '2023-06-01' }, body: JSON.stringify({ model: cfg.model, max_tokens: 100, messages: [{ role: 'user', content: testPrompt }] }) });
         const data = await r.json();
         if (!r.ok) throw new Error(data?.error?.message || ('HTTP ' + r.status));
         text = data?.content?.[0]?.text || '';
       }
       results[name] = { status: 'OK', model: cfg.model, reply: text.slice(0, 100) };
-    } catch (e) {
-      results[name] = { status: 'FAILED', model: cfg.model, error: e.message };
-    }
+    } catch (e) { results[name] = { status: 'FAILED', model: cfg.model, error: e.message }; }
   }
 
-  res.json({ success: true, results, env: {
-    primary: process.env.NEXUS_AI_PRIMARY || 'auto',
-    fallback: process.env.NEXUS_AI_FALLBACK || 'auto'
-  }});
+  res.json({ success: true, results, env: { primary: process.env.NEXUS_AI_PRIMARY || 'auto', fallback: process.env.NEXUS_AI_FALLBACK || 'auto' }});
 });
 
-// ═══════════ 🩺 HEALTH SAFETY LAYER (Data Isolation) ═══════════
+// ═══════════ 🩺 HEALTH SAFETY LAYER ═══════════
 const HEALTH_FORBIDDEN = ['orders.json', 'users.json', 'products.json', 'coupons.json', 'sessions.json'];
-
 function healthSafetyLayer(prompt) {
   let cleaned = String(prompt);
-  for (const f of HEALTH_FORBIDDEN) {
-    if (cleaned.includes(f)) {
-      cleaned = cleaned.replace(new RegExp(f.replace(/\./g, '\\.'), 'g'), '[DATA_ILIYOFICHWA]');
-    }
-  }
+  for (const f of HEALTH_FORBIDDEN) { if (cleaned.includes(f)) { cleaned = cleaned.replace(new RegExp(f.replace(/\./g, '\\.'), 'g'), '[DATA_ILIYOFICHWA]'); } }
   cleaned = cleaned.replace(/toa dawa|agiza dawa|andika prescription|diagnosis ya uhakika/gi, '[KANUNI: Hauruhusiwi]');
   return cleaned;
 }
 
-// ═══════════ 💬 AI CHAT (Customer Support) ═══════════
+// ═══════════ 💬 AI CHAT ═══════════
 app.post('/api/ai/chat', async (req, res) => {
   const { message, history } = req.body;
   if (!message || !message.trim()) return res.status(400).json({ error: 'Andika ujumbe' });
-
   const products = Object.values(readJson('products.json', {}));
-  const productList = products.length
-    ? products.map(p => '• ' + p.name + ' (' + (p.type || 'Bidhaa') + ') — ' + Number(p.price).toLocaleString() + ' TZS' + (p.downloadLink ? ' [download moja kwa moja]' : ' [Steam key/account]')).join('\n')
-    : 'Hakuna bidhaa bado kwenye duka';
-
+  const productList = products.length ? products.map(p => '• ' + p.name + ' (' + (p.type || 'Bidhaa') + ') — ' + Number(p.price).toLocaleString() + ' TZS' + (p.downloadLink ? ' [download moja kwa moja]' : ' [Steam key/account]')).join('\n') : 'Hakuna bidhaa bado kwenye duka';
   let transcript = '';
   if (Array.isArray(history) && history.length) {
     const recent = history.slice(-4);
-    transcript = '\n[Mazungumzo ya awali — kwa muktadha tu, USIJIBU yale maswali tena]:\n' +
-      recent.map(h => (h.role === 'user' ? 'Mteja alisema: ' : 'Wewe ulijibu: ') + String(h.text).slice(0, 200)).join('\n') +
-      '\n[Mwisho wa mazungumzo ya awali]\n\n';
+    transcript = '\n[Mazungumzo ya awali — kwa muktadha tu, USIJIBU yale maswali tena]:\n' + recent.map(h => (h.role === 'user' ? 'Mteja alisema: ' : 'Wewe ulijibu: ') + String(h.text).slice(0, 200)).join('\n') + '\n[Mwisho wa mazungumzo ya awali]\n\n';
   }
-
   const prompt = `Wewe ni msaidizi wa duka la gaming la Tanzania liitwalo GameHub.
 
 🔴 KANUNI YA MSINGI: Jibu SWALI LA SASA HIVI tu. Usijibu maswali ya awali. Ukiona swali jipya, jibu jipya.
@@ -1464,7 +1148,6 @@ Malipo: M-Pesa, Tigo Pesa, Airtel Money, HaloPesa kupitia ClickPesa au Malipo Ma
 ${transcript}Jibu swali hili la sasa HIVI: "${message}"
 
 Jibu kwa ufupi (sentensi 2-4), kirafiki, kwa Kiswahili.`;
-
   const reply = await askAI(prompt);
   res.json({ reply });
 });
@@ -1488,7 +1171,6 @@ Jibu kwa Kiswahili kwa ufupi, toa chaguo hadi 3 na sababu.`;
 app.post('/api/ai/health', async (req, res) => {
   const { message, history } = req.body;
   if (!message || !String(message).trim()) return res.status(400).json({ error: 'Andika swali' });
-
   const safeMessage = healthSafetyLayer(String(message).slice(0, 5000));
   const transcript = Array.isArray(history) ? history.slice(-8).map(h => `${h.role}: ${h.text}`).join('\n') : '';
   const prompt = `Wewe ni msaidizi wa taarifa za afya wa jamii ndani ya GameHub.
@@ -1498,88 +1180,64 @@ Usiombe taarifa nyeti zisizo muhimu.
 Mazungumzo:
 ${transcript}
 Swali jipya: ${safeMessage}`;
-
-  const reply = await askAI(prompt, process.env.NEXUS_HEALTH_PROVIDER || 'google');
-
+  const reply = await askAI(prompt, process.env.NEXUS_HEALTH_PROVIDER || 'cerebras');
   const healthLog = readJson('health_chats.json', []);
-  healthLog.push({
-    id: 'hc_' + Date.now(),
-    user: getUserByToken(req)?.email || 'anonymous',
-    question: safeMessage.slice(0, 200),
-    time: new Date().toISOString()
-  });
+  healthLog.push({ id: 'hc_' + Date.now(), user: getUserByToken(req)?.email || 'anonymous', question: safeMessage.slice(0, 200), time: new Date().toISOString() });
   if (healthLog.length > 500) healthLog.splice(0, healthLog.length - 500);
   writeJson('health_chats.json', healthLog);
-
   res.json({ reply });
 });
 
-// ═══════════ 🤖 AI ADMIN (Business Commands) ═══════════
+// ═══════════ 🤖 AI ADMIN ═══════════
 app.post('/api/ai/admin', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
-
   const { command } = req.body;
   if (!command || !command.trim()) return res.status(400).json({ error: 'Andika amri' });
-
   const lower = command.toLowerCase();
-
-  const addMatch = lower.match(/ongeza\s+(?:game|bidhaa|product)?\s*(.+?)\s+bei\s+(\d+)/i)
-    || lower.match(/ongeza\s+(?:game|bidhaa|product)?\s*(.+?)\s+(\d{3,})/i);
+  const addMatch = lower.match(/ongeza\s+(?:game|bidhaa|product)?\s*(.+?)\s+bei\s+(\d+)/i) || lower.match(/ongeza\s+(?:game|bidhaa|product)?\s*(.+?)\s+(\d{3,})/i);
   if (addMatch) {
-    const name = addMatch[1].trim();
-    const price = Number(addMatch[2]);
+    const name = addMatch[1].trim(); const price = Number(addMatch[2]);
     const products = readJson('products.json', {});
     const id = 'p' + Date.now();
     products[id] = { id: id, name: name, type: 'Game', price: price, emoji: '🎮', desc: 'Imeongezwa na AI ya admin' };
     writeJson('products.json', products);
     return res.json({ reply: '✅ Nimeongeza "' + name + '" kwa bei ' + price.toLocaleString() + ' TZS kwenye duka.' });
   }
-
   const delMatch = lower.match(/futa\s+(?:bidhaa|game|product)?\s*(.+)/i);
   if (delMatch) {
     const name = delMatch[1].trim().toLowerCase();
     const products = readJson('products.json', {});
     const found = Object.values(products).find(p => p.name.toLowerCase().includes(name));
-    if (found) {
-      delete products[found.id];
-      writeJson('products.json', products);
-      return res.json({ reply: '🗑️ Nimefuta "' + found.name + '" kwenye duka.' });
-    }
+    if (found) { delete products[found.id]; writeJson('products.json', products); return res.json({ reply: '🗑️ Nimefuta "' + found.name + '" kwenye duka.' }); }
     return res.json({ reply: 'Siipati bidhaa hiyo kwenye duka. Angalia jina.' });
   }
-
   if (/(mauzo|sales|mapato|income|orders)/.test(lower)) {
     const orders = readJson('orders.json', []);
     const total = orders.reduce((t, o) => t + (o.amount || 0), 0);
     return res.json({ reply: '📦 Mauzo yote: ' + orders.length + ' orders. Jumla ya mapato: ' + total.toLocaleString() + ' TZS.' });
   }
-
   if (/(wateja|customers|users)/.test(lower)) {
     const users = readJson(usersFile, {});
     const list = Object.values(users).map(u => u.name + ' (' + u.email + ')' + (u.isAdmin ? ' 👑' : '')).join('\n') || 'Hakuna wateja bado';
     return res.json({ reply: '👥 Wateja: ' + Object.keys(users).length + '\n' + list });
   }
-
   if (/(bidhaa|products)/.test(lower)) {
     const products = Object.values(readJson('products.json', {}));
     if (!products.length) return res.json({ reply: 'Duka halina bidhaa bado.' });
     return res.json({ reply: '🎮 Bidhaa zote:\n' + products.map(p => p.emoji + ' ' + p.name + ' - ' + Number(p.price).toLocaleString() + ' TZS').join('\n') });
   }
-
   if (/(request|ombi|maombi)/.test(lower)) {
     const requests = readJson('requests.json', []).slice().sort((a, b) => b.votes - a.votes);
     if (!requests.length) return res.json({ reply: 'Hakuna maombi ya games bado.' });
     return res.json({ reply: '🔍 Maombi ya games (kwa kura):\n' + requests.map(r => r.name + ' — kura ' + r.votes).join('\n') });
   }
-
   const stats = readJson('orders.json', []);
   const productsCount = Object.keys(readJson('products.json', {})).length;
   const prompt = 'Wewe ni msaidizi wa AI wa Admin wa duka la gaming GameHub (Tanzania).\n' +
     'Mauzo: ' + stats.length + ' orders. Bidhaa: ' + productsCount + '.\n' +
     'Admin ameuliza: "' + command + '"\n' +
     'Msaidi: jibu kwa Kiswahili kwa ufupi, toa ushauri wa biashara.';
-
   const reply = await askAI(prompt);
   res.json({ reply });
 });
@@ -1588,18 +1246,14 @@ app.post('/api/ai/admin', async (req, res) => {
 app.post('/api/ai/boss', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si Boss (Admin).' });
-
   const { message, mode } = req.body;
   if (!message || !message.trim()) return res.status(400).json({ error: 'Andika au sema amri yako.' });
-
   const orders = readJson('orders.json', []);
   const paid = orders.filter(o => o.status === 'successful');
   const usersCount = Object.keys(readJson('users.json', {})).length;
   const revenue = paid.reduce((t, o) => t + Number(o.amount || 0), 0);
   const pending = orders.filter(o => String(o.status || '').startsWith('pending'));
-
   const needsApproval = /payout|refund|withdraw|kutoa pesa|kufuta user|delete user|badilisha wallet|futa data/i.test(message);
-
   const prompt = `Wewe ni AI Boss Assistant wa GameHub Tanzania. Boss (${user.name}) amekuuliza:
 "${message}"
 
@@ -1616,28 +1270,13 @@ KANUNI:
 3. Kama ni ripoti tu, itoe kwa ufupi.
 
 ${needsApproval ? '⚠️ TAMBUA: Ombi hili linahitaji Boss Approval — lisifanye lolote lenyewe.' : ''}`;
-
-  const reply = await askAI(prompt, process.env.NEXUS_BOSS_PROVIDER || 'groq');
-
+  const reply = await askAI(prompt, process.env.NEXUS_BOSS_PROVIDER || 'cerebras');
   if (needsApproval) {
     const approvals = readJson('boss_approvals.json', []);
-    approvals.push({
-      id: 'appr_' + Date.now(),
-      command: message.slice(0, 500),
-      status: 'pending',
-      time: new Date().toISOString(),
-      requestedBy: user.email
-    });
+    approvals.push({ id: 'appr_' + Date.now(), command: message.slice(0, 500), status: 'pending', time: new Date().toISOString(), requestedBy: user.email });
     await writeJson('boss_approvals.json', approvals);
   }
-
-  res.json({
-    success: true,
-    reply,
-    needsApproval,
-    mode: mode || 'chat',
-    timestamp: new Date().toISOString()
-  });
+  res.json({ success: true, reply, needsApproval, mode: mode || 'chat', timestamp: new Date().toISOString() });
 });
 
 app.get('/api/ai/boss/approvals', (req, res) => {
@@ -1680,15 +1319,7 @@ app.post('/api/admin/live-streams', async (req, res) => {
   const { title, league, homeTeam, awayTeam, status, streamUrl, videoUrl, startTime, description, homeScore, awayScore, minute } = req.body || {};
   if (!title) return res.status(400).json({ error: 'Weka jina la mechi.' });
   const streams = readJson('live_streams.json', []);
-  const item = {
-    id: 'live_' + Date.now(),
-    title: String(title).slice(0,160), league: String(league||'Football').slice(0,100),
-    homeTeam: String(homeTeam||'').slice(0,80), awayTeam: String(awayTeam||'').slice(0,80),
-    status: String(status||'LIVE').slice(0,30), streamUrl: String(streamUrl||'').slice(0,2000),
-    videoUrl: String(videoUrl||'').slice(0,2000), startTime: String(startTime||'').slice(0,80),
-    description: String(description||'').slice(0,1000), createdAt: new Date().toISOString(),
-    homeScore: cleanScore(homeScore), awayScore: cleanScore(awayScore), minute: String(minute||'').slice(0,10)
-  };
+  const item = { id: 'live_' + Date.now(), title: String(title).slice(0,160), league: String(league||'Football').slice(0,100), homeTeam: String(homeTeam||'').slice(0,80), awayTeam: String(awayTeam||'').slice(0,80), status: String(status||'LIVE').slice(0,30), streamUrl: String(streamUrl||'').slice(0,2000), videoUrl: String(videoUrl||'').slice(0,2000), startTime: String(startTime||'').slice(0,80), description: String(description||'').slice(0,1000), createdAt: new Date().toISOString(), homeScore: cleanScore(homeScore), awayScore: cleanScore(awayScore), minute: String(minute||'').slice(0,10) };
   streams.push(item); await writeJson('live_streams.json', streams);
   res.json({ success:true, stream:item });
 });
@@ -1820,15 +1451,7 @@ app.post('/api/admin/ai-builder', async (req,res)=>{
       const type=String(action.type||action.action||'');
       if(type==='add_product'){
         const products=readJson('products.json',{}), id='p'+Date.now()+crypto.randomBytes(2).toString('hex');
-        products[id]={
-          id,
-          name:String(action.name||'New Product').slice(0,160),
-          type:String(action.productType||action.itemType||action.section||'Game').slice(0,80),
-          price:Number(action.price||0),
-          desc:String(action.desc||'').slice(0,800),
-          imageUrl:String(action.image||action.imageUrl||'').slice(0,1000),
-          section:String(action.section||'shop').slice(0,30)
-        };
+        products[id]={ id, name:String(action.name||'New Product').slice(0,160), type:String(action.productType||action.itemType||action.section||'Game').slice(0,80), price:Number(action.price||0), desc:String(action.desc||'').slice(0,800), imageUrl:String(action.image||action.imageUrl||'').slice(0,1000), section:String(action.section||'shop').slice(0,30) };
         await writeJson('products.json',products); results.push('Bidhaa: '+products[id].name); continue;
       }
       if(type==='add_banner'){
