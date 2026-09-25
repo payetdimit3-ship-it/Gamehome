@@ -1,6 +1,12 @@
 <!DOCTYPE html>
-<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Register — LIFEISGAMETZ</title>
-<link rel="stylesheet" href="zoneplay-four-reference.css"></head><body>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-four-reference.css">
+</head>
+<body>
 <div class="z-layout">
 <aside class="z-sidebar">
   <div class="z-brand"><div class="z-mark">✦</div><div><b>LIFEIS<span>GAMETZ</span></b><small>PLAY • LEARN • EARN</small></div></div>
@@ -28,44 +34,101 @@
 <div class="ref-auth"><div class="auth-grid">
 <section class="ref-card auth-art"><div class="orb"></div><div style="position:absolute;top:24px;left:25px;font-weight:800;font-size:17px">✦ LIFEIS<span style="color:#b444ff">GAMETZ</span><small style="display:block;font-size:7px;letter-spacing:2px;color:#a9b9d5">PLAY • LEARN • EARN</small></div>
 <h1>Create Your Account</h1><p>Join thousands of gamers and start your journey</p><div class="checks"><span><b>✓</b>Access to 40+ Pages</span><span><b>✓</b>Play & Learn</span><span><b>✓</b>Earn Rewards</span><span><b>✓</b>Join Community</span></div></section>
-<section class="ref-card auth-form"><div class="tabs"><a href="login.html">Login</a><span class="on">Register</span></div><h2>Create New Account</h2><div class="sub">Fill in your details to get started</div>
-<form id="registerForm"><div class="form-row"><label>Full Name</label><div class="input-wrap"><span>♙</span><input id="name" required placeholder="Your full name"></div></div>
-<div class="form-row"><label>Email Address</label><div class="input-wrap"><span>✉</span><input id="email" type="email" required placeholder="you@example.com"></div></div>
-<div class="form-row"><label>Username</label><div class="input-wrap"><span>♙</span><input id="username" required placeholder="Choose a username"></div></div>
-<div class="form-row"><label>Password</label><div class="input-wrap"><span>▣</span><input id="password" type="password" required placeholder="Create a password"></div></div>
-<div class="remember"><label><input type="checkbox" required> I agree to the Terms & Conditions</label></div><button class="primary-btn" type="submit">Register &nbsp; →</button><p id="authMsg" style="font-size:9px;color:#ff718e;text-align:center;min-height:14px"></p></form>
-<div class="form-foot">Already have an account? <a href="login.html">Login</a></div></section>
+<section class="ref-card auth-form">
+  <div class="tabs"><a href="login.html">Login</a><span class="on">Register</span></div>
+  <h2>Create New Account</h2>
+  <div class="sub">Fill in your details to get started</div>
+  <form id="registerForm">
+    <div class="form-row">
+      <label>Full Name</label>
+      <div class="input-wrap"><span>♙</span><input id="name" required placeholder="Your full name" autocomplete="name"></div>
+    </div>
+    <div class="form-row">
+      <label>Email Address</label>
+      <div class="input-wrap"><span>✉</span><input id="email" type="email" required placeholder="you@example.com" autocomplete="email"></div>
+    </div>
+    <div class="form-row">
+      <label>Namba ya Simu (255 + namba 9)</label>
+      <div class="input-wrap"><span>📱</span><input id="phone" type="tel" required placeholder="2557XXXXXXXX" autocomplete="tel"></div>
+    </div>
+    <div class="form-row">
+      <label>Password</label>
+      <div class="input-wrap"><span>▣</span><input id="password" type="password" required placeholder="Create a password" autocomplete="new-password"></div>
+    </div>
+    <div class="remember">
+      <label><input type="checkbox" required> I agree to the Terms &amp; Conditions</label>
+    </div>
+    <button class="primary-btn" type="submit">Register &nbsp; →</button>
+    <p id="authMsg" style="font-size:9px;color:#ff718e;text-align:center;min-height:14px"></p>
+  </form>
+  <div class="form-foot">Already have an account? <a href="login.html">Login</a></div>
+</section>
 </div></div>
-</div><footer class="z-footer"><span>© 2025 LIFEISGAMETZ. All rights reserved.</span><span>Terms &nbsp;&nbsp; Privacy &nbsp;&nbsp; Support</span></footer></main></div>
+</div>
+<footer class="z-footer"><span>© 2025 LIFEISGAMETZ. All rights reserved.</span><span>Terms &nbsp;&nbsp; Privacy &nbsp;&nbsp; Support</span></footer>
+</main>
+</div>
 <script>
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const msg = document.getElementById('authMsg');
-      const btn = e.target.querySelector('button');
-      btn.disabled = true;
-      try {
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: document.getElementById('name').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            password: document.getElementById('password').value
-          })
-        });
-        const data = await res.json();
-        if (!data.success) {
-          msg.textContent = '❌ ' + (data.error || 'Hitilafu');
-          btn.disabled = false;
-          return;
-        }
-        localStorage.setItem('gamehubToken', data.token);
-        localStorage.setItem('gamehubUser', JSON.stringify(data.user));
-        window.location.href = 'index.html';
-      } catch (err) {
-        msg.textContent = '❌ Hitilafu ya mtandao. Jaribu tena.';
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('authMsg');
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    msg.textContent = '';
+
+    // ✅ Soma values ZOTE kwa usalama
+    const nameEl = document.getElementById('name');
+    const emailEl = document.getElementById('email');
+    const phoneEl = document.getElementById('phone');
+    const passwordEl = document.getElementById('password');
+
+    if (!nameEl || !emailEl || !phoneEl || !passwordEl) {
+      msg.textContent = '❌ Fomu haijakamilika. Wasiliana na admin.';
+      btn.disabled = false;
+      return;
+    }
+
+    const name = nameEl.value.trim();
+    const email = emailEl.value.trim();
+    let phone = phoneEl.value.trim().replace(/\s+/g, '');
+    const password = passwordEl.value;
+
+    // ✅ Validation
+    if (!name || name.length < 2) { msg.textContent = '❌ Jina liwe na angalau herufi 2.'; btn.disabled = false; return; }
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) { msg.textContent = '❌ Email si sahihi.'; btn.disabled = false; return; }
+    if (!phone) { msg.textContent = '❌ Weka namba ya simu.'; btn.disabled = false; return; }
+    // Kawaida ya Tanzania: 255 + namba 9
+    if (phone.startsWith('0')) phone = '255' + phone.substring(1);
+    if (!phone.startsWith('255') && phone.length === 9) phone = '255' + phone;
+    if (!/^255\d{9}$/.test(phone)) { msg.textContent = '❌ Namba ya simu si sahihi. Mfano: 0786095758'; btn.disabled = false; return; }
+    if (!password || password.length < 4) { msg.textContent = '❌ Password iwe angalau herufi 4.'; btn.disabled = false; return; }
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, password })
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        msg.textContent = '❌ ' + (data.error || 'Hitilafu');
         btn.disabled = false;
+        return;
       }
-    });
-  </script></body></html>
+
+      // ✅ Mafanikio — hifadhi token na user
+      localStorage.setItem('gamehubToken', data.token);
+      localStorage.setItem('gamehubUser', JSON.stringify(data.user));
+      msg.style.color = '#86efac';
+      msg.textContent = '✅ Umefanikiwa! Tunakurudisha...';
+      setTimeout(() => { window.location.href = 'index.html'; }, 800);
+    } catch (err) {
+      console.error('Register error:', err);
+      msg.textContent = '❌ Hitilafu ya mtandao. Jaribu tena.';
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
