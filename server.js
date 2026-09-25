@@ -247,12 +247,22 @@ function blockIP(ip, minutes) {
   writeJson(securityFile, data);
   logSecurity('IP_BLOCKED', 'IP imefungwa kwa dakika ' + minutes, 'HIGH', ip);
 }
+
+// ═══════════ 🛡️ IMPROVED isSuspicious — Ruhusu URLs ndefu ═══════════
+// Ruhusu URLs za Google Drive, YouTube, n.k. — angalia SQL/XSS halisi pekee
 function isSuspicious(input) {
   if (!input || typeof input !== 'string') return false;
-  const patterns = /('|"|--|;|\/\*|\*\/|union\s+select|select\s+.*\s+from|insert\s+into|drop\s+table|<\s*script|onerror\s*=|javascript:)/i;
+  
+  // Ruhusu URLs ndefu (hadi 2000 chars) — kwa Google Drive, YouTube, n.k.
+  if (input.length > 2000) return true;
+  
+  // Angalia TU patterns za SQL injection na XSS halisi
+  // (Ondoa ' | " | -- | ; kwa sababu URLs zina hizi)
+  const patterns = /(union\s+select|insert\s+into|drop\s+table|delete\s+from|update\s+.*\s+set|<\s*script|javascript:|onerror\s*=|onload\s*=|<iframe|<embed|<object)/i;
   return patterns.test(input);
 }
 
+// ═══════════ 🛡️ IMPROVED /api middleware — Whitelist URL fields ═══════════
 app.use('/api', (req, res, next) => {
   const ip = getIP(req);
   const data = readJson(securityFile, { events: [], blocked: {} });
@@ -261,12 +271,31 @@ app.use('/api', (req, res, next) => {
     logSecurity('BLOCKED_REQUEST', 'IP iliyofungwa ilijaribu kuingia tena', 'MEDIUM', ip);
     return res.status(403).json({ error: 'IP yako imefungwa. Wasiliana na admin.' });
   }
+
+  // ✅ Fields zinazoruhusiwa URLs ndefu (downloadLink, imageUrl, trailerUrl, n.k.)
+  const URL_FIELDS = [
+    'downloadLink', 'imageUrl', 'trailerUrl', 'videoUrl', 'streamUrl', 
+    'poster', 'thumbnail', 'buttonUrl', 'url', 'image'
+  ];
+
   const checkItems = [req.body, req.query];
   for (const obj of checkItems) {
     if (!obj) continue;
     for (const key of Object.keys(obj)) {
       const val = obj[key];
-      if (typeof val === 'string' && isSuspicious(val)) {
+      if (typeof val !== 'string') continue;
+
+      // Ruka URL fields kwenye kikomo cha urefu
+      if (URL_FIELDS.includes(key)) {
+        if (val.length > 2000) {
+          logSecurity('URL_TOO_LONG', 'URL ndefu sana katika: "' + key + '"', 'MEDIUM', ip);
+          return res.status(400).json({ error: 'URL ni ndefu sana.' });
+        }
+        continue; // Ruka SQL/XSS check kwa URL fields
+      }
+
+      // Angalia SQL/XSS kwa fields nyingine zote
+      if (isSuspicious(val)) {
         logSecurity('SQLI_XSS', 'Input ya mashaka katika: "' + key + '"', 'HIGH', ip);
         blockIP(ip, 30);
         return res.status(400).json({ error: 'Input haikubaliki.' });
@@ -992,7 +1021,6 @@ async function askAI(prompt, preferred) {
       const cfg = providers[provider];
       let text = '';
 
-      // 🟢 CEREBRAS, GROQ, OPENROUTER, DEEPSEEK, OPENAI — OpenAI-compatible format
       if (['cerebras', 'groq', 'openrouter', 'deepseek', 'openai'].includes(provider)) {
         const base = cfg.base || (provider === 'deepseek' ? 'https://api.deepseek.com' : 'https://api.openai.com');
         const headers = {
