@@ -1,6 +1,12 @@
 <!DOCTYPE html>
-<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login — LIFEISGAMETZ</title>
-<link rel="stylesheet" href="zoneplay-four-reference.css"></head><body>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-four-reference.css">
+</head>
+<body>
 <div class="z-layout">
 <aside class="z-sidebar">
   <div class="z-brand"><div class="z-mark">✦</div><div><b>LIFEIS<span>GAMETZ</span></b><small>PLAY • LEARN • EARN</small></div></div>
@@ -26,33 +32,135 @@
 </header>
 <div class="z-content">
 <div class="ref-auth"><div class="auth-grid">
-<section class="ref-card auth-art"><div class="orb"></div><div style="position:absolute;top:24px;left:25px;font-weight:800;font-size:17px">✦ LIFEIS<span style="color:#b444ff">GAMETZ</span><small style="display:block;font-size:7px;letter-spacing:2px;color:#a9b9d5">PLAY • LEARN • EARN</small></div>
-<h1>Welcome Back!</h1><p>Login to your account and continue your journey</p><div class="checks"><span><b>✓</b>Access to 40+ Pages</span><span><b>✓</b>Play & Learn</span><span><b>✓</b>Earn Rewards</span><span><b>✓</b>Join Community</span></div></section>
-<section class="ref-card auth-form"><div class="tabs"><span class="on">Login</span><a href="register.html">Register</a></div><h2>Login to Your Account</h2><div class="sub">Enter your details to continue</div>
-<form id="loginForm"><div class="form-row"><label>Email or Username</label><div class="input-wrap"><span>✉</span><input id="email" type="email" required placeholder="you@example.com"></div></div>
-<div class="form-row"><label>Password</label><div class="input-wrap"><span>▣</span><input id="password" type="password" required placeholder="••••••••"></div></div>
-<div class="remember"><label><input type="checkbox" checked> Remember me</label><a href="recovery.html">Forgot password?</a></div>
-<button class="primary-btn" type="submit">Login &nbsp; →</button><p id="authMsg" style="font-size:9px;color:#ff718e;text-align:center;min-height:14px"></p></form>
-<div class="form-foot">or continue with</div><div class="socials"><button type="button" data-provider="google">G Google</button><button type="button" data-provider="facebook">f Facebook</button><button type="button" data-provider="apple">● Apple</button></div><p id="socialMsg" style="font-size:9px;color:#ffb86b;text-align:center;min-height:14px"></p>
-<div class="form-foot">Don't have an account? <a href="register.html">Register</a></div></section>
+<section class="ref-card auth-art">
+  <div class="orb"></div>
+  <div style="position:absolute;top:24px;left:25px;font-weight:800;font-size:17px">✦ LIFEIS<span style="color:#b444ff">GAMETZ</span><small style="display:block;font-size:7px;letter-spacing:2px;color:#a9b9d5">PLAY • LEARN • EARN</small></div>
+  <h1>Welcome Back!</h1>
+  <p>Login to your account and continue your journey</p>
+  <div class="checks"><span><b>✓</b>Access to 40+ Pages</span><span><b>✓</b>Play & Learn</span><span><b>✓</b>Earn Rewards</span><span><b>✓</b>Join Community</span></div>
+</section>
+<section class="ref-card auth-form">
+  <div class="tabs"><span class="on">Login</span><a href="register.html">Register</a></div>
+  <h2>Login to Your Account</h2>
+  <div class="sub">Enter your details to continue</div>
+  <form id="loginForm">
+    <div class="form-row">
+      <label>Email</label>
+      <div class="input-wrap"><span>✉</span><input id="email" type="email" required placeholder="you@example.com" autocomplete="email"></div>
+    </div>
+    <div class="form-row">
+      <label>Password</label>
+      <div class="input-wrap"><span>▣</span><input id="password" type="password" required placeholder="••••••••" autocomplete="current-password"></div>
+    </div>
+    <div class="remember">
+      <label><input type="checkbox" checked> Remember me</label>
+      <a href="recovery.html">Forgot password?</a>
+    </div>
+    <button class="primary-btn" type="submit">Login &nbsp; →</button>
+    <p id="authMsg" style="font-size:9px;color:#ff718e;text-align:center;min-height:14px"></p>
+  </form>
+  <div class="form-foot">or continue with</div>
+  <div class="socials">
+    <button type="button" data-provider="google">G Google</button>
+    <button type="button" data-provider="facebook">f Facebook</button>
+    <button type="button" data-provider="apple">● Apple</button>
+  </div>
+  <p id="socialMsg" style="font-size:9px;color:#ffb86b;text-align:center;min-height:14px"></p>
+  <div class="form-foot">Don't have an account? <a href="register.html">Register</a></div>
+</section>
 </div></div>
-</div><footer class="z-footer"><span>© 2025 LIFEISGAMETZ. All rights reserved.</span><span>Terms &nbsp;&nbsp; Privacy &nbsp;&nbsp; Support</span></footer></main></div>
-<script>
-document.getElementById('loginForm').addEventListener('submit',async(e)=>{e.preventDefault();const m=document.getElementById('authMsg'),b=e.target.querySelector('button');b.disabled=true;try{const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email.value.trim(),password:password.value})});const d=await r.json();if(!d.success){m.textContent='❌ '+(d.error||'Login failed');b.disabled=false;return}localStorage.setItem('gamehubToken',d.token);localStorage.setItem('gamehubUser',JSON.stringify(d.user));location.replace('index.html')}catch(x){m.textContent='❌ Hitilafu ya mtandao';b.disabled=false}});
+</div>
+<footer class="z-footer"><span>© 2025 LIFEISGAMETZ. All rights reserved.</span><span>Terms &nbsp;&nbsp; Privacy &nbsp;&nbsp; Support</span></footer>
+</main>
+</div>
 
 <script>
-(async()=>{
-  const msg=document.getElementById('socialMsg');
-  document.querySelectorAll('.socials button').forEach(btn=>btn.addEventListener('click',async()=>{
-    const provider=btn.dataset.provider; msg.textContent='Inaandaa '+provider+' login...'; btn.disabled=true;
-    try{
-      const c=await (await fetch('/api/auth/social/config')).json();
-      if(!c.enabled) throw new Error('Social login haija-configurewa kwenye server. Weka Supabase URL + anon key, kisha enable Google/Facebook/Apple.');
-      if(!window.supabase){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
-      const sb=window.supabase.createClient(c.url,c.anonKey);
-      const {error}=await sb.auth.signInWithOAuth({provider,options:{redirectTo:location.origin+'/auth-callback.html'}});
-      if(error) throw error;
-    }catch(e){msg.textContent='❌ '+(e.message||'Social login failed');btn.disabled=false}
-  }));
-})();
-</script></script></body></html>
+  // ===== LOGIN FORM =====
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const msg = document.getElementById('authMsg');
+    const btn = e.target.querySelector('button[type="submit"]');
+    const emailEl = document.getElementById('email');
+    const passwordEl = document.getElementById('password');
+
+    if (!emailEl || !passwordEl) {
+      msg.textContent = '❌ Fomu haijakamilika.';
+      return;
+    }
+
+    const email = emailEl.value.trim();
+    const password = passwordEl.value;
+
+    if (!email || !password) {
+      msg.textContent = '❌ Jaza email na password.';
+      return;
+    }
+
+    msg.textContent = '';
+    btn.disabled = true;
+
+    try {
+      const r = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const d = await r.json();
+
+      if (!d.success) {
+        msg.textContent = '❌ ' + (d.error || 'Login imeshindwa');
+        btn.disabled = false;
+        return;
+      }
+
+      // ✅ Mafanikio
+      localStorage.setItem('gamehubToken', d.token);
+      localStorage.setItem('gamehubUser', JSON.stringify(d.user));
+      msg.style.color = '#86efac';
+      msg.textContent = '✅ Umefanikiwa! Tunakurudisha...';
+      setTimeout(function() { location.replace('index.html'); }, 600);
+    } catch (x) {
+      console.error('Login error:', x);
+      msg.textContent = '❌ Hitilafu ya mtandao. Jaribu tena.';
+      btn.disabled = false;
+    }
+  });
+
+  // ===== SOCIAL LOGIN =====
+  (function() {
+    const msg = document.getElementById('socialMsg');
+    document.querySelectorAll('.socials button').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        const provider = btn.dataset.provider;
+        msg.textContent = 'Inaandaa ' + provider + ' login...';
+        btn.disabled = true;
+        try {
+          const c = await (await fetch('/api/auth/social/config')).json();
+          if (!c.enabled) {
+            throw new Error('Social login haija-configurewa. Weka Supabase URL + anon key.');
+          }
+          if (!window.supabase) {
+            await new Promise(function(resolve, reject) {
+              const s = document.createElement('script');
+              s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+              s.onload = resolve;
+              s.onerror = reject;
+              document.head.appendChild(s);
+            });
+          }
+          const sb = window.supabase.createClient(c.url, c.anonKey);
+          const result = await sb.auth.signInWithOAuth({
+            provider: provider,
+            options: { redirectTo: location.origin + '/auth-callback.html' }
+          });
+          if (result.error) throw result.error;
+        } catch (e) {
+          msg.textContent = '❌ ' + (e.message || 'Social login failed');
+          btn.disabled = false;
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>
