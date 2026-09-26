@@ -1,7 +1,7 @@
 {
-  "name": "gamehub",
-  "version": "1.0.0",
-  "description": "GameHub — Duka la Gaming la Tanzania (game keys, top-up, rental, AI chat, admin panel)",
+  "name": "kelvin-gaming-tz",
+  "version": "3.0.0",
+  "description": "Kelvin Gaming TZ — Duka la Gaming la Tanzania",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -10,9 +10,14 @@
     "express": "^4.19.2",
     "dotenv": "^16.4.5",
     "@supabase/supabase-js": "^2.45.0",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0",
+    "express-rate-limit": "^7.4.1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.0.0"
   }
 }
