@@ -207,3 +207,38 @@ One layout for every page (sidebar + topbar + mobile bottom navigation), dark mo
 
 ### Marketplace
 `marketplace.html` — partner businesses from `/api/marketplace` (admin-posted): search, category chips, sort, cards with WhatsApp / email / website button built from the listing's `contact` (local numbers like 0712… are converted to wa.me/255712…; anything else is shown as plain text). "Orodhesha Biashara" opens WhatsApp with a prefilled message.
+
+## 🆕 LIFEISGAMETZ Universal Products Command Center
+
+The product manager now supports one catalogue for multiple digital product types without changing the existing AI or payment flows.
+
+Supported product kinds:
+- Games / Game Keys
+- Accounts
+- eFootball / Top-Up / Coins
+- Gift Cards
+- Stream Accounts
+- Subscriptions
+- Cloud Gaming
+- Digital Services
+- Movies / Courses (as catalogue items; their dedicated upload managers remain available)
+
+Each product can store:
+- Name, price and optional old price
+- SKU
+- Product kind and section
+- Platform (PSP, PS2, PS3, Switch, Android, PC, Xbox, PlayStation)
+- Category and tags
+- Stock and status (active, draft, hidden, sold out)
+- Delivery type
+- Description
+- Image URL or admin image upload
+- Trailer URL
+- Download/delivery URL
+- Featured flag
+- Optional private account username/email and password for controlled delivery
+
+The public catalogue now respects the Admin-selected `kind`, `platform`, `status`, `featured`, `stock` and `deliveryType` values when they are available.
+
+### Compatibility note
+The existing AI provider integration and existing payment implementation were intentionally left unchanged in this update. Only the product catalogue/admin management area and its supporting product schema/image-upload endpoint were improved.

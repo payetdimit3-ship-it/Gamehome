@@ -30,6 +30,19 @@ const upload = multer({
   }
 });
 
+const imageUpload = multer({
+  dest: TMP_MEDIA_DIR,
+  limits: { fileSize: 12 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const mime = String(file.mimetype || '').toLowerCase();
+    const name = String(file.originalname || '').toLowerCase();
+    const ok = ['image/jpeg','image/png','image/webp','image/gif','image/avif'].includes(mime)
+      || /\.(jpg|jpeg|png|webp|gif|avif)$/.test(name);
+    if (!ok) return cb(new Error('Aina ya picha hairuhusiwi. Tumia JPG, PNG, WebP, GIF au AVIF.'));
+    cb(null, true);
+  }
+});
+
 const MEDIA_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'gamehub-media';
 
 // ☁️ SUPABASE CLIENT SETUP
@@ -86,6 +99,41 @@ async function saveUploadedVideo(file, folder) {
       } catch (e) {
         if (e.message && e.message.startsWith('Supabase Storage imekataa')) throw e;
         throw new Error('Supabase Storage imekataa upload: ' + e.message);
+      }
+    }
+    const targetDir = path.join(MEDIA_DIR, folder);
+    fs.mkdirSync(targetDir, { recursive: true });
+    const target = path.join(targetDir, filename);
+    fs.renameSync(localPath, target);
+    return { url: '/uploads/' + folder + '/' + filename, storage: 'local', path: target, filename };
+  } finally {
+    try { if (fs.existsSync(localPath)) fs.unlinkSync(localPath); } catch (e) {}
+  }
+}
+
+
+async function saveUploadedImage(file, folder) {
+  if (!file) throw new Error('Chagua picha kwanza.');
+  const ext = path.extname(file.originalname || '') || '.jpg';
+  const safeBase = (path.basename(file.originalname || 'image', ext).replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 80) || 'image');
+  const filename = Date.now() + '-' + crypto.randomBytes(4).toString('hex') + '-' + safeBase + ext.toLowerCase();
+  const objectPath = folder + '/' + filename;
+  const localPath = file.path;
+  try {
+    if (supabase) {
+      try {
+        const buffer = fs.readFileSync(localPath);
+        const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(objectPath, buffer, {
+          contentType: file.mimetype || 'image/jpeg', upsert: false, cacheControl: '3600'
+        });
+        if (!error) {
+          const pub = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(objectPath);
+          return { url: pub.data.publicUrl, storage: 'supabase', path: objectPath, filename };
+        }
+        throw new Error('Supabase Storage imekataa upload: ' + error.message);
+      } catch (e) {
+        if (e.message && e.message.startsWith('Supabase Storage imekataa')) throw e;
+        throw new Error('Supabase Storage imekataa: ' + e.message);
       }
     }
     const targetDir = path.join(MEDIA_DIR, folder);
@@ -515,22 +563,64 @@ app.post('/api/matches/:id/complete', async (req, res) => {
   res.json({ success: true, message: '✅ Mechi imekamilishwa na zawadi zimetolewa!', ...result });
 });
 
-// 🎮 BIDHAA (PRODUCTS)
+// 🎮 BIDHAA (PRODUCTS) — UNIVERSAL CATALOGUE
 app.get('/api/products', (req, res) => {
   const products = readJson('products.json', {});
   res.json({ success: true, products: Object.values(products) });
 });
 
+app.post('/api/admin/products/image', imageUpload.single('image'), async (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
+  try {
+    const saved = await saveUploadedImage(req.file, 'products');
+    res.json({ success: true, ...saved });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+function normalizeProductInput(body, existing = {}) {
+  const priceProvided = body.price !== undefined && body.price !== null && body.price !== '';
+  const out = { ...existing };
+  if (body.name !== undefined) out.name = String(body.name).trim().slice(0, 180);
+  if (body.type !== undefined) out.type = String(body.type).slice(0, 100);
+  if (priceProvided) out.price = Number(body.price);
+  if (body.emoji !== undefined) out.emoji = String(body.emoji).slice(0, 10);
+  if (body.desc !== undefined) out.desc = String(body.desc).slice(0, 3000);
+  if (body.downloadLink !== undefined) out.downloadLink = String(body.downloadLink).slice(0, 1500);
+  if (body.imageUrl !== undefined) out.imageUrl = String(body.imageUrl).slice(0, 1500);
+  if (body.trailerUrl !== undefined) out.trailerUrl = String(body.trailerUrl).slice(0, 1500);
+  if (body.category !== undefined) out.category = String(body.category).slice(0, 100);
+  if (body.section !== undefined) out.section = String(body.section).slice(0, 50);
+  if (body.kind !== undefined) out.kind = String(body.kind).slice(0, 40);
+  if (body.platform !== undefined) out.platform = String(body.platform).slice(0, 40);
+  if (body.sku !== undefined) out.sku = String(body.sku).slice(0, 80);
+  if (body.stock !== undefined && body.stock !== '') out.stock = Math.max(0, Number(body.stock) || 0);
+  if (body.status !== undefined) out.status = String(body.status).slice(0, 30);
+  if (body.featured !== undefined) out.featured = !!body.featured;
+  if (body.oldPrice !== undefined && body.oldPrice !== '') out.oldPrice = Math.max(0, Number(body.oldPrice) || 0);
+  if (body.deliveryType !== undefined) out.deliveryType = String(body.deliveryType).slice(0, 60);
+  if (body.tags !== undefined) out.tags = Array.isArray(body.tags) ? body.tags.map(x => String(x).trim()).filter(Boolean).slice(0, 20) : String(body.tags).split(',').map(x => x.trim()).filter(Boolean).slice(0, 20);
+  if (body.accountUser !== undefined) out.accountUser = String(body.accountUser).slice(0, 500);
+  if (body.accountPassword !== undefined) out.accountPassword = String(body.accountPassword).slice(0, 500);
+  return out;
+}
+
 app.post('/api/products', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || (!user.isAdmin && !user.isStaff)) return res.status(403).json({ error: 'Huna ruhusa' });
-  const { name, type, price, emoji, desc, downloadLink, imageUrl, trailerUrl, category, section, accountUser, accountPassword } = req.body;
-  if (!name || !price) return res.status(400).json({ error: 'Jaza jina na bei' });
+  const { name, price } = req.body || {};
+  if (!name || price === undefined || price === null || price === '' || Number.isNaN(Number(price))) return res.status(400).json({ error: 'Jaza jina na bei sahihi' });
   const products = readJson('products.json', {});
-  const id = 'p' + Date.now();
-  products[id] = { id, name, type: type || 'Bidhaa', price: Number(price), emoji: emoji || '🎮', desc: desc || '', downloadLink: downloadLink || '', imageUrl: imageUrl || '', trailerUrl: trailerUrl || '', category: category || 'Zote', section: section || 'shop', accountUser: accountUser || '', accountPassword: accountPassword || '' };
+  const id = 'p' + Date.now() + crypto.randomBytes(2).toString('hex');
+  const product = normalizeProductInput({ ...req.body, price }, {
+    id, name: String(name).trim(), type: 'Bidhaa', price: Number(price), emoji: '🎮', desc: '', downloadLink: '', imageUrl: '', trailerUrl: '',
+    category: 'Zote', section: 'shop', kind: 'game', platform: '', sku: '', stock: 0, status: 'active', featured: false, oldPrice: 0, deliveryType: 'digital', tags: [], accountUser: '', accountPassword: ''
+  });
+  products[id] = product;
   const saved = await writeJson('products.json', products);
-  res.json({ success: true, id, persistent: saved.cloud !== false });
+  res.json({ success: true, id, product, persistent: saved.cloud !== false });
 });
 
 app.put('/api/products/:id', async (req, res) => {
@@ -539,18 +629,20 @@ app.put('/api/products/:id', async (req, res) => {
   const products = readJson('products.json', {});
   const existing = products[req.params.id];
   if (!existing) return res.status(404).json({ error: 'Bidhaa haipatikani' });
-  const { name, type, price, emoji, desc, downloadLink, imageUrl, trailerUrl, category, section, accountUser, accountPassword } = req.body;
-  products[req.params.id] = { ...existing, name: name || existing.name, type: type || existing.type, price: price ? Number(price) : existing.price, emoji: emoji || existing.emoji, desc: desc !== undefined ? desc : existing.desc, downloadLink: downloadLink !== undefined ? downloadLink : existing.downloadLink, imageUrl: imageUrl !== undefined ? imageUrl : existing.imageUrl, trailerUrl: trailerUrl !== undefined ? trailerUrl : existing.trailerUrl, category: category || existing.category || 'Zote', section: section || existing.section || 'shop', accountUser: accountUser !== undefined ? accountUser : existing.accountUser, accountPassword: accountPassword !== undefined ? accountPassword : existing.accountPassword };
+  const product = normalizeProductInput(req.body || {}, existing);
+  if (!product.name) return res.status(400).json({ error: 'Jina la bidhaa linahitajika' });
+  if (product.price === undefined || Number.isNaN(Number(product.price))) return res.status(400).json({ error: 'Bei si sahihi' });
+  products[req.params.id] = product;
   const saved = await writeJson('products.json', products);
-  res.json({ success: true, product: products[req.params.id], persistent: saved.cloud !== false });
+  res.json({ success: true, product, persistent: saved.cloud !== false });
 });
 
-app.delete('/api/products/:id', (req, res) => {
+app.delete('/api/products/:id', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
   const products = readJson('products.json', {});
   delete products[req.params.id];
-  writeJson('products.json', products);
+  await writeJson('products.json', products);
   res.json({ success: true });
 });
 

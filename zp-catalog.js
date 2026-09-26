@@ -55,8 +55,9 @@
     return '';
   }
   function norm(p){
-    return {id:p.id, name:p.name||'Bidhaa', type:p.type||'Bidhaa', price:Number(p.price)||0, emoji:p.emoji||'🎮', imageUrl:p.imageUrl||'',
-      trailerUrl:p.trailerUrl||'', desc:p.desc||'', kind:detectKind(p), platform:detectPlatform(p), admin:true};
+    var k=p.kind || detectKind(p), plat=p.platform || detectPlatform(p);
+    return {id:p.id, name:p.name||'Bidhaa', type:p.type||'Bidhaa', price:Number(p.price)||0, oldPrice:Number(p.oldPrice)||0, emoji:p.emoji||'🎮', imageUrl:p.imageUrl||'',
+      trailerUrl:p.trailerUrl||'', desc:p.desc||'', kind:k, platform:plat, section:p.section||'shop', status:p.status||'active', featured:!!p.featured, stock:p.stock, deliveryType:p.deliveryType||'digital', tags:p.tags||[], admin:true};
   }
 
   /* Products of one admin section (e.g. 'efootball' squads). Resolves to null when the request fails. */
