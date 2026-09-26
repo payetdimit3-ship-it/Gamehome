@@ -108,7 +108,7 @@ Set these on Render before production use:
 - `AZAMPAY_APP_NAME`, `AZAMPAY_CLIENT_ID`, `AZAMPAY_CLIENT_SECRET`
 - Optional `AZAMPAY_API_KEY` and `AZAMPAY_API_BASE` according to your current AzamPay merchant documentation.
 
-The checkout page uses `/api/clickpesa-pay` and polls `/api/clickpesa-check/:ref`. Orders are recalculated server-side before payment, coupon usage is consumed only after a confirmed order, and `/api/admin/payment-status` reports gateway configuration without exposing secrets.
+The checkout page now calls `/api/azampay-pay` and polls `/api/azampay-check/:ref`. The old `/api/clickpesa-*` routes are kept as compatibility aliases.
 
 If `SUPABASE_SERVICE_ROLE_KEY` is missing, Render's local filesystem is not a durable database and product/order data can disappear after a restart/redeploy. The Admin Command Center shows a storage warning in that case.
 
@@ -149,10 +149,10 @@ The GameHub server uses the service-role key server-side to read/write this tabl
 - Messages zinahifadhiwa kwenye `public_chat.json` na zinaweza kubackup kupitia Supabase KV.
 - Admin → Public Chat inaweza kuondoa ujumbe.
 
-### ClickPesa
+### AzamPay
 - Checkout sasa inaruhusu kuchagua provider: `Mpesa`, `Tigo`, `Airtel`, `Halopesa`, `Azampesa`.
 - Render env lazima itumie `AZAMPAY_ENVIRONMENT=sandbox` au `production`.
-- Weka `CLICKPESA_CLIENT_ID`, `CLICKPESA_API_KEY`. The server uses ClickPesa USSD-Push collection and keeps the credentials server-side.
+- Weka `AZAMPAY_APP_NAME`, `AZAMPAY_CLIENT_ID`, `AZAMPAY_CLIENT_SECRET`; `AZAMPAY_API_KEY`/`AZAMPAY_API_BASE` hutumika pale merchant docs zako zinapohitaji.
 - Callback endpoint ya app ni `/api/azampay-callback`; merchant callback lazima isetiwe kwenye AzamPay merchant/developer configuration kwa URL ya Render ya app yako.
 - Admin → Payments inaonyesha kama credentials zimesanidiwa bila kuonyesha secrets.
 - Manual payment bado ipo kama fallback na sasa writes zake zinasubiriwa (`await`) ili data isiwe stale kabla ya response.
@@ -207,14 +207,3 @@ One layout for every page (sidebar + topbar + mobile bottom navigation), dark mo
 
 ### Marketplace
 `marketplace.html` — partner businesses from `/api/marketplace` (admin-posted): search, category chips, sort, cards with WhatsApp / email / website button built from the listing's `contact` (local numbers like 0712… are converted to wa.me/255712…; anything else is shown as plain text). "Orodhesha Biashara" opens WhatsApp with a prefilled message.
-
-
-## V14 UI + Product + Checkout Hardening (26 Sep 2026)
-- Added `lifegametz-modern.css` as a final visual polish layer for the supplied New Folde references.
-- Added the supplied screenshots to `design-reference/` without using them as page backgrounds.
-- Product management now supports image upload, SKU, stock, featured and published flags in addition to existing game/product/account fields.
-- Added `/api/admin/upload-image` with admin authorization and image type/size validation.
-- Checkout totals are now calculated server-side from product IDs and quantities; the browser cannot choose an arbitrary price.
-- Coupon checking no longer consumes a coupon use; usage is consumed only after a confirmed successful/manual order.
-- Added checkout quote validation, payment rate limiting, idempotent ClickPesa webhook handling, currency/amount checks and an Admin payment-status endpoint.
-- The existing AI provider code was intentionally left unchanged.

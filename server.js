@@ -5,7 +5,6 @@ const fs = require('fs');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const multer = require('multer');
-const rateLimit = require('express-rate-limit');
 
 const app = express();
 app.use(express.json({ limit: '10mb' }));
@@ -27,19 +26,6 @@ const upload = multer({
     const ok = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v', 'video/mov'].includes(mime)
       || /\.(mp4|webm|mov|m4v)$/.test(name);
     if (!ok) return cb(new Error('Aina ya file hairuhusiwi. Tumia MP4, WebM, MOV au M4V.'));
-    cb(null, true);
-  }
-});
-
-
-const imageUpload = multer({
-  dest: TMP_MEDIA_DIR,
-  limits: { fileSize: 15 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    const mime = String(file.mimetype || '').toLowerCase();
-    const name = String(file.originalname || '').toLowerCase();
-    const ok = ['image/png','image/jpeg','image/webp','image/gif'].includes(mime) || /\.(png|jpe?g|webp|gif)$/.test(name);
-    if (!ok) return cb(new Error('Aina ya picha hairuhusiwi. Tumia PNG, JPG, WEBP au GIF.'));
     cb(null, true);
   }
 });
@@ -110,30 +96,6 @@ async function saveUploadedVideo(file, folder) {
   } finally {
     try { if (fs.existsSync(localPath)) fs.unlinkSync(localPath); } catch (e) {}
   }
-}
-
-
-async function saveUploadedImage(file, folder) {
-  if (!file) throw new Error('Chagua picha kwanza.');
-  const ext = path.extname(file.originalname || '') || '.png';
-  const safeBase = (path.basename(file.originalname || 'image', ext).replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 80) || 'image');
-  const filename = Date.now() + '-' + crypto.randomBytes(4).toString('hex') + '-' + safeBase + ext.toLowerCase();
-  const objectPath = folder + '/' + filename;
-  const localPath = file.path;
-  try {
-    if (supabase) {
-      const buffer = fs.readFileSync(localPath);
-      const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(objectPath, buffer, { contentType: file.mimetype || 'image/png', upsert: false, cacheControl: '86400' });
-      if (error) throw new Error('Supabase Storage imekataa upload: ' + error.message);
-      const pub = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(objectPath);
-      return { url: pub.data.publicUrl, storage: 'supabase', path: objectPath, filename };
-    }
-    const targetDir = path.join(MEDIA_DIR, folder);
-    fs.mkdirSync(targetDir, { recursive: true });
-    const target = path.join(targetDir, filename);
-    fs.renameSync(localPath, target);
-    return { url: '/uploads/' + folder + '/' + filename, storage: 'local', path: target, filename };
-  } finally { try { if (fs.existsSync(localPath)) fs.unlinkSync(localPath); } catch (e) {} }
 }
 
 app.get('/', (req, res) => {
@@ -554,29 +516,9 @@ app.post('/api/matches/:id/complete', async (req, res) => {
 });
 
 // 🎮 BIDHAA (PRODUCTS)
-
-app.post('/api/admin/upload-image', imageUpload.single('image'), async (req, res) => {
-  const user = getUserByToken(req);
-  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
-  try {
-    const saved = await saveUploadedImage(req.file, 'products');
-    res.json({ success: true, ...saved });
-  } catch (e) { res.status(400).json({ error: e.message }); }
-});
-
-function publicProduct(p){
-  const { accountUser, accountPassword, ...safe } = p || {};
-  return safe;
-}
 app.get('/api/products', (req, res) => {
   const products = readJson('products.json', {});
-  const list = Object.values(products).filter(p => p.published !== false).map(publicProduct);
-  res.json({ success: true, products: list });
-});
-app.get('/api/admin/products', (req,res)=>{
-  const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
-  const products=readJson('products.json',{});
-  res.json({success:true,products:Object.values(products)});
+  res.json({ success: true, products: Object.values(products) });
 });
 
 app.post('/api/products', async (req, res) => {
@@ -586,7 +528,7 @@ app.post('/api/products', async (req, res) => {
   if (!name || !price) return res.status(400).json({ error: 'Jaza jina na bei' });
   const products = readJson('products.json', {});
   const id = 'p' + Date.now();
-  products[id] = { id, name: String(name || '').trim(), type: type || 'Bidhaa', price: Math.max(0, Number(price) || 0), emoji: emoji || '🎮', desc: desc || '', downloadLink: downloadLink || '', imageUrl: imageUrl || '', trailerUrl: trailerUrl || '', category: category || 'Zote', section: section || 'shop', accountUser: accountUser || '', accountPassword: accountPassword || '', sku: String(req.body.sku || '').trim(), stock: req.body.stock === null || req.body.stock === '' || req.body.stock === undefined ? null : Math.max(0, Number(req.body.stock) || 0), featured: !!req.body.featured, published: req.body.published !== false };
+  products[id] = { id, name, type: type || 'Bidhaa', price: Number(price), emoji: emoji || '🎮', desc: desc || '', downloadLink: downloadLink || '', imageUrl: imageUrl || '', trailerUrl: trailerUrl || '', category: category || 'Zote', section: section || 'shop', accountUser: accountUser || '', accountPassword: accountPassword || '' };
   const saved = await writeJson('products.json', products);
   res.json({ success: true, id, persistent: saved.cloud !== false });
 });
@@ -598,7 +540,7 @@ app.put('/api/products/:id', async (req, res) => {
   const existing = products[req.params.id];
   if (!existing) return res.status(404).json({ error: 'Bidhaa haipatikani' });
   const { name, type, price, emoji, desc, downloadLink, imageUrl, trailerUrl, category, section, accountUser, accountPassword } = req.body;
-  products[req.params.id] = { ...existing, name: name || existing.name, type: type || existing.type, price: price !== undefined ? Math.max(0, Number(price) || 0) : existing.price, emoji: emoji || existing.emoji, desc: desc !== undefined ? desc : existing.desc, downloadLink: downloadLink !== undefined ? downloadLink : existing.downloadLink, imageUrl: imageUrl !== undefined ? imageUrl : existing.imageUrl, trailerUrl: trailerUrl !== undefined ? trailerUrl : existing.trailerUrl, category: category || existing.category || 'Zote', section: section || existing.section || 'shop', accountUser: accountUser !== undefined ? accountUser : existing.accountUser, accountPassword: accountPassword !== undefined ? accountPassword : existing.accountPassword, sku: req.body.sku !== undefined ? String(req.body.sku || '').trim() : (existing.sku || ''), stock: req.body.stock === null || req.body.stock === '' ? null : (req.body.stock !== undefined ? Math.max(0, Number(req.body.stock) || 0) : existing.stock), featured: req.body.featured !== undefined ? !!req.body.featured : !!existing.featured, published: req.body.published !== undefined ? !!req.body.published : existing.published !== false };
+  products[req.params.id] = { ...existing, name: name || existing.name, type: type || existing.type, price: price ? Number(price) : existing.price, emoji: emoji || existing.emoji, desc: desc !== undefined ? desc : existing.desc, downloadLink: downloadLink !== undefined ? downloadLink : existing.downloadLink, imageUrl: imageUrl !== undefined ? imageUrl : existing.imageUrl, trailerUrl: trailerUrl !== undefined ? trailerUrl : existing.trailerUrl, category: category || existing.category || 'Zote', section: section || existing.section || 'shop', accountUser: accountUser !== undefined ? accountUser : existing.accountUser, accountPassword: accountPassword !== undefined ? accountPassword : existing.accountPassword };
   const saved = await writeJson('products.json', products);
   res.json({ success: true, product: products[req.params.id], persistent: saved.cloud !== false });
 });
@@ -700,7 +642,9 @@ app.post('/api/coupons/check', (req, res) => {
   const c = coupons[key];
   if (!c || !c.active) return res.status(404).json({ error: 'Kodi si sahihi au imeisha muda' });
   if (c.maxUses && c.uses >= c.maxUses) return res.status(400).json({ error: 'Kodi hii imeisha kutumika' });
-  res.json({ success: true, percentOff: Math.min(100, Math.max(0, Number(c.percentOff) || 0)), code: c.code });
+  c.uses += 1;
+  writeJson('coupons.json', coupons);
+  res.json({ success: true, percentOff: c.percentOff, code: c.code });
 });
 
 // ⭐ MAONI NA RATING
@@ -881,66 +825,6 @@ app.get('/api/security/report', (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════
-// 🧾 CHECKOUT VALIDATION — totals are calculated server-side
-// ═══════════════════════════════════════════════════════════════
-const SEEDED_CHECKOUT_PRODUCTS = [
-  {id:'fifa25',name:'FIFA 25',type:'Game Key • PC',price:45000,emoji:'⚽'},
-  {id:'gta5',name:'GTA V',type:'Game Key • PC',price:35000,emoji:'🚗'},
-  {id:'minecraft',name:'Minecraft',type:'Game Key • PC',price:30000,emoji:'🧱'},
-  {id:'codmw3',name:'Call of Duty: MW3',type:'Game Key • PC',price:55000,emoji:'💥'},
-  {id:'codpoints',name:'COD Points 1100',type:'Top-Up • Call of Duty',price:40000,emoji:'🪙'},
-  {id:'gtamoney',name:'GTA V — GTA$ 8M',type:'Top-Up • GTA Online',price:25000,emoji:'💰'},
-  {id:'futpoints',name:'FIFA Ultimate Team 12K',type:'Top-Up • FUT Points',price:50000,emoji:'⚡'},
-  {id:'steam10',name:'Steam Gift Card $10',type:'Gift Card • Steam',price:30000,emoji:'🎁'},
-  {id:'steam20',name:'Steam Gift Card $20',type:'Gift Card • Steam',price:58000,emoji:'🎁'},
-  {id:'psn10',name:'PlayStation Card $10',type:'Gift Card • PSN',price:32000,emoji:'🎁'},
-  {id:'accountfifa',name:'Steam Account (FIFA 25)',type:'Account • Full Access',price:60000,emoji:'👤'},
-  {id:'accountgta',name:'Steam Account (GTA V)',type:'Account • Full Access',price:50000,emoji:'👤'}
-];
-function checkoutCatalog(){
-  const db=readJson('products.json',{}); const map={};
-  Object.values(db).forEach(p=>map[p.id]=p);
-  SEEDED_CHECKOUT_PRODUCTS.forEach(p=>{if(!map[p.id])map[p.id]=p;});
-  return map;
-}
-function normalizeQty(v){const n=Math.floor(Number(v));return Number.isFinite(n)&&n>0&&n<=99?n:1;}
-function attachSecureDelivery(items){
-  const catalog=checkoutCatalog();
-  return items.map(i=>{ const p=catalog[i.id]||{}; const out={...i}; if(p.accountUser) out.accountUser=p.accountUser; if(p.accountPassword) out.accountPassword=p.accountPassword; if(p.downloadLink) out.downloadLink=p.downloadLink; return out; });
-}
-function quoteCheckout(rawItems, couponCode, wantsShipping){
-  if(!Array.isArray(rawItems)||!rawItems.length) throw new Error('Kikapu ni tupu');
-  const catalog=checkoutCatalog(); const items=[]; let subtotal=0;
-  for(const raw of rawItems){
-    const id=String(raw.id||'').trim(); const p=catalog[id]; if(!p) throw new Error('Bidhaa haipatikani: '+id);
-    if(p.published===false) throw new Error('Bidhaa haipatikani kwa sasa: '+p.name);
-    const qty=normalizeQty(raw.qty||raw.quantity||1); const price=Math.max(0,Number(p.price)||0); const line=price*qty;
-    subtotal+=line; items.push({id:p.id,name:p.name,type:p.type||'Bidhaa',price,qty,emoji:p.emoji||'🎮',imageUrl:p.imageUrl||'',section:p.section||'shop'});
-  }
-  let discountPercent=0, code='';
-  if(couponCode){
-    const coupons=readJson('coupons.json',{}); const key=String(couponCode).trim().toUpperCase(); const c=coupons[key];
-    if(!c||!c.active) throw new Error('Kodi si sahihi au imeisha muda');
-    if(c.maxUses && c.uses>=c.maxUses) throw new Error('Kodi hii imeisha kutumika');
-    discountPercent=Math.min(100,Math.max(0,Number(c.percentOff)||0)); code=c.code;
-  }
-  const discount=Math.round(subtotal*discountPercent/100); const shipping=wantsShipping?5000:0; const total=Math.max(0,subtotal-discount+shipping);
-  return {items,subtotal,discount,discountPercent,couponCode:code,shipping,total};
-}
-async function consumeCouponOnce(order){
-  if(!order.couponCode || order.couponConsumed) return;
-  const coupons=readJson('coupons.json',{}); const c=coupons[order.couponCode];
-  if(c){ c.uses=Math.max(0,Number(c.uses)||0)+1; await writeJson('coupons.json',coupons); }
-  order.couponConsumed=true;
-}
-const paymentLimiter = rateLimit({windowMs:10*60*1000,max:20,standardHeaders:true,legacyHeaders:false,message:{error:'Majaribio ya malipo yamezidi. Subiri dakika chache kisha ujaribu tena.'}});
-
-app.post('/api/checkout/quote', (req,res)=>{
-  try { const quote=quoteCheckout(req.body.items, req.body.couponCode, !!req.body.wantsShipping); res.json({success:true,quote}); }
-  catch(e){ res.status(400).json({error:e.message}); }
-});
-
-// ═══════════════════════════════════════════════════════════════
 // ⚡ CLICKPESA PAYMENTS
 // ═══════════════════════════════════════════════════════════════
 const CLICKPESA_BASE = 'https://api.clickpesa.com/third-parties';
@@ -960,66 +844,60 @@ async function getClickPesaToken() {
   return clickpesaTokenCache.token;
 }
 
-app.post('/api/clickpesa-pay', paymentLimiter, async (req, res) => {
+app.post('/api/clickpesa-pay', async (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza kulipa' });
   try {
-    const { items, couponCode, wantsShipping, phone, name } = req.body;
+    const { items, total, phone, name } = req.body;
+    if (!items || !items.length || !total) return res.status(400).json({ error: 'Kikapu ni tupu' });
     if (!phone) return res.status(400).json({ error: 'Weka namba ya simu' });
     let phoneFull = String(phone).replace(/\D/g, '');
     if (!phoneFull.startsWith('255')) phoneFull = '255' + phoneFull.replace(/^0/, '');
-    if (!/^255\d{9}$/.test(phoneFull)) return res.status(400).json({ error: 'Namba ya simu si sahihi. Mfano: 0786095758' });
-    const quote = quoteCheckout(items, couponCode, !!wantsShipping);
-    if (quote.total < 1) return res.status(400).json({ error: 'Jumla ya malipo si sahihi.' });
-    const orderReference = 'GH' + Date.now().toString().slice(-10) + crypto.randomBytes(2).toString('hex').toUpperCase();
+    if (phoneFull.length !== 12) return res.status(400).json({ error: 'Namba ya simu si sahihi. Mfano: 0786095758' });
+    const orderReference = 'GH' + Date.now().toString().slice(-10);
     const orders = readJson('orders.json', []);
-    orders.push({ tx_ref: orderReference, customer: user.email, customerPhone: phoneFull, customerName: name || user.name, amount: quote.total, subtotal: quote.subtotal, discount: quote.discount, shipping: quote.shipping, couponCode: quote.couponCode || null, couponConsumed:false, items:attachSecureDelivery(quote.items), provider:'ClickPesa', status:'pending_clickpesa', currency:'TZS', date:new Date().toISOString() });
+    orders.push({ tx_ref: orderReference, customer: user.email, customerPhone: phoneFull, customerName: name || user.name, amount: Number(total), items, provider: 'ClickPesa', status: 'pending_clickpesa', date: new Date().toISOString() });
     await writeJson('orders.json', orders);
     const token = await getClickPesaToken();
-    const payload={amount:String(quote.total),currency:'TZS',orderReference,phoneNumber:phoneFull};
-    const previewRes = await fetch(CLICKPESA_BASE + '/payments/preview-ussd-push-request', { method:'POST', headers:{'Authorization':token,'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    const previewData=await previewRes.json();
-    if(!previewRes.ok || previewData.success===false) throw new Error(previewData.message||'Malipo hayakuanza');
-    const payRes=await fetch(CLICKPESA_BASE + '/payments/initiate-ussd-push-request',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const payData=await payRes.json();
-    if(!payRes.ok || payData.success===false) throw new Error(payData.message||'Malipo hayakuanza');
-    res.json({success:true,tx_ref:orderReference,provider:'ClickPesa',transactionId:payData.id||payData.paymentId||null,amount:quote.total,currency:'TZS'});
-  } catch(err){
-    console.error('ClickPesa error:',err.message);
-    const msg=err.message||'Server error';
-    if(String(msg).includes('Malipo hayakuanza')||String(msg).includes('ClickPesa')) return res.status(400).json({error:'ClickPesa: '+msg});
-    res.status(400).json({error:msg});
-  }
+    const previewRes = await fetch(CLICKPESA_BASE + '/payments/preview-ussd-push-request', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ amount: String(total), currency: 'TZS', orderReference, phoneNumber: phoneFull }) });
+    const previewData = await previewRes.json();
+    if (!previewRes.ok || previewData.success === false) { console.error('ClickPesa preview error:', previewData); return res.status(400).json({ error: 'ClickPesa: ' + (previewData.message || 'Malipo hayakuanza') }); }
+    const payRes = await fetch(CLICKPESA_BASE + '/payments/initiate-ussd-push-request', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ amount: String(total), currency: 'TZS', orderReference, phoneNumber: phoneFull }) });
+    const payData = await payRes.json();
+    if (!payRes.ok || payData.success === false) {
+      console.error('ClickPesa payment error:', payData);
+      const all = readJson('orders.json', []);
+      const o = all.find(x => x.tx_ref === orderReference);
+      if (o) { o.status = 'failed_to_start'; await writeJson('orders.json', all); }
+      return res.status(400).json({ error: 'ClickPesa: ' + (payData.message || 'Malipo hayakuanza') });
+    }
+    res.json({ success: true, tx_ref: orderReference, provider: 'ClickPesa', transactionId: payData.id || null });
+  } catch (err) { console.error('ClickPesa error:', err); res.status(500).json({ error: 'Server error: ' + err.message }); }
 });
 
 app.post('/api/clickpesa-webhook', async (req, res) => {
   try {
-    const body=req.body||{}; const event=body.event||body.eventType; const data=body.data||{};
-    console.log('ClickPesa webhook:',event,JSON.stringify(data).slice(0,500));
-    const orderRef=data.orderReference; if(!orderRef) return res.status(400).json({error:'orderReference missing'});
-    const orders=readJson('orders.json',[]); const order=orders.find(o=>o.tx_ref===orderRef);
-    if(!order) return res.status(404).json({error:'Order haipatikani'});
-    if(order.status==='successful') return res.json({success:true,duplicate:true});
-    if(event==='PAYMENT RECEIVED'){
-      const currency=String(data.collectedCurrency||data.currency||'TZS').toUpperCase();
-      const collected=Number(data.collectedAmount||data.amount||data.amountPaid||0);
-      if(currency!=='TZS') { order.status='currency_mismatch'; await writeJson('orders.json',orders); return res.status(400).json({error:'Currency mismatch'}); }
-      if(collected < Number(order.amount||0)) { order.status='amount_mismatch'; order.collectedAmount=collected; await writeJson('orders.json',orders); return res.status(400).json({error:'Amount mismatch'}); }
-      order.status='successful'; order.confirmedAt=new Date().toISOString(); order.collectedAmount=collected; order.clickpesaRef=data.paymentId||data.id||null; await consumeCouponOnce(order); await writeJson('orders.json',orders);
-      logSecurity('CLICKPESA_PAYMENT_CONFIRMED','Malipo yamethibitishwa: '+orderRef,'LOW',getIP(req));
-    } else if(event==='PAYMENT FAILED'){
-      order.status='failed'; order.failureMessage=String(data.message||'Payment failed').slice(0,300); await writeJson('orders.json',orders);
+    const body = req.body || {};
+    const event = body.event || body.eventType;
+    const data = body.data || {};
+    console.log('ClickPesa webhook:', event, JSON.stringify(data).slice(0, 500));
+    if (event === 'PAYMENT RECEIVED') {
+      const orderRef = data.orderReference;
+      const orders = readJson('orders.json', []);
+      const order = orders.find(o => o.tx_ref === orderRef);
+      if (order && order.status !== 'successful') {
+        const collected = Number(data.collectedAmount || data.amount || 0);
+        if (collected >= (order.amount - 5)) { order.status = 'successful'; order.confirmedAt = new Date().toISOString(); order.clickpesaRef = data.id || null; await writeJson('orders.json', orders); logSecurity('CLICKPESA_PAYMENT_CONFIRMED', 'Malipo yamethibitishwa: ' + orderRef, 'LOW', getIP(req)); }
+        else { order.status = 'amount_mismatch'; await writeJson('orders.json', orders); }
+      }
+    } else if (event === 'PAYMENT FAILED') {
+      const orderRef = data.orderReference;
+      const orders = readJson('orders.json', []);
+      const order = orders.find(o => o.tx_ref === orderRef);
+      if (order && order.status !== 'successful') { order.status = 'failed'; await writeJson('orders.json', orders); }
     }
-    res.json({success:true});
-  } catch(err){ console.error('ClickPesa webhook error:',err); res.status(500).json({error:'Server error'}); }
-});
-
-app.get('/api/admin/payment-status', async (req,res)=>{
-  const user=getUserByToken(req); if(!user||!user.isAdmin) return res.status(403).json({error:'Wewe si admin'});
-  const configured=!!(process.env.CLICKPESA_CLIENT_ID && process.env.CLICKPESA_API_KEY);
-  let gateway='not_configured', detail='Weka CLICKPESA_CLIENT_ID na CLICKPESA_API_KEY kwenye Render.';
-  if(configured){ try{ await getClickPesaToken(); gateway='configured'; detail='Credentials zimekubalika na token imepatikana.'; }catch(e){ gateway='error'; detail=e.message; } }
-  res.json({success:true,configured,gateway,detail,environment:process.env.CLICKPESA_ENVIRONMENT||'production',supportedMethods:['M-Pesa','Airtel Money','Mixx by Yas / Tigo Pesa','HaloPesa','EzyPesa','Cards']});
+    res.json({ success: true });
+  } catch (err) { console.error('ClickPesa webhook error:', err); res.status(500).json({ error: 'Server error' }); }
 });
 
 app.get('/api/clickpesa-check/:ref', (req, res) => {
@@ -1032,15 +910,18 @@ app.get('/api/clickpesa-check/:ref', (req, res) => {
 });
 
 // 💵 MALIPO YA MANUAL
-app.post('/api/manual-pay', paymentLimiter, async (req,res)=>{
-  const user=getUserByToken(req); if(!user) return res.status(401).json({error:'Ingia kwanza kutuma ripoti ya malipo'});
-  const {items,couponCode,wantsShipping,txRef,phone}=req.body;
-  if(!txRef||!String(txRef).trim()) return res.status(400).json({error:'Andika namba ya muamala (tx ref)'});
-  const quote=quoteCheckout(items,couponCode,!!wantsShipping);
-  const orders=readJson('orders.json',[]); const orderRef='MANUAL-'+Date.now();
-  orders.push({tx_ref:orderRef,customer:user.email,customerPhone:String(phone||'').replace(/\D/g,''),manualTxRef:String(txRef).trim(),amount:quote.total,subtotal:quote.subtotal,discount:quote.discount,shipping:quote.shipping,couponCode:quote.couponCode||null,couponConsumed:false,items:attachSecureDelivery(quote.items),status:'pending_manual',currency:'TZS',date:new Date().toISOString()});
-  await writeJson('orders.json',orders); logSecurity('MANUAL_PAYMENT_SUBMITTED','Ripoti ya malipo manual kutoka '+user.email,'LOW',getIP(req));
-  res.json({success:true,message:'✅ Ripoti imepokelewa! Admin atathibitisha malipo yako hivi karibuni.',tx_ref:orderRef,total:quote.total});
+app.post('/api/manual-pay', async (req, res) => {
+  const user = getUserByToken(req);
+  if (!user) return res.status(401).json({ error: 'Ingia kwanza kutuma ripoti ya malipo' });
+  const { items, total, txRef, phone } = req.body;
+  if (!items || !items.length || !total) return res.status(400).json({ error: 'Kikapu ni tupu' });
+  if (!txRef || !txRef.trim()) return res.status(400).json({ error: 'Andika namba ya muamala (tx ref) uliyopewa baada ya kutuma pesa' });
+  const orders = readJson('orders.json', []);
+  const orderRef = 'MANUAL-' + Date.now();
+  orders.push({ tx_ref: orderRef, customer: user.email, customerPhone: phone || '', manualTxRef: txRef.trim(), amount: Number(total), items, status: 'pending_manual', date: new Date().toISOString() });
+  await writeJson('orders.json', orders);
+  logSecurity('MANUAL_PAYMENT_SUBMITTED', 'Ripoti ya malipo manual kutoka ' + user.email, 'LOW', getIP(req));
+  res.json({ success: true, message: '✅ Ripoti imepokelewa! Admin atathibitisha malipo yako hivi karibuni. Angalia "My Orders" baadaye.', tx_ref: orderRef });
 });
 
 app.post('/api/admin/orders/confirm', async (req, res) => {
@@ -1052,7 +933,6 @@ app.post('/api/admin/orders/confirm', async (req, res) => {
   if (!order) return res.status(404).json({ error: 'Order haipatikani' });
   order.status = 'successful';
   order.confirmedAt = new Date().toISOString();
-  await consumeCouponOnce(order);
   await writeJson('orders.json', orders);
   logSecurity('MANUAL_PAYMENT_CONFIRMED', 'Admin amethibitisha malipo: ' + tx_ref, 'LOW', getIP(req));
   res.json({ success: true, message: '✅ Malipo yamethibitishwa. Mteja ataona bidhaa yake kwenye My Orders.' });

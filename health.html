@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Health Assistant — LIFEISGAMETZ</title>
-<link rel="stylesheet" href="zoneplay-four-reference.css">  <link rel="stylesheet" href="lifegametz-modern.css">
-</head><body>
+<link rel="stylesheet" href="zoneplay-four-reference.css"></head><body>
 <div class="z-layout">
 <aside class="z-sidebar">
   <div class="z-brand"><div class="z-mark">✦</div><div><b>LIFEIS<span>GAMETZ</span></b><small>PLAY • LEARN • EARN</small></div></div>
@@ -38,5 +37,4 @@
 </div><footer class="z-footer"><span>© 2025 LIFEISGAMETZ. All rights reserved.</span><span>Terms &nbsp;&nbsp; Privacy &nbsp;&nbsp; Support</span></footer></main></div>
 <script>
 (()=>{const out=document.getElementById('msgs'),input=document.getElementById('healthInput'),send=document.getElementById('sendBtn');function add(t,c){const d=document.createElement('div');d.className='msg '+c;d.textContent=t;out.appendChild(d);out.scrollTop=out.scrollHeight}add('Habari! Naweza kutoa taarifa za jumla za afya na kukuongoza kwenye huduma ya kitaalamu.','bot');async function ask(){const q=input.value.trim();if(!q)return;input.value='';add(q,'user');add('Ninafikiria…','bot');try{const r=await fetch('/api/ai/health',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})});const d=await r.json();out.lastElementChild.textContent=d.reply||d.error||'Samahani, jaribu tena.'}catch(e){out.lastElementChild.textContent='Hitilafu ya mtandao. Jaribu tena.'}}send.onclick=ask;input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}})})();
-</script><script src="zoneplay-shell.js"></script>
-</body></html>
+</script></body></html>

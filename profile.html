@@ -7,7 +7,6 @@
 <style>
 .profile-main{position:relative}.profile-identity{display:flex;align-items:center;gap:13px;min-width:0}.profile-copy{min-width:0}.profile-copy p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.edit-btn{cursor:pointer}.quick{cursor:pointer;transition:.18s}.quick:hover{border-color:#7d32ff;transform:translateY(-1px);box-shadow:0 8px 22px rgba(86,27,255,.16)}.quick .arrow{float:right;color:#8f39ff}.modal-backdrop{position:fixed;inset:0;background:rgba(0,5,18,.76);backdrop-filter:blur(7px);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}.modal-backdrop.show{display:flex}.modal{width:min(500px,100%);background:linear-gradient(180deg,#081a3c,#040d23);border:1px solid #2855a4;border-radius:14px;box-shadow:0 25px 70px rgba(0,0,0,.55),0 0 35px rgba(101,37,255,.18);padding:18px}.modal h2{font-size:16px;margin:0}.modal .muted{font-size:9px;color:#8196bd;margin:5px 0 15px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}.close{width:30px;height:30px;border:1px solid #20427f;background:#071736;color:#cbd8ef;border-radius:8px;cursor:pointer}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}.secondary-btn{height:38px;border:1px solid #24457f;background:#071936;color:#b9c8e3;border-radius:8px;padding:0 14px;cursor:pointer}.status{font-size:9px;margin-top:9px;min-height:14px}.status.ok{color:#39e883}.status.err{color:#ff7198}.security-note{padding:9px 10px;border:1px solid #173a75;background:#061734;border-radius:8px;color:#8399bf;font-size:9px;margin-top:10px}.profile-empty{font-size:10px;color:#91a4c7}.logout-link{color:#ff7097!important}
 </style>
-  <link rel="stylesheet" href="lifegametz-modern.css">
 </head>
 <body>
 <div class="z-layout">
@@ -74,5 +73,4 @@ $('passwordForm').onsubmit=async e=>{e.preventDefault();const b=e.target.querySe
 $('logoutLink').onclick=async e=>{e.preventDefault();try{await api('/api/auth/logout',{method:'POST'})}catch(_){}localStorage.removeItem('gamehubToken');localStorage.removeItem('gamehubUser');location.replace('login.html')};
 loadProfile();
 </script>
-<script src="zoneplay-shell.js"></script>
 </body></html>
