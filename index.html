@@ -6,7 +6,6 @@
   <title>LIFEISGAMETZ — Play • Learn • Earn</title>
   <meta name="description" content="Duka la gaming la Tanzania: game keys, top-up, gift cards, live football, Academy na AI assistants.">
   <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v13-reference.css">
 </head>
 <body>
 <div class="main">
@@ -123,9 +122,9 @@
   function ytId(u){ var m=(u||'').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/); return m?m[1]:null; }
   function safeUrl(u){ u=String(u||''); return /^(https?:\/\/|\/|[\w-]+\.html)/i.test(u) ? u : 'shop.html'; }
   var DEFAULT_SLIDES = [
-    {tag:'FEATURED GAME', title:'EA SPORTS FC 26', desc:'Explore the latest football titles and digital games available in the LIFEISGAMETZ Store.', emoji:'⚽', art:'linear-gradient(120deg,#0b1238,#16105b 58%,#061d4a)', cta:['Nunua Sasa','shop.html'], cta2:['Angalia Store','shop.html']},
-    {tag:'LIFEISGAMETZ STORE', title:'GAMES • TOP-UP • GIFT CARDS', desc:'Discover digital gaming products, gift cards and top-up services from one place.', emoji:'🎮', art:'linear-gradient(120deg,#190a46,#12184f 58%,#06233f)', cta:['Fungua Store','shop.html'], cta2:['Gift Cards','giftcards.html']},
-    {tag:'LIVE SPORTS', title:'WATCH & FOLLOW LIVE', desc:'Live matches, scores and gaming media in one connected dashboard.', emoji:'🏆', art:'linear-gradient(120deg,#071b43,#0a1440 58%,#2b0a4a)', cta:['Tazama Live','live.html'], cta2:['Live Scores','livescores.html']}
+    {tag:'LIFEISGAMETZ', title:'CHEZA. JIFUNZE. SHINDA.', desc:'Duka la gaming la Tanzania lenye games, digital products, tournaments, live football, Academy na AI assistants — yote sehemu moja.', emoji:'🎮', art:'linear-gradient(120deg,#1a0a56,#0a1f6b 60%,#062a5c)', cta:['Explore Games','shop.html'], cta2:['Gaming Academy','academy.html']},
+    {tag:'DUKA', title:'GAME KEYS & GIFT CARDS', desc:'Games za kudownload moja kwa moja, gift cards na Steam accounts. Lipa kwa M-Pesa, Tigo Pesa, Airtel Money au Halotel.', emoji:'🎁', art:'linear-gradient(120deg,#3b0a5c,#141a6b 60%,#0a2a5c)', cta:['Nunua Sasa','shop.html'], cta2:['Gift Cards','giftcards.html']},
+    {tag:'LIVE', title:'TAZAMA LIVE FOOTBALL', desc:'Mechi live, matokeo ya papo hapo, filamu na video — kila kitu ndani ya LIFEISGAMETZ.', emoji:'⚽', art:'linear-gradient(120deg,#0a3a5c,#0a1a6b 60%,#2a0a5c)', cta:['Watch Live','live.html'], cta2:['Live Scores','livescores.html']}
   ];
   var slidesEl=document.getElementById('zpSlides'), dotsEl=document.getElementById('zpDots'), slider=document.getElementById('zpSlider');
   var slides=[], cur=0, timer=null, paused=false;
