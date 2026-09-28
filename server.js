@@ -1529,6 +1529,106 @@ app.post('/api/tournaments/register', (req, res) => {
 
 ensureTournamentSeed();
 
+// ═══════════ API-FOOTBALL — REAL LIVE SCORES ═══════════
+// API key stays server-side in Render: API_FOOTBALL_KEY
+const API_FOOTBALL_BASE = 'https://v3.football.api-sports.io';
+const apiFootballCache = new Map();
+const API_FOOTBALL_CACHE_MS = 15000;
+
+async function apiFootballGet(endpoint, query = {}) {
+  const key = process.env.API_FOOTBALL_KEY;
+  if (!key) throw new Error('Weka API_FOOTBALL_KEY kwenye Render Environment Variables.');
+
+  const qs = new URLSearchParams();
+  Object.entries(query).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && String(v) !== '') qs.set(k, String(v));
+  });
+  const url = API_FOOTBALL_BASE + endpoint + (qs.toString() ? '?' + qs.toString() : '');
+  const cacheKey = url;
+  const cached = apiFootballCache.get(cacheKey);
+  if (cached && Date.now() - cached.time < API_FOOTBALL_CACHE_MS) return cached.data;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'x-apisports-key': key,
+      'Accept': 'application/json'
+    }
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data?.message || data?.errors?.requests || ('API-Football HTTP ' + response.status));
+  }
+  if (data?.errors && Object.keys(data.errors).length) {
+    const msg = Object.values(data.errors).join(', ');
+    throw new Error(msg);
+  }
+  apiFootballCache.set(cacheKey, { time: Date.now(), data });
+  return data;
+}
+
+// All currently live football matches worldwide.
+app.get('/api/live-scores', async (req, res) => {
+  try {
+    const data = await apiFootballGet('/fixtures', { live: 'all' });
+    res.json({ success: true, provider: 'API-Football', ...data });
+  } catch (e) {
+    console.error('API-Football live scores:', e.message);
+    res.status(502).json({ success: false, error: e.message });
+  }
+});
+
+// Fixtures for a specific date: YYYY-MM-DD.
+app.get('/api/live-scores/date/:date', async (req, res) => {
+  try {
+    const date = String(req.params.date || '');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ success: false, error: 'Tarehe tumia YYYY-MM-DD.' });
+    }
+    const data = await apiFootballGet('/fixtures', { date });
+    res.json({ success: true, provider: 'API-Football', ...data });
+  } catch (e) {
+    console.error('API-Football date:', e.message);
+    res.status(502).json({ success: false, error: e.message });
+  }
+});
+
+// Detailed information for one real fixture, including events/lineups/statistics when available.
+app.get('/api/live-scores/fixture/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ success: false, error: 'Fixture ID si sahihi.' });
+    const [fixture, events, lineups, statistics] = await Promise.all([
+      apiFootballGet('/fixtures', { id }),
+      apiFootballGet('/fixtures/events', { fixture: id }),
+      apiFootballGet('/fixtures/lineups', { fixture: id }),
+      apiFootballGet('/fixtures/statistics', { fixture: id })
+    ]);
+    res.json({ success: true, provider: 'API-Football', fixture: fixture.response || [], events: events.response || [], lineups: lineups.response || [], statistics: statistics.response || [] });
+  } catch (e) {
+    console.error('API-Football fixture:', e.message);
+    res.status(502).json({ success: false, error: e.message });
+  }
+});
+
+// League list for the website filters.
+app.get('/api/live-scores/leagues', async (req, res) => {
+  try {
+    const data = await apiFootballGet('/leagues', { search: req.query.search || undefined });
+    res.json({ success: true, provider: 'API-Football', ...data });
+  } catch (e) {
+    console.error('API-Football leagues:', e.message);
+    res.status(502).json({ success: false, error: e.message });
+  }
+});
+
+// Live stream registry already used by LIFEISGAMETZ/Admin. This endpoint exposes
+// only streams saved by the site; it does not discover or generate pirated streams.
+app.get('/api/live-matches', (req, res) => {
+  const streams = readJson('live_streams.json', []);
+  res.json({ success: true, matches: Array.isArray(streams) ? streams : [] });
+});
+
 // ═══════════ UPLOAD/API ERROR HANDLER ═══════════
 app.use((err, req, res, next) => {
   if (err) {
