@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Community Chat — LIFEISGAMETZ</title>
   <link rel="stylesheet" href="zoneplay-full.css">
+  <link rel="stylesheet" href="zoneplay-v11-final.css">
+  <link rel="stylesheet" href="zoneplay-v12-final.css">
 </head>
 <body>
 <div class="main">
@@ -101,14 +103,12 @@
     seen=rows.length;
   }
 
-  var everLoaded=false;
   function load(force){
     return fetch('/api/public-chat/messages').then(function(r){ return r.json(); }).then(function(d){
       if (!d||!d.success) return;
       var list=d.messages||[], last=list[list.length-1], key=list.length+'|'+(last?last.id:'');
       if (key===lastKey && !force) return;            // nothing new: leave the scroll position alone
-      if (everLoaded && last && mine.indexOf(last.id)===-1) ZP.beep();   // ping only for messages from other people
-      everLoaded=true; lastKey=key; rows=list; render(!!force);
+      lastKey=key; rows=list; render(!!force);
     }).catch(function(){ if(!lastKey) feed.innerHTML='<div class="cm-empty"><b>Chat haipatikani kwa sasa</b>Angalia mtandao wako, itajaribu tena yenyewe.</div>'; });
   }
 
