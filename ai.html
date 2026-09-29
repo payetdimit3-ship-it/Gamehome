@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>AI Assistant — LIFEISGAMETZ</title>
   <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
 </head>
 <body class="ai-page">
 <div class="main">
@@ -93,7 +91,7 @@
     busy=true; sendBtn.disabled=true; say(''); start();
     input.value=''; add(q,'user');
     var wait=add('Ninafikiria…','bot','wait');
-    fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:hist.slice(-10)})})
+    fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:ZP.aiMessage(q),history:hist.slice(-10)})})
       .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
       .then(function(x){
         var ans=(x.d&&x.d.reply)||(x.d&&x.d.error)||'Samahani, jaribu tena.';

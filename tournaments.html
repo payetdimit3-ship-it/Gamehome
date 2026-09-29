@@ -1,75 +1,106 @@
 <!DOCTYPE html>
-<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tournaments — LIFEISGAMETZ</title><link rel="stylesheet" href="style.css">
-<style>
-.page-shell{max-width:1180px;margin:0 auto;padding:24px 20px 50px}
-.page-hero{background:linear-gradient(135deg,#120b2d,#241052 55%,#11152b);border:1px solid #35206b;border-radius:22px;padding:34px 28px;margin-bottom:22px;box-shadow:0 15px 45px rgba(60,20,130,.18)}
-.page-hero h1{font-size:clamp(26px,5vw,42px);margin-bottom:8px}.page-hero p{color:#b9b7cf;max-width:760px}
-.section-title{font-size:22px;margin:24px 0 12px}.muted{color:#9b9ab2}
-.feature-grid,.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-.pro-card{background:#121323;border:1px solid #292844;border-radius:16px;padding:20px;transition:.25s}
-.pro-card:hover{transform:translateY(-3px);border-color:#7b2ff7;box-shadow:0 10px 30px rgba(123,47,247,.15)}
-.pro-card .icon{font-size:34px;margin-bottom:10px}.pro-card h3{margin-bottom:7px}.pro-card p{color:#aaa9c1;font-size:14px}
-.btn-purple{display:inline-block;background:linear-gradient(90deg,#7024e8,#9b35ff);color:#fff;padding:11px 18px;border-radius:10px;border:0;font-weight:700;cursor:pointer;margin-top:12px}
-.btn-outline{display:inline-block;border:1px solid #6330ad;color:#ddd;padding:10px 16px;border-radius:10px;margin:12px 8px 0 0}
-.form-card{max-width:650px;background:#111222;border:1px solid #292844;border-radius:18px;padding:20px}
-.form-card input,.form-card select,.form-card textarea{width:100%;background:#080914;color:#fff;border:1px solid #302d4a;border-radius:10px;padding:12px;margin:6px 0 12px;outline:none}
-.form-card textarea{min-height:100px;resize:vertical}.status{padding:12px;border-radius:10px;background:#090a16;color:#bbb;margin-top:12px;white-space:pre-wrap}
-.score-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px;background:#121323;border:1px solid #292844;border-radius:13px;margin:9px 0}
-.badge{font-size:11px;padding:4px 8px;border-radius:99px;background:#2a1a4e;color:#cdaaff}
-@media(max-width:700px){.page-shell{padding:16px 12px 40px}.page-hero{padding:25px 18px}.score-row{font-size:13px}}
-</style>  <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Tournaments — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-full.css">
 </head>
-<body><div class="sidebar">
-  <div class="logo">🎮 GAME<span>HUB</span></div>
-  <div class="menu">
-    <a href="index.html">🏠 <span class="label">Home</span></a>
-    <a href="shop.html">🎮 <span class="label">All Games</span></a>
-    <a href="categories.html">🗂️ <span class="label">Categories</span></a>
-    <a href="steamaccounts.html">👤 <span class="label">Steam Accounts</span></a>
-    <a href="efootball.html">⚽ <span class="label">eFootball Vikosi</span></a>
-    <a href="topup.html">💰 <span class="label">eFootball Coins</span></a>
-    <a href="giftcards.html">🎁 <span class="label">Gift Cards</span></a>
-    <a href="cloudgaming.html">☁️ <span class="label">Cloud Gaming</span></a>
-<a href="live.html">📺 <span class="label">Watch Live</span></a>
-    <a href="livescores.html">📊 <span class="label">Live Scores</span></a>
-    <a href="tournaments.html">🏆 <span class="label">Tournaments</span></a>
-    <a href="courses.html">🎓 <span class="label">Courses + AI</span></a>
-<a href="movies.html">🎬 <span class="label">Movies</span></a>
-    <a href="marketplace.html">🏪 <span class="label">Marketplace</span></a>
-    <a href="wishlist.html">❤️ <span class="label">Wishlist</span></a>
-    <a href="mygames.html">🕹️ <span class="label">My Games</span></a>
-    <a href="myorders.html">📦 <span class="label">My Orders</span></a>
-    <a href="requests.html">🔍 <span class="label">Requests</span></a>
-    <a href="profile.html">👤 <span class="label">Profile</span></a>
-    <a href="health.html">🩺 <span class="label">Health Support</span></a>
-    <a href="cart.html">🛒 <span class="label">Kikapu</span> <span class="cart-badge" id="cartCount">0</span></a>
-    <a href="contact.html">☎ <span class="label">Contact</span></a>
+<body>
+<div class="main">
+
+  <section class="ac-hero" style="background:linear-gradient(110deg,#4a0d3a,#1a0a56 60%,#062a5c)">
+    <div>
+      <span class="zp-slide-tag">GAMEHUB TOURNAMENTS</span>
+      <h1>Jiunge na Mashindano</h1>
+      <p>Shindana na wachezaji wengine, jisajili kwa simu yako na fuatilia matokeo — yote GameHub.</p>
+      <div class="ac-cta">
+        <a class="zp-btn" href="#list"><span data-ic="trophy"></span>Angalia Tournaments</a>
+        <a class="zp-btn ghost" href="livescores.html"><span data-ic="ball"></span>Live Scores</a>
+      </div>
+    </div>
+    <div class="ac-stats" id="stats" hidden></div>
+  </section>
+
+  <div class="zp-sec" id="list" style="margin-top:6px"><h2>Tournaments Zilizopo</h2></div>
+  <section class="tn-grid" id="grid" aria-live="polite"><div class="zp-empty" style="grid-column:1/-1"><p>Inapakia...</p></div></section>
+</div>
+
+<div class="gm-modal" id="regModal" role="dialog" aria-modal="true" aria-labelledby="regTitle" hidden>
+  <div class="gm-box">
+    <div class="gm-head"><h2 id="regTitle">Sajili Tournament</h2><p id="regSub"></p><button class="gm-close" id="regClose" type="button" aria-label="Funga"></button></div>
+    <div class="gm-body">
+      <div class="ck-field"><label for="rName">Jina Kamili</label><input type="text" id="rName" placeholder="mfano: Juma Juma" autocomplete="name"></div>
+      <div class="ck-field"><label for="rPhone">Namba ya Simu</label><input type="tel" id="rPhone" placeholder="0786095758" inputmode="numeric" autocomplete="tel"></div>
+      <div class="ck-field"><label for="rGame">Game</label><input type="text" id="rGame" placeholder="mfano: eFootball"></div>
+      <button class="zp-btn ck-pay" id="regSubmit" type="button"></button>
+      <p class="ck-status" id="regStatus" role="status" aria-live="polite"></p>
+    </div>
   </div>
 </div>
-<div class="main"><div class="topbar"><a href="login.html" class="btn-login" id="topLoginBtn">🔐 Login</a></div>
-<div class="page-shell"><section class="page-hero"><h1>🏆 GameHub Tournaments</h1><p>Jiunge na mashindano ya gaming, fuatilia status na usajili kupitia simu yako.</p></section><div id="tournaments" class="card-grid"><div class="pro-card">⏳ Inapakia tournaments...</div></div>
-<div id="regBox" class="form-card" style="display:none;margin-top:20px"><h2>📝 Sajili Tournament</h2><input id="tId" type="hidden"><label>Jina</label><input id="tName" placeholder="Jina lako"><label>Namba ya simu</label><input id="tPhone" placeholder="07xxxxxxxx"><label>Game</label><input id="tGame" placeholder="Mfano eFootball"><button class="btn-purple" onclick="registerTournament()">Sajili Sasa</button><div id="regStatus" class="status"></div></div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
 <script>
-function loadT(){
- fetch('/api/tournaments').then(r=>r.json()).then(d=>{
-  const list=d.tournaments||[]; const box=document.getElementById('tournaments');
-  if(!list.length){box.innerHTML='<div class="pro-card"><div class="icon">🏆</div><h3>Hakuna tournament bado</h3><p>Admin ataweka mashindano mapya hapa.</p></div>';return;}
-  box.innerHTML=list.map(t=>`<article class="pro-card"><div class="icon">🏆</div><h3>${t.name||'GameHub Tournament'}</h3><p>${t.game||'Gaming'} · ${t.date||'Tarehe itawekwa'}</p><p>${t.description||'Jiunge na tournament ya GameHub.'}</p><span class="badge">${t.status||'OPEN'}</span><br><button class="btn-purple" onclick="openReg('${String(t.id).replace(/'/g,"\\'")}','${String(t.game||'').replace(/'/g,"\\'")}')">Jiunge</button></article>`).join('');
- }).catch(()=>document.getElementById('tournaments').innerHTML='<div class="pro-card">Imeshindikana kupakia tournaments.</div>');
-}
-function openReg(id,game){document.getElementById('regBox').style.display='block';document.getElementById('tId').value=id;document.getElementById('tGame').value=game;document.getElementById('regBox').scrollIntoView({behavior:'smooth'});}
-async function registerTournament(){
- const body={tournamentId:tId.value,name:tName.value,phone:tPhone.value,game:tGame.value,userToken:localStorage.getItem('gamehubToken')};
- const r=await fetch('/api/tournaments/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); const d=await r.json();
- regStatus.textContent=d.message||d.error||'Imekamilika.';
-}
-loadT();
-</script></div>
-<footer class="footer"><div class="footer-grid"><div><h3>🎮 LIFEISGAMETZ</h3><p>Duka la gaming la Tanzania — games, digital products, community na huduma za gaming.</p></div>
-<div><h3>Quick Links</h3><a href="shop.html">Shop</a><a href="livescores.html">Live Scores</a><a href="tournaments.html">Tournaments</a><a href="courses.html">Courses</a></div>
-<div><h3>Contact</h3><p>📱 +255 786 095 758</p><p>📧 lifeisgametz@gmail.com</p><p>💬 WhatsApp Support</p></div></div><p class="copyright">© 2026 LIFEISGAMETZ. Haki zote zimehifadhiwa.</p></footer>
-</div><script src="app.js"></script><script src="chat.js"></script>  <script src="zoneplay-shell.js"></script>
-</body></html>
+(function(){
+  var esc=ZP.esc;
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  document.getElementById('regClose').innerHTML=ZP.icon('x');
+  document.getElementById('regSubmit').innerHTML=ZP.icon('user')+'Sajili Sasa';
+
+  var list=[];
+  function statusOf(t){ var s=String(t.status||'OPEN').toUpperCase(); return /CLOSE|IMEISHA|FULL/.test(s)?'closed':/LIVE|INAENDELEA/.test(s)?'live':'open'; }
+  function card(t){
+    var st=statusOf(t), closed=st==='closed';
+    return '<article class="tn-card"><div class="tn-top"><span class="tn-ic">'+ZP.icon('trophy')+'</span><div><h3>'+esc(t.name||'GameHub Tournament')+'</h3><span class="meta">'+esc(t.game||'Gaming')+' • '+esc(t.date||'Tarehe itawekwa')+'</span></div></div>'+
+      '<p>'+esc(t.description||'Jiunge na tournament ya GameHub.')+'</p>'+
+      '<div class="tn-foot"><span class="tn-badge '+st+'">'+esc((t.status||'OPEN').toUpperCase())+'</span>'+
+      (closed?'':'<button class="zp-btn sm" type="button" data-join="'+esc(t.id)+'" data-game="'+esc(t.game||'')+'" data-name="'+esc(t.name||'')+'">'+ZP.icon('user')+'Jiunge</button>')+'</div></article>';
+  }
+  function render(){
+    var box=document.getElementById('grid');
+    if (list===null){ box.innerHTML='<div class="zp-empty" style="grid-column:1/-1"><h3>Imeshindikana kupakia tournaments</h3><p>Angalia mtandao kisha jaribu tena.</p><button class="zp-btn" type="button" onclick="location.reload()">Jaribu tena</button></div>'; return; }
+    if (!list.length){ box.innerHTML='<div class="zp-empty" style="grid-column:1/-1"><h3>Hakuna tournament bado</h3><p>Admin ataweka mashindano mapya hapa hivi karibuni.</p></div>'; return; }
+    var open=list.filter(function(t){ return statusOf(t)==='open'; }).length;
+    var st=document.getElementById('stats'); st.hidden=false;
+    st.innerHTML='<div class="ac-stat"><b>'+list.length+'</b><span>Tournaments</span></div>'+(open?'<div class="ac-stat"><b>'+open+'</b><span>Zinapokea Usajili</span></div>':'');
+    box.innerHTML=list.map(card).join('');
+  }
+  fetch('/api/tournaments').then(function(r){ return r.json(); }).then(function(d){ list=d.tournaments||[]; render(); }).catch(function(){ list=null; render(); });
+
+  /* ---------- Registration modal ---------- */
+  var modal=document.getElementById('regModal'), statusEl=document.getElementById('regStatus'), submitBtn=document.getElementById('regSubmit'), curId='';
+  function open(id,name,game){
+    curId=id; document.getElementById('regSub').textContent=name?('Kwa: '+name):'';
+    document.getElementById('rGame').value=game||''; document.getElementById('rName').value=''; document.getElementById('rPhone').value='';
+    statusEl.textContent=''; statusEl.className='ck-status'; submitBtn.disabled=false; submitBtn.innerHTML=ZP.icon('user')+'Sajili Sasa';
+    modal.hidden=false; modal.classList.add('on'); document.body.style.overflow='hidden';
+    document.getElementById('rName').focus();
+  }
+  function close(){ modal.classList.remove('on'); modal.hidden=true; document.body.style.overflow=''; }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('[data-join]'); if(b){ open(b.dataset.join,b.dataset.name,b.dataset.game); return; }
+    if (e.target===modal || e.target.closest('#regClose')) close();
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && modal.classList.contains('on')) close(); });
+
+  submitBtn.addEventListener('click',function(){
+    var name=document.getElementById('rName').value.trim(), phone=document.getElementById('rPhone').value.trim(), game=document.getElementById('rGame').value.trim();
+    if (!name||!phone){ statusEl.textContent='Jaza jina na namba ya simu.'; statusEl.className='ck-status'; return; }
+    submitBtn.disabled=true; submitBtn.textContent='⏳ Inatuma...';
+    fetch('/api/tournaments/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tournamentId:curId,name:name,phone:phone,game:game,userToken:localStorage.getItem('gamehubToken')})})
+      .then(function(r){ return r.json().catch(function(){ return {}; }); })
+      .then(function(d){
+        statusEl.textContent=d.message||d.error||'Imekamilika.';
+        statusEl.className='ck-status'+(d.message?' ok':'');
+        if (d.message){ submitBtn.innerHTML=ZP.icon('check')+'Umesajiliwa'; setTimeout(close,1800); }
+        else submitBtn.disabled=false, submitBtn.innerHTML=ZP.icon('user')+'Sajili Sasa';
+      })
+      .catch(function(){ statusEl.textContent='Hitilafu ya mtandao. Jaribu tena.'; statusEl.className='ck-status'; submitBtn.disabled=false; submitBtn.innerHTML=ZP.icon('user')+'Sajili Sasa'; });
+  });
+})();
+</script>
+</body>
+</html>

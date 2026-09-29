@@ -133,6 +133,33 @@
   ZP.CONTACT = { phone:'0786 095 758', wa:'255786095758', email:'lifeisgametz@gmail.com' };
   ZP.waLink = function(text){ return 'https://wa.me/'+ZP.CONTACT.wa+(text?'?text='+encodeURIComponent(text):''); };
 
+
+  /* ---------- Device-only preferences (Settings page) ---------- */
+  ZP.pref = function(key, fallback){
+    try{ var v=localStorage.getItem('zp_'+key); return v==null ? fallback : JSON.parse(v); }catch(e){ return fallback; }
+  };
+  ZP.setPref = function(key, val){ try{ localStorage.setItem('zp_'+key, JSON.stringify(val)); }catch(e){} };
+  ZP.aiLang = function(){ return ZP.pref('aiLang','sw'); };
+  ZP.dataSaver = function(){ return !!ZP.pref('dataSaver', false); };
+  ZP.soundOn = function(){ return ZP.pref('soundOn', true) !== false; };
+  /* Prefix a message to the AI with a language instruction when the device prefers English. Swahili is the default, so nothing changes for it. */
+  ZP.aiMessage = function(text){ return ZP.aiLang()==='en' ? 'Please reply in English. '+text : text; };
+  /* Short two-tone notification beep (Web Audio, no file, works offline). Silently does nothing if sound is off or unsupported. */
+  ZP.beep = function(){
+    if (!ZP.soundOn()) return;
+    try{
+      var Ctx=window.AudioContext||window.webkitAudioContext; if(!Ctx) return;
+      var ctx=new Ctx(), t=ctx.currentTime;
+      [[880,t],[660,t+0.09]].forEach(function(f){
+        var o=ctx.createOscillator(), g=ctx.createGain();
+        o.type='sine'; o.frequency.value=f[0]; o.connect(g); g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.0001,f[1]); g.gain.exponentialRampToValueAtTime(0.12,f[1]+0.01); g.gain.exponentialRampToValueAtTime(0.0001,f[1]+0.14);
+        o.start(f[1]); o.stop(f[1]+0.16);
+      });
+      setTimeout(function(){ ctx.close(); },400);
+    }catch(e){}
+  };
+
   ZP.money = function(n){ return Number(n||0).toLocaleString('en-US'); };
   ZP.href = function(p){ return 'product.html?id='+encodeURIComponent(p.id)+(p.admin?'&admin=1':''); };
   ZP.platformOf = function(key){ return ZP.PLATFORMS.filter(function(x){return x.key===key;})[0]; };

@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Movies — LIFEISGAMETZ</title>
   <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
 </head>
 <body>
 <div class="main">
@@ -105,12 +103,20 @@
   function open(id,from){
     var m=all.filter(function(x){ return String(x.id)===String(id); })[0]; if(!m) return;
     opener=from||null;
-    var url=safeUrl(m.videoUrl), yt=ytId(url), media;
+    var url=safeUrl(m.videoUrl), yt=ytId(url), media, needsClick=false;
     if (!url) media='<div class="cr-none">'+ZP.icon('film')+'<h3>Video haipatikani</h3><p>Movie hii bado haina video.</p></div>';
+    else if (ZP.dataSaver()){ needsClick=true; media='<button type="button" class="zp-ds-play" id="mvPlayBtn" style="position:relative;width:100%;height:100%">'+ZP.icon('play')+'<span>Data Saver iko wazi — bonyeza kucheza</span></button>'; }
     else if (yt) media='<iframe src="https://www.youtube.com/embed/'+encodeURIComponent(yt)+'?autoplay=1&rel=0&playsinline=1" title="'+esc(m.title)+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
     else media='<video controls playsinline autoplay src="'+esc(url)+'"></video>';
-    stage.querySelectorAll('iframe,video,.cr-none').forEach(function(n){ n.remove(); });
+    stage.querySelectorAll('iframe,video,.cr-none,.zp-ds-play').forEach(function(n){ n.remove(); });
     stage.insertAdjacentHTML('afterbegin',media);
+    if (needsClick){
+      document.getElementById('mvPlayBtn').addEventListener('click',function(){
+        var real=yt?'<iframe src="https://www.youtube.com/embed/'+encodeURIComponent(yt)+'?autoplay=1&rel=0&playsinline=1" title="'+esc(m.title)+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>':'<video controls playsinline autoplay src="'+esc(url)+'"></video>';
+        stage.querySelectorAll('.zp-ds-play').forEach(function(n){ n.remove(); });
+        stage.insertAdjacentHTML('afterbegin',real);
+      });
+    }
     document.getElementById('mInfo').innerHTML='<div class="cr-meta"><span class="ls-pill">'+esc((m.genre||'Movie').toUpperCase())+'</span>'+(m.year?'<span class="ls-pill">'+esc(m.year)+'</span>':'')+'</div><h2>'+esc(m.title)+'</h2>'+(m.description?'<p>'+esc(m.description)+'</p>':'');
     modal.hidden=false; modal.classList.add('on'); document.body.style.overflow='hidden'; document.body.classList.add('mv-open');
     var u=new URL(location.href); u.searchParams.set('id',m.id); history.replaceState(null,'',u.pathname+u.search);

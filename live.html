@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Live TV / Sports — LIFEISGAMETZ</title>
   <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
 </head>
 <body>
 <div class="main">
@@ -74,17 +72,9 @@
     return live || streams[0] || null;
   }
 
-  function renderStage(x){
-    var stage=document.getElementById('stage');
+  function insertMedia(stage,m,x){
     if (hls){ try{ hls.destroy(); }catch(e){} hls=null; }
-    if (!x){
-      stage.innerHTML='<div class="lv-none">'+ZP.icon('tv')+'<h3>Hakuna match live kwa sasa</h3><p>Rudi baadaye au angalia matokeo kwenye Live Scores.</p><a class="zp-btn sm" href="livescores.html">Live Scores</a></div>';
-      return;
-    }
-    var m=mediaOf(x);
-    if (m.kind==='none'){
-      stage.innerHTML='<div class="lv-none">'+ZP.icon('tv')+'<h3>Stream haijawekwa</h3><p>Mechi hii bado haina video. Angalia matokeo kwenye Live Scores.</p></div>';
-    } else if (m.kind==='iframe'){
+    if (m.kind==='iframe'){
       stage.innerHTML='<iframe src="'+esc(m.url)+'" title="'+esc(x.title)+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
     } else if (m.kind==='video'){
       stage.innerHTML='<video controls playsinline autoplay muted src="'+esc(m.url)+'"></video>';
@@ -93,6 +83,27 @@
       var v=stage.querySelector('video');
       if (window.Hls && Hls.isSupported()){ hls=new Hls(); hls.loadSource(m.url); hls.attachMedia(v); } else v.src=m.url;
     }
+  }
+  function renderStage(x){
+    var stage=document.getElementById('stage');
+    if (!x){
+      if (hls){ try{ hls.destroy(); }catch(e){} hls=null; }
+      stage.innerHTML='<div class="lv-none">'+ZP.icon('tv')+'<h3>Hakuna match live kwa sasa</h3><p>Rudi baadaye au angalia matokeo kwenye Live Scores.</p><a class="zp-btn sm" href="livescores.html">Live Scores</a></div>';
+      return;
+    }
+    var m=mediaOf(x);
+    if (m.kind==='none'){
+      if (hls){ try{ hls.destroy(); }catch(e){} hls=null; }
+      stage.innerHTML='<div class="lv-none">'+ZP.icon('tv')+'<h3>Stream haijawekwa</h3><p>Mechi hii bado haina video. Angalia matokeo kwenye Live Scores.</p></div>';
+      return;
+    }
+    if (ZP.dataSaver()){
+      if (hls){ try{ hls.destroy(); }catch(e){} hls=null; }
+      stage.innerHTML='<button type="button" class="zp-ds-play" style="position:relative;width:100%;height:100%;aspect-ratio:16/9">'+ZP.icon('play')+'<span>Data Saver iko wazi — bonyeza kucheza stream</span></button>';
+      stage.querySelector('.zp-ds-play').addEventListener('click',function(){ insertMedia(stage,m,x); });
+      return;
+    }
+    insertMedia(stage,m,x);
   }
 
   function renderInfo(x){

@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Courses + AI Tutor — LIFEISGAMETZ</title>
   <link rel="stylesheet" href="zoneplay-full.css">
-  <link rel="stylesheet" href="zoneplay-v11-final.css">
-  <link rel="stylesheet" href="zoneplay-v12-final.css">
 </head>
 <body>
 <div class="main">
@@ -123,7 +121,7 @@
     var wait=add('Ninafikiria...','bot wait');
     var c=course(), v=video(c);
     var ctx=c?(' ['+c.name+(v?' — '+v.title:'')+']'):'';
-    fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Course Tutor'+ctx+': '+q})})
+    fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:ZP.aiMessage('Course Tutor'+ctx+': '+q)})})
       .then(function(r){ return r.json(); })
       .then(function(d){ lastReply=d.reply||d.error||'Samahani, jaribu tena.'; wait.className='cr-msg bot'; wait.textContent=lastReply; })
       .catch(function(){ wait.className='cr-msg bot'; wait.textContent='Hitilafu ya mtandao. Jaribu tena.'; })

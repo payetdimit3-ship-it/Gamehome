@@ -207,3 +207,71 @@ One layout for every page (sidebar + topbar + mobile bottom navigation), dark mo
 
 ### Marketplace
 `marketplace.html` — partner businesses from `/api/marketplace` (admin-posted): search, category chips, sort, cards with WhatsApp / email / website button built from the listing's `contact` (local numbers like 0712… are converted to wa.me/255712…; anything else is shown as plain text). "Orodhesha Biashara" opens WhatsApp with a prefilled message.
+
+### My Games / Library
+`mygames.html` — (1) rental timers from `localStorage.gamehubRentals` (live countdown + progress bar, last 5 finished ones kept as history), (2) GeForce NOW launcher, (3) Library built from the customer's *successful* orders via `GET /api/my-orders` (download links; account details are hidden until clicked, with copy buttons; rentals are excluded). Pending orders are counted with a link to `myorders.html`.
+
+### Cart
+`cart.html` — rows with quantity stepper (1–99), remove with undo toast, two-step "Futa Kikapu", live total and count, payment-method chips, and suggested products when empty. Same storage key/shape (`gamehubCart`), so `checkout.html` and `rental.html` are unaffected. Item names are escaped before rendering.
+
+### Wishlist
+`wishlist.html` — saved games (`localStorage.gamehubWishlist`, price accepted as number or "45,000 TZS") shown as poster cards; prices are refreshed from the shop (`ZP.loadSection('*')` + built-in defaults): chips show "Bei imeshuka/imepanda" or "HAIPATIKANI TENA" (only when the shop answered). Heart removes with an undo toast, "Futa zote" needs a second click, sort by newest/price/name. Buying goes through `product.html` so the cart item keeps its usual shape.
+
+### Profile
+`profile.html` — account card (name, email, role), stats (orders / active rentals / wishlist / cart), tournament balance when > 0, shortcuts, logout, admin button, WhatsApp for account changes. **Fix:** the old page called `/api/auth/me` without the `Authorization` token, so it always said "Ingia kwanza"; it now sends `gamehubToken`. There is no profile-edit API, so nothing is editable here yet.
+
+### Checkout
+`checkout.html` — two-column layout (payment on the left, order summary + coupon on the right; summary first on phones). **Payment API contract unchanged:** `POST /api/coupons/check`, `POST /api/azampay-pay {total, phone(255…), provider, name, items}` then polling `GET /api/azampay-check/:tx_ref` every 5s (max 36), `POST /api/manual-pay {items,total,txRef,phone}`; cart/quick-buy sources (`gamehubCart`, `?quick=1` + `gamehubQuickBuy`) and success handling (`gamehubLastOrder`, cart cleared, redirect to `success.html` / `myorders.html`) are the same. Changes: names escaped, phone validated (255 + 9 digits) before calling the API, login banner up front, name prefilled from the account, the unused e-mail field replaced by a note showing the account e-mail, and the internal note about Render merchant credentials removed from the customer-facing page.
+**Known risk (server side, not changed):** totals, item prices and the coupon discount are computed in the browser and trusted by the server — re-price the order on the server before going live.
+
+### Login
+`login.html` — split layout (welcome panel + form), password show/hide, "Umesahau password?" hands over to WhatsApp support with the typed e-mail (there is no reset API), already-signed-in notice. **Fix:** checkout sends `login.html?return=checkout.html` but the old page always went to `index.html`; it now returns to the requested page. Only plain same-site pages (`name.html` with an optional query) are accepted — external, `//` and `../` targets fall back to `index.html`. API unchanged: `POST /api/auth/login` → `gamehubToken` + `gamehubUser`. `register.html` still ignores `?return=` (next page).
+
+### Register
+`register.html` — same split layout as `login.html`, password show/hide, already-signed-in notice, client-side checks matching the server (`password.length>=4`, optional phone format), and now honours `?return=` the same safe way as Login (falls back to `index.html` for anything that isn't a plain same-site page). API unchanged: `POST /api/auth/register`.
+
+### Settings (new — device preferences, no account-settings API exists)
+`settings.html` — device-only preferences (stored under `zp_*` keys in localStorage via `ZP.pref`/`ZP.setPref` in `zp-catalog.js`), reachable from the sidebar (ZAIDI) and the account menu:
+- **AI reply language** (Kiswahili/English) — applied to every AI call (`ai.html`, `health.html`, `courses.html` tutor) by prefixing the message with an instruction via `ZP.aiMessage()`; Swahili is the default and leaves messages unchanged.
+- **Data Saver** (`ZP.dataSaver()`) — when on, video/stream embeds don't autoplay: Home hero slides, `live.html`'s player and the `movies.html` modal all show a tap-to-play overlay instead.
+- **Sauti ya Ujumbe Mpya** — a short Web Audio beep (`ZP.beep()`, no audio file) when Community Chat receives a new message from someone else (not your own, not the initial load).
+- Device-data summary (cart/wishlist/active-rental counts) and a two-step "Futa Data ya Kifaa" that clears cart, wishlist and these preferences on this browser only — account, orders and rentals are untouched.
+- No account-detail fields (name/email/password) — the server has no endpoint for that; a WhatsApp button is offered instead, same as Profile.
+
+### Community Help
+`community.html` — hero, 4 pillar cards (Health Education → `health.html`, Online Safety, Financial Literacy, Emergency Information — the last 3 jump to sections on this page), safety/financial tip lists (general, non-diagnostic advice), a strip linking to Health Network / Recovery Support / Community Fund / Community Chat, and a non-specific emergency notice (no invented phone numbers — it points people to local official services). WhatsApp buttons open with a prefilled message. **Fix:** removed a stale sidebar alias that made `community.html` highlight "Community / Chat" instead of its own "Community Help" entry.
+**Known site-wide quirk (not introduced here):** the floating "Msaidizi AI" button (`#ghChatBtn` in `chat.js`) is fixed at the bottom-right on every page and can sit over content on long mobile pages, including this one.
+
+### Admin (dedicated sidebar, business logic untouched)
+Admin already inherited the shared shell/skin from Step 1 (sidebar+topbar+card colours). This pass replaces the **customer sidebar** with a dedicated **Admin OS sidebar** (`ADMIN_NAV` in `zoneplay-shell.js`) matching the 13 tabs — Dashboard, Command Center, Mauzo, Payments, Public Chat, Wateja, Bidhaa, Hero Studio, Requests, Marketplace, Coupons, Usalama, Media & Live, AI — plus "Rudi Dukani". The old top pill-row (`.admin-tabs`) still exists and works, just visually hidden (`display:none`) since the sidebar replaces it; nothing about tab switching, forms, or data loading inside each tab was changed.
+- Deep-linking: `admin.html#tab-products` opens that tab on load; clicking a tab (sidebar or the hidden pill row) keeps the hash in sync (`location.hash`), so the sidebar highlight, browser back/forward, and bookmarks all agree.
+- The 5-item mobile bottom nav (Home/Store/Cart/Library/Profile) is hidden on `admin.html` — it's for shoppers, not staff.
+- **Deliberately not done** (would touch business-critical logic and needs a live login to verify safely): rebuilding the internal tab content (tables, upload forms, Command Center, Security) with the `zp-*` component classes used elsewhere. It currently keeps its original markup/CSS classes (`dash-hero-card`, `tab-btn`, etc.), just recoloured to match. Say the word if you want that deeper pass — it touches products, payments, security and user management, so it's worth doing as its own careful session with your real login.
+
+### My Orders
+`myorders.html` was **never migrated** in earlier steps (missing `zoneplay-full.css`, old `style.css` sidebar) — fully rebuilt now. Status chips (Zote/Zilizothibitishwa/Zinazosubiri/Zenye Tatizo), one card per order (tx_ref, date, total, status pill, items), download buttons and hidden-by-default account credentials with copy buttons (same pattern as My Games). API unchanged: `GET /api/my-orders`, and the ClickPesa self-heal check (`GET /api/clickpesa-check/:tx_ref`) still runs once per pending order and silently reloads the list if any turned successful. **Fix:** removed a stale sidebar alias that made `myorders.html` highlight "My Games / Library" instead of its own "My Orders" entry.
+
+### Steam Accounts
+`steamaccounts.html` was also never fully migrated (old `style.css` sidebar block) — rebuilt using the shared poster-card grid (`ZP.loadSection('steam')`, forced `kind:'account'` so cards show the ACCOUNT tag), search, sort, and a safety note that credentials appear in My Orders after payment. **Fix:** removed a stale sidebar alias that made it highlight "Store" instead of its own "Steam Accounts" entry.
+
+### Tournaments
+`tournaments.html` — also never migrated (old sidebar). Rebuilt: hero with live counts, a card grid (name, game, date, description, OPEN/LIVE/CLOSED badge — CLOSED tournaments have no "Jiunge" button), and registration through a modal instead of an always-visible inline form. New reusable `.gm-modal`/`.gm-box` classes (generic popup dialog) for this and future pages. API unchanged: `GET /api/tournaments`, `POST /api/tournaments/register {tournamentId,name,phone,game,userToken}`.
+**Bug fixed (this pass, found while testing the modal):** the modal's `<input>`s inherited plain white browser styling because they sit outside `.zp-content` (deliberately, like the Movies/Live TV modals, so a modal is never affected by the page's own layout) — `.gm-modal input/select/textarea` now has its own explicit dark styling instead of depending on that scope.
+**Sidebar bug fixed for 4 pages at once:** `community.html`, `myorders.html`, `steamaccounts.html` and `tournaments.html` each already had their own dedicated sidebar entry, but a leftover `ALIAS` mapping (from before those pages existed as their own destinations) made the sidebar highlight a *different* item instead. While fixing this I found and fixed three more of the same bug that hadn't been reported yet: `topup.html` (was highlighting "eFootball / Top Up" instead of its own "eFootball Coins"), `rental.html` (was highlighting "Cloud Gaming" instead of its own "Cloud Rental"), and `recommendations.html` (was highlighting "Store" instead of its own "Recommendations"). `ALIAS` in `zoneplay-shell.js` now only contains the pages that genuinely have no sidebar entry of their own: `product.html`, `checkout.html`, `success.html`, `courses.html`.
+
+### Contact
+`contact.html` — hero, three real contact cards (WhatsApp/email/phone via `ZP.CONTACT`), quick links to FAQ/Terms/Requests/My Orders. No contact-form endpoint exists on the server, so this page only offers the direct channels rather than a form that would go nowhere.
+
+### FAQ
+`faq.html` — same 7 questions, now as an accessible `<details>/<summary>` accordion (first one open by default) instead of always-expanded text blocks.
+
+### Terms & Refund
+`terms.html` and `refund.html` — numbered policy-section cards, cross-linked tabs between the two, and a WhatsApp CTA on Refund pre-filled with a Jina/Tarehe/Tx Reference/Tatizo template. **Fix:** `refund.html` had no sidebar representation at all (highlighted nothing); added to `ALIAS` so it highlights the shared "Terms & Refund" entry, same as `terms.html`.
+
+### Game Requests
+`requests.html` — also never migrated (old sidebar block). Rebuilt: submission form with inline status (was already inline), and a ranked list (🏆 for #1) with a per-row vote button and inline confirmation. API unchanged: `GET/POST /api/requests`, `POST /api/requests/:id/vote`.
+**Fix:** replaced the two `alert()` popups (vote result, "ingia kwanza") with inline text next to each row. **Bug fixed while testing:** the vote confirmation used to be wiped instantly because the list reloaded immediately after a successful vote — the reload is now delayed ~900ms so the person actually sees "✅ Kura yako imeongezwa!" first.
+
+### Recovery Support, Health Network, Community Fund
+`recovery.html`, `professionals.html`, `community-fund.html` — all three were static, never-migrated pages (old sidebar block, no APIs). Rebuilt with the hero + card + emergency-notice patterns used elsewhere; **copy is unchanged** (including the "AI is not diagnosis" disclaimers, the generic "VERIFIED" wording on Health Network which describes categories rather than real listings, and the honest "prototype" note next to Community Fund's TSh 0 figures — there's no fund API, so those numbers are not live). Recovery Support keeps its emergency notice with no invented phone numbers.
+**Bug fixed (also affected `community.html` from earlier):** bullet icons in `.cu-tips` lists rendered as empty circles because the generic `.zp-body svg.ic` sizing rule outranked `.cu-tips svg`; now targets `.cu-tips li svg.ic`.

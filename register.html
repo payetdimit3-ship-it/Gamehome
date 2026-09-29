@@ -2,133 +2,102 @@
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register — LIFEISGAMETZ</title>
-  <link rel="stylesheet" href="zoneplay-four-reference.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Jiunge — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="zoneplay-full.css">
 </head>
 <body>
-<div class="z-layout">
-<aside class="z-sidebar">
-  <div class="z-brand"><div class="z-mark">✦</div><div><b>LIFEIS<span>GAMETZ</span></b><small>PLAY • LEARN • EARN</small></div></div>
-  <nav class="z-nav">
-    <a href="index.html" class="active"><i>⌂</i>Home</a>
-    <a href="shop.html"><i>⌘</i>Store</a><a href="categories.html"><i>◈</i>Games</a>
-    <a href="pspgames.html"><i>◫</i>PSP Gaming</a><a href="ps2games.html"><i>◫</i>PS2 Gaming</a><a href="ps3games.html"><i>◫</i>PS3 Gaming</a>
-    <a href="switch.html"><i>◈</i>Nintendo Switch</a><a href="android.html"><i>▣</i>Android Gaming</a><a href="pc.html"><i>▤</i>PC Gaming</a>
-    <a href="movies.html"><i>▦</i>Movies</a><a href="live.html"><i>▣</i>Live TV / Sports</a><a href="livescores.html"><i>●</i>Live Scores</a>
-    <a href="academy.html"><i>◇</i>Academy / Courses</a><a href="cloudgaming.html"><i>☁</i>Cloud Gaming</a><a href="efootball.html"><i>◉</i>eFootball & Top Up</a>
-    <a href="giftcards.html"><i>🎁</i>Gift Cards</a><a href="community.html"><i>◌</i>Community / Chat</a><a href="health.html"><i>♥</i>Health Assistant</a><a href="ai.html"><i>✦</i>AI Assistant</a><a href="marketplace.html"><i>▰</i>Marketplace</a>
-    <div class="section">Account</div>
-    <a href="wishlist.html"><i>♡</i>Wishlist</a><a href="cart.html"><i>🛒</i>Cart</a><a href="mygames.html"><i>▣</i>My Games / Library</a><a href="profile.html"><i>♙</i>Profile</a>
-  </nav>
-</aside>
-<main class="z-main">
-<header class="z-topbar">
-  <div class="z-search"><span>⌕</span><input placeholder="Tafuta game, filamu, kozi, bidhaa..." /></div>
-  <div class="z-actions">
-    <div class="z-chip">♧ <b>3</b></div><div class="z-chip">🛒 <b>2</b></div><div class="z-chip">▣ <strong>TSh 12,500</strong> →</div>
-    <div class="z-chip user"><div class="z-avatar">K</div><span><strong>Kelvin Fred</strong><br><small style="color:#8195bb">Premium User</small></span>⌄</div>
+<div class="main">
+  <div class="au-wrap">
+    <section class="au-hero">
+      <div class="zp-brand"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="aug2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#19d8ff"/><stop offset="1" stop-color="#7c3aff"/></linearGradient></defs><path d="M24 3 42 13.5v21L24 45 6 34.5v-21z" fill="#0a1236" stroke="url(#aug2)" stroke-width="2.4"/><path d="M24 12 34 18v12l-10 6-10-6V18z" fill="none" stroke="url(#aug2)" stroke-width="2"/><path d="M24 12v24 M14 18l20 12 M34 18 14 30" stroke="url(#aug2)" stroke-width="1.3" opacity=".7"/></svg><span><b>LIFEIS<span>GAME</span>TZ</b><small>PLAY • LEARN • EARN</small></span></div>
+      <h1>Jiunge Nasi</h1>
+      <p>Fungua akaunti bure — weka oda, fuatilia malipo na cheza games zako popote.</p>
+      <ul class="au-perks">
+        <li><span data-ic="box"></span>Historia ya oda zako zote</li>
+        <li><span data-ic="book"></span>Maktaba ya games ulizonunua</li>
+        <li><span data-ic="bot"></span>AI Assistant kwa msaada wa haraka</li>
+      </ul>
+    </section>
+
+    <section class="au-card">
+      <div id="again" class="au-again" hidden>
+        <span id="againText"></span>
+        <div class="ac-cta"><a class="zp-btn sm" id="againGo" href="index.html">Endelea</a><button class="zp-btn ghost sm" id="againOut" type="button">Toka na uingie upya</button></div>
+      </div>
+
+      <div id="formBox">
+        <h2>Jiunge Nasi</h2>
+        <p>Inachukua chini ya dakika moja.</p>
+        <form class="au-form" id="registerForm" novalidate style="margin-top:12px">
+          <div class="ck-field"><label for="name">Jina Kamili</label><input type="text" id="name" required placeholder="mfano: Juma Juma" autocomplete="name"></div>
+          <div class="ck-field"><label for="email">Email</label><input type="email" id="email" required placeholder="juma@email.com" autocomplete="username" inputmode="email"></div>
+          <div class="ck-field"><label for="phone">Namba ya Simu (hiari)</label><input type="tel" id="phone" placeholder="2557XXXXXXXX" inputmode="numeric" autocomplete="tel"></div>
+          <div class="ck-field"><label for="password">Password (angalau herufi 4)</label>
+            <div class="au-pw"><input type="password" id="password" required minlength="4" placeholder="••••••" autocomplete="new-password"><button class="au-eye" id="eye" type="button" aria-label="Onyesha password" aria-pressed="false"></button></div>
+          </div>
+          <button type="submit" class="zp-btn ck-pay" id="regBtn"></button>
+          <p class="ck-status" id="authMsg" role="alert" aria-live="assertive"></p>
+        </form>
+        <p class="au-switch">Una account tayari? <a id="loginLink" href="login.html">Ingia hapa</a></p>
+      </div>
+    </section>
   </div>
-</header>
-<div class="z-content">
-<div class="ref-auth"><div class="auth-grid">
-<section class="ref-card auth-art"><div class="orb"></div><div style="position:absolute;top:24px;left:25px;font-weight:800;font-size:17px">✦ LIFEIS<span style="color:#b444ff">GAMETZ</span><small style="display:block;font-size:7px;letter-spacing:2px;color:#a9b9d5">PLAY • LEARN • EARN</small></div>
-<h1>Create Your Account</h1><p>Join thousands of gamers and start your journey</p><div class="checks"><span><b>✓</b>Access to 40+ Pages</span><span><b>✓</b>Play & Learn</span><span><b>✓</b>Earn Rewards</span><span><b>✓</b>Join Community</span></div></section>
-<section class="ref-card auth-form">
-  <div class="tabs"><a href="login.html">Login</a><span class="on">Register</span></div>
-  <h2>Create New Account</h2>
-  <div class="sub">Fill in your details to get started</div>
-  <form id="registerForm">
-    <div class="form-row">
-      <label>Full Name</label>
-      <div class="input-wrap"><span>♙</span><input id="name" required placeholder="Your full name" autocomplete="name"></div>
-    </div>
-    <div class="form-row">
-      <label>Email Address</label>
-      <div class="input-wrap"><span>✉</span><input id="email" type="email" required placeholder="you@example.com" autocomplete="email"></div>
-    </div>
-    <div class="form-row">
-      <label>Namba ya Simu (255 + namba 9)</label>
-      <div class="input-wrap"><span>📱</span><input id="phone" type="tel" required placeholder="2557XXXXXXXX" autocomplete="tel"></div>
-    </div>
-    <div class="form-row">
-      <label>Password</label>
-      <div class="input-wrap"><span>▣</span><input id="password" type="password" required placeholder="Create a password" autocomplete="new-password"></div>
-    </div>
-    <div class="remember">
-      <label><input type="checkbox" required> I agree to the Terms &amp; Conditions</label>
-    </div>
-    <button class="primary-btn" type="submit">Register &nbsp; →</button>
-    <p id="authMsg" style="font-size:9px;color:#ff718e;text-align:center;min-height:14px"></p>
-  </form>
-  <div class="form-foot">Already have an account? <a href="login.html">Login</a></div>
-</section>
-</div></div>
 </div>
-<footer class="z-footer"><span>© 2025 LIFEISGAMETZ. All rights reserved.</span><span>Terms &nbsp;&nbsp; Privacy &nbsp;&nbsp; Support</span></footer>
-</main>
-</div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
 <script>
-  document.getElementById('registerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const msg = document.getElementById('authMsg');
-    const btn = e.target.querySelector('button');
-    btn.disabled = true;
-    msg.textContent = '';
+(function(){
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  var form=document.getElementById('registerForm'), btn=document.getElementById('regBtn'), msg=document.getElementById('authMsg'),
+      name=document.getElementById('name'), email=document.getElementById('email'), phone=document.getElementById('phone'),
+      pw=document.getElementById('password'), eye=document.getElementById('eye');
+  btn.innerHTML=ZP.icon('user')+'Jiunge'; eye.innerHTML=ZP.icon('eye');
 
-    // ✅ Soma values ZOTE kwa usalama
-    const nameEl = document.getElementById('name');
-    const emailEl = document.getElementById('email');
-    const phoneEl = document.getElementById('phone');
-    const passwordEl = document.getElementById('password');
+  var ret=new URLSearchParams(location.search).get('return')||'';
+  var target=/^[A-Za-z0-9_-]+\.html(\?[A-Za-z0-9_=&%.-]*)?$/.test(ret) ? ret : 'index.html';
+  document.getElementById('loginLink').href='login.html'+(target!=='index.html'?'?return='+encodeURIComponent(target):'');
 
-    if (!nameEl || !emailEl || !phoneEl || !passwordEl) {
-      msg.textContent = '❌ Fomu haijakamilika. Wasiliana na admin.';
-      btn.disabled = false;
-      return;
-    }
+  var token=localStorage.getItem('gamehubToken'), user=null; try{ user=JSON.parse(localStorage.getItem('gamehubUser')||'null'); }catch(e){}
+  if (token && user){
+    document.getElementById('formBox').hidden=true; document.getElementById('again').hidden=false;
+    document.getElementById('againText').textContent='Umeshaingia kama '+(user.name||user.email||'mteja')+'.';
+    document.getElementById('againGo').href=target;
+    document.getElementById('againOut').addEventListener('click',function(){
+      try{ fetch('/api/auth/logout',{method:'POST',headers:{'Authorization':token}}); }catch(e){}
+      localStorage.removeItem('gamehubToken'); localStorage.removeItem('gamehubUser'); location.reload();
+    });
+  }
 
-    const name = nameEl.value.trim();
-    const email = emailEl.value.trim();
-    let phone = phoneEl.value.trim().replace(/\s+/g, '');
-    const password = passwordEl.value;
-
-    // ✅ Validation
-    if (!name || name.length < 2) { msg.textContent = '❌ Jina liwe na angalau herufi 2.'; btn.disabled = false; return; }
-    if (!email || !/^\S+@\S+\.\S+$/.test(email)) { msg.textContent = '❌ Email si sahihi.'; btn.disabled = false; return; }
-    if (!phone) { msg.textContent = '❌ Weka namba ya simu.'; btn.disabled = false; return; }
-    // Kawaida ya Tanzania: 255 + namba 9
-    if (phone.startsWith('0')) phone = '255' + phone.substring(1);
-    if (!phone.startsWith('255') && phone.length === 9) phone = '255' + phone;
-    if (!/^255\d{9}$/.test(phone)) { msg.textContent = '❌ Namba ya simu si sahihi. Mfano: 0786095758'; btn.disabled = false; return; }
-    if (!password || password.length < 4) { msg.textContent = '❌ Password iwe angalau herufi 4.'; btn.disabled = false; return; }
-
-    try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, password })
-      });
-      const data = await res.json();
-
-      if (!data.success) {
-        msg.textContent = '❌ ' + (data.error || 'Hitilafu');
-        btn.disabled = false;
-        return;
-      }
-
-      // ✅ Mafanikio — hifadhi token na user
-      localStorage.setItem('gamehubToken', data.token);
-      localStorage.setItem('gamehubUser', JSON.stringify(data.user));
-      msg.style.color = '#86efac';
-      msg.textContent = '✅ Umefanikiwa! Tunakurudisha...';
-      setTimeout(() => { window.location.href = 'index.html'; }, 800);
-    } catch (err) {
-      console.error('Register error:', err);
-      msg.textContent = '❌ Hitilafu ya mtandao. Jaribu tena.';
-      btn.disabled = false;
-    }
+  eye.addEventListener('click',function(){
+    var show=pw.type==='password'; pw.type=show?'text':'password';
+    eye.innerHTML=ZP.icon(show?'eyeoff':'eye'); eye.setAttribute('aria-pressed',show); eye.setAttribute('aria-label',show?'Ficha password':'Onyesha password');
   });
+
+  function say(t,cls){ msg.textContent=t||''; msg.className='ck-status'+(cls?' '+cls:''); }
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var n=name.value.trim(), em=email.value.trim(), ph=phone.value.trim(), pass=pw.value;
+    if (!n){ say('Andika jina lako kamili.'); name.focus(); return; }
+    if (!em){ say('Andika email yako.'); email.focus(); return; }
+    if (pass.length<4){ say('Password iwe angalau herufi 4.'); pw.focus(); return; }
+    if (ph && !/^\+?[\d\s-]{9,15}$/.test(ph)){ say('Namba ya simu si sahihi. Mfano: 0786095758.'); phone.focus(); return; }
+    say(''); btn.disabled=true; btn.textContent='⏳ Inaunda akaunti...';
+    fetch('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,email:em,phone:ph,password:pass})})
+      .then(function(r){ return r.json().catch(function(){ return {}; }); })
+      .then(function(d){
+        if (!d.success){ say(d.error||'Hitilafu. Jaribu tena.'); btn.disabled=false; btn.innerHTML=ZP.icon('user')+'Jiunge';
+          if (/tayari/i.test(d.error||'')) email.focus(); return; }
+        localStorage.setItem('gamehubToken',d.token); localStorage.setItem('gamehubUser',JSON.stringify(d.user));
+        say('Akaunti imetengenezwa! Inakupeleka...','ok'); location.replace(target);
+      })
+      .catch(function(){ say('Hitilafu ya mtandao. Jaribu tena.'); btn.disabled=false; btn.innerHTML=ZP.icon('user')+'Jiunge'; });
+  });
+  if (!(token&&user) && window.matchMedia('(min-width:901px)').matches) name.focus();
+})();
 </script>
 </body>
 </html>
