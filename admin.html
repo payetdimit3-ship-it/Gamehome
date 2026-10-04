@@ -315,6 +315,35 @@
         <input id="liveVideoUrl" placeholder="Direct Video URL — MP4/WebM au .m3u8 (HLS)">
         <input id="startTime" placeholder="Muda/Tarehe">
         <textarea id="liveDesc" rows="3" placeholder="Maelezo"></textarea>
+        <details style="margin-top:4px"><summary style="cursor:pointer;color:#8f8faa;font-size:13px">➕ Zaidi: Matukio ya Mechi, Stats, Lineups (hiari)</summary>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+            <div>
+              <label style="font-size:12px;color:#8f8faa">Matukio ya Mechi — mstari mmoja kwa kila tukio: <code>dakika|aina|timu|maelezo</code>. Aina: goal, yellow, red, sub. Timu: home au away.</label>
+              <textarea id="liveEvents" rows="3" placeholder="67|goal|home|Simba anafunga bao&#10;72|yellow|away|Kadi ya njano"></textarea>
+            </div>
+            <div>
+              <label style="font-size:12px;color:#8f8faa">Stats (hiari — acha wazi kama hujui)</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:4px">
+                <input id="stPossH" type="number" min="0" max="100" placeholder="Possession % Home">
+                <input id="stPossA" type="number" min="0" max="100" placeholder="Possession % Away">
+                <input id="stShotsH" type="number" min="0" placeholder="Shots Home">
+                <input id="stShotsA" type="number" min="0" placeholder="Shots Away">
+                <input id="stCornH" type="number" min="0" placeholder="Corners Home">
+                <input id="stCornA" type="number" min="0" placeholder="Corners Away">
+                <input id="stFoulH" type="number" min="0" placeholder="Fouls Home">
+                <input id="stFoulA" type="number" min="0" placeholder="Fouls Away">
+                <input id="stYelH" type="number" min="0" placeholder="Yellow Cards Home">
+                <input id="stYelA" type="number" min="0" placeholder="Yellow Cards Away">
+                <input id="stRedH" type="number" min="0" placeholder="Red Cards Home">
+                <input id="stRedA" type="number" min="0" placeholder="Red Cards Away">
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div><label style="font-size:12px;color:#8f8faa">Lineup Home — jina moja kwa mstari</label><textarea id="liveLineupHome" rows="4" placeholder="Jina la mchezaji 1&#10;Jina la mchezaji 2"></textarea></div>
+              <div><label style="font-size:12px;color:#8f8faa">Lineup Away — jina moja kwa mstari</label><textarea id="liveLineupAway" rows="4" placeholder="Jina la mchezaji 1&#10;Jina la mchezaji 2"></textarea></div>
+            </div>
+          </div>
+        </details>
         <button class="btn-primary" id="addLiveBtn">➕ Weka Match</button>
         <div id="liveList" style="margin-top:12px"></div>
       </div>
@@ -992,10 +1021,46 @@
       try{
         const [lr,mr,cr]=await Promise.all([fetch('/api/live-streams'),fetch('/api/movies'),fetch('/api/courses')]);
         const l=await lr.json(),m=await mr.json(),c=await cr.json();
-        document.getElementById('liveList').innerHTML=(l.streams||[]).map(x=>`<div class="admin-row" style="flex-wrap:wrap;gap:8px"><div><b>${x.title}</b><small>${x.homeTeam||''} vs ${x.awayTeam||''} • ${x.status}</small></div><span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input id="ls_h_${x.id}" type="number" min="0" max="99" value="${x.homeScore??''}" placeholder="H" style="width:56px"><input id="ls_a_${x.id}" type="number" min="0" max="99" value="${x.awayScore??''}" placeholder="A" style="width:56px"><input id="ls_m_${x.id}" value="${x.minute||''}" placeholder="Dk" style="width:56px"><select id="ls_s_${x.id}" style="width:auto"><option${x.status==='LIVE'?' selected':''}>LIVE</option><option${x.status==='UPCOMING'?' selected':''}>UPCOMING</option><option${x.status==='ENDED'?' selected':''}>ENDED</option></select><button class="btn-vote" title="Hifadhi matokeo" onclick="saveLiveScore('${x.id}')">💾</button><button class="btn-vote" onclick="deleteLive('${x.id}')">🗑️</button></span></div>`).join('')||'<p style="color:#8f8faa">Hakuna live match.</p>';
+        const evLines=x=>(x.events||[]).map(e=>`${e.minute||''}|${e.type||'other'}|${e.team||'home'}|${(e.text||'').replace(/\|/g,'/')}`).join('\n');
+        const statVal=(x,k,i)=>{const p=(x.stats||{})[k];return (p&&p[i]!=null)?p[i]:'';};
+        document.getElementById('liveList').innerHTML=(l.streams||[]).map(x=>`<div class="admin-row" style="flex-wrap:wrap;gap:8px"><div style="flex:1;min-width:220px"><b>${x.title}</b><small>${x.homeTeam||''} vs ${x.awayTeam||''} • ${x.status}</small>
+          <details style="margin-top:6px"><summary style="cursor:pointer;color:#8f8faa;font-size:12px">✏️ Matukio / Stats / Lineups</summary>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+              <textarea id="ev_${x.id}" rows="3" placeholder="dakika|aina|timu|maelezo" style="font-size:12px">${evLines(x)}</textarea>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px">
+                <input id="sph_${x.id}" type="number" min="0" max="100" value="${statVal(x,'possession',0)}" placeholder="Poss% H" style="font-size:12px">
+                <input id="spa_${x.id}" type="number" min="0" max="100" value="${statVal(x,'possession',1)}" placeholder="Poss% A" style="font-size:12px">
+                <input id="ssh_${x.id}" type="number" min="0" value="${statVal(x,'shots',0)}" placeholder="Shots H" style="font-size:12px">
+                <input id="ssa_${x.id}" type="number" min="0" value="${statVal(x,'shots',1)}" placeholder="Shots A" style="font-size:12px">
+                <input id="sch_${x.id}" type="number" min="0" value="${statVal(x,'corners',0)}" placeholder="Corn H" style="font-size:12px">
+                <input id="sca_${x.id}" type="number" min="0" value="${statVal(x,'corners',1)}" placeholder="Corn A" style="font-size:12px">
+                <input id="sfh_${x.id}" type="number" min="0" value="${statVal(x,'fouls',0)}" placeholder="Fouls H" style="font-size:12px">
+                <input id="sfa_${x.id}" type="number" min="0" value="${statVal(x,'fouls',1)}" placeholder="Fouls A" style="font-size:12px">
+                <input id="syh_${x.id}" type="number" min="0" value="${statVal(x,'yellow',0)}" placeholder="Yel H" style="font-size:12px">
+                <input id="sya_${x.id}" type="number" min="0" value="${statVal(x,'yellow',1)}" placeholder="Yel A" style="font-size:12px">
+                <input id="srh_${x.id}" type="number" min="0" value="${statVal(x,'red',0)}" placeholder="Red H" style="font-size:12px">
+                <input id="sra_${x.id}" type="number" min="0" value="${statVal(x,'red',1)}" placeholder="Red A" style="font-size:12px">
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                <textarea id="lh_${x.id}" rows="3" placeholder="Lineup Home" style="font-size:12px">${(x.lineupHome||[]).join('\n')}</textarea>
+                <textarea id="la_${x.id}" rows="3" placeholder="Lineup Away" style="font-size:12px">${(x.lineupAway||[]).join('\n')}</textarea>
+              </div>
+              <button class="btn-vote" onclick="saveLiveDetails('${x.id}')" style="align-self:flex-start">💾 Hifadhi Matukio/Stats/Lineups</button>
+            </div>
+          </details>
+        </div><span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input id="ls_h_${x.id}" type="number" min="0" max="99" value="${x.homeScore??''}" placeholder="H" style="width:56px"><input id="ls_a_${x.id}" type="number" min="0" max="99" value="${x.awayScore??''}" placeholder="A" style="width:56px"><input id="ls_m_${x.id}" value="${x.minute||''}" placeholder="Dk" style="width:56px"><select id="ls_s_${x.id}" style="width:auto"><option${x.status==='LIVE'?' selected':''}>LIVE</option><option${x.status==='UPCOMING'?' selected':''}>UPCOMING</option><option${x.status==='ENDED'?' selected':''}>ENDED</option></select><button class="btn-vote" title="Hifadhi matokeo" onclick="saveLiveScore('${x.id}')">💾</button><button class="btn-vote" onclick="deleteLive('${x.id}')">🗑️</button></span></div>`).join('')||'<p style="color:#8f8faa">Hakuna live match.</p>';
         document.getElementById('movieList').innerHTML=(m.movies||[]).map(x=>`<div class="admin-row"><b>🎬 ${x.title}</b><button class="btn-vote" onclick="deleteMovie('${x.id}')">🗑️</button></div>`).join('')||'<p style="color:#8f8faa">Hakuna movie.</p>';
         document.getElementById('courseList').innerHTML=(c.courses||[]).map(x=>`<div class="admin-row"><div><b>🎓 ${x.name}</b><small>${(x.videos||[]).length} video(s)</small></div><label class="btn-vote" style="cursor:pointer">⬆️ Video<input type="file" accept="video/mp4,video/webm,video/quicktime" hidden onchange="uploadCourseVideo('${x.id}',this)"></label></div>`).join('')||'<p style="color:#8f8faa">Hakuna course.</p>';
       }catch(e){}
+    }
+    async function saveLiveDetails(id){
+      const g=k=>document.getElementById(k+'_'+id).value;
+      const pair=(h,a)=>{const hv=g(h),av=g(a);return (hv===''&&av==='')?undefined:[hv,av];};
+      const body={events:g('ev'),lineupHome:g('lh'),lineupAway:g('la'),
+        stats:{possession:pair('sph','spa'),shots:pair('ssh','ssa'),corners:pair('sch','sca'),fouls:pair('sfh','sfa'),yellow:pair('syh','sya'),red:pair('srh','sra')}};
+      const r=await fetch('/api/admin/live-streams/'+id+'/score',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok)alert(d.error||'Hitilafu'); else { alert('✅ Imehifadhiwa.'); loadMediaData(); }
     }
     async function saveLiveScore(id){
       const g=k=>document.getElementById('ls_'+k+'_'+id).value;
@@ -1006,7 +1071,10 @@
     async function deleteLive(id){if(!confirm('Futa match?'))return;await fetch('/api/admin/live-streams/'+id,{method:'DELETE',headers:{'Authorization':token}});loadMediaData();}
     async function deleteMovie(id){if(!confirm('Futa movie?'))return;await fetch('/api/admin/movies/'+id,{method:'DELETE',headers:{'Authorization':token}});loadMediaData();}
     document.getElementById('addLiveBtn').addEventListener('click',async()=>{
-      const body={title:liveTitle.value,league:liveLeague.value,homeTeam:homeTeam.value,awayTeam:awayTeam.value,status:liveStatus.value,homeScore:liveHomeScore.value,awayScore:liveAwayScore.value,minute:liveMinute.value,streamUrl:streamUrl.value,videoUrl:liveVideoUrl.value,startTime:startTime.value,description:liveDesc.value};
+      const statPair=(h,a)=>{const hv=document.getElementById(h).value,av=document.getElementById(a).value;return (hv===''&&av==='')?undefined:[hv,av];};
+      const body={title:liveTitle.value,league:liveLeague.value,homeTeam:homeTeam.value,awayTeam:awayTeam.value,status:liveStatus.value,homeScore:liveHomeScore.value,awayScore:liveAwayScore.value,minute:liveMinute.value,streamUrl:streamUrl.value,videoUrl:liveVideoUrl.value,startTime:startTime.value,description:liveDesc.value,
+        events:liveEvents.value,lineupHome:liveLineupHome.value,lineupAway:liveLineupAway.value,
+        stats:{possession:statPair('stPossH','stPossA'),shots:statPair('stShotsH','stShotsA'),corners:statPair('stCornH','stCornA'),fouls:statPair('stFoulH','stFoulA'),yellow:statPair('stYelH','stYelA'),red:statPair('stRedH','stRedA')}};
       const r=await fetch('/api/admin/live-streams',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)alert(d.error||'Hitilafu');else{alert('✅ Match imewekwa.');loadMediaData();}
     });
     document.getElementById('uploadMovieBtn').addEventListener('click',async()=>{

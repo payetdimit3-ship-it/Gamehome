@@ -19,6 +19,13 @@
     <div>
       <div class="lv-stage" id="stage"><div class="lv-none"><h3>Inapakia...</h3></div></div>
       <div class="lv-info" id="info" hidden></div>
+      <div id="detailBox" hidden>
+        <nav class="lv-dtabs" id="dTabs" aria-label="Taarifa za mechi"></nav>
+        <div class="lv-dpanel on" id="dpEvents"></div>
+        <div class="lv-dpanel" id="dpLineups"></div>
+        <div class="lv-dpanel" id="dpStats"></div>
+        <div class="lv-dpanel" id="dpH2H"><p class="lv-empty-sm">H2H inapatikana baada ya kuunganisha API ya mechi halisi.</p></div>
+      </div>
     </div>
     <aside class="lv-side" id="side">
       <header>Mechi za Sasa <small id="sideCount"></small></header>
@@ -125,6 +132,43 @@
       (generic?'<p class="lv-note">Ikiwa link ni website ya kawaida, inaweza kukataa kuonyeshwa hapa. Tumia YouTube Embed au Direct MP4/WebM/HLS.</p>':'');
   }
 
+  var EV_ICON={goal:'⚽',yellow:'🟨',red:'🟥',sub:'🔄',other:'•'};
+  var dTab='events';
+  function renderDetails(x){
+    var box=document.getElementById('detailBox');
+    if (!x){ box.hidden=true; return; }
+    box.hidden=false;
+    var t=M.teams(x), hasEv=(x.events||[]).length, hasLine=(x.lineupHome||[]).length||(x.lineupAway||[]).length, hasStats=x.stats&&Object.keys(x.stats).length;
+    var TABS=[['events','Matukio',hasEv],['lineups','Lineups',hasLine],['stats','Stats',hasStats],['h2h','H2H',0]];
+    document.getElementById('dTabs').innerHTML=TABS.map(function(tb){
+      return '<button type="button" class="zp-chip'+(tb[0]===dTab?' active':'')+'" data-dt="'+tb[0]+'">'+tb[1]+(tb[2]?' <i>'+tb[2]+'</i>':'')+'</button>';
+    }).join('');
+    document.querySelectorAll('.lv-dpanel').forEach(function(p){ p.classList.remove('on'); });
+    var active=document.getElementById('dp'+dTab.charAt(0).toUpperCase()+dTab.slice(1));
+    if (active) active.classList.add('on');
+
+    document.getElementById('dpEvents').innerHTML = hasEv
+      ? x.events.slice().sort(function(a,b){ return (parseInt(a.minute,10)||0)-(parseInt(b.minute,10)||0); }).map(function(e){
+          return '<div class="lv-ev-row"><span class="lv-ev-min">'+esc(e.minute||'')+'\'</span><span class="lv-ev-ic '+esc(e.type)+'">'+(EV_ICON[e.type]||'•')+'</span><span class="lv-ev-text">'+esc(e.text||'')+'</span><span class="lv-ev-side">'+(e.team==='away'?esc(t[1]||'Away'):esc(t[0]||'Home'))+'</span></div>';
+        }).join('')
+      : '<p class="lv-empty-sm">Bado hakuna matukio yaliyorekodiwa kwa mechi hii.</p>';
+
+    document.getElementById('dpLineups').innerHTML = hasLine
+      ? '<div class="lv-lineups"><div><h4>'+esc(t[0]||'Home')+'</h4><ol>'+(x.lineupHome||[]).map(function(n){ return '<li>'+esc(n)+'</li>'; }).join('')+'</ol></div><div><h4>'+esc(t[1]||'Away')+'</h4><ol>'+(x.lineupAway||[]).map(function(n){ return '<li>'+esc(n)+'</li>'; }).join('')+'</ol></div></div>'
+      : '<p class="lv-empty-sm">Lineups bado hazijawekwa.</p>';
+
+    if (hasStats){
+      var LBL={possession:'Possession',shots:'Shots',corners:'Corners',fouls:'Fouls',yellow:'Yellow Cards',red:'Red Cards'};
+      document.getElementById('dpStats').innerHTML=Object.keys(LBL).filter(function(k){ return x.stats[k]; }).map(function(k){
+        var p=x.stats[k], h=Number(p[0])||0, a=Number(p[1])||0, tot=h+a||1, pct=Math.round(h/tot*100);
+        return '<div class="lv-stat-row"><b>'+h+'</b><div class="lv-stat-bar"><i class="h" style="width:'+pct+'%"></i><i class="a" style="width:'+(100-pct)+'%"></i></div><b class="a">'+a+'</b></div><div class="lv-stat-label" style="width:auto;text-align:center;margin:-6px 0 10px">'+esc(LBL[k])+'</div>';
+      }).join('');
+    } else {
+      document.getElementById('dpStats').innerHTML='<p class="lv-empty-sm">Stats bado hazijawekwa.</p>';
+    }
+  }
+  document.getElementById('dTabs').addEventListener('click',function(e){ var b=e.target.closest('[data-dt]'); if(!b) return; dTab=b.dataset.dt; renderDetails(current()); });
+
   function scoreText(x){ return M.hasScore(x) && M.status(x)!=='upcoming' ? x.homeScore+' – '+x.awayScore : ''; }
 
   function renderSide(cur){
@@ -157,11 +201,11 @@
     var cur=current();
     var key=cur? cur.id+'|'+(cur.videoUrl||'')+'|'+(cur.streamUrl||'') : 'none';
     if (forceStage || key!==stageKey){ stageKey=key; renderStage(cur); }
-    renderInfo(cur); renderSide(cur); renderGrid(cur);
+    renderInfo(cur); renderDetails(cur); renderSide(cur); renderGrid(cur);
   }
 
   function select(id){
-    selectedId=id;
+    selectedId=id; dTab='events';
     var u=new URL(location.href); u.searchParams.set('id',id); history.replaceState(null,'',u);
     render(true);
     var top=document.querySelector('.lv-layout'); if(top && top.scrollIntoView) top.scrollIntoView({behavior:'smooth',block:'start'});
