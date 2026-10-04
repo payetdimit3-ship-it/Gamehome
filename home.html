@@ -1,213 +1,90 @@
-<!DOCTYPE html>
-<html lang="sw">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>LIFEISGAMETZ — Play • Learn • Earn</title>
-  <meta name="description" content="Duka la gaming la Tanzania: game keys, top-up, gift cards, live football, Academy na AI assistants.">
-  <link rel="stylesheet" href="zoneplay-full.css">
-</head>
-<body>
-<div class="main">
-
-  <!-- HERO -->
-  <section class="zp-hero" aria-label="Matangazo makuu">
-    <div class="zp-slider" id="zpSlider" role="region" aria-roledescription="carousel" aria-label="Featured">
-      <div id="zpSlides"></div>
-      <button class="zp-arrow prev" id="zpPrev" aria-label="Iliyotangulia"></button>
-      <button class="zp-arrow next" id="zpNext" aria-label="Inayofuata"></button>
-      <div class="zp-dots" id="zpDots"></div>
-    </div>
-    <div class="zp-promos">
-      <a class="zp-promo" href="rental.html" style="--art:linear-gradient(140deg,#0e7490,#1e1b4b)">
-        <span class="zp-pi" data-ic="cloud"></span>
-        <small>GEFORCE NOW</small><h3>Kodisha Muda</h3><span>Cheza PC games bila kudownload — kuanzia 300 TZS.</span>
-      </a>
-      <a class="zp-promo" href="efootball.html" style="--art:linear-gradient(140deg,#6d28d9,#831843)">
-        <span class="zp-pi" data-ic="ball"></span>
-        <small>EFOOTBALL</small><h3>Coins &amp; Vikosi</h3><span>Top-up salama, delivery papo hapo.</span>
-      </a>
-    </div>
-  </section>
-
-  <div class="zp-trust">
-    <div><span data-ic="bolt"></span><p style="margin:0"><b>Delivery ya haraka</b><span>Bidhaa zinafika baada ya malipo</span></p></div>
-    <div><span data-ic="shield"></span><p style="margin:0"><b>100% Salama</b><span>Malipo yaliyolindwa</span></p></div>
-    <div><span data-ic="wallet"></span><p style="margin:0"><b>Bei nafuu</b><span>Kwa kila mchezaji</span></p></div>
-    <div><span data-ic="headset"></span><p style="margin:0"><b>Msaada 24/7</b><span>AI na WhatsApp</span></p></div>
-  </div>
-
-  <div id="dynamicBanners" hidden></div>
-
-  <!-- CATEGORIES -->
-  <div class="zp-sec"><h2>Chagua Platform</h2><a href="categories.html">Zote <span data-ic="chevr"></span></a></div>
-  <div class="zp-cats" id="zpCats"></div>
-
-  <!-- POPULAR -->
-  <div class="zp-sec"><h2>Games Maarufu</h2><a href="shop.html">Angalia Zote <span data-ic="chevr"></span></a></div>
-  <div class="zp-grid c5 hscroll" id="featuredGames" aria-live="polite">
-    <div class="zp-empty"><p>Inapakia...</p></div>
-  </div>
-
-  <!-- MORE WORLDS -->
-  <div class="zp-sec"><h2>Zaidi ya Gaming</h2></div>
-  <div class="zp-strips">
-    <a class="zp-strip" href="live.html" style="--art:linear-gradient(120deg,#0f3d91,#0a1240)"><span class="zp-pi">📺</span><h3>Live TV / Sports</h3><span>Mechi na matukio live, na matokeo ya papo hapo.</span></a>
-    <a class="zp-strip" href="movies.html" style="--art:linear-gradient(120deg,#7a1fa2,#1b0d4a)"><span class="zp-pi">🎬</span><h3>Movies</h3><span>Filamu na video zilizopakiwa na admin.</span></a>
-    <a class="zp-strip" href="academy.html" style="--art:linear-gradient(120deg,#0e7490,#0a1a4a)"><span class="zp-pi">🎓</span><h3>Academy</h3><span>Jifunze coding, design, AI na biashara ya kidijitali.</span></a>
-    <a class="zp-strip" href="opportunities.html" style="--art:linear-gradient(120deg,#b45309,#4a0d3a)"><span class="zp-pi">💼</span><h3>Youth Opportunities</h3><span>Kazi, creator work, testing na tournaments.</span></a>
-    <a class="zp-strip" href="marketplace.html" style="--art:linear-gradient(120deg,#166534,#0a2a4a)"><span class="zp-pi">🏪</span><h3>Creator Marketplace</h3><span>Uza guides, graphics, templates na huduma.</span></a>
-    <a class="zp-strip" href="community.html" style="--art:linear-gradient(120deg,#be185d,#1b0d4a)"><span class="zp-pi">🤝</span><h3>Community Help</h3><span>Elimu ya afya, usalama mtandaoni na ushauri kwa vijana.</span></a>
-  </div>
-
-  <!-- AI -->
-  <div class="zp-sec"><h2>Msaidizi wa AI</h2></div>
-  <section class="zp-ai" id="ai">
-    <div>
-      <span class="zp-slide-tag">AI MSAIDIZI WA GAMEHUB</span>
-      <h2>Uliza Chochote — Jibu Papo Hapo</h2>
-      <p>AI inajua bei, bidhaa na mfumo wa malipo. Inakusaidia kununua, kuomba game au kutatua tatizo — kwa Kiswahili, wakati wowote.</p>
-      <div class="zp-ai-ex" id="aiExamples">
-        <button class="zp-chip" type="button">FIFA 25 bei gani?</button>
-        <button class="zp-chip" type="button">Naomba muda wa masaa 3 GeForce</button>
-        <button class="zp-chip" type="button">Sijapata bidhaa yangu</button>
-      </div>
-      <p style="margin:16px 0 0;display:flex;gap:10px;flex-wrap:wrap"><button class="zp-btn" id="openAiBtn" type="button"><span data-ic="bot"></span>Zungumza na AI</button><a class="zp-btn ghost" href="ai.html"><span data-ic="chevr"></span>Fungua AI Assistant</a></p>
-    </div>
-    <div class="zp-ai-orb" data-ic="bot"></div>
-  </section>
-
-  <!-- PAYMENTS -->
-  <div class="zp-sec"><h2>Njia za Malipo</h2></div>
-  <section class="zp-pay">
-    <div class="chips"><span>M-Pesa (Vodacom)</span><span>Tigo Pesa</span><span>Airtel Money</span><span>Halotel</span></div>
-    <p>Malipo ni automatic kupitia AzamPay. Ukipata tatizo, tuma pesa moja kwa moja kwa <strong>0786 095 758 — Amina Mwinyi</strong>, kisha wasiliana nasi WhatsApp na namba ya muamala (ref) kupata bidhaa yako.</p>
-  </section>
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home — LIFEISGAMETZ</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head><body>
+<div class="app">
+<aside class="sidebar">
+  <a class="brand" href="home.html"><div class="brand-mark">🎮</div><div><b>LIFEISGAMETZ</b><small>PLAY • PREDICT • WIN</small></div></a>
+  <nav><div class="nav-label">DISCOVER</div>
+<a class="nav-item active" href="home.html"><span class="nav-icon">🏠</span><span>Home</span></a>
+<a class="nav-item " href="store.html"><span class="nav-icon">🛍️</span><span>Store</span></a>
+<a class="nav-item " href="games.html"><span class="nav-icon">🎮</span><span>Games</span></a>
+<a class="nav-item " href="marketplace.html"><span class="nav-icon">🛒</span><span>Marketplace</span></a>
+<a class="nav-item " href="wishlist.html"><span class="nav-icon">❤️</span><span>Wishlist</span></a>
+<a class="nav-item " href="cart.html"><span class="nav-icon">🛒</span><span>Cart</span></a>
+<div class="nav-label">GAMING</div>
+<a class="nav-item " href="psp-gaming.html"><span class="nav-icon">🎮</span><span>PSP Gaming</span></a>
+<a class="nav-item " href="ps2-gaming.html"><span class="nav-icon">🎮</span><span>PS2 Gaming</span></a>
+<a class="nav-item " href="ps3-gaming.html"><span class="nav-icon">🎮</span><span>PS3 Gaming</span></a>
+<a class="nav-item " href="winlator-gamehub.html"><span class="nav-icon">📱</span><span>Winlator &amp; GameHub</span></a>
+<a class="nav-item " href="nintendo-switch.html"><span class="nav-icon">🎮</span><span>Nintendo Switch</span></a>
+<a class="nav-item " href="android-gaming.html"><span class="nav-icon">📱</span><span>Android Gaming</span></a>
+<a class="nav-item " href="pc-gaming.html"><span class="nav-icon">🖥️</span><span>PC Gaming</span></a>
+<a class="nav-item " href="cloud-gaming.html"><span class="nav-icon">☁️</span><span>Cloud Gaming</span></a>
+<a class="nav-item " href="my-games-library.html"><span class="nav-icon">🎮</span><span>My Games / Library</span></a>
+<div class="nav-label">SPORTS &amp; LIVE</div>
+<a class="nav-item " href="live-tv-esports.html"><span class="nav-icon">📺</span><span>Live TV / eSports</span></a>
+<a class="nav-item " href="live-scores.html"><span class="nav-icon">⚽</span><span>Live Scores</span></a>
+<a class="nav-item " href="tournament.html"><span class="nav-icon">🏆</span><span>Tournament</span></a>
+<a class="nav-item " href="betting.html"><span class="nav-icon">🎰</span><span>Betting</span></a>
+<a class="nav-item " href="efootball-topup.html"><span class="nav-icon">⚽</span><span>eFootball / Top Up</span></a>
+<a class="nav-item " href="live-football-watch.html"><span class="nav-icon">⚽</span><span>Live Football / Watch Match</span></a>
+<a class="nav-item " href="sports-tv.html"><span class="nav-icon">📺</span><span>Sports TV</span></a>
+<a class="nav-item " href="sports-news.html"><span class="nav-icon">📰</span><span>Sports News</span></a>
+<div class="nav-label">MEDIA &amp; LEARN</div>
+<a class="nav-item " href="movies.html"><span class="nav-icon">🎬</span><span>Movies</span></a>
+<a class="nav-item " href="academy.html"><span class="nav-icon">🎓</span><span>Academy</span></a>
+<a class="nav-item " href="live-movies-player.html"><span class="nav-icon">🎬</span><span>Live Movies Player</span></a>
+<a class="nav-item " href="game-trailer.html"><span class="nav-icon">🎞️</span><span>Game Trailer</span></a>
+<a class="nav-item " href="courses.html"><span class="nav-icon">🎓</span><span>Courses</span></a>
+<div class="nav-label">AI &amp; COMMUNITY</div>
+<a class="nav-item " href="community-chat.html"><span class="nav-icon">💬</span><span>Community / Chat</span></a>
+<a class="nav-item " href="health-assistant.html"><span class="nav-icon">🩺</span><span>Health Assistant</span></a>
+<a class="nav-item " href="ai-assistant.html"><span class="nav-icon">🤖</span><span>AI Assistant</span></a>
+<a class="nav-item " href="contact-support.html"><span class="nav-icon">📞</span><span>Contact / Support</span></a>
+<a class="nav-item " href="faq-help.html"><span class="nav-icon">❓</span><span>FAQ / Help</span></a>
+<div class="nav-label">ACCOUNT</div>
+<a class="nav-item " href="gift-cards.html"><span class="nav-icon">🎁</span><span>Gift Cards</span></a>
+<a class="nav-item " href="profile.html"><span class="nav-icon">👤</span><span>Profile</span></a>
+<a class="nav-item " href="login.html"><span class="nav-icon">🔐</span><span>Login</span></a>
+<a class="nav-item " href="register.html"><span class="nav-icon">📝</span><span>Register</span></a>
+<a class="nav-item " href="product-details.html"><span class="nav-icon">📦</span><span>Product Details</span></a>
+<a class="nav-item " href="checkout.html"><span class="nav-icon">💳</span><span>Checkout</span></a>
+<a class="nav-item " href="my-orders.html"><span class="nav-icon">📋</span><span>My Orders</span></a>
+<a class="nav-item " href="requests-transactions.html"><span class="nav-icon">💰</span><span>Requests / Transactions</span></a></nav>
+</aside>
+<main class="main">
+<header class="topbar">
+  <div class="search">⌕ <input data-search placeholder="Search users, games, matches..."></div>
+  <div class="top-actions"><button class="icon-btn">🔔</button><button class="icon-btn">☰</button><div class="user-chip"><div class="avatar">K</div><div><b>Kelvin</b><small style="display:block;color:#71809c">Member</small></div></div></div>
+</header>
+<div class="content">
+        <section class="hero-grid">
+          <div class="hero">
+            <div class="eyebrow">LIFEISGAMETZ • PLAY • PREDICT • WIN</div>
+            <h1>Gaming, football, AI & digital entertainment — <span>in one place.</span></h1>
+            <p>Discover games, live scores, tournaments, movies, cloud gaming, AI tools and a modern gaming marketplace.</p>
+            <div class="actions"><a class="btn primary" href="store.html">Explore Store</a><a class="btn ghost" href="live-scores.html">Live Scores</a></div>
+            <div class="stats-row"><div><b>24/7</b><small>Platform</small></div><div><b>LIVE</b><small>Football</small></div><div><b>AI</b><small>Assistants</small></div></div>
+          </div>
+          <div class="visual" style="--bg:url('../assets/refs/a_detailed_collage_flat_lay_image_a_large_grid_of.png"')">
+            <div class="visual-overlay"></div><div class="floating-card"><span>⚡ LIVE NOW</span><b>Real-time gaming ecosystem</b><small>Games • Sports • AI • Store</small></div>
+          </div>
+        </section>
+        <section class="section"><div class="section-head"><h2>Explore LIFEISGAMETZ</h2><a href="games.html">View all</a></div>
+          <div class="feature-grid">
+            <a class="feature" href="games.html"><i>🎮</i><b>Gaming Hub</b><span>PSP, PS2, PS3, Android, PC & Switch</span></a>
+            <a class="feature" href="live-scores.html"><i>⚽</i><b>Live Football</b><span>Scores, fixtures and match center</span></a>
+            <a class="feature" href="ai-assistant.html"><i>🤖</i><b>AI Assistant</b><span>Smart help across the platform</span></a>
+            <a class="feature" href="marketplace.html"><i>🛍️</i><b>Marketplace</b><span>Digital products and services</span></a>
+          </div>
+        </section>
+        <section class="section"><div class="section-head"><h2>Trending Games</h2><a href="store.html">Shop now</a></div><div class="card-grid"><article class="product-card"><div class="thumb t0">🎮</div><div><b>eFootball 2026</b><small>Digital • Instant delivery</small><strong>TSh 15,000</strong></div></article><article class="product-card"><div class="thumb t1">🔥</div><div><b>GTA V</b><small>Digital • Instant delivery</small><strong>TSh 20,000</strong></div></article><article class="product-card"><div class="thumb t2">🏎️</div><div><b>Need for Speed</b><small>Digital • Instant delivery</small><strong>TSh 25,000</strong></div></article><article class="product-card"><div class="thumb t3">⚔️</div><div><b>EA FC 26</b><small>Digital • Instant delivery</small><strong>TSh 30,000</strong></div></article></div></section>
+        </div>
+</main>
 </div>
-
-<script src="zoneplay-shell.js"></script>
-<script src="zp-catalog.js"></script>
-<script src="app.js"></script>
-<script src="chat.js"></script>
-<script>
-(function(){
-  var esc = ZP.esc;
-  // Fill icon placeholders
-  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
-  document.getElementById('zpPrev').innerHTML = ZP.icon('chevl');
-  document.getElementById('zpNext').innerHTML = ZP.icon('chevr');
-
-  /* ---------- Categories ---------- */
-  var catsEl = document.getElementById('zpCats');
-  function renderCats(list){
-    var counts = {};
-    (list||[]).forEach(function(p){ if(p.platform) counts[p.platform]=(counts[p.platform]||0)+1; });
-    catsEl.innerHTML = ZP.PLATFORMS.map(function(pl){
-      var n = counts[pl.key]||0;
-      return '<a class="zp-cat" href="shop.html?cat='+pl.key+'"><span class="zp-ci" style="--art:'+pl.art+'">'+ZP.icon(pl.icon)+'</span><b>'+esc(pl.label)+'</b><small>'+(n? n+' bidhaa':'Angalia')+'</small></a>';
-    }).join('') +
-    '<a class="zp-cat" href="giftcards.html"><span class="zp-ci" style="--art:linear-gradient(135deg,#f59e0b,#c2255c)">'+ZP.icon('gift')+'</span><b>Gift Cards</b><small>Steam • PSN</small></a>'+
-    '<a class="zp-cat" href="efootball.html"><span class="zp-ci" style="--art:linear-gradient(135deg,#16a34a,#0b5a8a)">'+ZP.icon('ball')+'</span><b>Top-Up</b><small>eFootball</small></a>';
-  }
-  renderCats([]);
-
-  /* ---------- Featured games ---------- */
-  var grid = document.getElementById('featuredGames');
-  ZP.loadProducts().then(function(list){
-    renderCats(list);
-    grid.innerHTML = list.slice(0,10).map(ZP.card).join('') || '<div class="zp-empty"><h3>Bado hakuna bidhaa</h3><p>Admin akiongeza bidhaa zitaonekana hapa.</p></div>';
-  });
-
-  /* ---------- Hero ---------- */
-  function ytId(u){ var m=(u||'').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/); return m?m[1]:null; }
-  function safeUrl(u){ u=String(u||''); return /^(https?:\/\/|\/|[\w-]+\.html)/i.test(u) ? u : 'shop.html'; }
-  var DEFAULT_SLIDES = [
-    {tag:'LIFEISGAMETZ', title:'CHEZA. JIFUNZE. SHINDA.', desc:'Duka la gaming la Tanzania lenye games, digital products, tournaments, live football, Academy na AI assistants — yote sehemu moja.', emoji:'🎮', art:'linear-gradient(120deg,#1a0a56,#0a1f6b 60%,#062a5c)', cta:['Explore Games','shop.html'], cta2:['Gaming Academy','academy.html']},
-    {tag:'DUKA', title:'GAME KEYS & GIFT CARDS', desc:'Games za kudownload moja kwa moja, gift cards na Steam accounts. Lipa kwa M-Pesa, Tigo Pesa, Airtel Money au Halotel.', emoji:'🎁', art:'linear-gradient(120deg,#3b0a5c,#141a6b 60%,#0a2a5c)', cta:['Nunua Sasa','shop.html'], cta2:['Gift Cards','giftcards.html']},
-    {tag:'LIVE', title:'TAZAMA LIVE FOOTBALL', desc:'Mechi live, matokeo ya papo hapo, filamu na video — kila kitu ndani ya LIFEISGAMETZ.', emoji:'⚽', art:'linear-gradient(120deg,#0a3a5c,#0a1a6b 60%,#2a0a5c)', cta:['Watch Live','live.html'], cta2:['Live Scores','livescores.html']}
-  ];
-  var slidesEl=document.getElementById('zpSlides'), dotsEl=document.getElementById('zpDots'), slider=document.getElementById('zpSlider');
-  var slides=[], cur=0, timer=null, paused=false;
-  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function slideHtml(s,i){
-    var media='';
-    if (s.yt) media='<iframe data-yt="'+s.yt+'" title="'+esc(s.title)+'" allow="autoplay; encrypted-media" tabindex="-1"></iframe>';
-    else if (s.video) media='<video muted loop playsinline preload="metadata"'+(s.poster?' poster="'+esc(s.poster)+'"':'')+'><source src="'+esc(s.video)+'"></video>';
-    else if (s.image) media='<img src="'+esc(s.image)+'" alt="" onerror="this.remove()">';
-    var big = (!media && s.emoji) ? '<span class="zp-bigemoji" aria-hidden="true">'+esc(s.emoji)+'</span>' : '';
-    var price = s.price ? '<span class="zp-price">'+ZP.money(s.price)+'<small>TZS</small></span>' : '';
-    return '<div class="zp-slide'+(i===0?' on':'')+'" role="group" aria-roledescription="slide" aria-label="'+(i+1)+'">'+
-      '<div class="zp-slide-bg" style="--art:'+(s.art||ZP.art(s.title))+'">'+media+big+'</div>'+
-      '<div class="zp-slide-body"><span class="zp-slide-tag">'+esc(s.tag||'FEATURED')+'</span><h2>'+esc(s.title)+'</h2>'+(s.desc?'<p>'+esc(s.desc)+'</p>':'')+
-      '<div class="zp-slide-cta">'+price+'<a class="zp-btn" href="'+esc(s.cta[1])+'">'+esc(s.cta[0])+'</a>'+(s.cta2?'<a class="zp-btn ghost" href="'+esc(s.cta2[1])+'">'+esc(s.cta2[0])+'</a>':'')+'</div></div></div>';
-  }
-  var startedSlides={};
-  function playOverlay(el,i){
-    if (el.querySelector('.zp-ds-play')) return;
-    var b=document.createElement('button'); b.type='button'; b.className='zp-ds-play';
-    b.innerHTML=ZP.icon('play')+'<span>Data Saver iko wazi — bonyeza kucheza</span>';
-    b.addEventListener('click',function(e){ e.stopPropagation(); startedSlides[i]=true; b.remove(); media(i,true); });
-    el.appendChild(b);
-  }
-  function media(i,on){
-    var el=slidesEl.children[i]; if(!el) return;
-    var hasEmbed=el.querySelector('iframe,video');
-    if (on && ZP.dataSaver() && hasEmbed && !startedSlides[i]){ playOverlay(el,i); return; }
-    var f=el.querySelector('iframe'); if(f){ if(on){ var id=f.dataset.yt; f.src='https://www.youtube.com/embed/'+id+'?autoplay=1&mute=1&controls=0&loop=1&playlist='+id+'&rel=0&modestbranding=1&playsinline=1'; } else f.removeAttribute('src'); }
-    var v=el.querySelector('video'); if(v){ if(on && !reduce){ v.muted=true; var p=v.play(); p&&p.catch&&p.catch(function(){}); } else v.pause(); }
-  }
-  function show(i){
-    if(!slides.length) return;
-    media(cur,false); cur=(i+slides.length)%slides.length;
-    Array.prototype.forEach.call(slidesEl.children,function(el,n){ el.classList.toggle('on',n===cur); });
-    Array.prototype.forEach.call(dotsEl.children,function(el,n){ el.classList.toggle('on',n===cur); el.setAttribute('aria-current',n===cur?'true':'false'); });
-    media(cur,true);
-  }
-  function tick(){ clearInterval(timer); if(slides.length>1 && !reduce) timer=setInterval(function(){ if(!paused && !document.hidden) show(cur+1); },8000); }
-  function build(list){
-    slides=list;
-    slidesEl.innerHTML=slides.map(slideHtml).join('');
-    dotsEl.innerHTML=slides.map(function(s,i){ return '<button type="button" aria-label="Slide '+(i+1)+'" class="'+(i===0?'on':'')+'"></button>'; }).join('');
-    dotsEl.querySelectorAll('button').forEach(function(b,i){ b.addEventListener('click',function(){ show(i); tick(); }); });
-    var multi=slides.length>1; document.getElementById('zpPrev').style.display=multi?'':'none'; document.getElementById('zpNext').style.display=multi?'':'none'; dotsEl.style.display=multi?'':'none';
-    cur=0; media(0,true); tick();
-  }
-  build(DEFAULT_SLIDES);
-  document.getElementById('zpPrev').addEventListener('click',function(){ show(cur-1); tick(); });
-  document.getElementById('zpNext').addEventListener('click',function(){ show(cur+1); tick(); });
-  slider.addEventListener('mouseenter',function(){ paused=true; });
-  slider.addEventListener('mouseleave',function(){ paused=false; });
-  slider.addEventListener('focusin',function(){ paused=true; });
-  slider.addEventListener('focusout',function(){ paused=false; });
-  var x0=null;
-  slider.addEventListener('touchstart',function(e){ x0=e.touches[0].clientX; },{passive:true});
-  slider.addEventListener('touchend',function(e){ if(x0==null) return; var dx=e.changedTouches[0].clientX-x0; x0=null; if(Math.abs(dx)>45){ show(cur+(dx<0?1:-1)); tick(); } });
-
-  // Admin-fed slides: product trailers + banners, then the defaults
-  Promise.all([
-    ZP.loadProducts(),
-    fetch('/api/banners').then(function(r){ return r.json(); }).catch(function(){ return {}; })
-  ]).then(function(res){
-    var prods=res[0]||[], banners=(res[1]&&res[1].banners)||[];
-    var fromProducts=prods.filter(function(p){ return p.admin && (p.trailerUrl||p.imageUrl); }).slice(0,4).map(function(p){
-      var id=ytId(p.trailerUrl);
-      return {tag:(p.type||'GAME').toUpperCase(), title:p.name, desc:p.desc, price:p.price, yt:id, video:(!id&&p.trailerUrl)?p.trailerUrl:'', image:(!p.trailerUrl)?p.imageUrl:'', poster:p.imageUrl, emoji:p.emoji, art:ZP.art(p.name), cta:['Nunua Sasa',ZP.href(p)]};
-    });
-    var fromBanners=banners.slice(0,3).map(function(b){ return {tag:'GAMEHUB UPDATE', title:b.title||'Habari mpya', desc:b.description, emoji:'📢', art:'linear-gradient(120deg,#3b0a5c,#0a2a6b)', cta:[b.buttonText||'Angalia',safeUrl(b.buttonUrl)]}; });
-    var all=fromProducts.concat(fromBanners);
-    if (all.length) build(all.concat(DEFAULT_SLIDES.slice(0, Math.max(0,3-all.length))));
-  });
-
-  /* ---------- AI helpers ---------- */
-  function openChat(text){
-    var b=document.getElementById('ghChatBtn'), box=document.getElementById('ghChatBox');
-    if(box && box.style.display!=='block' && b) b.click();
-    if(text){ var i=document.getElementById('ghChatInput'); if(i){ i.value=text; i.focus(); } }
-  }
-  document.getElementById('openAiBtn').addEventListener('click',function(){ openChat(); });
-  document.querySelectorAll('#aiExamples .zp-chip').forEach(function(c){ c.addEventListener('click',function(){ openChat(c.textContent); }); });
-})();
-</script>
-</body>
-</html>
+<nav class="mobile-nav"><a href="home.html"><span>🏠</span>Home</a><a href="live-scores.html"><span>⚽</span>Live</a><a href="ai-assistant.html"><span>🤖</span>AI</a><a href="profile.html"><span>👤</span>Profile</a></nav>
+<script src="../assets/app.js"></script>
+</body></html>
