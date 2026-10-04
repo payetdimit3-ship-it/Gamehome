@@ -79,10 +79,3 @@ The supplied design pack is treated as the visual reference. The implementation 
 ## Backend
 
 This V2 is the full UI/page architecture. Existing legacy code is preserved under `legacy/` for migration of real functionality. Render/Supabase/API-Football/NEXUS/ClickPesa endpoints are not invented here.
-
-## V15 ROUTING FIX
-- Canonical user pages are stored at project root and are also available through `/user/<page>` compatibility routes.
-- Canonical admin pages are stored at project root and are also available through `/admin/<page>` compatibility routes.
-- Sidebar navigation now points to the canonical filenames that actually exist.
-- Sports TV and Sports News are explicitly present in the main navigation.
-- `home.html` now uses the same modern homepage as `index.html`.
