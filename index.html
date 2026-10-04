@@ -37,12 +37,6 @@
     <div><span data-ic="headset"></span><p style="margin:0"><b>Msaada 24/7</b><span>AI na WhatsApp</span></p></div>
   </div>
 
-  <div class="zp-sec" style="margin-top:22px"><h2>⚽ Live Football</h2><a href="livescores.html">Live Scores <span data-ic="chevr"></span></a></div>
-  <section class="hp-live" id="liveFootball" aria-live="polite">
-    <header><span data-ic="trophy"></span><h3>Mechi za Leo</h3><a href="live.html">Tazama Live <span data-ic="chevr"></span></a></header>
-    <div id="liveFootballRows"><p class="lv-empty-sm">Inapakia...</p></div>
-  </section>
-
   <div id="dynamicBanners" hidden></div>
 
   <!-- CATEGORIES -->
@@ -212,20 +206,6 @@
     if(text){ var i=document.getElementById('ghChatInput'); if(i){ i.value=text; i.focus(); } }
   }
   document.getElementById('openAiBtn').addEventListener('click',function(){ openChat(); });
-
-  /* ---------- Live Football widget ---------- */
-  fetch('/api/live-streams').then(function(r){ return r.json(); }).then(function(d){
-    var M=ZP.match, box=document.getElementById('liveFootballRows');
-    var all=(d&&d.streams)||[], order={live:0,upcoming:1,ended:2};
-    var list=all.filter(function(m){ return M.status(m)!=='ended'; }).sort(function(a,b){ return order[M.status(a)]-order[M.status(b)]; }).slice(0,3);
-    if (!list.length){ document.getElementById('liveFootball').hidden=true; return; }
-    box.innerHTML=list.map(function(m){
-      var st=M.status(m), t=M.teams(m), live=st==='live';
-      var mid='<small>'+(live?'<span style="color:var(--red)">● LIVE '+esc(m.minute||'')+'\'</span>':esc(m.startTime||'Ratiba'))+'</small>'+
-        '<span class="hp-score">'+(M.hasScore(m)?esc(m.homeScore)+' – '+esc(m.awayScore):'vs')+'</span>';
-      return '<a class="hp-row" href="live.html?id='+encodeURIComponent(m.id)+'"><span class="hp-team">'+M.badge(t[0])+'<span>'+esc(t[0]||m.title)+'</span></span><span style="text-align:center">'+mid+'</span><span class="hp-team away">'+M.badge(t[1])+'<span>'+esc(t[1]||'')+'</span></span></a>';
-    }).join('');
-  }).catch(function(){ document.getElementById('liveFootball').hidden=true; });
   document.querySelectorAll('#aiExamples .zp-chip').forEach(function(c){ c.addEventListener('click',function(){ openChat(c.textContent); }); });
 })();
 </script>

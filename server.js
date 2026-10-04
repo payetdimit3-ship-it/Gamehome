@@ -102,6 +102,45 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Canonical page compatibility routes. The project stores the HTML files at the
+// project root, while older sitemap/docs use /user/* and /admin/* paths.
+const USER_PAGE_ALIASES = {
+  'home':'index.html','store':'store.html','games':'games.html','psp-gaming':'psp-gaming.html',
+  'ps2-gaming':'ps2-gaming.html','ps3-gaming':'ps3-gaming.html','winlator-gamehub':'winlator-gamehub.html',
+  'nintendo-switch':'nintendo-switch.html','android-gaming':'android-gaming.html','pc-gaming':'pc-gaming.html',
+  'movies':'movies.html','live-tv-esports':'live-tv-esports.html','live-scores':'live-scores.html',
+  'tournament':'tournament.html','betting':'betting.html','academy':'academy.html','courses':'courses.html',
+  'cloud-gaming':'cloud-gaming.html','efootball-topup':'efootball-topup.html','gift-cards':'gift-cards.html',
+  'community-chat':'community-chat.html','health-assistant':'health-assistant.html','ai-assistant':'ai-assistant.html',
+  'marketplace':'marketplace.html','wishlist':'wishlist.html','cart':'cart.html','my-games-library':'my-games-library.html',
+  'profile':'profile.html','login':'login.html','register':'register.html','product-details':'product-details.html',
+  'checkout':'checkout.html','live-football-watch':'live-football-watch.html','live-movies-player':'live-movies-player.html',
+  'game-trailer':'game-trailer.html','sports-tv':'sports-tv.html','sports-news':'sports-news.html',
+  'my-orders':'my-orders.html','requests-transactions':'requests-transactions.html','contact-support':'contact-support.html',
+  'faq-help':'faq-help.html'
+};
+const ADMIN_PAGE_ALIASES = {
+  'dashboard':'dashboard.html','games-management':'games-management.html','products-management':'products-management.html',
+  'movies-management':'movies-management.html','trailers-management':'trailers-management.html','hero-homepage-management':'hero-homepage-management.html',
+  'live-matches-management':'live-matches-management.html','efootball-topup-management':'efootball-topup-management.html',
+  'cloud-gaming-management':'cloud-gaming-management.html','gift-cards-management':'gift-cards-management.html',
+  'marketplace-management':'marketplace-management.html','users-management':'users-management.html','orders-sales':'orders-sales.html',
+  'coupons-discounts':'coupons-discounts.html','withdraw-requests':'withdraw-requests.html','support-tickets':'support-tickets.html',
+  'courses-management':'courses-management.html','lessons-videos-management':'lessons-videos-management.html','students-management':'students-management.html',
+  'sports-tv-management':'sports-tv-management.html','sports-news-management':'sports-news-management.html',
+  'analytics':'analytics.html','reports':'reports.html','storage-server':'storage-server.html','settings':'settings.html'
+};
+function servePageAlias(map, req, res) {
+  const key = String(req.params.page || '').replace(/\.html$/i, '').toLowerCase();
+  const file = map[key];
+  if (!file) return res.status(404).send('Page haipatikani.');
+  res.sendFile(path.join(__dirname, file));
+}
+app.get('/user/:page', (req,res) => servePageAlias(USER_PAGE_ALIASES, req, res));
+app.get('/admin/:page', (req,res) => servePageAlias(ADMIN_PAGE_ALIASES, req, res));
+app.get('/user/:page.html', (req,res) => servePageAlias(USER_PAGE_ALIASES, req, res));
+app.get('/admin/:page.html', (req,res) => servePageAlias(ADMIN_PAGE_ALIASES, req, res));
+
 // 📁 HIFADHI YA DATA
 const DATA_DIR = path.join(__dirname, '.data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
