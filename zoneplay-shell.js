@@ -57,15 +57,14 @@
 
   /* ---------- Navigation ---------- */
   var NAV = [
-    ['Home','index.html','home'], ['Store','store.html','bag'], ['Games','games.html','grid'],
-    ['PSP Gaming','psp-gaming.html','gamepad'], ['PS2 Gaming','ps2-gaming.html','gamepad'], ['PS3 Gaming','ps3-gaming.html','gamepad'],
-    ['Winlator & GameHub','winlator-gamehub.html','gamepad'], ['Nintendo Switch','nintendo-switch.html','gamepad'], ['Android Gaming','android-gaming.html','phone'], ['PC Gaming','pc-gaming.html','monitor'],
-    ['Movies','movies.html','film'], ['Live TV / Sports','live-tv-esports.html','tv'], ['Live Scores','live-scores.html','trophy'],
-    ['Tournament','tournament.html','trophy'], ['Betting','betting.html','wallet'], ['Sports TV','sports-tv.html','tv'], ['Sports News','sports-news.html','file'],
-    ['Academy','academy.html','cap'], ['Courses','courses.html','cap'], ['Cloud Gaming','cloud-gaming.html','cloud'], ['eFootball / Top Up','efootball-topup.html','ball'],
-    ['Gift Cards','gift-cards.html','gift'], ['Community / Chat','community-chat.html','chat'], ['Health Assistant','health-assistant.html','pulse'],
-    ['AI Assistant','ai-assistant.html','bot'], ['Marketplace','marketplace.html','shop'], ['Wishlist','wishlist.html','heart'],
-    ['Cart','cart.html','cart'], ['My Games / Library','my-games-library.html','book'], ['Profile','profile.html','user']
+    ['Home','index.html','home'], ['Store','shop.html','bag'], ['Games','categories.html','grid'],
+    ['PSP Gaming','shop.html?cat=psp','gamepad'], ['PS2 Gaming','shop.html?cat=ps2','gamepad'], ['PS3 Gaming','shop.html?cat=ps3','gamepad'],
+    ['Nintendo Switch','shop.html?cat=switch','gamepad'], ['Android Gaming','shop.html?cat=android','phone'], ['PC Gaming','shop.html?cat=pc','monitor'],
+    ['Movies','movies.html','film'], ['Live TV / Sports','live.html','tv'], ['Live Scores','livescores.html','trophy'],
+    ['Academy / Courses','academy.html','cap'], ['Cloud Gaming','cloudgaming.html','cloud'], ['eFootball / Top Up','efootball.html','ball'],
+    ['Gift Cards','giftcards.html','gift'], ['Community / Chat','chat.html','chat'], ['Health Assistant','health.html','pulse'],
+    ['AI Assistant','ai.html','bot'], ['Marketplace','marketplace.html','shop'], ['Wishlist','wishlist.html','heart'],
+    ['Cart','cart.html','cart'], ['My Games / Library','mygames.html','book'], ['Profile','profile.html','user']
   ];
   var ADMIN_NAV = [
     ['Dashboard','overview','grid'], ['Command Center','command','bot'], ['Mauzo','orders','box'],
@@ -82,7 +81,8 @@
     ['Contact','contact.html','mail'], ['FAQ','faq.html','help'], ['Terms & Refund','terms.html','file'], ['Settings','settings.html','settings']
   ];
   /* Pages that belong to a sidebar item without being one */
-  var ALIAS = {'home.html':'index.html','shop.html':'store.html','categories.html':'games.html','live.html':'live-tv-esports.html','livescores.html':'live-scores.html','tournaments.html':'tournament.html','cloudgaming.html':'cloud-gaming.html','efootball.html':'efootball-topup.html','giftcards.html':'gift-cards.html','chat.html':'community-chat.html','health.html':'health-assistant.html','ai.html':'ai-assistant.html','mygames.html':'my-games-library.html','product.html':'product-details.html','checkout.html':'cart.html','success.html':'my-games-library.html','courses.html':'academy.html','refund.html':'terms.html'};
+  var ALIAS = {'product.html':'shop.html','checkout.html':'cart.html','success.html':'mygames.html',
+    'courses.html':'academy.html','refund.html':'terms.html'};
   var here = (location.pathname.split('/').pop()||'index.html').toLowerCase();
   var qs = new URLSearchParams(location.search);
   function isActive(href, strict){
