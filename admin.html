@@ -176,7 +176,15 @@
             <option value="Shooter">Shooter</option>
             <option value="Strategy">Strategy</option>
           </select>
-          <input type="text" id="pDownload" placeholder="Link ya Kudownload (hiari - kwa games za kudownload, si GeForce)">
+          <label style="display:block;margin-top:10px;color:#9ea9c8">Viungo vya game (unaweza kuweka zaidi ya kimoja)</label>
+          <input type="text" id="pDownload" placeholder="Link ya Game #1 (download / Play / store)">
+          <input type="text" id="pDownload2" placeholder="Link ya Game #2 (hiari)">
+          <input type="text" id="pDownload3" placeholder="Link ya Game #3 (hiari)">
+          <select id="pSaleType"><option value="paid">💳 Game ya kulipia</option><option value="free">🆓 Game ya BURE (Free)</option></select>
+          <input type="text" id="pPlatforms" placeholder="Platform: Android, PC, PSP, PS2, Winlator...">
+          <input type="text" id="pMinSpecs" placeholder="Minimum specs (RAM, Android/Windows, storage, GPU)">
+          <input type="text" id="pRecommendedSpecs" placeholder="Recommended specs (hiari)">
+          <textarea id="pSettings" placeholder="Graphics/settings unazopendekeza kwa simu au PC" style="width:100%;min-height:80px"></textarea>
         </div>
 
         <!-- Fields za Steam Accounts -->
@@ -625,7 +633,7 @@
         <div class="admin-row">
           <div style="display:flex; align-items:center; gap:10px;">
             ${p.imageUrl ? `<img src="${p.imageUrl}" style="width:40px; height:40px; object-fit:cover; border-radius:8px;" onerror="this.style.display='none'">` : `<span style="font-size:26px;">${p.emoji}</span>`}
-            <div><strong>${p.name}</strong><br><small>${p.type || ''} — ${Number(p.price).toLocaleString()} TZS</small>${p.downloadLink ? '<br><small style="color:#00e5ff;">⬇️ Ina download link</small>' : ''}${p.accountUser ? '<br><small style="color:#00e5ff;">🔑 Ina account credentials</small>' : ''}${p.section && p.section !== 'shop' ? '<br><small style="color:#ffb020;">📍 ' + p.section + '</small>' : ''}</div>
+            <div><strong>${p.name}</strong><br><small>${p.type || ''} — ${p.saleType === 'free' || Number(p.price) === 0 ? '🆓 BURE / FREE' : Number(p.price).toLocaleString() + ' TZS'}</small>${(p.gameLinks && p.gameLinks.length) || p.downloadLink ? '<br><small style="color:#00e5ff;">⬇️ ' + ((p.gameLinks && p.gameLinks.length) || 1) + ' game link(s)</small>' : ''}${p.platforms ? '<br><small>🖥️ ' + p.platforms + '</small>' : ''}${p.accountUser ? '<br><small style="color:#00e5ff;">🔑 Ina account credentials</small>' : ''}${p.section && p.section !== 'shop' ? '<br><small style="color:#ffb020;">📍 ' + p.section + '</small>' : ''}</div>
           </div>
           <div style="display:flex; gap:6px;">
             <button class="btn-vote" onclick="editProduct('${p.id}')">✏️ Hariri</button>
@@ -657,7 +665,14 @@
       document.getElementById('pTrailer').value = p.trailerUrl || '';
       document.getElementById('pCategory').value = p.category || 'Zote';
       document.getElementById('pSection').value = p.section || 'shop';
-      document.getElementById('pDownload').value = p.downloadLink || '';
+      document.getElementById('pDownload').value = p.downloadLink || (p.gameLinks && p.gameLinks[0]) || '';
+      document.getElementById('pDownload2').value = (p.gameLinks && p.gameLinks[1]) || '';
+      document.getElementById('pDownload3').value = (p.gameLinks && p.gameLinks[2]) || '';
+      document.getElementById('pSaleType').value = p.saleType || (Number(p.price) === 0 ? 'free' : 'paid');
+      document.getElementById('pPlatforms').value = p.platforms || '';
+      document.getElementById('pMinSpecs').value = p.minimumSpecs || '';
+      document.getElementById('pRecommendedSpecs').value = p.recommendedSpecs || '';
+      document.getElementById('pSettings').value = p.recommendedSettings || '';
       document.getElementById('pAccUserSteam').value = p.section === 'steam' ? (p.accountUser || '') : '';
       document.getElementById('pAccPassSteam').value = p.section === 'steam' ? (p.accountPassword || '') : '';
       document.getElementById('pAccUserEf').value = p.section === 'efootball' ? (p.accountUser || '') : '';
@@ -671,9 +686,10 @@
 
     function resetProductForm() {
       document.getElementById('pId').value = '';
-      ['pName','pType','pPrice','pEmoji','pDesc','pImage','pTrailer','pDownload','pAccUserSteam','pAccPassSteam','pAccUserEf','pAccPassEf'].forEach(id => document.getElementById(id).value = '');
+      ['pName','pType','pPrice','pEmoji','pDesc','pImage','pTrailer','pDownload','pDownload2','pDownload3','pPlatforms','pMinSpecs','pRecommendedSpecs','pSettings','pAccUserSteam','pAccPassSteam','pAccUserEf','pAccPassEf'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('pCategory').value = 'Zote';
       document.getElementById('pSection').value = 'shop';
+      document.getElementById('pSaleType').value = 'paid';
       updateFormFields();
       document.getElementById('productFormTitle').textContent = '➕ Ongeza Bidhaa Mpya';
       document.getElementById('addProductBtn').textContent = '➕ Ongeza';
@@ -704,7 +720,13 @@
       const body = {
         name: document.getElementById('pName').value.trim(),
         type: section === 'steam' ? 'Steam Account' : section === 'efootball' ? 'eFootball Kikosi' : document.getElementById('pType').value.trim(),
-        price: document.getElementById('pPrice').value,
+        price: document.getElementById('pSaleType').value === 'free' ? 0 : document.getElementById('pPrice').value,
+        saleType: document.getElementById('pSaleType').value,
+        gameLinks: [document.getElementById('pDownload').value.trim(), document.getElementById('pDownload2').value.trim(), document.getElementById('pDownload3').value.trim()].filter(Boolean),
+        platforms: document.getElementById('pPlatforms').value.trim(),
+        minimumSpecs: document.getElementById('pMinSpecs').value.trim(),
+        recommendedSpecs: document.getElementById('pRecommendedSpecs').value.trim(),
+        recommendedSettings: document.getElementById('pSettings').value.trim(),
         emoji: section === 'steam' ? '👤' : section === 'efootball' ? '⚽' : document.getElementById('pEmoji').value.trim() || '🎮',
         desc: section === 'shop' ? document.getElementById('pDesc').value.trim() : '',
         imageUrl: document.getElementById('pImage').value.trim(),
