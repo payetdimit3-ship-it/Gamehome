@@ -563,11 +563,11 @@ app.get('/api/products', (req, res) => {
 app.post('/api/products', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || (!user.isAdmin && !user.isStaff)) return res.status(403).json({ error: 'Huna ruhusa' });
-  const { name, type, price, emoji, desc, downloadLink, imageUrl, trailerUrl, category, section, accountUser, accountPassword } = req.body;
-  if (!name || !price) return res.status(400).json({ error: 'Jaza jina na bei' });
+  const { name, type, price, emoji, desc, downloadLink, imageUrl, trailerUrl, category, section, accountUser, accountPassword, gameLinks, saleType, platforms, minimumSpecs, recommendedSpecs, recommendedSettings } = req.body;
+  if (!name || price === undefined || price === null || Number(price) < 0) return res.status(400).json({ error: 'Jaza jina na bei sahihi (game ya bure inaweza kuwa 0)' });
   const products = readJson('products.json', {});
   const id = 'p' + Date.now();
-  products[id] = { id, name, type: type || 'Bidhaa', price: Number(price), emoji: emoji || '🎮', desc: desc || '', downloadLink: downloadLink || '', imageUrl: imageUrl || '', trailerUrl: trailerUrl || '', category: category || 'Zote', section: section || 'shop', accountUser: accountUser || '', accountPassword: accountPassword || '' };
+  products[id] = { id, name, type: type || 'Bidhaa', price: Number(price), saleType: saleType || (Number(price) === 0 ? 'free' : 'paid'), gameLinks: Array.isArray(gameLinks) ? gameLinks.filter(Boolean).slice(0, 10) : (downloadLink ? [downloadLink] : []), platforms: platforms || '', minimumSpecs: minimumSpecs || '', recommendedSpecs: recommendedSpecs || '', recommendedSettings: recommendedSettings || '', emoji: emoji || '🎮', desc: desc || '', downloadLink: downloadLink || (Array.isArray(gameLinks) ? gameLinks[0] || '' : ''), imageUrl: imageUrl || '', trailerUrl: trailerUrl || '', category: category || 'Zote', section: section || 'shop', accountUser: accountUser || '', accountPassword: accountPassword || '' };
   const saved = await writeJson('products.json', products);
   res.json({ success: true, id, persistent: saved.cloud !== false });
 });
@@ -578,8 +578,8 @@ app.put('/api/products/:id', async (req, res) => {
   const products = readJson('products.json', {});
   const existing = products[req.params.id];
   if (!existing) return res.status(404).json({ error: 'Bidhaa haipatikani' });
-  const { name, type, price, emoji, desc, downloadLink, imageUrl, trailerUrl, category, section, accountUser, accountPassword } = req.body;
-  products[req.params.id] = { ...existing, name: name || existing.name, type: type || existing.type, price: price ? Number(price) : existing.price, emoji: emoji || existing.emoji, desc: desc !== undefined ? desc : existing.desc, downloadLink: downloadLink !== undefined ? downloadLink : existing.downloadLink, imageUrl: imageUrl !== undefined ? imageUrl : existing.imageUrl, trailerUrl: trailerUrl !== undefined ? trailerUrl : existing.trailerUrl, category: category || existing.category || 'Zote', section: section || existing.section || 'shop', accountUser: accountUser !== undefined ? accountUser : existing.accountUser, accountPassword: accountPassword !== undefined ? accountPassword : existing.accountPassword };
+  const { name, type, price, emoji, desc, downloadLink, imageUrl, trailerUrl, category, section, accountUser, accountPassword, gameLinks, saleType, platforms, minimumSpecs, recommendedSpecs, recommendedSettings } = req.body;
+  products[req.params.id] = { ...existing, name: name || existing.name, type: type || existing.type, price: price !== undefined && price !== null && price !== '' ? Number(price) : existing.price, saleType: saleType || (Number(price ?? existing.price) === 0 ? 'free' : existing.saleType || 'paid'), gameLinks: Array.isArray(gameLinks) ? gameLinks.filter(Boolean).slice(0, 10) : existing.gameLinks || (existing.downloadLink ? [existing.downloadLink] : []), platforms: platforms !== undefined ? platforms : existing.platforms || '', minimumSpecs: minimumSpecs !== undefined ? minimumSpecs : existing.minimumSpecs || '', recommendedSpecs: recommendedSpecs !== undefined ? recommendedSpecs : existing.recommendedSpecs || '', recommendedSettings: recommendedSettings !== undefined ? recommendedSettings : existing.recommendedSettings || '', emoji: emoji || existing.emoji, desc: desc !== undefined ? desc : existing.desc, downloadLink: downloadLink !== undefined ? downloadLink : existing.downloadLink, imageUrl: imageUrl !== undefined ? imageUrl : existing.imageUrl, trailerUrl: trailerUrl !== undefined ? trailerUrl : existing.trailerUrl, category: category || existing.category || 'Zote', section: section || existing.section || 'shop', accountUser: accountUser !== undefined ? accountUser : existing.accountUser, accountPassword: accountPassword !== undefined ? accountPassword : existing.accountPassword };
   const saved = await writeJson('products.json', products);
   res.json({ success: true, product: products[req.params.id], persistent: saved.cloud !== false });
 });
