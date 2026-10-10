@@ -288,7 +288,17 @@
 <script src="chat.js"></script>
 <script>
 (function(){
-  var esc = ZP.esc;
+  /* ═══════════════════════════════════════════════════
+     🔗 API CONFIGURATION — MUHIMU KWA GITHUB PAGES
+     ═══════════════════════════════════════════════════ */
+  var API_URL = 'https://gaming-platform-ecosystem.onrender.com';
+
+  /* Fallback kama ZP.esc haipo */
+  var esc = (window.ZP && ZP.esc) ? ZP.esc : function(s){
+    return String(s || '').replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  };
 
   /* ============ ORDER DATA ============ */
   var isQuickBuy = new URLSearchParams(location.search).get('quick') === '1';
@@ -312,15 +322,20 @@
   document.getElementById('layout').hidden = false;
 
   /* ============ PREFILL ============ */
-  if (user && user.name) { document.getElementById('fullname').value = user.name; document.getElementById('manualName').value = user.name; }
-  if (user && user.email) { document.getElementById('email').value = user.email; }
+  if (user && user.name) {
+    document.getElementById('fullname').value = user.name;
+    document.getElementById('manualName').value = user.name;
+  }
+  if (user && user.email) {
+    document.getElementById('email').value = user.email;
+  }
 
   /* ============ RENDER ITEMS ============ */
   var itemsBox = document.getElementById('items');
   itemsBox.innerHTML = items.map(function(i){
     var lineTotal = (Number(i.num)||Number(i.price)||0) * (Number(i.qty)||1);
     baseTotal += lineTotal;
-    var art = ZP.art ? ZP.art(i.name) : 'linear-gradient(135deg,#7c3aed,#4c1d95)';
+    var art = (window.ZP && ZP.art) ? ZP.art(i.name) : 'linear-gradient(135deg,#7c3aed,#4c1d95)';
     return '<div class="ck2-item">' +
       '<span class="art" style="background:' + art + '">' + esc(i.emoji || '🎮') + '</span>' +
       '<div>' +
@@ -381,25 +396,35 @@
     msg.className = 'ck2-msg'; msg.textContent = '';
     if (!code) { msg.className = 'ck2-msg err on'; msg.textContent = 'Andika kodi kwanza.'; return; }
 
-    fetch('/api/coupons/check', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+    // ✅ IM E BADILISHWA — API_URL + '/api/...'
+    fetch(API_URL + '/api/coupons/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: code })
     })
     .then(function(r){
       var ct = r.headers.get('content-type');
-      if (!ct || !ct.includes('application/json')) throw new Error('Server error (HTML returned)');
+      if (!ct || !ct.includes('application/json')) {
+        throw new Error('Backend haipatikani. Kagua Render.');
+      }
       return r.json();
     })
     .then(function(d){
       if (d.success) {
-        discount = d.percentOff; couponCode = d.code;
-        msg.className = 'ck2-msg ok on'; msg.textContent = 'Kodi "' + d.code + '" imetumika — punguzo la ' + d.percentOff + '%!';
+        discount = d.percentOff;
+        couponCode = d.code;
+        msg.className = 'ck2-msg ok on';
+        msg.textContent = 'Kodi "' + d.code + '" imetumika — punguzo la ' + d.percentOff + '%!';
         renderTotals();
       } else {
-        msg.className = 'ck2-msg err on'; msg.textContent = d.error || 'Kodi si sahihi';
+        msg.className = 'ck2-msg err on';
+        msg.textContent = d.error || 'Kodi si sahihi';
       }
     })
-    .catch(function(e){ msg.className = 'ck2-msg err on'; msg.textContent = 'Hitilafu ya mtandao: ' + e.message; });
+    .catch(function(e){
+      msg.className = 'ck2-msg err on';
+      msg.textContent = 'Hitilafu: ' + e.message;
+    });
   });
 
   /* ============ AUTO PAYMENT (ClickPesa) ============ */
@@ -407,21 +432,30 @@
   var poll = null;
 
   payBtn.addEventListener('click', function(){
-    if (!token) { showStatus(pStatus, 'Ingia kwanza kulipa. Tunakurudisha kwenye login...', 'err'); setTimeout(function(){ location.href='login.html?return=checkout.html'; }, 900); return; }
+    if (!token) {
+      showStatus(pStatus, 'Ingia kwanza kulipa. Tunakurudisha kwenye login...', 'err');
+      setTimeout(function(){ location.href='login.html?return=checkout.html'; }, 900);
+      return;
+    }
 
     var name = document.getElementById('fullname').value.trim();
     var phone = document.getElementById('phone').value.trim();
 
     if (!name) { showStatus(pStatus, 'Andika jina lako kamili.', 'err'); return; }
-    var phoneFull = phone; if (!phoneFull.startsWith('255')) phoneFull = '255' + phoneFull.replace(/^0/, '');
-    if (!/^255\d{9}$/.test(phoneFull)) { showStatus(pStatus, 'Namba ya simu si sahihi. Tumia mfano 0786095758 au 255786095758.', 'err'); return; }
+    var phoneFull = phone;
+    if (!phoneFull.startsWith('255')) phoneFull = '255' + phoneFull.replace(/^0/, '');
+    if (!/^255\d{9}$/.test(phoneFull)) {
+      showStatus(pStatus, 'Namba ya simu si sahihi. Tumia mfano 0786095758 au 255786095758.', 'err');
+      return;
+    }
 
     var total = finalTotal();
     showStatus(pStatus, '');
     payBtn.disabled = true;
     document.querySelector('#payBtn span').textContent = '⏳ Inaandaa malipo...';
 
-    fetch('/api/clickpesa-pay', {
+    // ✅ IM E BADILISHWA — API_URL + '/api/...'
+    fetch(API_URL + '/api/clickpesa-pay', {
       method: 'POST',
       headers: { 'Authorization': token, 'Content-Type': 'application/json' },
       body: JSON.stringify({ total: total, phone: phoneFull, name: name, items: discountedItems() })
@@ -430,7 +464,7 @@
       var ct = r.headers.get('content-type');
       if (!ct || !ct.includes('application/json')) {
         return r.text().then(function(txt){
-          throw new Error('Server ilirudisha HTML badala ya JSON. Kagua Render Logs.');
+          throw new Error('Backend haipatikani. Kagua Render Logs. (' + txt.slice(0, 80) + ')');
         });
       }
       return r.json();
@@ -448,7 +482,8 @@
       var attempts = 0;
       poll = setInterval(function(){
         attempts++;
-        fetch('/api/clickpesa-check/' + data.tx_ref, { headers: { 'Authorization': token } })
+        // ✅ IM E BADILISHWA — API_URL + '/api/...'
+        fetch(API_URL + '/api/clickpesa-check/' + data.tx_ref, { headers: { 'Authorization': token } })
           .then(function(r){
             var ct = r.headers.get('content-type');
             if (!ct || !ct.includes('application/json')) return null;
@@ -458,53 +493,77 @@
             if (!v) return;
             if (v.success && v.status === 'successful') {
               clearInterval(poll);
-              localStorage.setItem('gamehubLastOrder', JSON.stringify({ tx_ref: data.tx_ref, items: discountedItems(), total: total, date: new Date().toISOString() }));
-              clearOrder(); location.href = 'success.html';
+              localStorage.setItem('gamehubLastOrder', JSON.stringify({
+                tx_ref: data.tx_ref,
+                items: discountedItems(),
+                total: total,
+                date: new Date().toISOString()
+              }));
+              clearOrder();
+              location.href = 'success.html';
             } else if (v.status === 'amount_mismatch') {
-              clearInterval(poll); showStatus(pStatus, 'Kiasi kilicholipwa hakikamilika sahihi. Wasiliana WhatsApp na tx ref: ' + data.tx_ref, 'err');
-              payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
+              clearInterval(poll);
+              showStatus(pStatus, 'Kiasi kilicholipwa hakikamilika sahihi. Wasiliana WhatsApp na tx ref: ' + data.tx_ref, 'err');
+              payBtn.disabled = false;
+              document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
             } else if (v.status === 'failed') {
-              clearInterval(poll); showStatus(pStatus, 'Malipo hayakufanikiwa (umekataa au muda umeisha). Jaribu tena.', 'err');
-              payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
+              clearInterval(poll);
+              showStatus(pStatus, 'Malipo hayakufanikiwa (umekataa au muda umeisha). Jaribu tena.', 'err');
+              payBtn.disabled = false;
+              document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
             } else if (attempts >= 36) {
-              clearInterval(poll); showStatus(pStatus, 'Muda umeisha. Kama umelipa, wasiliana nasi WhatsApp na tx ref: ' + data.tx_ref, 'err');
-              payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
+              clearInterval(poll);
+              showStatus(pStatus, 'Muda umeisha. Kama umelipa, wasiliana nasi WhatsApp na tx ref: ' + data.tx_ref, 'err');
+              payBtn.disabled = false;
+              document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
             }
           }).catch(function(){});
       }, 5000);
     })
-    .catch(function(err){ 
-      showStatus(pStatus, err.message || 'Hitilafu ya mtandao. Jaribu tena.', 'err'); 
-      payBtn.disabled = false; 
-      document.querySelector('#payBtn span').textContent = '🔒 Pay Now'; 
+    .catch(function(err){
+      showStatus(pStatus, err.message || 'Hitilafu ya mtandao. Jaribu tena.', 'err');
+      payBtn.disabled = false;
+      document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
     });
   });
 
   /* ============ MANUAL PAYMENT ============ */
   var mStatus = document.getElementById('manualStatus');
   document.getElementById('manualPayBtn').addEventListener('click', function(){
-    if (!token) { showStatus(mStatus, 'Ingia kwanza kutuma ripoti ya malipo.', 'err'); setTimeout(function(){ location.href='login.html?return=checkout.html'; }, 1200); return; }
+    if (!token) {
+      showStatus(mStatus, 'Ingia kwanza kutuma ripoti ya malipo.', 'err');
+      setTimeout(function(){ location.href='login.html?return=checkout.html'; }, 1200);
+      return;
+    }
     var name = document.getElementById('manualName').value.trim();
     var phone = document.getElementById('manualPhone').value.trim();
     var txRef = document.getElementById('manualTxRef').value.trim();
-    if (!name || !phone || !txRef) { showStatus(mStatus, 'Jaza taarifa zote.', 'err'); return; }
+    if (!name || !phone || !txRef) {
+      showStatus(mStatus, 'Jaza taarifa zote.', 'err');
+      return;
+    }
 
     showStatus(mStatus, '');
-    this.disabled = true; this.querySelector('span').textContent = '⏳ Inatuma...';
+    this.disabled = true;
+    this.querySelector('span').textContent = '⏳ Inatuma...';
 
-    fetch('/api/manual-pay', {
+    // ✅ IM E BADILISHWA — API_URL + '/api/...'
+    fetch(API_URL + '/api/manual-pay', {
       method: 'POST',
       headers: { 'Authorization': token, 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: discountedItems(), total: finalTotal(), txRef: txRef, phone: phone })
     })
     .then(function(r){
       var ct = r.headers.get('content-type');
-      if (!ct || !ct.includes('application/json')) throw new Error('Server error (HTML returned)');
+      if (!ct || !ct.includes('application/json')) {
+        throw new Error('Backend haipatikani. Kagua Render.');
+      }
       return r.json();
     })
     .then(function(d){
       if (d.success) {
-        clearOrder(); showStatus(mStatus, d.message || 'Ripoti imepokelewa.', 'ok');
+        clearOrder();
+        showStatus(mStatus, d.message || 'Ripoti imepokelewa.', 'ok');
         setTimeout(function(){ location.href = 'my-orders.html'; }, 2000);
       } else {
         showStatus(mStatus, d.error || 'Hitilafu', 'err');
@@ -512,9 +571,9 @@
         document.querySelector('#manualPayBtn span').textContent = '📤 Tuma Ripoti ya Malipo';
       }
     })
-    .catch(function(e){ 
-      showStatus(mStatus, 'Hitilafu ya mtandao: ' + e.message, 'err'); 
-      document.getElementById('manualPayBtn').disabled = false; 
+    .catch(function(e){
+      showStatus(mStatus, 'Hitilafu: ' + e.message, 'err');
+      document.getElementById('manualPayBtn').disabled = false;
       document.querySelector('#manualPayBtn span').textContent = '📤 Tuma Ripoti ya Malipo';
     });
   });
@@ -532,10 +591,13 @@
   /* ============ COPY PHONE NUMBER ============ */
   document.getElementById('copyNum').addEventListener('click', function(){
     var n = document.getElementById('payNum').textContent.replace(/\s/g, '');
-    if (navigator.clipboard) navigator.clipboard.writeText(n).then(function(){
-      var b = document.getElementById('copyNum'); b.textContent = '✓ Imenakiliwa';
-      setTimeout(function(){ b.textContent = '📋 Nakili'; }, 1500);
-    });
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(n).then(function(){
+        var b = document.getElementById('copyNum');
+        b.textContent = '✓ Imenakiliwa';
+        setTimeout(function(){ b.textContent = '📋 Nakili'; }, 1500);
+      });
+    }
   });
 
 })();
