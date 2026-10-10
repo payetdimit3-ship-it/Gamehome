@@ -123,7 +123,7 @@
       <div class="ck2-card" style="text-align:center;padding:40px">
         <h3>Kikapu chako ni tupu</h3>
         <p style="color:var(--muted)">Ongeza bidhaa kwanza kisha urudi hapa kulipa.</p>
-        <a class="zp-btn" href="shop.html">Nenda Dukani</a>
+        <a class="zp-btn" href="store.html">Nenda Dukani</a>
       </div>
     </div>
 
@@ -296,7 +296,7 @@
   var cart = {}; try { cart = JSON.parse(localStorage.getItem('gamehubCart') || '{}') || {}; } catch(e){}
   var items = quickItem ? [quickItem] : Object.values(cart);
   var user = null; try { user = JSON.parse(localStorage.getItem('gamehubUser') || 'null'); } catch(e){}
-  var token = localStorage.getItem('gamehubToken');
+  var token = localStorage.getItem('gamehubToken') || localStorage.getItem('token');
 
   var baseTotal = 0, discount = 0, couponCode = '', SHIPPING = 5000, wantsShipping = false;
   function money(n){ return 'Tsh ' + Number(n||0).toLocaleString(); }
@@ -318,7 +318,7 @@
   /* ============ RENDER ITEMS ============ */
   var itemsBox = document.getElementById('items');
   itemsBox.innerHTML = items.map(function(i){
-    var lineTotal = (Number(i.num)||0) * (Number(i.qty)||1);
+    var lineTotal = (Number(i.num)||Number(i.price)||0) * (Number(i.qty)||1);
     baseTotal += lineTotal;
     var art = ZP.art ? ZP.art(i.name) : 'linear-gradient(135deg,#7c3aed,#4c1d95)';
     return '<div class="ck2-item">' +
@@ -385,7 +385,11 @@
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: code })
     })
-    .then(function(r){ return r.json(); })
+    .then(function(r){
+      var ct = r.headers.get('content-type');
+      if (!ct || !ct.includes('application/json')) throw new Error('Server error (HTML returned)');
+      return r.json();
+    })
     .then(function(d){
       if (d.success) {
         discount = d.percentOff; couponCode = d.code;
@@ -395,7 +399,7 @@
         msg.className = 'ck2-msg err on'; msg.textContent = d.error || 'Kodi si sahihi';
       }
     })
-    .catch(function(){ msg.className = 'ck2-msg err on'; msg.textContent = 'Hitilafu ya mtandao.'; });
+    .catch(function(e){ msg.className = 'ck2-msg err on'; msg.textContent = 'Hitilafu ya mtandao: ' + e.message; });
   });
 
   /* ============ AUTO PAYMENT (ClickPesa) ============ */
@@ -407,7 +411,6 @@
 
     var name = document.getElementById('fullname').value.trim();
     var phone = document.getElementById('phone').value.trim();
-    var provider = document.querySelector('input[name="payMethod"]:checked').value;
 
     if (!name) { showStatus(pStatus, 'Andika jina lako kamili.', 'err'); return; }
     var phoneFull = phone; if (!phoneFull.startsWith('255')) phoneFull = '255' + phoneFull.replace(/^0/, '');
@@ -423,7 +426,15 @@
       headers: { 'Authorization': token, 'Content-Type': 'application/json' },
       body: JSON.stringify({ total: total, phone: phoneFull, name: name, items: discountedItems() })
     })
-    .then(function(r){ return r.json(); })
+    .then(function(r){
+      var ct = r.headers.get('content-type');
+      if (!ct || !ct.includes('application/json')) {
+        return r.text().then(function(txt){
+          throw new Error('Server ilirudisha HTML badala ya JSON. Kagua Render Logs.');
+        });
+      }
+      return r.json();
+    })
     .then(function(data){
       if (!data.success) {
         showStatus(pStatus, data.error || 'Malipo hayakuanza. Jaribu tena.', 'err');
@@ -438,8 +449,13 @@
       poll = setInterval(function(){
         attempts++;
         fetch('/api/clickpesa-check/' + data.tx_ref, { headers: { 'Authorization': token } })
-          .then(function(r){ return r.json(); })
+          .then(function(r){
+            var ct = r.headers.get('content-type');
+            if (!ct || !ct.includes('application/json')) return null;
+            return r.json();
+          })
           .then(function(v){
+            if (!v) return;
             if (v.success && v.status === 'successful') {
               clearInterval(poll);
               localStorage.setItem('gamehubLastOrder', JSON.stringify({ tx_ref: data.tx_ref, items: discountedItems(), total: total, date: new Date().toISOString() }));
@@ -457,7 +473,11 @@
           }).catch(function(){});
       }, 5000);
     })
-    .catch(function(){ showStatus(pStatus, 'Hitilafu ya mtandao. Jaribu tena.', 'err'); payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now'; });
+    .catch(function(err){ 
+      showStatus(pStatus, err.message || 'Hitilafu ya mtandao. Jaribu tena.', 'err'); 
+      payBtn.disabled = false; 
+      document.querySelector('#payBtn span').textContent = '🔒 Pay Now'; 
+    });
   });
 
   /* ============ MANUAL PAYMENT ============ */
@@ -477,18 +497,26 @@
       headers: { 'Authorization': token, 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: discountedItems(), total: finalTotal(), txRef: txRef, phone: phone })
     })
-    .then(function(r){ return r.json(); })
+    .then(function(r){
+      var ct = r.headers.get('content-type');
+      if (!ct || !ct.includes('application/json')) throw new Error('Server error (HTML returned)');
+      return r.json();
+    })
     .then(function(d){
       if (d.success) {
         clearOrder(); showStatus(mStatus, d.message || 'Ripoti imepokelewa.', 'ok');
-        setTimeout(function(){ location.href = 'myorders.html'; }, 2000);
+        setTimeout(function(){ location.href = 'my-orders.html'; }, 2000);
       } else {
         showStatus(mStatus, d.error || 'Hitilafu', 'err');
         document.getElementById('manualPayBtn').disabled = false;
         document.querySelector('#manualPayBtn span').textContent = '📤 Tuma Ripoti ya Malipo';
       }
     })
-    .catch(function(){ showStatus(mStatus, 'Hitilafu ya mtandao. Jaribu tena.', 'err'); document.getElementById('manualPayBtn').disabled = false; });
+    .catch(function(e){ 
+      showStatus(mStatus, 'Hitilafu ya mtandao: ' + e.message, 'err'); 
+      document.getElementById('manualPayBtn').disabled = false; 
+      document.querySelector('#manualPayBtn span').textContent = '📤 Tuma Ripoti ya Malipo';
+    });
   });
 
   /* ============ HELPERS ============ */
@@ -513,4 +541,4 @@
 })();
 </script>
 </body>
-                </html>
+</html>
