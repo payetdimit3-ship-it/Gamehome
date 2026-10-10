@@ -288,9 +288,9 @@
 <script src="chat.js"></script>
 <script>
 (function(){
-  /* ═══════════════════════════════════════════════════
-     🔗 API CONFIGURATION — MUHIMU KWA GITHUB PAGES
-     ═══════════════════════════════════════════════════ */
+  /* ==================================================
+     API CONFIGURATION — MUHIMU KWA GITHUB PAGES
+     ================================================== */
   var API_URL = 'https://gaming-platform-ecosystem.onrender.com';
 
   /* Fallback kama ZP.esc haipo */
@@ -396,7 +396,7 @@
     msg.className = 'ck2-msg'; msg.textContent = '';
     if (!code) { msg.className = 'ck2-msg err on'; msg.textContent = 'Andika kodi kwanza.'; return; }
 
-    // ✅ IM E BADILISHWA — API_URL + '/api/...'
+    // IM E BADILISHWA — API_URL + '/api/...'
     fetch(API_URL + '/api/coupons/check', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -454,7 +454,7 @@
     payBtn.disabled = true;
     document.querySelector('#payBtn span').textContent = '⏳ Inaandaa malipo...';
 
-    // ✅ IM E BADILISHWA — API_URL + '/api/...'
+    // IM E BADILISHWA — API_URL + '/api/...'
     fetch(API_URL + '/api/clickpesa-pay', {
       method: 'POST',
       headers: { 'Authorization': token, 'Content-Type': 'application/json' },
@@ -482,7 +482,7 @@
       var attempts = 0;
       poll = setInterval(function(){
         attempts++;
-        // ✅ IM E BADILISHWA — API_URL + '/api/...'
+        // IM E BADILISHWA — API_URL + '/api/...'
         fetch(API_URL + '/api/clickpesa-check/' + data.tx_ref, { headers: { 'Authorization': token } })
           .then(function(r){
             var ct = r.headers.get('content-type');
@@ -547,7 +547,7 @@
     this.disabled = true;
     this.querySelector('span').textContent = '⏳ Inatuma...';
 
-    // ✅ IM E BADILISHWA — API_URL + '/api/...'
+    // IM E BADILISHWA — API_URL + '/api/...'
     fetch(API_URL + '/api/manual-pay', {
       method: 'POST',
       headers: { 'Authorization': token, 'Content-Type': 'application/json' },
