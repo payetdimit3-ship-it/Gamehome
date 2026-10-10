@@ -6,7 +6,6 @@ const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const multer = require('multer');
 
-// 🆕 PACKAGES MPYA
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -14,14 +13,9 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 
-// ⚠️ MUHIMU KWA RENDER
 app.set('trust proxy', 1);
 
-// ═══════════════════════════════════════════════════════════
-// 🛡️ SECURITY MIDDLEWARE (MPYA!)
-// ═══════════════════════════════════════════════════════════
-
-// 1. CORS — Ruhusu GitHub Pages
+// SECURITY MIDDLEWARE
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 
   'http://localhost:3000,http://localhost:5500,https://payetdimit3-ship-it.github.io,https://kelvingamingtz.com,https://www.kelvingamingtz.com'
 ).split(',').map(s => s.trim());
@@ -32,7 +26,7 @@ app.use(cors({
     if (ALLOWED_ORIGINS.includes(origin) || ALLOWED_ORIGINS.includes('*')) {
       return callback(null, true);
     }
-    console.warn('🚫 CORS blocked:', origin);
+    console.warn('CORS blocked:', origin);
     callback(null, false);
   },
   credentials: true,
@@ -40,21 +34,17 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// 2. Helmet
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false,
   crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 
-// 3. Compression
 app.use(compression());
 
-// 4. Body parser
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// 5. Rate limiting
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000, max: 1000,
   message: { error: 'Maombi mengi. Subiri kidogo.' },
@@ -71,15 +61,14 @@ app.use('/api/auth/login', loginLimiter);
 app.use('/api/ai/', aiLimiter);
 app.use('/api/', apiLimiter);
 
-console.log('🛡️ Security middleware imewekwa');
+console.log('Security middleware imewekwa');
 
-// 🎬 MEDIA STORAGE
+// MEDIA STORAGE
 const MEDIA_DIR = path.join(__dirname, 'uploads');
 const TMP_MEDIA_DIR = path.join(MEDIA_DIR, 'tmp');
 if (!fs.existsSync(MEDIA_DIR)) fs.mkdirSync(MEDIA_DIR, { recursive: true });
 if (!fs.existsSync(TMP_MEDIA_DIR)) fs.mkdirSync(TMP_MEDIA_DIR, { recursive: true });
 
-// ✅ Ruhusu uploads pekee (SIO root!)
 app.use('/uploads', express.static(MEDIA_DIR, {
   maxAge: '1d',
   setHeaders: (res, filePath) => {
@@ -105,7 +94,7 @@ const upload = multer({
 
 const MEDIA_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'gamehub-media';
 
-// ☁️ SUPABASE CLIENT SETUP
+// SUPABASE CLIENT SETUP
 let supabase = null;
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -113,9 +102,9 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBL
 
 if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
   supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-  console.log('☁️ Supabase imeunganishwa — data itahifadhiwa kudumu.');
+  console.log('Supabase imeunganishwa');
 } else {
-  console.log('⚠️ Supabase HAIJAWEKWA — data itapotea kila deploy mpya!');
+  console.log('Supabase HAIJAWEKWA - data itapotea kila deploy!');
 }
 
 async function ensureMediaBucket() {
@@ -125,7 +114,7 @@ async function ensureMediaBucket() {
     if (!error && data) return true;
     const created = await supabase.storage.createBucket(MEDIA_BUCKET, { public: true });
     if (created.error && !/already exists|duplicate/i.test(created.error.message || '')) return false;
-    console.log('☁️ Bucket iko tayari: ' + MEDIA_BUCKET);
+    console.log('Bucket iko tayari: ' + MEDIA_BUCKET);
     return true;
   } catch (e) { return false; }
 }
@@ -159,7 +148,7 @@ async function saveUploadedVideo(file, folder) {
   }
 }
 
-// 🏠 ROOT + HEALTH
+// ROOT + HEALTH
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -179,7 +168,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// 📁 HIFADHI YA DATA
+// DATA STORAGE
 const DATA_DIR = path.join(__dirname, '.data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
@@ -207,7 +196,7 @@ async function writeJson(file, data) {
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
     fs.renameSync(tmpPath, filePath);
   } catch (e) {
-    console.error('❌ Write error (' + file + '):', e.message);
+    console.error('Write error (' + file + '):', e.message);
     try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch (e) {}
     return { local: false, cloud: false, error: e.message };
   }
@@ -216,14 +205,14 @@ async function writeJson(file, data) {
     const { error } = await supabase.from(process.env.SUPABASE_KV_TABLE || 'kv_store').upsert({
       file_name: file, data, updated_at: new Date().toISOString()
     });
-    if (error) { console.error('☁️ Supabase (' + file + '):', error.message); return { local: true, cloud: false, error: error.message }; }
+    if (error) { console.error('Supabase (' + file + '):', error.message); return { local: true, cloud: false, error: error.message }; }
     return { local: true, cloud: true };
   } catch (err) { return { local: true, cloud: false, error: err.message }; }
 }
 
 async function restoreFromSupabase() {
   if (!supabase) return;
-  console.log('☁️ Inarudisha data...');
+  console.log('Inarudisha data...');
   const results = await Promise.allSettled(
     TRACKED_FILES.map(async (file) => {
       const { data, error } = await supabase.from(process.env.SUPABASE_KV_TABLE || 'kv_store').select('data').eq('file_name', file).maybeSingle();
@@ -235,7 +224,7 @@ async function restoreFromSupabase() {
     })
   );
   const restored = results.filter(r => r.status === 'fulfilled' && r.value).length;
-  console.log(`☁️ Files ${restored}/${TRACKED_FILES.length} zimerudishwa`);
+  console.log('Files ' + restored + '/' + TRACKED_FILES.length + ' zimerudishwa');
 }
 
 function ensureTournamentSeed() {
@@ -248,7 +237,7 @@ function ensureTournamentSeed() {
   }
 }
 
-// 💬 PUBLIC CHAT
+// PUBLIC CHAT
 const publicChatRate = new Map();
 function cleanPublicText(value, max) {
   return String(value || '').replace(/[\u0000-\u001F\u007F]/g, ' ').replace(/<[^>]*>/g, '').trim().slice(0, max);
@@ -287,7 +276,7 @@ app.delete('/api/admin/public-chat/:id', async (req, res) => {
   res.json({ success: true });
 });
 
-// 🔐 PASSWORD
+// PASSWORD
 function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString('hex');
   const hash = crypto.scryptSync(password, salt, 64).toString('hex');
@@ -302,7 +291,7 @@ function verifyPassword(password, stored) {
   } catch (e) { return false; }
 }
 
-// 🛑 LOGIN PROTECTION
+// LOGIN PROTECTION
 const loginAttempts = new Map();
 const MAX_ATTEMPTS = 5;
 const BLOCK_MINUTES = 10;
@@ -318,7 +307,7 @@ function recordFail(key) {
   loginAttempts.set(key, entry);
 }
 
-// 🛡️ SECURITY
+// SECURITY
 const securityFile = 'security.json';
 function logSecurity(type, details, severity, ip) {
   const data = readJson(securityFile, { events: [], blocked: {} });
@@ -375,7 +364,7 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
-// 👤 USERS + SESSIONS
+// USERS + SESSIONS
 const usersFile = 'users.json';
 const sessionsFile = 'sessions.json';
 const SESSION_DAYS = 7;
@@ -520,7 +509,7 @@ app.post('/api/admin/users/staff', (req, res) => {
   if (users[cleanEmail].isAdmin) return res.status(400).json({ error: 'Huyu ni Admin kamili' });
   users[cleanEmail].isStaff = !!makeStaff;
   writeJson(usersFile, users);
-  res.json({ success: true, message: makeStaff ? '✅ Staff.' : '✅ Si Staff tena.' });
+  res.json({ success: true, message: makeStaff ? 'Staff.' : 'Si Staff tena.' });
 });
 
 app.post('/api/auth/logout', (req, res) => {
@@ -537,10 +526,10 @@ app.get('/api/auth/promote', (req, res) => {
   if (!users[cleanEmail]) return res.status(404).json({ error: 'Mtumiaji hajapatikana.' });
   users[cleanEmail].isAdmin = true;
   writeJson(usersFile, users);
-  res.json({ success: true, message: '✅ ' + cleanEmail + ' sasa ni Admin.' });
+  res.json({ success: true, message: cleanEmail + ' sasa ni Admin.' });
 });
 
-// 🏆 MATCH PAYOUT
+// MATCH PAYOUT
 async function completeMatchAndPayout(matchId, winnerUserId) {
   const matches = readJson('matches.json', []);
   const match = matches.find(m => m.id === matchId);
@@ -582,10 +571,10 @@ app.post('/api/matches/:id/complete', async (req, res) => {
   if (!winnerUserId) return res.status(400).json({ error: 'Weka mshindi' });
   const result = await completeMatchAndPayout(req.params.id, winnerUserId);
   if (!result.success) return res.status(400).json({ error: result.error });
-  res.json({ success: true, message: '✅ Mechi imekamilika!', ...result });
+  res.json({ success: true, message: 'Mechi imekamilika!', ...result });
 });
 
-// 🎮 PRODUCTS
+// PRODUCTS
 app.get('/api/products', (req, res) => {
   const products = readJson('products.json', {});
   res.json({ success: true, products: Object.values(products) });
@@ -598,7 +587,7 @@ app.post('/api/products', async (req, res) => {
   if (!name || price === undefined) return res.status(400).json({ error: 'Jaza jina na bei' });
   const products = readJson('products.json', {});
   const id = 'p' + Date.now();
-  products[id] = { id, name, type: type || 'Bidhaa', price: Number(price), saleType: saleType || (Number(price) === 0 ? 'free' : 'paid'), gameLinks: Array.isArray(gameLinks) ? gameLinks.filter(Boolean).slice(0, 10) : (downloadLink ? [downloadLink] : []), platforms: platforms || '', minimumSpecs: minimumSpecs || '', recommendedSpecs: recommendedSpecs || '', recommendedSettings: recommendedSettings || '', emoji: emoji || '🎮', desc: desc || '', downloadLink: downloadLink || '', imageUrl: imageUrl || '', trailerUrl: trailerUrl || '', category: category || 'Zote', section: section || 'shop', accountUser: accountUser || '', accountPassword: accountPassword || '' };
+  products[id] = { id, name, type: type || 'Bidhaa', price: Number(price), saleType: saleType || (Number(price) === 0 ? 'free' : 'paid'), gameLinks: Array.isArray(gameLinks) ? gameLinks.filter(Boolean).slice(0, 10) : (downloadLink ? [downloadLink] : []), platforms: platforms || '', minimumSpecs: minimumSpecs || '', recommendedSpecs: recommendedSpecs || '', recommendedSettings: recommendedSettings || '', emoji: emoji || '', desc: desc || '', downloadLink: downloadLink || '', imageUrl: imageUrl || '', trailerUrl: trailerUrl || '', category: category || 'Zote', section: section || 'shop', accountUser: accountUser || '', accountPassword: accountPassword || '' };
   const saved = await writeJson('products.json', products);
   res.json({ success: true, id, persistent: saved.cloud !== false });
 });
@@ -624,7 +613,7 @@ app.delete('/api/products/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// 📊 ANALYTICS
+// ANALYTICS
 app.get('/api/admin/analytics', (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
@@ -651,7 +640,7 @@ app.get('/api/admin/backup', (req, res) => {
   res.send(JSON.stringify(backup, null, 2));
 });
 
-// 🏪 MARKETPLACE
+// MARKETPLACE
 app.get('/api/marketplace', (req, res) => {
   res.json({ success: true, listings: readJson('marketplace.json', []) });
 });
@@ -675,7 +664,7 @@ app.delete('/api/marketplace/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// 🎟️ COUPONS
+// COUPONS
 app.get('/api/admin/coupons', (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
@@ -715,7 +704,7 @@ app.post('/api/coupons/check', (req, res) => {
   res.json({ success: true, percentOff: c.percentOff, code: c.code });
 });
 
-// ⭐ REVIEWS
+// REVIEWS
 app.get('/api/reviews/:productId', (req, res) => {
   const reviews = readJson('reviews.json', {});
   const list = reviews[req.params.productId] || [];
@@ -735,10 +724,10 @@ app.post('/api/reviews/:productId', (req, res) => {
   if (already) return res.json({ success: false, message: 'Umeshaacha maoni.' });
   reviews[req.params.productId].push({ name: user.name, email: user.email, rating: r, comment: (comment || '').trim(), date: new Date().toISOString() });
   writeJson('reviews.json', reviews);
-  res.json({ success: true, message: '✅ Asante!' });
+  res.json({ success: true, message: 'Asante!' });
 });
 
-// 📌 REQUESTS
+// REQUESTS
 app.get('/api/requests', (req, res) => {
   res.json({ success: true, requests: readJson('requests.json', []).slice().sort((a, b) => b.votes - a.votes) });
 });
@@ -757,7 +746,7 @@ app.post('/api/requests', (req, res) => {
   }
   requests.push({ id: 'r' + Date.now(), name, voters: [user.email], votes: 1, date: new Date().toISOString() });
   writeJson('requests.json', requests);
-  res.json({ success: true, message: '✅ Game imeongezwa!' });
+  res.json({ success: true, message: 'Game imeongezwa!' });
 });
 
 app.post('/api/requests/:id/vote', (req, res) => {
@@ -769,7 +758,7 @@ app.post('/api/requests/:id/vote', (req, res) => {
   if (item.voters.includes(user.email)) return res.json({ success: false, message: 'Umeshapiga kura' });
   item.voters.push(user.email); item.votes += 1;
   writeJson('requests.json', requests);
-  res.json({ success: true, message: '✅ Kura imeongezwa!' });
+  res.json({ success: true, message: 'Kura imeongezwa!' });
 });
 
 app.delete('/api/requests/:id', (req, res) => {
@@ -779,7 +768,7 @@ app.delete('/api/requests/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// 🧾 ADMIN STATS
+// ADMIN STATS
 app.get('/api/admin/orders', (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
@@ -824,7 +813,7 @@ app.get('/api/admin/stats', (req, res) => {
   res.json({ success: true, stats: { orders: orders.length, total, customers: Object.keys(users).length, products: Object.keys(readJson('products.json', {})).length } });
 });
 
-// 🛡️ SECURITY
+// SECURITY
 app.get('/api/security/events', (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
@@ -847,7 +836,7 @@ app.post('/api/security/block', (req, res) => {
   const { ip, minutes } = req.body;
   if (!ip) return res.status(400).json({ error: 'Andika IP' });
   blockIP(ip, minutes || 60);
-  res.json({ success: true, message: '🛡️ IP imefungwa.' });
+  res.json({ success: true, message: 'IP imefungwa.' });
 });
 
 app.post('/api/security/unblock', (req, res) => {
@@ -858,7 +847,7 @@ app.post('/api/security/unblock', (req, res) => {
   delete data.blocked[ip];
   writeJson(securityFile, data);
   logSecurity('IP_UNBLOCKED', 'IP ' + ip + ' imefunguliwa', 'LOW', getIP(req));
-  res.json({ success: true, message: '✅ IP imefunguliwa.' });
+  res.json({ success: true, message: 'IP imefunguliwa.' });
 });
 
 app.get('/api/security/report', (req, res) => {
@@ -867,10 +856,10 @@ app.get('/api/security/report', (req, res) => {
   const data = readJson(securityFile, { events: [], blocked: {} });
   const now = Date.now();
   const high = data.events.filter(e => e.severity === 'HIGH').length;
-  res.json({ success: true, report: '🛡️ RIPOTI YA USALAMA\nMatukio: ' + data.events.length + '\nHIGH: ' + high + '\nHali: ' + (high > 0 ? 'Kuna hatari!' : 'Salama ✅') });
+  res.json({ success: true, report: 'RIPOTI YA USALAMA\nMatukio: ' + data.events.length + '\nHIGH: ' + high + '\nHali: ' + (high > 0 ? 'Kuna hatari!' : 'Salama') });
 });
 
-// ⚡ CLICKPESA
+// CLICKPESA
 const CLICKPESA_BASE = 'https://api.clickpesa.com/third-parties';
 let clickpesaTokenCache = { token: null, expiresAt: 0 };
 
@@ -884,7 +873,7 @@ async function getClickPesaToken() {
     headers: { 'client-id': process.env.CLICKPESA_CLIENT_ID, 'api-key': process.env.CLICKPESA_API_KEY }
   });
   const data = await r.json();
-  if (!r.ok || !data.token) throw new Error('ClickPesa: token imeshindwa — ' + (data.message || 'Unknown'));
+  if (!r.ok || !data.token) throw new Error('ClickPesa: token imeshindwa - ' + (data.message || 'Unknown'));
   clickpesaTokenCache = { token: data.token, expiresAt: Date.now() + 55 * 60 * 1000 };
   return clickpesaTokenCache.token;
 }
@@ -953,7 +942,7 @@ app.get('/api/clickpesa-check/:ref', (req, res) => {
   res.json({ success: true, status: o.status === 'successful' ? 'successful' : (o.status === 'failed' || o.status === 'failed_to_start' ? 'failed' : o.status === 'amount_mismatch' ? 'amount_mismatch' : 'pending') });
 });
 
-// 💵 MANUAL PAY
+// MANUAL PAY
 app.post('/api/manual-pay', async (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza' });
@@ -965,7 +954,7 @@ app.post('/api/manual-pay', async (req, res) => {
   orders.push({ tx_ref: orderRef, customer: user.email, customerPhone: phone || '', manualTxRef: txRef.trim(), amount: Number(total), items, status: 'pending_manual', date: new Date().toISOString() });
   await writeJson('orders.json', orders);
   logSecurity('MANUAL_PAYMENT_SUBMITTED', user.email, 'LOW', getIP(req));
-  res.json({ success: true, message: '✅ Ripoti imepokelewa!', tx_ref: orderRef });
+  res.json({ success: true, message: 'Ripoti imepokelewa!', tx_ref: orderRef });
 });
 
 app.post('/api/admin/orders/confirm', async (req, res) => {
@@ -978,7 +967,7 @@ app.post('/api/admin/orders/confirm', async (req, res) => {
   order.status = 'successful';
   order.confirmedAt = new Date().toISOString();
   await writeJson('orders.json', orders);
-  res.json({ success: true, message: '✅ Malipo yamethibitishwa.' });
+  res.json({ success: true, message: 'Malipo yamethibitishwa.' });
 });
 
 app.post('/api/admin/orders/reject', async (req, res) => {
@@ -996,9 +985,7 @@ app.get('/api/my-orders', (req, res) => {
   res.json({ success: true, orders: orders.filter(o => o.customer === user.email).slice().reverse() });
 });
 
-// ═══════════════════════════════════════════════════════════════
-// 🤖 AI INTEGRATION
-// ═══════════════════════════════════════════════════════════════
+// AI INTEGRATION
 async function askAI(prompt, preferred) {
   const providers = {
     cerebras: { key: process.env.CEREBRAS_API_KEY, model: process.env.NEXUS_CEREBRAS_MODEL || 'gpt-oss-120b', base: 'https://api.cerebras.ai/v1' },
@@ -1042,7 +1029,7 @@ async function askAI(prompt, preferred) {
       } finally { clearTimeout(timeout); }
       if (text.trim()) return text.trim();
       throw new Error('Empty response');
-    } catch (err) { console.error('❌ AI [' + provider + ']:', err.message); }
+    } catch (err) { console.error('AI [' + provider + ']:', err.message); }
   }
   return 'Samahani, AI haikupatikana kwa sasa.';
 }
@@ -1097,18 +1084,12 @@ app.post('/api/ai/chat', async (req, res) => {
   const { message, history } = req.body;
   if (!message || !message.trim()) return res.status(400).json({ error: 'Andika ujumbe' });
   const products = Object.values(readJson('products.json', {}));
-  const productList = products.length ? products.map(p => '• ' + p.name + ' — ' + Number(p.price).toLocaleString() + ' TZS').join('\n') : 'Hakuna bidhaa';
+  const productList = products.length ? products.map(p => '- ' + p.name + ' - ' + Number(p.price).toLocaleString() + ' TZS').join('\n') : 'Hakuna bidhaa';
   let transcript = '';
   if (Array.isArray(history) && history.length) {
     transcript = '\n[Mazungumzo ya awali]:\n' + history.slice(-4).map(h => (h.role === 'user' ? 'Mteja: ' : 'Wewe: ') + String(h.text).slice(0, 200)).join('\n') + '\n\n';
   }
-  const prompt = `Wewe ni Amina, msaidizi wa Kelvin Gaming TZ.
-Bidhaa zilizopo:
-${productList}
-GeForce NOW: Dakika 20=300, 50=500, Masaa 2=1,000 TZS
-Malipo: M-Pesa, Tigo, Airtel, HaloPesa (ClickPesa)
-${transcript}Mteja: "${message}"
-Jibu kwa Kiswahili kifupi (sentensi 2-4).`;
+  const prompt = 'Wewe ni Amina, msaidizi wa Kelvin Gaming TZ.\nBidhaa zilizopo:\n' + productList + '\nGeForce NOW: Dakika 20=300, 50=500, Masaa 2=1,000 TZS\nMalipo: M-Pesa, Tigo, Airtel, HaloPesa (ClickPesa)\n' + transcript + 'Mteja: "' + message + '"\nJibu kwa Kiswahili kifupi (sentensi 2-4).';
   const reply = await askAI(prompt);
   res.json({ reply, agent: 'Amina' });
 });
@@ -1116,12 +1097,8 @@ Jibu kwa Kiswahili kifupi (sentensi 2-4).`;
 app.post('/api/ai/recommendations', async (req, res) => {
   const { message } = req.body;
   const products = Object.values(readJson('products.json', {}));
-  const catalog = products.map(p => `${p.name} | ${p.type || 'Game'} | ${Number(p.price || 0).toLocaleString()} TZS`).join('\n');
-  const prompt = `Wewe ni AI Recommendation wa Kelvin Gaming TZ.
-Mteja: ${String(message || '').slice(0, 3000)}
-Catalog:
-${catalog || 'Hakuna bidhaa.'}
-Jibu kwa Kiswahili kifupi, chaguo hadi 3.`;
+  const catalog = products.map(p => p.name + ' | ' + (p.type || 'Game') + ' | ' + Number(p.price || 0).toLocaleString() + ' TZS').join('\n');
+  const prompt = 'Wewe ni AI Recommendation wa Kelvin Gaming TZ.\nMteja: ' + String(message || '').slice(0, 3000) + '\nCatalog:\n' + (catalog || 'Hakuna bidhaa.') + '\nJibu kwa Kiswahili kifupi, chaguo hadi 3.';
   const reply = await askAI(prompt);
   res.json({ reply });
 });
@@ -1130,13 +1107,8 @@ app.post('/api/ai/health', async (req, res) => {
   const { message, history } = req.body;
   if (!message) return res.status(400).json({ error: 'Andika swali' });
   const safeMessage = healthSafetyLayer(String(message).slice(0, 5000));
-  const transcript = Array.isArray(history) ? history.slice(-8).map(h => `${h.role}: ${h.text}`).join('\n') : '';
-  const prompt = `Wewe ni msaidizi wa afya wa Kelvin Gaming TZ.
-Toa taarifa za jumla tu; usijidai kuwa daktari, usifanye diagnosis, usiagize dawa.
-Kama ni dharura, mshauri kupiga 114 (Afya) au 112 (Dharura).
-Mazungumzo:
-${transcript}
-Swali: ${safeMessage}`;
+  const transcript = Array.isArray(history) ? history.slice(-8).map(h => h.role + ': ' + h.text).join('\n') : '';
+  const prompt = 'Wewe ni msaidizi wa afya wa Kelvin Gaming TZ.\nToa taarifa za jumla tu; usijidai kuwa daktari, usifanye diagnosis, usiagize dawa.\nKama ni dharura, mshauri kupiga 114 (Afya) au 112 (Dharura).\nMazungumzo:\n' + transcript + '\nSwali: ' + safeMessage;
   const reply = await askAI(prompt, process.env.NEXUS_HEALTH_PROVIDER || 'cerebras');
   const healthLog = readJson('health_chats.json', []);
   healthLog.push({ id: 'hc_' + Date.now(), user: getUserByToken(req)?.email || 'anonymous', question: safeMessage.slice(0, 200), time: new Date().toISOString() });
@@ -1165,10 +1137,7 @@ app.post('/api/ai/boss', async (req, res) => {
   const revenue = paid.reduce((t, o) => t + Number(o.amount || 0), 0);
   const pending = orders.filter(o => String(o.status || '').startsWith('pending'));
   const needsApproval = /payout|refund|withdraw|kutoa pesa|kufuta user|delete user|badilisha wallet|futa data/i.test(message);
-  const prompt = `Wewe ni Kelvin Boss AI. Boss (${user.name}): "${message}"
-TAARIFA:
-- Mauzo: ${orders.length}, Yaliyofanikiwa: ${paid.length}, Mapato: ${revenue.toLocaleString()} TZS, Wateja: ${usersCount}, Pending: ${pending.length}
-Jibu kwa Kiswahili kifupi. Kama ombi linahitaji pesa/delete, sema "⚠️ Inahitaji Boss Approval."`;
+  const prompt = 'Wewe ni Kelvin Boss AI. Boss (' + user.name + '): "' + message + '"\nTAARIFA:\n- Mauzo: ' + orders.length + ', Yaliyofanikiwa: ' + paid.length + ', Mapato: ' + revenue.toLocaleString() + ' TZS, Wateja: ' + usersCount + ', Pending: ' + pending.length + '\nJibu kwa Kiswahili kifupi. Kama ombi linahitaji pesa/delete, sema "Inahitaji Boss Approval."';
   const reply = await askAI(prompt, process.env.NEXUS_BOSS_PROVIDER || 'cerebras');
   if (needsApproval) {
     const approvals = readJson('boss_approvals.json', []);
@@ -1205,22 +1174,22 @@ app.get('/api/banners', (req, res) => {
 
 // ESPN LIVE SCORES
 const ESPN_LEAGUES = {
-  'eng.1': { name: 'Premier League', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-  'esp.1': { name: 'La Liga', flag: '🇪🇸' },
-  'ita.1': { name: 'Serie A', flag: '🇮🇹' },
-  'ger.1': { name: 'Bundesliga', flag: '🇩🇪' },
-  'fra.1': { name: 'Ligue 1', flag: '🇫🇷' },
-  'uefa.champions': { name: 'Champions League', flag: '🇪🇺' },
-  'uefa.europa': { name: 'Europa League', flag: '🇪🇺' }
+  'eng.1': { name: 'Premier League' },
+  'esp.1': { name: 'La Liga' },
+  'ita.1': { name: 'Serie A' },
+  'ger.1': { name: 'Bundesliga' },
+  'fra.1': { name: 'Ligue 1' },
+  'uefa.champions': { name: 'Champions League' },
+  'uefa.europa': { name: 'Europa League' }
 };
 
 async function fetchESPNLeague(leagueCode) {
   try {
-    const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/${leagueCode}/scoreboard`;
+    const url = 'https://site.api.espn.com/apis/site/v2/sports/soccer/' + leagueCode + '/scoreboard';
     const response = await fetch(url, { headers: { 'User-Agent': 'KelvinGamingTZ/1.0' } });
     if (!response.ok) return [];
     const data = await response.json();
-    const leagueInfo = ESPN_LEAGUES[leagueCode] || { name: leagueCode, flag: '⚽' };
+    const leagueInfo = ESPN_LEAGUES[leagueCode] || { name: leagueCode };
     return (data.events || []).map(event => {
       const comp = event.competitions?.[0] || {};
       const home = comp.competitors?.find(c => c.homeAway === 'home') || {};
@@ -1229,7 +1198,6 @@ async function fetchESPNLeague(leagueCode) {
       return {
         id: event.id,
         league: leagueInfo.name,
-        leagueFlag: leagueInfo.flag,
         homeTeam: home.team?.displayName || 'Home',
         homeLogo: home.team?.logo || '',
         homeScore: home.score ?? '0',
@@ -1263,7 +1231,7 @@ app.get('/api/live-scores', async (req, res) => {
 });
 
 app.get('/api/leagues', (req, res) => {
-  res.json({ success: true, leagues: Object.entries(ESPN_LEAGUES).map(([code, info]) => ({ code, name: info.name, flag: info.flag })) });
+  res.json({ success: true, leagues: Object.entries(ESPN_LEAGUES).map(([code, info]) => ({ code, name: info.name })) });
 });
 
 // LIVE STREAMS
@@ -1385,15 +1353,7 @@ async function askClaudeBuilder(command) {
   const key=process.env.ANTHROPIC_API_KEY;
   if(!key) throw new Error('Weka ANTHROPIC_API_KEY.');
   const model=process.env.NEXUS_ANTHROPIC_BUILDER_MODEL || process.env.NEXUS_ANTHROPIC_MODEL || 'claude-3-5-sonnet-latest';
-  const system=`Wewe ni AI Web Developer wa Kelvin Gaming TZ. Tengeneza JSON TU.
-Allowed actions:
-1) add_product: {name,price,productType,desc,section,image}
-2) add_banner: {title,description,buttonText,buttonUrl}
-3) add_movie: {title,description,genre,year,videoUrl,poster}
-4) add_course_video: {courseName,title,description,videoUrl}
-5) add_live_match: {title,league,homeTeam,awayTeam,status,streamUrl,videoUrl,startTime,description}
-6) update_settings: {key,value}
-Jibu: {"summary":"...","actions":[...]}.`;
+  const system='Wewe ni AI Web Developer wa Kelvin Gaming TZ. Tengeneza JSON TU.\nAllowed actions:\n1) add_product: {name,price,productType,desc,section,image}\n2) add_banner: {title,description,buttonText,buttonUrl}\n3) add_movie: {title,description,genre,year,videoUrl,poster}\n4) add_course_video: {courseName,title,description,videoUrl}\n5) add_live_match: {title,league,homeTeam,awayTeam,status,streamUrl,videoUrl,startTime,description}\n6) update_settings: {key,value}\nJibu: {"summary":"...","actions":[...]}.';
   const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model,max_tokens:1800,temperature:0.2,system,messages:[{role:'user',content:String(command).slice(0,6000)}]})});
   const data=await r.json(); if(!r.ok) throw new Error(data?.error?.message||('Claude HTTP '+r.status));
   return extractJson(data?.content?.map(x=>x.text||'').join(''));
@@ -1444,7 +1404,7 @@ app.post('/api/tournaments/register', (req, res) => {
 
 ensureTournamentSeed();
 
-// 🚨 ERROR HANDLER
+// ERROR HANDLER
 app.use((err, req, res, next) => {
   if (err) {
     console.error('API error:', err.message);
@@ -1464,28 +1424,28 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Endpoint haipatikani' });
 });
 
-// 🚀 START SERVER
+// START SERVER
 restoreFromSupabase()
   .then(() => ensureMediaBucket())
-  .catch(err => console.error('☁️ Restore error:', err.message))
+  .catch(err => console.error('Restore error:', err.message))
   .finally(() => {
     const PORT = process.env.PORT || 3000;
     const server = app.listen(PORT, '0.0.0.0', () => {
-      console.log(`\n🎮 ═══════════════════════════════════════════`);
-      console.log(`   KELVIN GAMING TZ API v3.2`);
-      console.log(`   🌍 Port: ${PORT}`);
-      console.log(`   ☁️  Supabase: ${supabase ? '✅' : '❌'}`);
-      console.log(`   🌐 CORS: ${ALLOWED_ORIGINS.length} origins`);
-      console.log(`═══════════════════════════════════════════════\n`);
+      console.log('\n========================================');
+      console.log('   KELVIN GAMING TZ API v3.2');
+      console.log('   Port: ' + PORT);
+      console.log('   Supabase: ' + (supabase ? 'OK' : 'NOT CONFIGURED'));
+      console.log('   CORS: ' + ALLOWED_ORIGINS.length + ' origins');
+      console.log('========================================\n');
     });
 
     const shutdown = (signal) => {
-      console.log(`\n🛑 ${signal} imepokelewa.`);
+      console.log('\n' + signal + ' imepokelewa.');
       server.close(() => process.exit(0));
       setTimeout(() => process.exit(1), 10000);
     };
     process.on('SIGTERM', () => shutdown('SIGTERM'));
     process.on('SIGINT', () => shutdown('SIGINT'));
-    process.on('unhandledRejection', (reason) => console.error('❌ Unhandled:', reason));
-    process.on('uncaughtException', (err) => console.error('❌ Uncaught:', err));
+    process.on('unhandledRejection', (reason) => console.error('Unhandled:', reason));
+    process.on('uncaughtException', (err) => console.error('Uncaught:', err));
   });
