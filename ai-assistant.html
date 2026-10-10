@@ -1,70 +1,276 @@
-<!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Assistant — LIFEISGAMETZ</title>
-<link rel="stylesheet" href="style.css">
-</head><body>
-<div class="app">
-<aside class="sidebar">
-  <a class="brand" href="home.html"><div class="brand-mark">🎮</div><div><b>LIFEISGAMETZ</b><small>PLAY • PREDICT • WIN</small></div></a>
-  <nav><div class="nav-label">DISCOVER</div>
-<a class="nav-item " href="home.html"><span class="nav-icon">🏠</span><span>Home</span></a>
-<a class="nav-item " href="store.html"><span class="nav-icon">🛍️</span><span>Store</span></a>
-<a class="nav-item " href="games.html"><span class="nav-icon">🎮</span><span>Games</span></a>
-<a class="nav-item " href="marketplace.html"><span class="nav-icon">🛒</span><span>Marketplace</span></a>
-<a class="nav-item " href="wishlist.html"><span class="nav-icon">❤️</span><span>Wishlist</span></a>
-<a class="nav-item " href="cart.html"><span class="nav-icon">🛒</span><span>Cart</span></a>
-<div class="nav-label">GAMING</div>
-<a class="nav-item " href="psp-gaming.html"><span class="nav-icon">🎮</span><span>PSP Gaming</span></a>
-<a class="nav-item " href="ps2-gaming.html"><span class="nav-icon">🎮</span><span>PS2 Gaming</span></a>
-<a class="nav-item " href="ps3-gaming.html"><span class="nav-icon">🎮</span><span>PS3 Gaming</span></a>
-<a class="nav-item " href="winlator-gamehub.html"><span class="nav-icon">📱</span><span>Winlator &amp; GameHub</span></a>
-<a class="nav-item " href="nintendo-switch.html"><span class="nav-icon">🎮</span><span>Nintendo Switch</span></a>
-<a class="nav-item " href="android-gaming.html"><span class="nav-icon">📱</span><span>Android Gaming</span></a>
-<a class="nav-item " href="pc-gaming.html"><span class="nav-icon">🖥️</span><span>PC Gaming</span></a>
-<a class="nav-item " href="cloud-gaming.html"><span class="nav-icon">☁️</span><span>Cloud Gaming</span></a>
-<a class="nav-item " href="my-games-library.html"><span class="nav-icon">🎮</span><span>My Games / Library</span></a>
-<div class="nav-label">SPORTS &amp; LIVE</div>
-<a class="nav-item " href="live-tv-esports.html"><span class="nav-icon">📺</span><span>Live TV / eSports</span></a>
-<a class="nav-item " href="live-scores.html"><span class="nav-icon">⚽</span><span>Live Scores</span></a>
-<a class="nav-item " href="tournament.html"><span class="nav-icon">🏆</span><span>Tournament</span></a>
-<a class="nav-item " href="betting.html"><span class="nav-icon">🎰</span><span>Betting</span></a>
-<a class="nav-item " href="efootball-topup.html"><span class="nav-icon">⚽</span><span>eFootball / Top Up</span></a>
-<a class="nav-item " href="live-football-watch.html"><span class="nav-icon">⚽</span><span>Live Football / Watch Match</span></a>
-<a class="nav-item " href="sports-tv.html"><span class="nav-icon">📺</span><span>Sports TV</span></a>
-<a class="nav-item " href="sports-news.html"><span class="nav-icon">📰</span><span>Sports News</span></a>
-<div class="nav-label">MEDIA &amp; LEARN</div>
-<a class="nav-item " href="movies.html"><span class="nav-icon">🎬</span><span>Movies</span></a>
-<a class="nav-item " href="academy.html"><span class="nav-icon">🎓</span><span>Academy</span></a>
-<a class="nav-item " href="live-movies-player.html"><span class="nav-icon">🎬</span><span>Live Movies Player</span></a>
-<a class="nav-item " href="game-trailer.html"><span class="nav-icon">🎞️</span><span>Game Trailer</span></a>
-<a class="nav-item " href="courses.html"><span class="nav-icon">🎓</span><span>Courses</span></a>
-<div class="nav-label">AI &amp; COMMUNITY</div>
-<a class="nav-item " href="community-chat.html"><span class="nav-icon">💬</span><span>Community / Chat</span></a>
-<a class="nav-item " href="health-assistant.html"><span class="nav-icon">🩺</span><span>Health Assistant</span></a>
-<a class="nav-item active" href="ai-assistant.html"><span class="nav-icon">🤖</span><span>AI Assistant</span></a>
-<a class="nav-item " href="contact-support.html"><span class="nav-icon">📞</span><span>Contact / Support</span></a>
-<a class="nav-item " href="faq-help.html"><span class="nav-icon">❓</span><span>FAQ / Help</span></a>
-<div class="nav-label">ACCOUNT</div>
-<a class="nav-item " href="gift-cards.html"><span class="nav-icon">🎁</span><span>Gift Cards</span></a>
-<a class="nav-item " href="profile.html"><span class="nav-icon">👤</span><span>Profile</span></a>
-<a class="nav-item " href="login.html"><span class="nav-icon">🔐</span><span>Login</span></a>
-<a class="nav-item " href="register.html"><span class="nav-icon">📝</span><span>Register</span></a>
-<a class="nav-item " href="product-details.html"><span class="nav-icon">📦</span><span>Product Details</span></a>
-<a class="nav-item " href="checkout.html"><span class="nav-icon">💳</span><span>Checkout</span></a>
-<a class="nav-item " href="my-orders.html"><span class="nav-icon">📋</span><span>My Orders</span></a>
-<a class="nav-item " href="requests-transactions.html"><span class="nav-icon">💰</span><span>Requests / Transactions</span></a></nav>
-</aside>
-<main class="main">
-<header class="topbar">
-  <div class="search">⌕ <input data-search placeholder="Search users, games, matches..."></div>
-  <div class="top-actions"><button class="icon-btn">🔔</button><button class="icon-btn">☰</button><div class="user-chip"><div class="avatar">K</div><div><b>Kelvin</b><small style="display:block;color:#71809c">Member</small></div></div></div>
-</header>
-<div class="content">
-        <section class="page-hero ai-page"><div><div class="eyebrow">🤖 SMART SERVICES</div><h1>AI Assistant</h1><p>Friendly, focused and secure assistant experience inside LIFEISGAMETZ.</p></div><span class="ai-status">● AI ONLINE</span></section>
-        <section class="ai-shell"><aside class="ai-agents"><b>Assistants</b><a class="active">LIFEISGAMETZ AI</a><a>Gaming Expert</a><a>Football Assistant</a><a>Support Agent</a></aside><div class="chat-window"><div class="chat-top"><b>AI Assistant</b><span>Secure session</span></div><div class="messages"><div class="msg bot">Karibu LIFEISGAMETZ 👋. Ungependa msaada gani leo?</div><div class="msg user">Nisaidie kupata game nzuri.</div><div class="msg bot">Naweza kukushauri games kulingana na platform, budget na genre.</div></div><div class="chat-input"><input placeholder="Type your message..."><button class="btn primary">Send</button></div></div></section></div>
-</main>
-</div>
-<nav class="mobile-nav"><a href="home.html"><span>🏠</span>Home</a><a href="live-scores.html"><span>⚽</span>Live</a><a href="ai-assistant.html"><span>🤖</span>AI</a><a href="profile.html"><span>👤</span>Profile</a></nav>
-<script src="app.js"></script>
-</body></html>
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Assistant — LIFEISGAMETZ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- SIDEBAR NAVIGATION                                              -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <aside class="sidebar">
+      <a class="brand" href="home.html">
+        <div class="brand-mark">🎮</div>
+        <div>
+          <b>LIFEISGAMETZ</b>
+          <small>PLAY • PREDICT • WIN</small>
+        </div>
+      </a>
+
+      <nav>
+        <div class="nav-label">DISCOVER</div>
+        <a class="nav-item" href="home.html">
+          <span class="nav-icon">🏠</span>
+          <span>Home</span>
+        </a>
+        <a class="nav-item" href="store.html">
+          <span class="nav-icon">🛍️</span>
+          <span>Store</span>
+        </a>
+        <a class="nav-item" href="games.html">
+          <span class="nav-icon">🎮</span>
+          <span>Games</span>
+        </a>
+        <a class="nav-item" href="marketplace.html">
+          <span class="nav-icon">🛒</span>
+          <span>Marketplace</span>
+        </a>
+        <a class="nav-item" href="wishlist.html">
+          <span class="nav-icon">❤️</span>
+          <span>Wishlist</span>
+        </a>
+        <a class="nav-item" href="cart.html">
+          <span class="nav-icon">🛒</span>
+          <span>Cart</span>
+        </a>
+
+        <div class="nav-label">GAMING</div>
+        <a class="nav-item" href="psp-gaming.html">
+          <span class="nav-icon">🎮</span>
+          <span>PSP Gaming</span>
+        </a>
+        <a class="nav-item" href="ps2-gaming.html">
+          <span class="nav-icon">🎮</span>
+          <span>PS2 Gaming</span>
+        </a>
+        <a class="nav-item" href="ps3-gaming.html">
+          <span class="nav-icon">🎮</span>
+          <span>PS3 Gaming</span>
+        </a>
+        <a class="nav-item" href="winlator-gamehub.html">
+          <span class="nav-icon">📱</span>
+          <span>Winlator &amp; GameHub</span>
+        </a>
+        <a class="nav-item" href="nintendo-switch.html">
+          <span class="nav-icon">🎮</span>
+          <span>Nintendo Switch</span>
+        </a>
+        <a class="nav-item" href="android-gaming.html">
+          <span class="nav-icon">📱</span>
+          <span>Android Gaming</span>
+        </a>
+        <a class="nav-item" href="pc-gaming.html">
+          <span class="nav-icon">🖥️</span>
+          <span>PC Gaming</span>
+        </a>
+        <a class="nav-item" href="cloud-gaming.html">
+          <span class="nav-icon">☁️</span>
+          <span>Cloud Gaming</span>
+        </a>
+        <a class="nav-item" href="my-games-library.html">
+          <span class="nav-icon">🎮</span>
+          <span>My Games / Library</span>
+        </a>
+
+        <div class="nav-label">SPORTS &amp; LIVE</div>
+        <a class="nav-item" href="live-tv-esports.html">
+          <span class="nav-icon">📺</span>
+          <span>Live TV / eSports</span>
+        </a>
+        <a class="nav-item" href="live-scores.html">
+          <span class="nav-icon">⚽</span>
+          <span>Live Scores</span>
+        </a>
+        <a class="nav-item" href="tournament.html">
+          <span class="nav-icon">🏆</span>
+          <span>Tournament</span>
+        </a>
+        <a class="nav-item" href="betting.html">
+          <span class="nav-icon">🎰</span>
+          <span>Betting</span>
+        </a>
+        <a class="nav-item" href="efootball-topup.html">
+          <span class="nav-icon">⚽</span>
+          <span>eFootball / Top Up</span>
+        </a>
+        <a class="nav-item" href="live-football-watch.html">
+          <span class="nav-icon">⚽</span>
+          <span>Live Football / Watch Match</span>
+        </a>
+        <a class="nav-item" href="sports-tv.html">
+          <span class="nav-icon">📺</span>
+          <span>Sports TV</span>
+        </a>
+        <a class="nav-item" href="sports-news.html">
+          <span class="nav-icon">📰</span>
+          <span>Sports News</span>
+        </a>
+
+        <div class="nav-label">MEDIA &amp; LEARN</div>
+        <a class="nav-item" href="movies.html">
+          <span class="nav-icon">🎬</span>
+          <span>Movies</span>
+        </a>
+        <a class="nav-item" href="academy.html">
+          <span class="nav-icon">🎓</span>
+          <span>Academy</span>
+        </a>
+        <a class="nav-item" href="live-movies-player.html">
+          <span class="nav-icon">🎬</span>
+          <span>Live Movies Player</span>
+        </a>
+        <a class="nav-item" href="game-trailer.html">
+          <span class="nav-icon">🎞️</span>
+          <span>Game Trailer</span>
+        </a>
+        <a class="nav-item" href="courses.html">
+          <span class="nav-icon">🎓</span>
+          <span>Courses</span>
+        </a>
+
+        <div class="nav-label">AI &amp; COMMUNITY</div>
+        <a class="nav-item" href="community-chat.html">
+          <span class="nav-icon">💬</span>
+          <span>Community / Chat</span>
+        </a>
+        <a class="nav-item" href="health-assistant.html">
+          <span class="nav-icon">🩺</span>
+          <span>Health Assistant</span>
+        </a>
+        <a class="nav-item active" href="ai-assistant.html">
+          <span class="nav-icon">🤖</span>
+          <span>AI Assistant</span>
+        </a>
+        <a class="nav-item" href="contact-support.html">
+          <span class="nav-icon">📞</span>
+          <span>Contact / Support</span>
+        </a>
+        <a class="nav-item" href="faq-help.html">
+          <span class="nav-icon">❓</span>
+          <span>FAQ / Help</span>
+        </a>
+
+        <div class="nav-label">ACCOUNT</div>
+        <a class="nav-item" href="gift-cards.html">
+          <span class="nav-icon">🎁</span>
+          <span>Gift Cards</span>
+        </a>
+        <a class="nav-item" href="profile.html">
+          <span class="nav-icon">👤</span>
+          <span>Profile</span>
+        </a>
+        <a class="nav-item" href="login.html">
+          <span class="nav-icon">🔐</span>
+          <span>Login</span>
+        </a>
+        <a class="nav-item" href="register.html">
+          <span class="nav-icon">📝</span>
+          <span>Register</span>
+        </a>
+        <a class="nav-item" href="product-details.html">
+          <span class="nav-icon">📦</span>
+          <span>Product Details</span>
+        </a>
+        <a class="nav-item" href="checkout.html">
+          <span class="nav-icon">💳</span>
+          <span>Checkout</span>
+        </a>
+        <a class="nav-item" href="my-orders.html">
+          <span class="nav-icon">📋</span>
+          <span>My Orders</span>
+        </a>
+        <a class="nav-item" href="requests-transactions.html">
+          <span class="nav-icon">💰</span>
+          <span>Requests / Transactions</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- MAIN CONTENT AREA                                               -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <main class="main">
+      <header class="topbar">
+        <div class="search">
+          ⌕ <input data-search placeholder="Search users, games, matches...">
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn">🔔</button>
+          <button class="icon-btn">☰</button>
+          <div class="user-chip">
+            <div class="avatar">K</div>
+            <div>
+              <b>Kelvin</b>
+              <small style="display:block; color:#71809c">Member</small>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- HERO SECTION -->
+        <section class="page-hero ai-page">
+          <div>
+            <div class="eyebrow">🤖 SMART SERVICES</div>
+            <h1>AI Assistant</h1>
+            <p>Friendly, focused and secure assistant experience inside LIFEISGAMETZ.</p>
+          </div>
+          <span class="ai-status">● AI ONLINE</span>
+        </section>
+
+        <!-- AI CHAT SHELL -->
+        <section class="ai-shell">
+          <aside class="ai-agents">
+            <b>Assistants</b>
+            <a class="active">LIFEISGAMETZ AI</a>
+            <a>Gaming Expert</a>
+            <a>Football Assistant</a>
+            <a>Support Agent</a>
+          </aside>
+
+          <div class="chat-window">
+            <div class="chat-top">
+              <b>AI Assistant</b>
+              <span>Secure session</span>
+            </div>
+
+            <div class="messages">
+              <div class="msg bot">Karibu LIFEISGAMETZ 👋. Ungependa msaada gani leo?</div>
+              <div class="msg user">Nisaidie kupata game nzuri.</div>
+              <div class="msg bot">Naweza kukushauri games kulingana na platform, budget na genre.</div>
+            </div>
+
+            <div class="chat-input">
+              <input placeholder="Type your message...">
+              <button class="btn primary">Send</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="mobile-nav">
+    <a href="home.html"><span>🏠</span>Home</a>
+    <a href="live-scores.html"><span>⚽</span>Live</a>
+    <a href="ai-assistant.html"><span>🤖</span>AI</a>
+    <a href="profile.html"><span>👤</span>Profile</a>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
