@@ -39,13 +39,35 @@
   function safeUrl(u){ u=String(u||'').trim(); return /^(https?:\/\/|\/)/i.test(u)?u:''; }
 
   function itemRow(i,o,idx,oi){
-    var link=safeUrl(i.downloadLink), showDL=o.status==='successful'&&link, showAcct=o.status==='successful'&&i.accountUser;
+    var showAcct=o.status==='successful'&&i.accountUser;
     var key='c'+idx+'-'+oi;
+    
+    // Kusanya link zote (ikijumuisha link1, link2, link3 au array ya downloadLinks)
+    var links = [];
+    if (Array.isArray(i.downloadLinks)) {
+      links = i.downloadLinks;
+    } else {
+      if (i.link1) links.push(i.link1);
+      if (i.link2) links.push(i.link2);
+      if (i.link3) links.push(i.link3);
+      if (links.length === 0 && i.downloadLink) links.push(i.downloadLink);
+    }
+
+    var downloadHtml = '';
+    if (o.status === 'successful' && links.length > 0) {
+      downloadHtml = links.map(function(l, lIdx) {
+        var cleanUrl = safeUrl(l);
+        if (!cleanUrl) return '';
+        return '<a class="zp-btn sm" href="'+esc(cleanUrl)+'" target="_blank" rel="noopener noreferrer" style="margin-left:4px; margin-top:4px;">'+ZP.icon('download')+'Download '+(lIdx+1)+'</a>';
+      }).join('');
+    }
+
     return '<div class="or-item"><div class="n"><b>'+esc(i.emoji||'🎮')+' '+esc(i.name)+'</b> × '+esc(i.qty||1)+
       (showAcct?' <button class="zp-btn ghost sm" type="button" data-cred="'+key+'" style="margin-left:8px">'+ZP.icon('shield')+'Taarifa za account</button><div class="mg-cred" id="cred'+key+'" hidden></div>':'')+'</div>'+
-      (showDL?'<a class="zp-btn sm" href="'+esc(link)+'" target="_blank" rel="noopener noreferrer">'+ZP.icon('download')+'Download</a>':'<span class="p">'+ZP.money((Number(i.num)||0)*(Number(i.qty)||1))+'</span>')+
+      (downloadHtml ? '<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">'+downloadHtml+'</div>' : '<span class="p">'+ZP.money((Number(i.num)||0)*(Number(i.qty)||1))+'</span>')+
       '</div>';
   }
+
   function card(o,idx){
     var g=groupOf(o), items=(o.items||[]).map(function(i,oi){ return itemRow(i,o,idx,oi); }).join('');
     var note = o.status==='pending_manual' ? 'Admin bado hajathibitisha malipo yako. Ukishalipa, subiri kidogo au wasiliana WhatsApp.'
