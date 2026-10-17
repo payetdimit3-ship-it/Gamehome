@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Wallet / Mpila Yangu — LIFEISGAMETZ</title>
+  <meta name="description" content="Salio lako la zawadi, historia ya miamala na kuomba kutoa pesa.">
+  <link rel="stylesheet" href="zoneplay-full.css">
+  <style>
+    .wl-grid{display:grid;gap:14px;grid-template-columns:1fr}
+    @media(min-width:900px){.wl-grid{grid-template-columns:5fr 7fr;align-items:start}}
+    .wl-card{background:linear-gradient(180deg,#0e1a3f,#0a1330);border:1px solid var(--line2,#233f88);border-radius:16px;padding:18px}
+    .wl-card h3{margin:0 0 10px;font:700 18px var(--font-d)}
+    .wl-bal{background:linear-gradient(120deg,#5a1fe6,#1a3fd0 70%,#0ea5c6);border:0}
+    .wl-bal small{opacity:.85;font-weight:600}
+    .wl-bal b{display:block;font:700 40px var(--font-d);margin:4px 0 2px}
+    .wl-form{display:grid;gap:10px;margin-top:12px}
+    .wl-form label{display:grid;gap:5px;font-size:12px;color:var(--muted);font-weight:600}
+    .wl-form select,.wl-form input{height:44px;border-radius:10px;border:1px solid #1d3570;background:#08122c;color:#f4f7ff;padding:0 12px;font:500 14px var(--font-b)}
+    .wl-form select:focus,.wl-form input:focus{outline:2px solid #7c3aff;outline-offset:1px}
+    .wl-msg{font-size:13px;min-height:18px}.wl-msg.ok{color:#2be879}.wl-msg.err{color:#ff6b8a}
+    .wl-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #16224d;font-size:14px}
+    .wl-row:last-child{border:0}.wl-row small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+    .wl-pos{color:#2be879;font-weight:700}.wl-neg{color:#ff9fb4;font-weight:700}
+    .wl-st{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;border:1px solid}
+    .wl-st.pending{color:#ffd166;border-color:#8a6a12}.wl-st.paid{color:#2be879;border-color:#1f7a47}.wl-st.rejected{color:#ff9fb4;border-color:#8a1f3a}
+    .wl-note{color:var(--muted);font-size:12.5px;line-height:1.55;margin:10px 0 0}
+  </style>
+</head>
+<body>
+<div class="main">
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="wallet"></div>
+    <div><h1>Mpila Yangu</h1><p>Salio la zawadi zako za mashindano na mechi, na kuomba kutoa pesa.</p></div>
+    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="tournaments.html" id="tourBtn"></a></div>
+  </header>
+
+  <div id="needLogin" class="zp-empty" hidden><h3>Ingia kwanza</h3><p>Ingia kwenye akaunti yako kuona Mpila yako.</p><a class="zp-btn" href="login.html?return=wallet.html">Ingia</a></div>
+
+  <div class="wl-grid" id="wlGrid" hidden>
+    <div>
+      <section class="wl-card wl-bal"><small>Salio linalopatikana</small><b id="balance">TSh 0</b><small id="minLine"></small></section>
+      <section class="wl-card" style="margin-top:14px">
+        <h3>💸 Omba kutoa pesa</h3>
+        <form class="wl-form" id="wdForm" novalidate>
+          <label>Mtandao wa simu<select id="wdNet"></select></label>
+          <label>Namba ya simu<input id="wdPhone" inputmode="tel" placeholder="mf. 0786095758" autocomplete="tel"></label>
+          <label>Kiasi (TZS)<input id="wdAmount" inputmode="numeric" placeholder="mf. 10000"></label>
+          <button class="zp-btn" type="submit" id="wdBtn">Tuma ombi</button>
+          <div class="wl-msg" id="wdMsg" role="status"></div>
+        </form>
+        <p class="wl-note">Maombi yanathibitishwa na admin, ambaye anakutumia pesa kwa mkono. Ombi likikataliwa, salio lako linarudishwa. Salio linatokana na zawadi za mechi na mashindano.</p>
+      </section>
+    </div>
+    <div>
+      <section class="wl-card"><h3>Maombi ya kutoa</h3><div id="wdList"></div></section>
+      <section class="wl-card" style="margin-top:14px"><h3>Historia ya miamala</h3><div id="ledger"></div></section>
+    </div>
+  </div>
+</div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script>
+(function(){
+  var esc=ZP.esc, token=localStorage.getItem('gamehubToken');
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  document.getElementById('tourBtn').innerHTML=ZP.icon('gamepad')+'Mashindano';
+  var money=function(n){ return 'TSh '+Number(n||0).toLocaleString(); };
+  if(!token){ document.getElementById('needLogin').hidden=false; return; }
+  var st={pending:'Inasubiri',paid:'Imelipwa',rejected:'Imekataliwa'};
+  function load(){
+    fetch('/api/wallet',{headers:{'Authorization':token}}).then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); }).then(function(x){
+      if(!x.ok){ document.getElementById('needLogin').hidden=false; return; }
+      var d=x.d; document.getElementById('wlGrid').hidden=false;
+      document.getElementById('balance').textContent=money(d.balance);
+      document.getElementById('minLine').textContent='Kiwango cha chini cha kutoa: '+money(d.minWithdraw);
+      var sel=document.getElementById('wdNet'); if(!sel.options.length) sel.innerHTML=(d.networks||[]).map(function(n){ return '<option>'+esc(n)+'</option>'; }).join('');
+      document.getElementById('wdList').innerHTML=(d.withdrawals||[]).length?d.withdrawals.map(function(w){
+        return '<div class="wl-row"><div><b>'+money(w.amount)+'</b> — '+esc(w.network)+'<small>'+esc(w.phone)+' • '+new Date(w.date).toLocaleDateString()+'</small></div><span class="wl-st '+esc(w.status)+'">'+esc(st[w.status]||w.status)+'</span></div>';
+      }).join(''):'<p class="wl-note">Bado hujaomba kutoa pesa.</p>';
+      document.getElementById('ledger').innerHTML=(d.ledger||[]).length?d.ledger.map(function(l){
+        return '<div class="wl-row"><div>'+esc(l.note||l.type)+'<small>'+new Date(l.date).toLocaleString()+'</small></div><span class="'+(l.amount>=0?'wl-pos':'wl-neg')+'">'+(l.amount>=0?'+':'−')+money(Math.abs(l.amount))+'</span></div>';
+      }).join(''):'<p class="wl-note">Hakuna miamala bado. Shinda mechi au mashindano upate zawadi.</p>';
+    }).catch(function(){ document.getElementById('needLogin').hidden=false; });
+  }
+  document.getElementById('wdForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var msg=document.getElementById('wdMsg'), btn=document.getElementById('wdBtn');
+    msg.className='wl-msg'; msg.textContent='';
+    btn.disabled=true;
+    fetch('/api/wallet/withdraw',{method:'POST',headers:{'Content-Type':'application/json','Authorization':token},body:JSON.stringify({network:document.getElementById('wdNet').value,phone:document.getElementById('wdPhone').value,amount:document.getElementById('wdAmount').value.replace(/[^\d]/g,'')})})
+    .then(function(r){ return r.json(); }).then(function(d){
+      if(d.success){ msg.className='wl-msg ok'; msg.textContent='✅ Ombi limetumwa. Admin atakutumia pesa hivi karibuni.'; document.getElementById('wdAmount').value=''; load(); }
+      else { msg.className='wl-msg err'; msg.textContent=d.error||'Imeshindikana.'; }
+    }).catch(function(){ msg.className='wl-msg err'; msg.textContent='Hitilafu ya mtandao.'; })
+    .then(function(){ btn.disabled=false; });
+  });
+  load();
+})();
+</script>
+</body>
+</html>

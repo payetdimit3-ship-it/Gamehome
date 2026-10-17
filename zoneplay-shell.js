@@ -60,10 +60,11 @@
     ['Home','index.html','home'], ['Store','shop.html','bag'], ['Games','categories.html','grid'],
     ['PSP Gaming','shop.html?cat=psp','gamepad'], ['PS2 Gaming','shop.html?cat=ps2','gamepad'], ['PS3 Gaming','shop.html?cat=ps3','gamepad'],
     ['Nintendo Switch','shop.html?cat=switch','gamepad'], ['Android Gaming','shop.html?cat=android','phone'], ['PC Gaming','shop.html?cat=pc','monitor'],
+    ['Winlator & GameHub','winlator-gamehub.html','phone'], ['Free Games','free-games.html','download'],
     ['Movies','movies.html','film'], ['Live TV / Sports','live.html','tv'], ['Live Scores','livescores.html','trophy'],
     ['Academy / Courses','academy.html','cap'], ['Cloud Gaming','cloudgaming.html','cloud'], ['eFootball / Top Up','efootball.html','ball'],
     ['Gift Cards','giftcards.html','gift'], ['Community / Chat','chat.html','chat'], ['Health Assistant','health.html','pulse'],
-    ['AI Assistant','ai.html','bot'], ['Marketplace','marketplace.html','shop'], ['Wishlist','wishlist.html','heart'],
+    ['AI Assistant','ai.html','bot'], ['Game Advisor (AI)','game-advisor.html','bot'], ['Wallet / Mpila','wallet.html','wallet'], ['Marketplace','marketplace.html','shop'], ['Wishlist','wishlist.html','heart'],
     ['Cart','cart.html','cart'], ['My Games / Library','mygames.html','book'], ['Profile','profile.html','user']
   ];
   var ADMIN_NAV = [
@@ -71,7 +72,7 @@
     ['Payments','payments','wallet'], ['Public Chat','publicchat','chat'], ['Wateja','customers','users'],
     ['Bidhaa','products','gamepad'], ['Hero Studio','hero','film'], ['Requests','requests','search'],
     ['Marketplace','marketplace','shop'], ['Coupons','coupons','gift'], ['Usalama','security','shield'],
-    ['Media & Live','media','tv'], ['AI','ai','bot']
+    ['Web Content','webcontent','tv'], ['Withdraw','withdrawals','wallet'], ['Media & Live','media','tv'], ['AI','ai','bot']
   ];
   var MORE = [
     ['Steam Accounts','steamaccounts.html','user'], ['eFootball Coins','topup.html','ball'], ['Tournaments','tournaments.html','trophy'],
@@ -83,6 +84,7 @@
   /* Pages that belong to a sidebar item without being one */
   var ALIAS = {'product.html':'shop.html','checkout.html':'cart.html','success.html':'mygames.html',
     'courses.html':'academy.html','refund.html':'terms.html'};
+  /*GEN-ALIAS*/Object.assign(ALIAS,{'ai-assistant.html':'ai.html','android-gaming.html':'shop.html','betting.html':'livescores.html','cloud-gaming.html':'cloudgaming.html','community-chat.html':'chat.html','contact-support.html':'contact.html','efootball-topup.html':'efootball.html','faq-help.html':'faq.html','game-trailer.html':'movies.html','games.html':'categories.html','gift-cards.html':'giftcards.html','health-assistant.html':'health.html','home.html':'index.html','live-football-watch.html':'live.html','live-movies-player.html':'movies.html','live-scores.html':'livescores.html','live-tv-esports.html':'live.html','my-games-library.html':'mygames.html','my-orders.html':'myorders.html','nintendo-switch.html':'shop.html','pc-gaming.html':'shop.html','product-details.html':'product.html','ps2-gaming.html':'shop.html','ps3-gaming.html':'shop.html','psp-gaming.html':'shop.html','requests-transactions.html':'myorders.html','sports-news.html':'livescores.html','sports-tv.html':'live.html','store.html':'shop.html','tournament.html':'tournaments.html'});/*END-GEN-ALIAS*/
   var here = (location.pathname.split('/').pop()||'index.html').toLowerCase();
   var qs = new URLSearchParams(location.search);
   function isActive(href, strict){
@@ -140,7 +142,7 @@
     var name = user ? (user.name || (user.email||'').split('@')[0] || 'Mteja') : '';
 
     var shell = document.createElement('div'); shell.id='zp-shell'; shell.className='zp-shell';
-    var isAdminPage = here==='admin.html';
+    var isAdminPage = here==='admin.html' || !!document.querySelector('body > .admin-page');
     var side = document.createElement('aside'); side.className='zp-sidebar'; side.setAttribute('aria-label','Menu kuu');
     if (isAdminPage){
       function adminHash(){ return (location.hash||'#tab-overview').replace('#tab-',''); }
@@ -253,7 +255,50 @@
     var active = side.querySelector('.zp-nav-item.active');
     if (active && active.scrollIntoView) active.scrollIntoView({block:'nearest'});
     if (isAdminPage) bottom.style.display='none';   // the 5-item shopper bottom nav doesn't apply inside Admin OS
+    applySite();
     document.dispatchEvent(new CustomEvent('zp:ready'));
+  }
+
+  /* ---- Maudhui ya website (Web Content): tangazo la juu, mawasiliano, mitandao, footer ---- */
+  function safeHref(u){ u=String(u||'').trim(); return /^(https?:\/\/|\/|[a-z0-9-]+\.html)/i.test(u) ? u : ''; }
+  function applySite(){
+    function apply(site){
+      var Z = window.ZP = window.ZP || {};
+      var c = site.contact || {};
+      Z.CONTACT = Z.CONTACT || {};
+      if (c.whatsapp) Z.CONTACT.wa = c.whatsapp;
+      if (c.phone) Z.CONTACT.phone = c.phone;
+      if (c.email) Z.CONTACT.email = c.email;
+      Z.SITE = site;
+      var main = document.querySelector('.zp-shell .main') || document.querySelector('body > .main') || document.querySelector('.main');
+      if (!main) return;
+      var a = site.announcement || {};
+      if (a.enabled && a.text && !document.getElementById('zpAnnc') && !sessionStorage.getItem('zpAnncClosed')){
+        var bar = document.createElement('div'); bar.id='zpAnnc'; bar.setAttribute('role','status');
+        bar.style.cssText='display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 14px;margin:0 0 12px;border-radius:12px;background:linear-gradient(90deg,#6a2cff,#0ea5c6);color:#fff;font:600 13px Inter,system-ui,sans-serif;text-align:center';
+        var span = document.createElement('span'); span.textContent = a.text; bar.appendChild(span);
+        var href = safeHref(a.link);
+        if (href){ var l = document.createElement('a'); l.href=href; l.textContent='Angalia →'; l.style.cssText='color:#fff;text-decoration:underline;white-space:nowrap'; bar.appendChild(l); }
+        var x = document.createElement('button'); x.type='button'; x.setAttribute('aria-label','Funga tangazo'); x.textContent='×'; x.style.cssText='background:none;border:0;color:#fff;font-size:20px;line-height:1;cursor:pointer';
+        x.onclick=function(){ bar.remove(); try{ sessionStorage.setItem('zpAnncClosed','1'); }catch(e){} };
+        bar.appendChild(x);
+        main.insertBefore(bar, main.firstChild);
+      }
+      var so = site.social || {}, labels = {instagram:'Instagram',facebook:'Facebook',tiktok:'TikTok',youtube:'YouTube',x:'X'};
+      var links = Object.keys(labels).filter(function(k){ return safeHref(so[k]); });
+      if ((site.footerText || links.length) && !document.getElementById('zpSiteFooter') && here!=='admin.html' && !document.querySelector('body > .admin-page')){
+        var f = document.createElement('footer'); f.id='zpSiteFooter';
+        f.style.cssText='margin:30px 0 90px;padding:16px;border-top:1px solid #1d2c63;text-align:center;color:#93a3c7;font:500 13px Inter,system-ui,sans-serif';
+        if (site.footerText){ var p = document.createElement('p'); p.style.margin='0 0 8px'; p.textContent = site.footerText; f.appendChild(p); }
+        links.forEach(function(k){ var l=document.createElement('a'); l.href=safeHref(so[k]); l.target='_blank'; l.rel='noopener noreferrer'; l.textContent=labels[k]; l.style.cssText='color:#19d8ff;margin:0 8px;text-decoration:none;font-weight:600'; f.appendChild(l); });
+        main.appendChild(f);
+      }
+    }
+    var cached = null; try { cached = JSON.parse(sessionStorage.getItem('zpSite') || 'null'); } catch(e){}
+    if (cached && Date.now() - cached.t < 300000) { apply(cached.s); return; }
+    fetch('/api/site-content').then(function(r){ return r.json(); }).then(function(d){
+      if (d && d.site){ try { sessionStorage.setItem('zpSite', JSON.stringify({t:Date.now(), s:d.site})); } catch(e){} apply(d.site); }
+    }).catch(function(){});
   }
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', build); else build();
 })();

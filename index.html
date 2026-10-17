@@ -194,7 +194,7 @@
       var id=ytId(p.trailerUrl);
       return {tag:(p.type||'GAME').toUpperCase(), title:p.name, desc:p.desc, price:p.price, yt:id, video:(!id&&p.trailerUrl)?p.trailerUrl:'', image:(!p.trailerUrl)?p.imageUrl:'', poster:p.imageUrl, emoji:p.emoji, art:ZP.art(p.name), cta:['Nunua Sasa',ZP.href(p)]};
     });
-    var fromBanners=banners.slice(0,3).map(function(b){ return {tag:'GAMEHUB UPDATE', title:b.title||'Habari mpya', desc:b.description, emoji:'📢', art:'linear-gradient(120deg,#3b0a5c,#0a2a6b)', cta:[b.buttonText||'Angalia',safeUrl(b.buttonUrl)]}; });
+    var fromBanners=banners.slice(0,3).map(function(b){ return {tag:'GAMEHUB UPDATE', title:b.title||'Habari mpya', desc:b.description, image:b.imageUrl||'', poster:b.imageUrl||'', emoji:'📢', art:'linear-gradient(120deg,#3b0a5c,#0a2a6b)', cta:[b.buttonText||'Angalia',safeUrl(b.buttonUrl)]}; });
     var all=fromProducts.concat(fromBanners);
     if (all.length) build(all.concat(DEFAULT_SLIDES.slice(0, Math.max(0,3-all.length))));
   });

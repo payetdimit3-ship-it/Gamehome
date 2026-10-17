@@ -17,10 +17,11 @@
     {key:'ps3',   label:'PS3',             title:'PS3 Gaming',       sub:'Titles za PlayStation 3',            icon:'gamepad', emoji:'🎮', art:'linear-gradient(140deg,#0e7490,#1e1b4b)', re:/\bps3\b|playstation ?3/},
     {key:'switch',label:'Nintendo Switch', title:'Nintendo Switch',  sub:'Games za Switch',                    icon:'gamepad', emoji:'🔴', art:'linear-gradient(140deg,#dc2626,#7f1d1d)', re:/switch|nintendo/},
     {key:'android',label:'Android',        title:'Android Gaming',   sub:'Games na top-up za simu',            icon:'phone',   emoji:'📱', art:'linear-gradient(140deg,#16a34a,#14532d)', re:/android|mobile|simu/},
-    {key:'pc',    label:'PC',              title:'PC Gaming',        sub:'Game keys na Steam accounts',        icon:'monitor', emoji:'💻', art:'linear-gradient(140deg,#0284c7,#1e3a8a)', re:/\bpc\b|steam|windows/}
+    {key:'pc',    label:'PC',              title:'PC Gaming',        sub:'Game keys na Steam accounts',        icon:'monitor', emoji:'💻', art:'linear-gradient(140deg,#0284c7,#1e3a8a)', re:/\bpc\b|steam|windows/},
+    {key:'winlator',label:'Winlator',      title:'Winlator & GameHub', sub:'Michezo ya Windows kwenye Android', icon:'phone',   emoji:'🪟', art:'linear-gradient(140deg,#0f766e,#1e1b4b)', re:/winlator|gamehub/}
   ];
   ZP.KINDS = [
-    {key:'all',label:'Zote'},{key:'key',label:'Game Keys'},{key:'topup',label:'Top-Up'},{key:'gift',label:'Gift Cards'},{key:'account',label:'Steam Accounts'}
+    {key:'all',label:'Zote'},{key:'free',label:'Free'},{key:'key',label:'Game Keys'},{key:'topup',label:'Top-Up'},{key:'gift',label:'Gift Cards'},{key:'account',label:'Steam Accounts'}
   ];
   var KIND_TAG = {topup:'TOP-UP', gift:'GIFT CARD', account:'ACCOUNT', squad:'KIKOSI'};
 
@@ -51,12 +52,14 @@
   function detectPlatform(p){
     if (p.platform){ var k=String(p.platform).toLowerCase(); if (ZP.PLATFORMS.some(function(x){return x.key===k;})) return k; }
     var t=[p.category,p.type,p.name,p.platform].join(' ').toLowerCase();
+    if (/winlator|gamehub/.test(t)) return 'winlator';
     for (var i=0;i<ZP.PLATFORMS.length;i++) if (ZP.PLATFORMS[i].re.test(t)) return ZP.PLATFORMS[i].key;
     return '';
   }
   function norm(p){
     return {id:p.id, name:p.name||'Bidhaa', type:p.type||'Bidhaa', price:Number(p.price)||0, emoji:p.emoji||'🎮', imageUrl:p.imageUrl||'',
-      trailerUrl:p.trailerUrl||'', desc:p.desc||'', kind:detectKind(p), platform:detectPlatform(p), admin:true};
+      trailerUrl:p.trailerUrl||'', desc:p.desc||'', kind:detectKind(p), platform:detectPlatform(p), admin:true,
+      free:!!p.free, specs:p.specs||'', downloadLink:p.downloadLink||'', links:Array.isArray(p.links)?p.links:[]};
   }
 
   /* Products of one admin section (e.g. 'efootball' squads). Resolves to null when the request fails. */
@@ -160,6 +163,12 @@
     }catch(e){}
   };
 
+  ZP.matchKind = function(p, k){ return k==='all' || (k==='free' ? !!p.free : p.kind===k); };
+  ZP.linksOf = function(p){
+    var out=[]; (p.links||[]).forEach(function(l){ if(l&&/^(https?:\/\/|\/uploads\/)/i.test(l.url||'')) out.push({label:l.label||'Download',url:l.url}); });
+    if (p.downloadLink && /^(https?:\/\/|\/uploads\/)/i.test(p.downloadLink) && !out.some(function(l){return l.url===p.downloadLink;})) out.unshift({label:'Download',url:p.downloadLink});
+    return out;
+  };
   ZP.money = function(n){ return Number(n||0).toLocaleString('en-US'); };
   ZP.href = function(p){ return 'product.html?id='+encodeURIComponent(p.id)+(p.admin?'&admin=1':''); };
   ZP.platformOf = function(key){ return ZP.PLATFORMS.filter(function(x){return x.key===key;})[0]; };
@@ -167,7 +176,7 @@
   function wish(){ try{ return JSON.parse(localStorage.getItem('gamehubWishlist')||'{}')||{}; }catch(e){ return {}; } }
   ZP.card = function(p){
     var plat = ZP.platformOf(p.platform);
-    var tag = KIND_TAG[p.kind] || (plat ? plat.label.toUpperCase() : 'GAME');
+    var tag = p.free ? 'FREE' : (KIND_TAG[p.kind] || (plat ? plat.label.toUpperCase() : 'GAME'));
     var w = wish()[p.id];
     var img = p.imageUrl ? '<img src="'+esc(p.imageUrl)+'" alt="" loading="lazy" onerror="this.remove()">' : '';
     var href = ZP.href(p);
@@ -175,7 +184,7 @@
       '<a class="zp-art" href="'+href+'" style="--art:'+ZP.art(p.name)+'" aria-label="'+esc(p.name)+'">'+img+(p.imageUrl?'':'<span class="zp-emoji">'+esc(p.emoji)+'</span>')+'<span class="zp-tag">'+esc(tag)+'</span></a>'+
       '<button class="zp-fav'+(w?' on':'')+'" data-fav="'+esc(p.id)+'" aria-pressed="'+(w?'true':'false')+'" aria-label="Wishlist">'+ZP.icon('heart')+'</button>'+
       '<div class="zp-info"><h3>'+esc(p.name)+'</h3><small>'+esc(p.type)+'</small>'+
-      '<div class="zp-buyrow"><span class="zp-price">'+ZP.money(p.price)+'<small>TZS</small></span><a class="zp-btn" href="'+href+'">Nunua</a></div></div></article>';
+      '<div class="zp-buyrow"><span class="zp-price">'+(p.free?'FREE':ZP.money(p.price)+'<small>TZS</small>')+'</span><a class="zp-btn" href="'+href+'">'+(p.free?'Pata Free':'Nunua')+'</a></div></div></article>';
   };
 
   /* Wishlist hearts (same storage as product.html / wishlist.html) */

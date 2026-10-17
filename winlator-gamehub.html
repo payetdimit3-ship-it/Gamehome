@@ -1,351 +1,80 @@
 <!DOCTYPE html>
 <html lang="sw">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Winlator &amp; GameHub — LIFEISGAMETZ</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Cheza michezo ya Windows kwenye simu ya Android kwa Winlator na GameHub. Angalia kama simu yako inatosha kabla ya kununua.">
+  <link rel="stylesheet" href="zoneplay-full.css">
+  <style>
+    .wl-hero{display:grid;gap:10px;padding:22px;border-radius:18px;border:1px solid #1f6f6a;background:linear-gradient(120deg,#0b3a3a,#12104a 70%);margin-bottom:16px}
+    .wl-hero h2{margin:0;font:700 26px var(--font-d)}.wl-hero p{margin:0;color:#c8e8e6;font-size:14px;line-height:1.55}
+    .wl-cols{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-bottom:18px}
+    .wl-box{background:linear-gradient(180deg,#0e1a3f,#0a1330);border:1px solid var(--line2);border-radius:14px;padding:14px 16px}
+    .wl-box h3{margin:0 0 8px;font:700 17px var(--font-d)}
+    .wl-box ul,.wl-box ol{margin:0;padding-left:18px;color:#c4d0ee;font-size:13.5px;line-height:1.65}
+    .wl-h{font:700 22px var(--font-d);margin:22px 0 10px}
+  </style>
 </head>
 <body>
-  <div class="app">
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- SIDEBAR NAVIGATION                                              -->
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <aside class="sidebar">
-      <a class="brand" href="home.html">
-        <div class="brand-mark">🎮</div>
-        <div>
-          <b>LIFEISGAMETZ</b>
-          <small>PLAY • PREDICT • WIN</small>
-        </div>
-      </a>
+<div class="main">
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="phone"></div>
+    <div><h1>Winlator &amp; GameHub</h1><p>Cheza michezo ya Windows kwenye simu yako ya Android.</p></div>
+    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="free-games.html?cat=winlator" id="fgBtn"></a></div>
+  </header>
 
-      <nav>
-        <div class="nav-label">DISCOVER</div>
-        <a class="nav-item" href="home.html">
-          <span class="nav-icon">🏠</span>
-          <span>Home</span>
-        </a>
-        <a class="nav-item" href="store.html">
-          <span class="nav-icon">🛍️</span>
-          <span>Store</span>
-        </a>
-        <a class="nav-item" href="games.html">
-          <span class="nav-icon">🎮</span>
-          <span>Games</span>
-        </a>
-        <a class="nav-item" href="marketplace.html">
-          <span class="nav-icon">🛒</span>
-          <span>Marketplace</span>
-        </a>
-        <a class="nav-item" href="wishlist.html">
-          <span class="nav-icon">❤️</span>
-          <span>Wishlist</span>
-        </a>
-        <a class="nav-item" href="cart.html">
-          <span class="nav-icon">🛒</span>
-          <span>Cart</span>
-        </a>
+  <section class="wl-hero">
+    <h2>📱 PC games kwenye simu</h2>
+    <p>Winlator na GameHub Lite zinakuwezesha kuendesha baadhi ya michezo ya Windows kwenye Android. Matokeo yanategemea sana nguvu ya simu — ndiyo maana tumeweka <b>AI Advisor</b> hapa chini: jaza uwezo wa simu yako ujue kama game itacheza <b>kabla ya kununua</b>.</p>
+  </section>
 
-        <div class="nav-label">GAMING</div>
-        <a class="nav-item" href="psp-gaming.html">
-          <span class="nav-icon">🎮</span>
-          <span>PSP Gaming</span>
-        </a>
-        <a class="nav-item" href="ps2-gaming.html">
-          <span class="nav-icon">🎮</span>
-          <span>PS2 Gaming</span>
-        </a>
-        <a class="nav-item" href="ps3-gaming.html">
-          <span class="nav-icon">🎮</span>
-          <span>PS3 Gaming</span>
-        </a>
-        <a class="nav-item active" href="winlator-gamehub.html">
-          <span class="nav-icon">📱</span>
-          <span>Winlator &amp; GameHub</span>
-        </a>
-        <a class="nav-item" href="nintendo-switch.html">
-          <span class="nav-icon">🎮</span>
-          <span>Nintendo Switch</span>
-        </a>
-        <a class="nav-item" href="android-gaming.html">
-          <span class="nav-icon">📱</span>
-          <span>Android Gaming</span>
-        </a>
-        <a class="nav-item" href="pc-gaming.html">
-          <span class="nav-icon">🖥️</span>
-          <span>PC Gaming</span>
-        </a>
-        <a class="nav-item" href="cloud-gaming.html">
-          <span class="nav-icon">☁️</span>
-          <span>Cloud Gaming</span>
-        </a>
-        <a class="nav-item" href="my-games-library.html">
-          <span class="nav-icon">🎮</span>
-          <span>My Games / Library</span>
-        </a>
-
-        <div class="nav-label">SPORTS &amp; LIVE</div>
-        <a class="nav-item" href="live-tv-esports.html">
-          <span class="nav-icon">📺</span>
-          <span>Live TV / eSports</span>
-        </a>
-        <a class="nav-item" href="live-scores.html">
-          <span class="nav-icon">⚽</span>
-          <span>Live Scores</span>
-        </a>
-        <a class="nav-item" href="tournament.html">
-          <span class="nav-icon">🏆</span>
-          <span>Tournament</span>
-        </a>
-        <a class="nav-item" href="betting.html">
-          <span class="nav-icon">🎰</span>
-          <span>Betting</span>
-        </a>
-        <a class="nav-item" href="efootball-topup.html">
-          <span class="nav-icon">⚽</span>
-          <span>eFootball / Top Up</span>
-        </a>
-        <a class="nav-item" href="live-football-watch.html">
-          <span class="nav-icon">⚽</span>
-          <span>Live Football / Watch Match</span>
-        </a>
-        <a class="nav-item" href="sports-tv.html">
-          <span class="nav-icon">📺</span>
-          <span>Sports TV</span>
-        </a>
-        <a class="nav-item" href="sports-news.html">
-          <span class="nav-icon">📰</span>
-          <span>Sports News</span>
-        </a>
-
-        <div class="nav-label">MEDIA &amp; LEARN</div>
-        <a class="nav-item" href="movies.html">
-          <span class="nav-icon">🎬</span>
-          <span>Movies</span>
-        </a>
-        <a class="nav-item" href="academy.html">
-          <span class="nav-icon">🎓</span>
-          <span>Academy</span>
-        </a>
-        <a class="nav-item" href="live-movies-player.html">
-          <span class="nav-icon">🎬</span>
-          <span>Live Movies Player</span>
-        </a>
-        <a class="nav-item" href="game-trailer.html">
-          <span class="nav-icon">🎞️</span>
-          <span>Game Trailer</span>
-        </a>
-        <a class="nav-item" href="courses.html">
-          <span class="nav-icon">🎓</span>
-          <span>Courses</span>
-        </a>
-
-        <div class="nav-label">AI &amp; COMMUNITY</div>
-        <a class="nav-item" href="community-chat.html">
-          <span class="nav-icon">💬</span>
-          <span>Community / Chat</span>
-        </a>
-        <a class="nav-item" href="health-assistant.html">
-          <span class="nav-icon">🩺</span>
-          <span>Health Assistant</span>
-        </a>
-        <a class="nav-item" href="ai-assistant.html">
-          <span class="nav-icon">🤖</span>
-          <span>AI Assistant</span>
-        </a>
-        <a class="nav-item" href="contact-support.html">
-          <span class="nav-icon">📞</span>
-          <span>Contact / Support</span>
-        </a>
-        <a class="nav-item" href="faq-help.html">
-          <span class="nav-icon">❓</span>
-          <span>FAQ / Help</span>
-        </a>
-
-        <div class="nav-label">ACCOUNT</div>
-        <a class="nav-item" href="gift-cards.html">
-          <span class="nav-icon">🎁</span>
-          <span>Gift Cards</span>
-        </a>
-        <a class="nav-item" href="profile.html">
-          <span class="nav-icon">👤</span>
-          <span>Profile</span>
-        </a>
-        <a class="nav-item" href="login.html">
-          <span class="nav-icon">🔐</span>
-          <span>Login</span>
-        </a>
-        <a class="nav-item" href="register.html">
-          <span class="nav-icon">📝</span>
-          <span>Register</span>
-        </a>
-        <a class="nav-item" href="product-details.html">
-          <span class="nav-icon">📦</span>
-          <span>Product Details</span>
-        </a>
-        <a class="nav-item" href="checkout.html">
-          <span class="nav-icon">💳</span>
-          <span>Checkout</span>
-        </a>
-        <a class="nav-item" href="my-orders.html">
-          <span class="nav-icon">📋</span>
-          <span>My Orders</span>
-        </a>
-        <a class="nav-item" href="requests-transactions.html">
-          <span class="nav-icon">💰</span>
-          <span>Requests / Transactions</span>
-        </a>
-      </nav>
-    </aside>
-
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- MAIN CONTENT AREA                                               -->
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <main class="main">
-      <header class="topbar">
-        <div class="search">
-          ⌕ <input data-search placeholder="Search users, games, matches...">
-        </div>
-        <div class="top-actions">
-          <button class="icon-btn">🔔</button>
-          <button class="icon-btn">☰</button>
-          <div class="user-chip">
-            <div class="avatar">K</div>
-            <div>
-              <b>Kelvin</b>
-              <small style="display:block; color:#71809c">Member</small>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div class="content">
-        <!-- HERO SECTION -->
-        <section class="page-hero">
-          <div>
-            <div class="eyebrow">📱 LIFEISGAMETZ</div>
-            <h1>Winlator &amp; GameHub</h1>
-            <p>Browse, filter and discover the latest digital gaming products and experiences.</p>
-          </div>
-          <button class="btn primary">+ Add to collection</button>
-        </section>
-
-        <!-- TOOLBAR -->
-        <section class="toolbar">
-          <input placeholder="Search Winlator &amp; GameHub...">
-          <select>
-            <option>All categories</option>
-            <option>Newest</option>
-            <option>Popular</option>
-            <option>Price</option>
-          </select>
-          <button class="btn ghost">Filters</button>
-        </section>
-
-        <!-- CATALOG GRID -->
-        <section class="card-grid catalog-grid">
-          <article class="product-card">
-            <div class="thumb t0">🎮</div>
-            <div>
-              <span class="tag">DIGITAL</span>
-              <b>Premium Game Pack 1</b>
-              <small>Instant access • Verified</small>
-              <strong>TSh 12,000</strong>
-              <a class="mini-btn" href="product-details.html">View details</a>
-            </div>
-          </article>
-
-          <article class="product-card">
-            <div class="thumb t1">🕹️</div>
-            <div>
-              <span class="tag">DIGITAL</span>
-              <b>Ultimate Gaming Bundle 2</b>
-              <small>Instant access • Verified</small>
-              <strong>TSh 19,500</strong>
-              <a class="mini-btn" href="product-details.html">View details</a>
-            </div>
-          </article>
-
-          <article class="product-card">
-            <div class="thumb t2">⚡</div>
-            <div>
-              <span class="tag">DIGITAL</span>
-              <b>Pro Edition 3</b>
-              <small>Instant access • Verified</small>
-              <strong>TSh 27,000</strong>
-              <a class="mini-btn" href="product-details.html">View details</a>
-            </div>
-          </article>
-
-          <article class="product-card">
-            <div class="thumb t3">🔥</div>
-            <div>
-              <span class="tag">DIGITAL</span>
-              <b>Starter Pack 4</b>
-              <small>Instant access • Verified</small>
-              <strong>TSh 34,500</strong>
-              <a class="mini-btn" href="product-details.html">View details</a>
-            </div>
-          </article>
-
-          <article class="product-card">
-            <div class="thumb t0">🎮</div>
-            <div>
-              <span class="tag">DIGITAL</span>
-              <b>Premium Game Pack 5</b>
-              <small>Instant access • Verified</small>
-              <strong>TSh 42,000</strong>
-              <a class="mini-btn" href="product-details.html">View details</a>
-            </div>
-          </article>
-
-          <article class="product-card">
-            <div class="thumb t1">🕹️</div>
-            <div>
-              <span class="tag">DIGITAL</span>
-              <b>Ultimate Gaming Bundle 6</b>
-              <small>Instant access • Verified</small>
-              <strong>TSh 49,500</strong>
-              <a class="mini-btn" href="product-details.html">View details</a>
-            </div>
-          </article>
-
-          <article class="product-card">
-            <div class="thumb t2">⚡</div>
-            <div>
-              <span class="tag">DIGITAL</span>
-              <b>Pro Edition 7</b>
-              <small>Instant access • Verified</small>
-              <strong>TSh 57,000</strong>
-              <a class="mini-btn" href="product-details.html">View details</a>
-            </div>
-          </article>
-
-          <article class="product-card">
-            <div class="thumb t3">🔥</div>
-            <div>
-              <span class="tag">DIGITAL</span>
-              <b>Starter Pack 8</b>
-              <small>Instant access • Verified</small>
-              <strong>TSh 64,500</strong>
-              <a class="mini-btn" href="product-details.html">View details</a>
-            </div>
-          </article>
-        </section>
-      </div>
-    </main>
+  <div class="wl-cols">
+    <div class="wl-box"><h3>✅ Simu inayofaa</h3><ul>
+      <li>Snapdragon 8 Gen 1 au bora (Adreno 730+) ni chaguo bora</li>
+      <li>RAM 8GB+ (6GB kwa michezo myepesi)</li>
+      <li>Nafasi ya storage 20GB+ bure</li>
+      <li>Simu za Mali/Helio mara nyingi zina matatizo ya drivers</li>
+    </ul></div>
+    <div class="wl-box"><h3>⚙️ Settings za kuanzia</h3><ul>
+      <li>Box64 preset: Performance au Compatibility</li>
+      <li>DXVK kwa DX9–11, VKD3D kwa DX12</li>
+      <li>Graphics driver: Turnip (Adreno)</li>
+      <li>Screen 800×600 hadi 1280×720 kwa kasi nzuri</li>
+    </ul></div>
+    <div class="wl-box"><h3>⚠️ Kumbuka</h3><ul>
+      <li>Si kila game itacheza — compatibility inatofautiana</li>
+      <li>Michezo mipya ya AAA kwa kawaida ni mizito mno</li>
+      <li>Jaribu free game kwanza kabla ya kulipia</li>
+    </ul></div>
   </div>
 
-  <!-- MOBILE BOTTOM NAV -->
-  <nav class="mobile-nav">
-    <a href="home.html"><span>🏠</span>Home</a>
-    <a href="live-scores.html"><span>⚽</span>Live</a>
-    <a href="ai-assistant.html"><span>🤖</span>AI</a>
-    <a href="profile.html"><span>👤</span>Profile</a>
-  </nav>
+  <h2 class="wl-h">🤖 AI Advisor — Winlator</h2>
+  <div id="advisor"></div>
 
-  <script src="app.js"></script>
-  <script src="lifegametz-ai-widget.js"></script>
+  <h2 class="wl-h">🎮 Games za Winlator</h2>
+  <p class="zp-count" id="countLine"></p>
+  <section class="zp-grid" id="grid"><div class="zp-empty"><p>Inapakia...</p></div></section>
+</div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script src="game-advisor.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  document.getElementById('fgBtn').innerHTML=ZP.icon('download')+'Free Games';
+  ZP.advisor.mount(document.getElementById('advisor'), { category:'winlator', compact:true });
+  var grid=document.getElementById('grid'), count=document.getElementById('countLine');
+  ZP.loadProducts().then(function(list){
+    var mine=list.filter(function(p){ return p.platform==='winlator'; });
+    count.textContent=mine.length+' bidhaa';
+    grid.innerHTML = mine.length ? mine.map(ZP.card).join('') :
+      '<div class="zp-empty"><h3>Bado hakuna games za Winlator</h3><p>Admin akiziongeza (platform: Winlator) zitaonekana hapa.</p><a class="zp-btn" href="requests.html">Omba Game</a></div>';
+  });
+})();
+</script>
 </body>
 </html>

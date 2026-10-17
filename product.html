@@ -154,6 +154,7 @@
 <script src="zp-catalog.js"></script>
 <script src="app.js"></script>
 <script src="chat.js"></script>
+<script src="game-advisor.js"></script>
 
 <script>
 (function(){
@@ -178,7 +179,17 @@
     document.getElementById('crumbName').textContent = p.name;
     document.title = p.name + ' — LIFEISGAMETZ';
 
-    const priceNum = Number(p.priceNumber || String(p.price||'').replace(/[^\d]/g,'')) || 0;
+    const isFree = !!p.free;
+    const dlLinks = (ZP.linksOf ? ZP.linksOf(p) : []);
+    const advPlat = (function(){
+      if (p.platform) return p.platform;
+      const t = String((p.type||'') + ' ' + (p.name||'') + ' ' + (p.category||'')).toLowerCase();
+      if (/winlator|gamehub/.test(t)) return 'winlator';
+      const P = (ZP.PLATFORMS || []);
+      for (let i = 0; i < P.length; i++) if (P[i].re && P[i].re.test(t)) return P[i].key;
+      return 'pc';
+    })();
+    const priceNum = isFree ? 0 : (Number(p.priceNumber || String(p.price||'').replace(/[^\d]/g,'')) || 0);
     const oldPrice = priceNum ? Math.round(priceNum * 1.35) : 0;
     const off = priceNum ? Math.round(((oldPrice - priceNum) / oldPrice) * 100) : 0;
 
@@ -209,44 +220,49 @@
       { ico: '🌍', label: 'Languages', value: p.languages || 'English, French, Spanish, German, Italian + more' }
     ];
 
-    const platforms = ['PS5', 'PS4', 'Xbox', 'PC', 'Switch'];
+    const platforms = [(ZP.platformOf && ZP.platformOf(advPlat)) ? ZP.platformOf(advPlat).label : 'PC'];
 
     container.innerHTML = `
       <div class="p2-top">
         <div class="p2-gallery">
           ${thumbs}
           <div class="p2-main">
-            <span class="p2-badge">Best Seller</span>
+            <span class="p2-badge">${isFree ? 'FREE' : 'Best Seller'}</span>
             ${mainMedia}
           </div>
         </div>
 
         <div class="p2-info">
           <div class="p2-tags">
-            ${[p.type || 'EA SPORTS', 'Sports', 'Football', 'Multiplayer'].map(function(t){ return '<span>' + esc(t) + '</span>'; }).join('')}
+            ${[p.type, (p.category && p.category !== 'Zote' ? p.category : ''), (ZP.platformOf && ZP.platformOf(advPlat) ? ZP.platformOf(advPlat).label : '')].filter(Boolean).map(function(t){ return '<span>' + esc(t) + '</span>'; }).join('')}
           </div>
           <h1>${esc(p.name)}</h1>
-          <div class="p2-rating">
-            <span class="stars">★★★★★</span>
-            <span><b style="color:#fff">4.7</b> (2,543 reviews)</span>
-          </div>
 
           <div class="p2-platforms">
             ${platforms.map(function(pl,i){ return '<button type="button" class="' + (i===0?'on':'') + '">' + pl + '</button>'; }).join('')}
           </div>
 
           <div class="p2-price">
-            <span class="now">${money(priceNum)}</span>
-            <span class="old">${money(oldPrice)}</span>
-            <span class="off">-${off}%</span>
+            ${isFree
+              ? '<span class="now" style="color:#2be879">FREE</span>'
+              : '<span class="now">' + money(priceNum) + '</span><span class="old">' + money(oldPrice) + '</span><span class="off">-' + off + '%</span>'}
           </div>
 
+          ${isFree ? `
+          <div class="p2-delivery" style="display:block">
+            <b style="color:#fff">⬇️ Download Links ${dlLinks.length ? '(' + dlLinks.length + ')' : ''}</b>
+            <div style="display:grid;gap:8px;margin-top:10px">
+              ${dlLinks.length ? dlLinks.map(function(l){
+                return '<a href="' + esc(l.url) + '" target="_blank" rel="noopener noreferrer" style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 14px;border-radius:10px;background:#0b1a44;border:1px solid #1d3570;color:#fff;text-decoration:none;font-weight:600"><span>⬇️ ' + esc(l.label) + '</span><span>↗</span></a>';
+              }).join('') : '<span style="color:var(--muted)">Link bado haijawekwa. Wasiliana nasi kupata link.</span>'}
+            </div>
+          </div>` : `
           <div class="p2-delivery">
             <i>⚡</i>
-            <div><b style="color:#fff">Digital Download</b><br>Instant delivery after purchase</div>
-          </div>
+            <div><b style="color:#fff">Digital Download</b><br>Links/akaunti utazipata kwenye My Orders baada ya malipo</div>
+          </div>`}
 
-          <div class="p2-qty">
+          <div class="p2-qty"${isFree ? ' style="display:none"' : ''}>
             <label>Quantity</label>
             <div class="p2-qty-btns">
               <button type="button" id="qtyDec">−</button>
@@ -256,8 +272,8 @@
           </div>
 
           <div class="p2-buttons">
-            <button class="p2-buy" id="buyNow">⚡ Buy Now</button>
-            <button class="p2-add" id="addCart">🛒 Add to Cart</button>
+            <button class="p2-buy" id="buyNow"${isFree ? ' style="display:none"' : ''}>⚡ Buy Now</button>
+            <button class="p2-add" id="addCart"${isFree ? ' style="display:none"' : ''}>🛒 Add to Cart</button>
             <button class="p2-wish" id="wish" title="Wishlist">🤍</button>
           </div>
 
@@ -273,7 +289,8 @@
         <button class="p2-tab on" data-t="overview">Overview</button>
         <button class="p2-tab" data-t="features">Features</button>
         <button class="p2-tab" data-t="req">System Requirements</button>
-        <button class="p2-tab" data-t="reviews">Reviews (2,543)</button>
+        <button class="p2-tab" data-t="advisor">🤖 AI Advisor</button>
+        <button class="p2-tab" data-t="reviews">Reviews</button>
       </div>
 
       <div class="p2-tab-content" id="tabOverview">
@@ -302,10 +319,14 @@
 
       <div class="p2-tab-content" id="tabReq" hidden>
         <h3>System Requirements</h3>
-        <div class="p2-details-grid">
-          <div><b style="color:#fff">Minimum</b><p>OS: Windows 10 64-bit · CPU: Intel Core i5-6600K · RAM: 8 GB · GPU: NVIDIA GTX 1050 Ti · Storage: 50 GB</p></div>
-          <div><b style="color:#fff">Recommended</b><p>OS: Windows 11 64-bit · CPU: Intel Core i7-9700 · RAM: 16 GB · GPU: NVIDIA RTX 2060 · Storage: 50 GB SSD</p></div>
-        </div>
+        ${p.specs
+          ? '<p style="white-space:pre-line">' + esc(p.specs) + '</p>'
+          : '<p style="color:var(--muted)">Requirements za game hii bado hazijawekwa. Fungua tab ya <b>🤖 AI Advisor</b> ujue kama itacheza kwenye simu/PC yako.</p>'}
+      </div>
+
+      <div class="p2-tab-content" id="tabAdvisor" hidden>
+        <h3>🤖 Itacheza kwenye kifaa changu?</h3>
+        <div id="advisorMount"></div>
       </div>
 
       <div class="p2-tab-content" id="tabReviews" hidden>
@@ -408,7 +429,11 @@
       t.addEventListener('click', function(){
         tabs.forEach(function(x){ x.classList.remove('on'); });
         t.classList.add('on');
-        ['overview','features','req','reviews'].forEach(function(k){
+        if (t.dataset.t === 'advisor' && !t.dataset.mounted && window.ZP && ZP.advisor) {
+          t.dataset.mounted = '1';
+          ZP.advisor.mount(document.getElementById('advisorMount'), { category: advPlat, game: p.name, compact: true });
+        }
+        ['overview','features','req','advisor','reviews'].forEach(function(k){
           const el = document.getElementById('tab' + k.charAt(0).toUpperCase() + k.slice(1));
           if (el) el.hidden = (k !== t.dataset.t);
         });
