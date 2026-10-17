@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Game Advisor (AI) — LIFEISGAMETZ</title>
+  <meta name="description" content="Angalia kama game itacheza kwenye simu au PC yako kabla ya kununua, na upate settings bora kutoka kwa AI.">
+  <link rel="stylesheet" href="zoneplay-full.css">
+</head>
+<body>
+<div class="main">
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="bot"></div>
+    <div><h1>Game Advisor (AI)</h1><p>Jaza uwezo wa simu au PC yako — AI ikuambie game itacheza au la, na settings bora. Kabla ya kununua.</p></div>
+    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="free-games.html" id="freeBtn"></a></div>
+  </header>
+  <div id="advisor"></div>
+</div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script src="game-advisor.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  document.getElementById('freeBtn').innerHTML = ZP.icon('download')+'Free Games';
+  var q = new URLSearchParams(location.search);
+  ZP.advisor.mount(document.getElementById('advisor'), { category: q.get('cat') || 'psp', game: q.get('game') || '', selectable: true });
+})();
+</script>
+</body>
+</html>

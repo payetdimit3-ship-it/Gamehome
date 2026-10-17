@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Free Games — LIFEISGAMETZ</title>
+  <meta name="description" content="Games za bure — download links nyingi kwa kila game, na AI ya kukagua kama itacheza kwenye kifaa chako.">
+  <link rel="stylesheet" href="zoneplay-full.css">
+  <style>
+    .fg-links{display:grid;gap:6px;margin-top:10px}
+    .fg-links a{display:flex;align-items:center;justify-content:space-between;gap:8px;height:36px;padding:0 12px;border-radius:9px;background:#0b1a44;border:1px solid #1d3570;color:#dbe6ff;font:600 12.5px var(--font-b);text-decoration:none}
+    .fg-links a:hover{border-color:var(--glow);background:#12236b}
+    .fg-links a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .fg-more{margin-top:6px;background:none;border:0;color:var(--cyan);font:600 12px var(--font-b);cursor:pointer;padding:4px 0}
+    .fg-chk{display:inline-flex;align-items:center;gap:6px;margin-top:8px;color:#a583ff;font:600 12.5px var(--font-b);text-decoration:none}
+    .fg-chk:hover{color:#fff}
+    .fg-specs{margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+    .fg-banner{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;border:1px solid #2b8f5a;background:linear-gradient(100deg,#0b2a1b,#0a1330);margin-bottom:16px}
+    .fg-banner b{font:700 20px var(--font-d)}.fg-banner p{margin:2px 0 0;color:#b9f6d3;font-size:13px}
+  </style>
+</head>
+<body>
+<div class="main">
+
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="download"></div>
+    <div><h1>Free Games</h1><p>Games za bure. Chagua link yoyote ya download, na ukague kwanza kama itacheza kwenye kifaa chako.</p></div>
+    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="game-advisor.html" id="advBtn"></a></div>
+  </header>
+
+  <div class="fg-banner"><div style="font-size:30px">🎁</div><div><b>Hazilipiwi</b><p>Kila game ina links kadhaa — ikiwa moja haifunguki, jaribu nyingine.</p></div></div>
+
+  <nav class="zp-tabs" id="platTabs" aria-label="Platform"></nav>
+
+  <div class="zp-toolbar">
+    <label class="zp-search">
+      <span id="srchIc"></span>
+      <input type="search" id="searchBox" placeholder="Tafuta free game…" autocomplete="off" aria-label="Tafuta free game">
+    </label>
+  </div>
+
+  <p class="zp-count" id="countLine" aria-live="polite"></p>
+  <section class="zp-grid" id="grid"><div class="zp-empty"><p>Inapakia...</p></div></section>
+
+  <section class="zp-ai" style="margin-top:34px">
+    <div>
+      <h2 style="font-size:26px">Unataka game ya kulipia?</h2>
+      <p style="margin:0">Tazama duka letu kwa game keys, top-up na gift cards.</p>
+    </div>
+    <a class="zp-btn" href="shop.html" id="shopBtn"></a>
+  </section>
+</div>
+
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script>
+(function(){
+  var esc=ZP.esc;
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  document.getElementById('advBtn').innerHTML=ZP.icon('bot')+'AI Game Advisor';
+  document.getElementById('shopBtn').innerHTML=ZP.icon('bag')+'Nenda Dukani';
+  document.getElementById('srchIc').innerHTML=ZP.icon('search');
+
+  var params=new URLSearchParams(location.search);
+  var plat=params.get('cat')||'', q=params.get('search')||'', all=[];
+  if (!ZP.platformOf(plat)) plat='';
+  document.getElementById('searchBox').value=q;
+
+  var grid=document.getElementById('grid'), count=document.getElementById('countLine'), tabs=document.getElementById('platTabs');
+
+  function renderTabs(){
+    var base=all;
+    tabs.innerHTML='<a class="zp-chip'+(plat?'':' active')+'" href="free-games.html">Zote <i>'+base.length+'</i></a>'+
+      ZP.PLATFORMS.map(function(p){
+        var n=base.filter(function(x){return x.platform===p.key;}).length;
+        return n||p.key===plat ? '<a class="zp-chip'+(p.key===plat?' active':'')+'" href="free-games.html?cat='+p.key+'">'+esc(p.label)+' <i>'+n+'</i></a>' : '';
+      }).join('');
+  }
+
+  function card(p){
+    var pl=ZP.platformOf(p.platform), links=ZP.linksOf(p);
+    var img=p.imageUrl?'<img src="'+esc(p.imageUrl)+'" alt="" loading="lazy" onerror="this.remove()">':'';
+    var linkHtml='';
+    if (links.length){
+      linkHtml='<div class="fg-links">'+links.map(function(l,i){
+        return '<a href="'+esc(l.url)+'" target="_blank" rel="noopener noreferrer"'+(i>1?' class="fg-extra" hidden':'')+'><span>⬇️ '+esc(l.label)+'</span><span>↗</span></a>';
+      }).join('')+'</div>'+(links.length>2?'<button type="button" class="fg-more" data-more="1">+ Links '+(links.length-2)+' zaidi</button>':'');
+    } else {
+      linkHtml='<p class="fg-specs">Link bado haijawekwa — <a href="'+esc(ZP.waLink('Naomba link ya '+p.name))+'" target="_blank" rel="noopener" style="color:var(--cyan)">omba kwa WhatsApp</a>.</p>';
+    }
+    var chk='game-advisor.html?cat='+encodeURIComponent(p.platform||'android')+'&game='+encodeURIComponent(p.name);
+    return '<article class="zp-poster">'+
+      '<a class="zp-art" href="'+ZP.href(p)+'" style="--art:'+ZP.art(p.name)+'" aria-label="'+esc(p.name)+'">'+img+(p.imageUrl?'':'<span class="zp-emoji">'+esc(p.emoji)+'</span>')+'<span class="zp-tag">'+esc(pl?pl.label.toUpperCase():'FREE')+'</span></a>'+
+      '<div class="zp-info"><h3>'+esc(p.name)+'</h3><small>'+esc(p.type)+' • <b style="color:#2be879">FREE</b></small>'+
+      (p.specs?'<p class="fg-specs">'+esc(p.specs)+'</p>':'')+
+      linkHtml+
+      '<a class="fg-chk" href="'+chk+'">'+ZP.icon('bot')+'Itacheza kwenye kifaa changu?</a></div></article>';
+  }
+
+  function render(){
+    var term=q.trim().toLowerCase();
+    var list=all.filter(function(p){ return (!plat||p.platform===plat) && (!term||(p.name+' '+p.type).toLowerCase().indexOf(term)>-1); });
+    renderTabs();
+    count.textContent=list.length+' free game'+(list.length===1?'':'s');
+    if(!list.length){
+      grid.innerHTML='<div class="zp-empty"><h3>'+(term?'Hakuna kilichopatikana':'Bado hakuna free games')+'</h3><p>'+(term?'Jaribu neno lingine.':'Zikiongezwa na admin zitaonekana hapa.')+'</p><a class="zp-btn" href="requests.html">Omba Game</a></div>';
+      return;
+    }
+    grid.innerHTML=list.map(card).join('');
+  }
+
+  grid.addEventListener('click',function(e){
+    var b=e.target.closest('[data-more]'); if(!b) return;
+    b.previousElementSibling.querySelectorAll('.fg-extra').forEach(function(a){ a.hidden=false; });
+    b.remove();
+  });
+  document.getElementById('searchBox').addEventListener('input',function(e){
+    q=e.target.value;
+    var u=new URLSearchParams(); if(plat) u.set('cat',plat); if(q) u.set('search',q);
+    history.replaceState(null,'','free-games.html'+(u.toString()?'?'+u:''));
+    render();
+  });
+
+  ZP.loadProducts().then(function(list){ all=list.filter(function(p){ return p.free; }); render(); });
+})();
+</script>
+</body>
+</html>
