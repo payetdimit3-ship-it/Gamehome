@@ -301,7 +301,7 @@
   var baseTotal = 0, discount = 0, couponCode = '', SHIPPING = 5000, wantsShipping = false;
   function money(n){ return 'Tsh ' + Number(n||0).toLocaleString(); }
   function finalTotal(){
-    var sub = Math.round(baseTotal * (1 - discount/100));
+    var sub = Math.max(0, baseTotal - discount);     // discount = kiasi cha TZS kinachohesabiwa na server
     return sub + (wantsShipping ? SHIPPING : 0);
   }
   function discountedItems(){
@@ -338,7 +338,7 @@
 
   function renderTotals(){
     document.getElementById('subtotal').textContent = money(baseTotal);
-    document.getElementById('discount').textContent = discount > 0 ? '- ' + money(baseTotal * discount / 100) : '- Tsh 0';
+    document.getElementById('discount').textContent = discount > 0 ? '- ' + money(discount) : '- Tsh 0';
     document.getElementById('shippingBox').textContent = wantsShipping ? money(SHIPPING) : 'Tsh 0';
     document.getElementById('totalBox').textContent = money(finalTotal());
     document.getElementById('payAmt').textContent = money(finalTotal());
@@ -381,15 +381,16 @@
     msg.className = 'ck2-msg'; msg.textContent = '';
     if (!code) { msg.className = 'ck2-msg err on'; msg.textContent = 'Andika kodi kwanza.'; return; }
 
+    if (!token) { msg.className = 'ck2-msg err on'; msg.textContent = 'Ingia kwanza kutumia kodi ya punguzo.'; return; }
     fetch('/api/coupons/check', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: code })
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': token },
+      body: JSON.stringify({ code: code, items: items, shipping: wantsShipping })
     })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.success) {
-        discount = d.percentOff; couponCode = d.code;
-        msg.className = 'ck2-msg ok on'; msg.textContent = 'Kodi "' + d.code + '" imetumika — punguzo la ' + d.percentOff + '%!';
+        discount = Number(d.discountAmount) || 0; couponCode = d.code;
+        msg.className = 'ck2-msg ok on'; msg.textContent = 'Kodi "' + d.code + '" imetumika — punguzo la ' + money(discount) + (d.appliesTo ? ' (' + d.appliesTo + ')' : '') + '!';
         renderTotals();
       } else {
         msg.className = 'ck2-msg err on'; msg.textContent = d.error || 'Kodi si sahihi';
@@ -421,7 +422,7 @@
     fetch('/api/clickpesa-pay', {
       method: 'POST',
       headers: { 'Authorization': token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ total: total, phone: phoneFull, name: name, items: discountedItems() })
+      body: JSON.stringify({ total: total, phone: phoneFull, name: name, items: items, coupon: couponCode, shipping: wantsShipping })
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
@@ -442,7 +443,7 @@
           .then(function(v){
             if (v.success && v.status === 'successful') {
               clearInterval(poll);
-              localStorage.setItem('gamehubLastOrder', JSON.stringify({ tx_ref: data.tx_ref, items: discountedItems(), total: total, date: new Date().toISOString() }));
+              localStorage.setItem('gamehubLastOrder', JSON.stringify({ tx_ref: data.tx_ref, items: items, total: total, date: new Date().toISOString() }));
               clearOrder(); location.href = 'success.html';
             } else if (v.status === 'amount_mismatch') {
               clearInterval(poll); showStatus(pStatus, 'Kiasi kilicholipwa hakikamilika sahihi. Wasiliana WhatsApp na tx ref: ' + data.tx_ref, 'err');
@@ -475,7 +476,7 @@
     fetch('/api/manual-pay', {
       method: 'POST',
       headers: { 'Authorization': token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: discountedItems(), total: finalTotal(), txRef: txRef, phone: phone })
+      body: JSON.stringify({ items: items, total: finalTotal(), txRef: txRef, phone: phone, coupon: couponCode, shipping: wantsShipping })
     })
     .then(function(r){ return r.json(); })
     .then(function(d){

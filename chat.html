@@ -7,6 +7,12 @@
   <link rel="stylesheet" href="zoneplay-full.css">
   <link rel="stylesheet" href="zoneplay-v11-final.css">
   <link rel="stylesheet" href="zoneplay-v12-final.css">
+  <style>
+    .cm-group.ai .cm-bubble{background:linear-gradient(180deg,#0e1f52,#0a1636);border:1px solid #19d8ff66;color:#eaf3ff}
+    .cm-group.ai .cm-meta b{color:#19d8ff}
+    .cm-ai-btn{background:linear-gradient(90deg,#0ea5c6,#7c3aff)!important}
+    .cm-ai-hint{margin:0 0 8px;font-size:12px;color:var(--muted)}
+  </style>
 </head>
 <body>
 <div class="main">
@@ -27,6 +33,7 @@
           <div class="cm-emoji" id="emoji" aria-label="Emoji"></div>
           <button class="zp-btn ghost sm cm-mic" id="voiceBtn" type="button" aria-pressed="false" hidden></button>
           <span class="cm-count" id="count">0/500</span>
+          <button class="zp-btn cm-ai-btn" id="aiBtn" type="button" title="Uliza AI swali lolote — itajibu hapa hapa kwenye chat"></button>
           <button class="zp-btn" id="sendBtn" type="button"></button>
         </div>
         <p class="cm-status" id="status" role="status" aria-live="polite"></p>
@@ -34,6 +41,7 @@
     </section>
 
     <aside class="cm-side">
+      <div class="cm-box"><h3>🤖 GameHub AI</h3><p>Uliza AI swali lolote — hata lisilohusu games (shule, biashara, teknolojia, michezo…). Andika swali kisha bonyeza <b>AI</b>, au anza ujumbe wako na <b>@AI</b>. Jibu litaonekana kwa kila mtu kwenye chat.</p></div>
       <div class="cm-box"><h3>Kumbuka</h3><p>Chat hii ni ya wazi kwa kila mtu. Usiweke namba ya simu, password wala taarifa binafsi. Subiri sekunde chache kati ya ujumbe mmoja na mwingine.</p></div>
       <div class="cm-box"><h3>Nenda Kwenye</h3>
         <div class="cm-links">
@@ -58,6 +66,7 @@
   var feed=document.getElementById('feed'), nameEl=document.getElementById('name'), msgEl=document.getElementById('message'),
       sendBtn=document.getElementById('sendBtn'), statusEl=document.getElementById('status'), countEl=document.getElementById('count');
   sendBtn.innerHTML=ZP.icon('arrow')+'Tuma';
+  var aiBtn=document.getElementById('aiBtn'); aiBtn.innerHTML=ZP.icon('bot')+'Uliza AI';
 
   /* small local memory: nickname + which messages are mine (never leaves this browser) */
   function ls(k,d){ try{ var v=JSON.parse(localStorage.getItem(k)); return v==null?d:v; }catch(e){ return d; } }
@@ -90,10 +99,11 @@
       if (newDay){ if(groupOpen) html+='</div></div>'; groupOpen=false; html+='<div class="cm-day">'+esc(dayLabel(d))+'</div>'; }
       if (!same){
         if (groupOpen) html+='</div></div>';
-        html+='<div class="cm-group'+(isMine?' mine':'')+'">'+ZP.match.badge(r.name)+'<div class="cm-col"><div class="cm-meta"><b>'+esc(r.name)+'</b><time datetime="'+esc(r.time)+'">'+esc(hm(d))+'</time></div>';
+        var isAI=!!r.isAI;
+        html+='<div class="cm-group'+(isMine?' mine':'')+(isAI?' ai':'')+'">'+(isAI?'<i class="ls-badge" style="--art:linear-gradient(140deg,#19d8ff,#7c3aff)">🤖</i>':ZP.match.badge(r.name))+'<div class="cm-col"><div class="cm-meta"><b>'+esc(r.name)+'</b><time datetime="'+esc(r.time)+'">'+esc(hm(d))+'</time></div>';
         groupOpen=true;
       }
-      html+='<div class="cm-bubble">'+esc(r.message)+'</div>';
+      html+='<div class="cm-bubble">'+(r.isAI?esc(r.message).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>'):esc(r.message))+'</div>';
       prev=r;
     });
     if (groupOpen) html+='</div></div>';
@@ -115,6 +125,7 @@
   function send(){
     var name=(nameEl.value||'').trim()||'Mgeni', message=msgEl.value.trim();
     if (!message){ say('Andika ujumbe kwanza.'); return; }
+    if (/^@(ai|nexus|gamehub)\b/i.test(message)){ askAI(); return; }
     sendBtn.disabled=true; say('');
     lsSet('zpChatName',nameEl.value.trim());
     fetch('/api/public-chat/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name,message:message})})
@@ -127,6 +138,22 @@
       .catch(function(){ say('Hitilafu ya mtandao. Jaribu tena.'); })
       .then(function(){ sendBtn.disabled=false; msgEl.focus({preventScroll:true}); });
   }
+  function askAI(){
+    var name=(nameEl.value||'').trim()||'Mgeni', message=msgEl.value.trim();
+    if (!message){ say('Andika swali lako kwanza, kisha bonyeza Uliza AI.'); return; }
+    sendBtn.disabled=true; aiBtn.disabled=true; say('🤖 AI inafikiria…',true);
+    lsSet('zpChatName',nameEl.value.trim());
+    fetch('/api/public-chat/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name,message:ZP.aiMessage?ZP.aiMessage(message):message})})
+      .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+      .then(function(x){
+        if (!x.ok){ say((x.d&&x.d.error)||'AI haikupatikana. Jaribu tena.'); return; }
+        if (x.d.message && x.d.message.id){ mine.push(x.d.message.id); mine=mine.slice(-200); lsSet('zpChatMine',mine); }
+        msgEl.value=''; countEl.textContent='0/500'; say(''); return load(true);
+      })
+      .catch(function(){ say('Hitilafu ya mtandao. Jaribu tena.'); })
+      .then(function(){ sendBtn.disabled=false; aiBtn.disabled=false; msgEl.focus({preventScroll:true}); });
+  }
+  aiBtn.addEventListener('click',askAI);
   sendBtn.addEventListener('click',send);
   msgEl.addEventListener('keydown',function(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); } });
   msgEl.addEventListener('input',function(){ countEl.textContent=msgEl.value.length+'/500'; });
