@@ -187,3 +187,16 @@ document.addEventListener('DOMContentLoaded', () => {
     checkoutBtn.addEventListener('click', processAzamPayCheckout);
   }
 });
+
+
+/* Faili/links zote za bidhaa iliyolipiwa: kuu + za ziada, zenye lebo (mf. APK, Data) */
+window.ZPFiles = function (item) {
+  var out = [];
+  function ok(u) { return /^(https?:\/\/|\/uploads\/)/i.test(String(u || '').trim()); }
+  if (item && ok(item.downloadLink)) out.push({ label: String(item.downloadLabel || '').trim(), url: String(item.downloadLink).trim() });
+  ((item && item.links) || []).forEach(function (l) {
+    if (l && ok(l.url) && !out.some(function (x) { return x.url === l.url; })) out.push({ label: String(l.label || '').trim(), url: String(l.url).trim() });
+  });
+  out.forEach(function (f, i) { if (!f.label || f.label === 'Download') f.label = out.length > 1 ? 'Faili ' + (i + 1) : 'Download'; });
+  return out;
+};

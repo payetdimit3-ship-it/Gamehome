@@ -88,6 +88,10 @@
       <button class="tab-btn" data-tab="coupons">🎟️ Coupons</button>
       <button class="tab-btn" data-tab="webcontent">🌐 Web Content</button>
       <button class="tab-btn" data-tab="withdrawals">💸 Withdraw</button>
+      <button class="tab-btn" data-tab="news">📰 Habari</button>
+      <button class="tab-btn" data-tab="contentposts">📝 Content Posts</button>
+      <button class="tab-btn" data-tab="tvchannels">📺 TV Channels</button>
+      <button class="tab-btn" data-tab="aichat">💬 AI Chat</button>
       <button class="tab-btn" data-tab="security">🛡️ Usalama</button>
       <button class="tab-btn" data-tab="media">📺 Media & Live</button>
       <button class="tab-btn" data-tab="ai">🤖 AI</button>
@@ -200,6 +204,7 @@
             <option value="Strategy">Strategy</option>
           </select>
           <input type="text" id="pDownload" placeholder="Link kuu ya Kudownload (hiari - kwa games za kudownload, si GeForce)">
+          <input type="text" id="pDownloadLabel" maxlength="40" placeholder="Jina la download kuu (mfano: APK) — mteja ataliona kwenye My Orders">
           <div class="up-box">
             <strong>⬆️ AU upload file la game moja kwa moja</strong>
             <small style="color:#8f8faa">zip, rar, 7z, iso, cso, apk, xapk, obb, exe, msi, pkg… (hadi 1GB). Likipakiwa, link yake inawekwa hapo juu kiotomatiki.</small>
@@ -343,6 +348,7 @@
         <h3>🦶 Footer</h3>
         <input type="text" id="wcFooter" maxlength="200" placeholder="Maandishi ya chini ya kila ukurasa">
       </div>
+      <button class="btn-secondary" type="button" onclick="document.querySelector('.tab-btn[data-tab=contentposts]').click()" style="margin-right:8px">📝 Nenda kupost content kwa wateja</button>
       <button class="btn-primary" id="saveSiteBtn">💾 Hifadhi Mabadiliko</button> <a href="index.html" target="_blank" style="margin-left:10px">👁️ Angalia Home →</a>
       <p id="siteMsg" class="pay-status"></p>
     </div>
@@ -351,6 +357,54 @@
       <h2>💸 Withdraw Requests</h2>
       <p style="color:#8f8faa">Wateja wanaomba kutoa salio la zawadi. Wewe unatuma pesa kwa mkono (M-Pesa/Tigo/Airtel/Halo) kisha ubonyeze "Nimelipa". Ukikataa, salio linarudishwa.</p>
       <div id="withdrawList" class="admin-list"><p style="color:#8f8faa">Inapakia...</p></div>
+    </div>
+
+    <div class="tab-content" id="tab-news" style="display:none;">
+      <h2>📰 Habari za Michezo</h2>
+      <p style="color:#8f8faa">Chapisha habari kama maandishi, picha au video. Zinaonekana kwenye ukurasa wa <a href="sports-news.html" target="_blank">Sports News</a>. AI inakusaidia kuziandika.</p>
+      <div id="newsRoot"></div>
+    </div>
+
+    <div class="tab-content" id="tab-contentposts" style="display:none;">
+      <h2>📝 Content Posts</h2>
+      <p style="color:#8f8faa">Chapisha maudhui kwa wateja wako (matangazo, ofa, mafunzo, habari za duka) — maandishi, picha au video. Yanaonekana kwenye ukurasa wa <a href="content.html" target="_blank">Content</a>.</p>
+      <div id="contentRoot"></div>
+    </div>
+
+    <div class="tab-content" id="tab-tvchannels" style="display:none;">
+      <h2>📺 TV Channels</h2>
+      <p style="color:#8f8faa">Ongeza channels mbalimbali. Zinaonekana kwenye ukurasa wa <a href="sports-tv.html" target="_blank">TV</a>. Stream inaweza kuwa HLS (.m3u8), YouTube (hata live ya channel), Vimeo, Dailymotion au mp4. Weka tu streams ambazo una haki ya kuzionyesha.</p>
+      <div class="admin-form">
+        <h3 id="tvFormTitle">➕ Channel mpya</h3>
+        <input type="text" id="tvName" maxlength="60" placeholder="Jina la channel (mfano: Azam Sports 1)">
+        <select id="tvCat"></select>
+        <input type="text" id="tvStream" placeholder="Link ya stream (https://…m3u8, YouTube, Vimeo, mp4…)">
+        <input type="text" id="tvDesc" maxlength="240" placeholder="Maelezo mafupi (hiari)">
+        <input type="text" id="tvCountry" maxlength="40" placeholder="Nchi/lugha (hiari, mfano: Tanzania)">
+        <input type="number" id="tvOrder" placeholder="Mpangilio (namba ndogo = juu)">
+        <select id="tvStatus"><option value="live">🟢 Live (inaonekana)</option><option value="offline">⚪ Offline (inaonekana kama haipo hewani)</option><option value="hidden">🚫 Fichwa</option></select>
+        <div class="up-box">
+          <strong>🖼️ Logo ya channel</strong>
+          <input type="text" id="tvLogo" placeholder="Logo URL (hiari) — AU upload hapa chini">
+          <input type="file" id="tvLogoFile" accept="image/png,image/jpeg,image/webp,image/gif">
+          <div class="up-bar"><i id="tvBar"></i></div><div class="up-status" id="tvUpStatus"></div>
+        </div>
+        <button class="btn-primary up-lock" id="tvSaveBtn">💾 Hifadhi Channel</button> <button class="btn-secondary" id="tvCancelBtn" style="display:none">Ghairi kuhariri</button>
+        <p id="tvMsg" class="pay-status"></p>
+      </div>
+      <h3 style="margin-top:16px">Channels zilizopo</h3>
+      <div id="tvList" class="admin-list"><p style="color:#8f8faa">Inapakia...</p></div>
+    </div>
+
+    <div class="tab-content" id="tab-aichat" style="display:none;">
+      <h2>💬 AI Chat — Msaidizi wa Website Yako</h2>
+      <p style="color:#8f8faa">Ongea na AI yako. Inajibu swali lolote, na inajua mauzo, bidhaa, wateja, kuponi na mipangilio ya website yako, kisha inakupa habari na ushauri. (Haiwezi kubadilisha mambo kwenye website — inakuelekeza hatua za kufanya.)</p>
+      <div class="up-box" style="border-style:solid">
+        <div id="acLog" role="log" aria-live="polite" style="display:grid;gap:10px;max-height:460px;overflow:auto;padding:4px"></div>
+        <div id="acQuick" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"></div>
+        <div style="display:flex;gap:8px"><textarea id="acIn" rows="2" maxlength="2000" placeholder="Uliza chochote… (Enter = tuma, Shift+Enter = mstari mpya)" style="flex:1"></textarea><button class="btn-primary" id="acSend" type="button">Tuma</button></div>
+        <button class="btn-secondary" id="acClear" type="button" style="margin-top:8px">🗑️ Futa mazungumzo</button>
+      </div>
     </div>
 
     <div class="tab-content" id="tab-security" style="display:none;">
@@ -796,6 +850,7 @@
       document.getElementById('pCategory').value = p.category || 'Zote';
       document.getElementById('pSection').value = p.section || 'shop';
       document.getElementById('pDownload').value = p.downloadLink || '';
+      document.getElementById('pDownloadLabel').value = p.downloadLabel || '';
       document.getElementById('pFree').checked = !!p.free;
       document.getElementById('pPlatform').value = p.platform || '';
       document.getElementById('pSpecs').value = p.specs || '';
@@ -818,6 +873,7 @@
       document.getElementById('pCategory').value = 'Zote';
       document.getElementById('pSection').value = 'shop';
       document.getElementById('pFree').checked = false;
+      document.getElementById('pDownloadLabel').value = '';
       document.getElementById('pPlatform').value = '';
       document.getElementById('pSpecs').value = '';
       document.getElementById('pLinksBox').innerHTML = '';
@@ -860,6 +916,7 @@
         category: section === 'shop' ? document.getElementById('pCategory').value : 'Zote',
         section: section,
         downloadLink: section === 'shop' ? document.getElementById('pDownload').value.trim() : '',
+        downloadLabel: section === 'shop' ? document.getElementById('pDownloadLabel').value.trim() : '',
         free: section === 'shop' && document.getElementById('pFree').checked,
         platform: section === 'shop' ? document.getElementById('pPlatform').value : '',
         specs: section === 'shop' ? document.getElementById('pSpecs').value.trim() : '',
@@ -1025,6 +1082,7 @@
     document.getElementById('pPlatform').addEventListener('change', () => { clearTimeout(aiTimer); aiTimer = setTimeout(() => runAiFill(false), 300); });
     document.getElementById('pName').addEventListener('input', () => { clearTimeout(aiTimer); aiTimer = setTimeout(() => runAiFill(false), 1400); });
 
+    // (post editor, TV na AI Chat zinafuata chini ya upload helpers)
     // ===== UPLOAD HELPERS (picha + file la game) =====
     function xhrUpload(kind, file, onProgress) {
       return new Promise((resolve, reject) => {
@@ -1039,7 +1097,7 @@
       });
     }
     let activeUploads = 0;
-    function setUploading(delta) { activeUploads += delta; ['addProductBtn', 'addBannerBtn'].forEach(id => { const b = document.getElementById(id); if (b) b.disabled = activeUploads > 0; }); }
+    function setUploading(delta) { activeUploads += delta; ['addProductBtn', 'addBannerBtn'].forEach(id => { const b = document.getElementById(id); if (b) b.disabled = activeUploads > 0; }); document.querySelectorAll('.up-lock').forEach(b => { b.disabled = activeUploads > 0; }); }
     function fmtSize(n) { n = Number(n) || 0; return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
     async function doUpload(kind, input, barId, statusId, onDone) {
       const f = input.files && input.files[0]; if (!f) return;
@@ -1071,9 +1129,13 @@
     }));
     document.getElementById('pImage').addEventListener('input', refreshImgPreview);
     document.getElementById('pImageFile').addEventListener('change', e => doUpload('image', e.target, 'imgBar', 'imgStatus', d => { document.getElementById('pImage').value = d.url; refreshImgPreview(); }));
+    function fileLabel(name) {
+      const ext = String(name || '').split('.').pop().toLowerCase();
+      return ({ apk: 'APK', xapk: 'APK', obb: 'Data (OBB)', zip: 'Faili (ZIP)', rar: 'Faili (RAR)', '7z': 'Faili (7Z)', iso: 'ISO', cso: 'ISO (CSO)', exe: 'Installer', msi: 'Installer', pkg: 'PKG' })[ext] || 'Faili la game';
+    }
     document.getElementById('pGameFile').addEventListener('change', e => doUpload('game', e.target, 'gameBar', 'gameStatus', d => {
-      const dl = document.getElementById('pDownload');
-      if (!dl.value.trim()) dl.value = d.url; else addLinkRow('File ya game', d.url);
+      const dl = document.getElementById('pDownload'), lb = document.getElementById('pDownloadLabel');
+      if (!dl.value.trim()) { dl.value = d.url; if (!lb.value.trim()) lb.value = fileLabel(d.name); } else addLinkRow(fileLabel(d.name), d.url);
     }));
 
     // 🎟️ COUPONS (punguzo la gaming)
@@ -1177,6 +1239,216 @@
       const d = await res.json();
       msg.textContent = d.success ? '✅ Imehifadhiwa! Mabadiliko yataonekana kwenye website (refresh ukurasa).' : '❌ ' + (d.error || 'Hitilafu');
     });
+
+
+    // ===== 📰 POST EDITOR (Habari za Michezo + Content Posts) =====
+    function initPostEditor(root, section) {
+      const id = n => section + '_' + n, el = n => document.getElementById(id(n));
+      root.innerHTML = `
+        <div class="admin-form">
+          <h3 id="${id('formTitle')}">➕ Chapisha mpya</h3>
+          <div class="up-tabs" id="${id('types')}">
+            <button type="button" class="up-tab active" data-type="text">📝 Maandishi</button>
+            <button type="button" class="up-tab" data-type="image">🖼️ Picha</button>
+            <button type="button" class="up-tab" data-type="video">🎬 Video</button>
+          </div>
+          <input type="text" id="${id('title')}" maxlength="150" placeholder="Kichwa cha habari">
+          <select id="${id('cat')}"></select>
+          <textarea id="${id('body')}" rows="8" maxlength="8000" placeholder="Maudhui kamili (aya zitenganishwe kwa mstari mtupu)"></textarea>
+          <input type="text" id="${id('summary')}" maxlength="200" placeholder="Muhtasari mfupi (hiari — kinaonekana kwenye kadi)">
+          <div class="up-box" id="${id('imgBox')}">
+            <strong id="${id('imgLabel')}">🖼️ Picha (hiari)</strong>
+            <input type="text" id="${id('img')}" placeholder="Image URL — AU upload hapa chini">
+            <input type="file" id="${id('imgFile')}" accept="image/png,image/jpeg,image/webp,image/gif">
+            <div class="up-bar"><i id="${id('imgBar')}"></i></div><div class="up-status" id="${id('imgSt')}"></div>
+          </div>
+          <div class="up-box" id="${id('vidBox')}" style="display:none">
+            <strong>🎬 Video</strong>
+            <input type="text" id="${id('vid')}" placeholder="Link ya video (YouTube, Vimeo, mp4…) — AU upload hapa chini">
+            <input type="file" id="${id('vidFile')}" accept="video/mp4,video/webm,video/quicktime,video/x-m4v,.mp4,.webm,.mov,.m4v">
+            <div class="up-bar"><i id="${id('vidBar')}"></i></div><div class="up-status" id="${id('vidSt')}"></div>
+            <small style="color:#8f8faa">Picha hapo juu itatumika kama poster ya video. Video ya upload inahitaji hifadhi ya kutosha (Supabase ya bure ~50MB kwa file) — video kubwa ni bora kuweka link ya YouTube.</small>
+          </div>
+          <input type="text" id="${id('tags')}" placeholder="Tags (zitenganishwe kwa koma, mfano: simba, ligi kuu)">
+          <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:8px 0">
+            <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="${id('pin')}" style="width:auto"> 📌 Weka juu</label>
+            <select id="${id('status')}" style="max-width:260px"><option value="published">Chapisha sasa</option><option value="draft">Hifadhi kama rasimu</option></select>
+          </div>
+          <div class="up-box" style="border-style:solid">
+            <strong>🤖 AI inakusaidia kuandika</strong>
+            <small style="color:#8f8faa;display:block;margin-bottom:6px">Andika maelezo mafupi (nini kimetokea, nani, lini, matokeo…). AI inaandika habari kamili kwa Kiswahili. Inatumia taarifa ulizotoa tu — haibuni alama wala majina; hakiki kabla ya kuchapisha.</small>
+            <textarea id="${id('notes')}" rows="3" maxlength="3000" placeholder="Mfano: Simba imeshinda Yanga 2-1 jana, mabao ya A na B, mashabiki 50,000…"></textarea>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+              <button type="button" class="btn-secondary up-lock" id="${id('aiWrite')}">✨ AI andika</button>
+              <button type="button" class="btn-secondary up-lock" id="${id('aiImprove')}">🔁 Boresha nilichoandika</button>
+              <button type="button" class="btn-primary up-lock" id="${id('aiPublish')}">🤖 AI andika &amp; chapisha</button>
+            </div>
+            <div class="up-status" id="${id('aiSt')}" aria-live="polite"></div>
+          </div>
+          <button class="btn-primary up-lock" id="${id('save')}">💾 Hifadhi</button>
+          <button class="btn-secondary" id="${id('cancel')}" style="display:none">Ghairi kuhariri</button>
+          <p id="${id('msg')}" class="pay-status"></p>
+        </div>
+        <h3 style="margin-top:16px">Machapisho yaliyopo</h3>
+        <div id="${id('list')}" class="admin-list"><p style="color:#8f8faa">Inapakia...</p></div>`;
+      let type = 'text', editingId = null, posts = [], loaded = false;
+      const setType = t => {
+        type = t;
+        root.querySelectorAll('#' + id('types') + ' .up-tab').forEach(b => b.classList.toggle('active', b.dataset.type === t));
+        el('vidBox').style.display = t === 'video' ? 'block' : 'none';
+        el('imgLabel').textContent = t === 'image' ? '🖼️ Picha (inahitajika)' : t === 'video' ? '🖼️ Poster ya video (hiari)' : '🖼️ Picha (hiari)';
+      };
+      root.querySelectorAll('#' + id('types') + ' .up-tab').forEach(b => b.addEventListener('click', () => setType(b.dataset.type)));
+      el('imgFile').addEventListener('change', e => doUpload('image', e.target, id('imgBar'), id('imgSt'), d => { el('img').value = d.url; }));
+      el('vidFile').addEventListener('change', e => doUpload('video', e.target, id('vidBar'), id('vidSt'), d => { el('vid').value = d.url; }));
+      const msg = (t, ok) => { const m = el('msg'); m.textContent = t; m.style.color = ok ? '#2be879' : '#ff6b8a'; };
+      const resetForm = () => {
+        editingId = null; setType('text');
+        ['title', 'body', 'summary', 'img', 'vid', 'tags', 'notes'].forEach(n => el(n).value = '');
+        el('pin').checked = false; el('status').value = 'published';
+        ['imgBar', 'vidBar'].forEach(n => el(n).style.width = '0%'); ['imgSt', 'vidSt', 'aiSt'].forEach(n => { el(n).textContent = ''; el(n).className = 'up-status'; });
+        el('formTitle').textContent = '➕ Chapisha mpya'; el('cancel').style.display = 'none'; el('save').textContent = '💾 Hifadhi';
+      };
+      const collect = status => ({ section, type, title: el('title').value.trim(), body: el('body').value, summary: el('summary').value.trim(), category: el('cat').value, imageUrl: el('img').value.trim(), videoUrl: type === 'video' ? el('vid').value.trim() : '', tags: el('tags').value.split(',').map(x => x.trim()).filter(Boolean), pinned: el('pin').checked, status: status || el('status').value });
+      async function save(status) {
+        const body = collect(status);
+        const res = await fetch('/api/admin/news' + (editingId ? '/' + encodeURIComponent(editingId) : ''), { method: editingId ? 'PUT' : 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const d = await res.json();
+        if (!d.success) { msg('❌ ' + (d.error || 'Hitilafu'), false); return false; }
+        msg(body.status === 'draft' ? '✅ Rasimu imehifadhiwa.' : '✅ Imechapishwa!', true); resetForm(); load(true); return true;
+      }
+      async function ai(mode) {
+        const st = el('aiSt'); st.className = 'up-status'; st.textContent = '⏳ AI inaandika…';
+        const res = await fetch('/api/admin/news/ai-assist', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ section, mode, notes: el('notes').value, title: el('title').value, body: el('body').value }) });
+        const d = await res.json();
+        if (!d.success) { st.className = 'up-status err'; st.textContent = '❌ ' + (d.error || 'AI imeshindwa'); return null; }
+        const r = d.result;
+        if (r.title) el('title').value = r.title; if (r.summary) el('summary').value = r.summary; if (r.body) el('body').value = r.body;
+        if (r.category && Array.from(el('cat').options).some(o => o.value === r.category)) el('cat').value = r.category;
+        if (r.tags && r.tags.length) el('tags').value = r.tags.join(', ');
+        st.className = 'up-status ' + (r.needsReview ? '' : 'ok');
+        st.textContent = (r.needsReview ? '⚠️ Hakiki kabla ya kuchapisha' : '✅ AI imemaliza') + (r.reviewNote ? ' — ' + r.reviewNote : '');
+        return r;
+      }
+      el('aiWrite').addEventListener('click', () => ai(type === 'video' ? 'video' : 'write'));
+      el('aiImprove').addEventListener('click', () => ai('improve'));
+      el('aiPublish').addEventListener('click', async () => {
+        if (type === 'image' && !el('img').value.trim()) { msg('❌ Weka au upload picha kwanza.', false); return; }
+        if (type === 'video' && !el('vid').value.trim()) { msg('❌ Weka au upload video kwanza.', false); return; }
+        const r = await ai(type === 'video' ? 'video' : 'write'); if (!r) return;
+        const warn = r.needsReview ? '\n\n⚠️ ' + (r.reviewNote || 'AI inashauri uhakiki ukweli.') : '';
+        if (confirm('Chapisha habari hii sasa?\n\n' + (el('title').value) + warn)) save('published');
+        else msg('Haijachapishwa — unaweza kuhariri kisha bonyeza Hifadhi.', true);
+      });
+      el('save').addEventListener('click', () => save());
+      el('cancel').addEventListener('click', resetForm);
+      function render() {
+        const box = el('list');
+        box.innerHTML = posts.length ? posts.map(p => {
+          const ic = p.type === 'video' ? '🎬' : p.type === 'image' ? '🖼️' : '📝';
+          const st = p.status === 'draft' ? '<span style="color:#ffd166">rasimu</span>' : '<span style="color:#2be879">imechapishwa</span>';
+          return `<div class="admin-row"><div style="display:flex;gap:10px;align-items:center">${p.imageUrl ? '<img src="' + escAdmin(p.imageUrl) + '" alt="" style="width:64px;height:40px;object-fit:cover;border-radius:6px">' : '<span style="font-size:26px">' + ic + '</span>'}<div><strong>${p.pinned ? '📌 ' : ''}${escAdmin(p.title)}</strong><br><small>${ic} ${escAdmin(p.category)} • ${st} • 👁️ ${p.views || 0} • ${new Date(p.createdAt).toLocaleDateString()}</small></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn-secondary" data-act="edit" data-id="${escAdmin(p.id)}">✏️</button><button class="btn-secondary" data-act="pub" data-id="${escAdmin(p.id)}">${p.status === 'draft' ? 'Chapisha' : 'Ficha'}</button><button class="btn-secondary" data-act="pin" data-id="${escAdmin(p.id)}">📌</button><button class="btn-remove" data-act="del" data-id="${escAdmin(p.id)}">🗑️</button></div></div>`;
+        }).join('') : '<p style="color:#8f8faa">Hakuna machapisho bado.</p>';
+      }
+      async function mutate(pid, body) { await fetch('/api/admin/news/' + encodeURIComponent(pid), { method: 'PUT', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); load(true); }
+      el('list').addEventListener('click', async e => {
+        const b = e.target.closest('button[data-act]'); if (!b) return;
+        const p = posts.find(x => x.id === b.dataset.id); if (!p) return;
+        if (b.dataset.act === 'del') { if (confirm('Futa chapisho hili?')) { await fetch('/api/admin/news/' + encodeURIComponent(p.id), { method: 'DELETE', headers: { 'Authorization': token } }); load(true); } }
+        else if (b.dataset.act === 'pin') mutate(p.id, { pinned: !p.pinned });
+        else if (b.dataset.act === 'pub') mutate(p.id, { status: p.status === 'draft' ? 'published' : 'draft' });
+        else if (b.dataset.act === 'edit') {
+          editingId = p.id; setType(p.type);
+          el('title').value = p.title; el('body').value = p.body || ''; el('summary').value = p.summary || ''; el('img').value = p.imageUrl || ''; el('vid').value = p.video ? p.video.url : '';
+          el('tags').value = (p.tags || []).join(', '); el('pin').checked = !!p.pinned; el('status').value = p.status; if (p.category) el('cat').value = p.category;
+          el('formTitle').textContent = '✏️ Unahariri: ' + p.title.slice(0, 40); el('cancel').style.display = ''; el('save').textContent = '💾 Hifadhi mabadiliko';
+          root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+      async function load(force) {
+        if (loaded && !force) return; loaded = true;
+        try {
+          const d = await (await fetch('/api/admin/news?section=' + section, { headers: { 'Authorization': token } })).json();
+          if (!el('cat').options.length) el('cat').innerHTML = (d.categories || []).map(c => '<option>' + escAdmin(c) + '</option>').join('');
+          posts = d.posts || []; render();
+        } catch (e) { el('list').innerHTML = '<p style="color:#ff3d71">Hitilafu.</p>'; }
+      }
+      return { load: () => load(true) };
+    }
+    const newsEd = initPostEditor(document.getElementById('newsRoot'), 'sports');
+    const contentEd = initPostEditor(document.getElementById('contentRoot'), 'content');
+
+    // ===== 📺 TV CHANNELS (admin) =====
+    let tvEditing = null, tvChannels = [];
+    document.getElementById('tvLogoFile').addEventListener('change', e => doUpload('image', e.target, 'tvBar', 'tvUpStatus', d => { document.getElementById('tvLogo').value = d.url; }));
+    function tvReset() {
+      tvEditing = null; ['tvName', 'tvStream', 'tvDesc', 'tvCountry', 'tvOrder', 'tvLogo'].forEach(i => document.getElementById(i).value = '');
+      document.getElementById('tvStatus').value = 'live'; document.getElementById('tvFormTitle').textContent = '➕ Channel mpya'; document.getElementById('tvCancelBtn').style.display = 'none';
+    }
+    async function loadTv() {
+      if (currentRole !== 'admin' && currentRole !== 'staff') return;
+      try {
+        const d = await (await fetch('/api/admin/tv/channels', { headers: { 'Authorization': token } })).json();
+        const sel = document.getElementById('tvCat'); if (!sel.options.length) sel.innerHTML = (d.categories || []).map(c => '<option>' + escAdmin(c) + '</option>').join('');
+        tvChannels = d.channels || [];
+        const stl = { live: '<span style="color:#2be879">🟢 live</span>', offline: '<span style="color:#ffd166">⚪ offline</span>', hidden: '<span style="color:#ff9fb4">🚫 imefichwa</span>' };
+        document.getElementById('tvList').innerHTML = tvChannels.length ? tvChannels.map(c => `<div class="admin-row"><div style="display:flex;gap:10px;align-items:center">${c.logo ? '<img src="' + escAdmin(c.logo) + '" alt="" style="width:54px;height:36px;object-fit:contain;background:#0b1230;border-radius:6px">' : '<span style="font-size:24px">📺</span>'}<div><strong>${escAdmin(c.name)}</strong><br><small>${escAdmin(c.category)} • ${escAdmin(c.type)} • ${stl[c.status] || c.status} • #${c.order || 0}</small></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn-secondary" data-tv="edit" data-id="${escAdmin(c.id)}">✏️</button><button class="btn-secondary" data-tv="toggle" data-id="${escAdmin(c.id)}">${c.status === 'live' ? 'Weka offline' : 'Weka live'}</button><button class="btn-remove" data-tv="del" data-id="${escAdmin(c.id)}">🗑️</button></div></div>`).join('') : '<p style="color:#8f8faa">Hakuna channels bado.</p>';
+      } catch (e) { document.getElementById('tvList').innerHTML = '<p style="color:#ff3d71">Hitilafu.</p>'; }
+    }
+    document.getElementById('tvList').addEventListener('click', async e => {
+      const b = e.target.closest('button[data-tv]'); if (!b) return;
+      const c = tvChannels.find(x => x.id === b.dataset.id); if (!c) return;
+      const h = { 'Authorization': token, 'Content-Type': 'application/json' };
+      if (b.dataset.tv === 'del') { if (confirm('Futa channel hii?')) { await fetch('/api/admin/tv/channels/' + encodeURIComponent(c.id), { method: 'DELETE', headers: h }); loadTv(); } }
+      else if (b.dataset.tv === 'toggle') { await fetch('/api/admin/tv/channels/' + encodeURIComponent(c.id), { method: 'PUT', headers: h, body: JSON.stringify({ status: c.status === 'live' ? 'offline' : 'live' }) }); loadTv(); }
+      else {
+        tvEditing = c.id; const set = (i, v) => document.getElementById(i).value = v == null ? '' : v;
+        set('tvName', c.name); set('tvCat', c.category); set('tvStream', c.streamUrl); set('tvDesc', c.description); set('tvCountry', c.country); set('tvOrder', c.order); set('tvStatus', c.status); set('tvLogo', c.logo);
+        document.getElementById('tvFormTitle').textContent = '✏️ Unahariri: ' + c.name; document.getElementById('tvCancelBtn').style.display = ''; document.getElementById('tab-tvchannels').scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+    document.getElementById('tvCancelBtn').addEventListener('click', tvReset);
+    document.getElementById('tvSaveBtn').addEventListener('click', async () => {
+      const g = i => document.getElementById(i).value.trim(), msg = document.getElementById('tvMsg');
+      const body = { name: g('tvName'), category: g('tvCat'), streamUrl: g('tvStream'), description: g('tvDesc'), country: g('tvCountry'), order: g('tvOrder'), status: g('tvStatus'), logo: g('tvLogo') };
+      const res = await fetch('/api/admin/tv/channels' + (tvEditing ? '/' + encodeURIComponent(tvEditing) : ''), { method: tvEditing ? 'PUT' : 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const d = await res.json();
+      if (d.success) { msg.style.color = '#2be879'; msg.textContent = '✅ Channel imehifadhiwa!'; tvReset(); loadTv(); } else { msg.style.color = '#ff6b8a'; msg.textContent = '❌ ' + (d.error || 'Hitilafu'); }
+    });
+
+    // ===== 💬 AI CHAT (admin) =====
+    let acReady = false, acHist = [];
+    function acFmt(t) { return escAdmin(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>'); }
+    function acSay(who, html, raw) {
+      const log = document.getElementById('acLog'), d = document.createElement('div');
+      d.style.cssText = 'max-width:92%;padding:10px 13px;border-radius:14px;font-size:14px;line-height:1.55;' + (who === 'me' ? 'justify-self:end;background:linear-gradient(90deg,#6a2cff,#4c1bd6);color:#fff' : 'justify-self:start;background:#0b1636;border:1px solid #1d3570');
+      d.innerHTML = raw ? html : acFmt(html); log.appendChild(d); log.scrollTop = log.scrollHeight; return d;
+    }
+    async function acAsk(text) {
+      text = (text || '').trim(); if (!text) return;
+      document.getElementById('acIn').value = ''; acSay('me', text);
+      const wait = acSay('ai', '<span style="color:#9db0da">⏳ AI inafikiria…</span>', true);
+      const btn = document.getElementById('acSend'); btn.disabled = true;
+      try {
+        const res = await fetch('/api/admin/ai-chat', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text, history: acHist.slice(-8) }) });
+        const d = await res.json(); const reply = d.reply || d.error || 'Hitilafu';
+        wait.innerHTML = acFmt(reply);
+        if (d.reply) { acHist.push({ role: 'user', text }, { role: 'ai', text: reply }); acHist = acHist.slice(-12); try { sessionStorage.setItem('adminChatHist', JSON.stringify(acHist)); } catch (e) {} }
+      } catch (e) { wait.textContent = 'Hitilafu ya mtandao. Jaribu tena.'; }
+      btn.disabled = false; document.getElementById('acLog').scrollTop = 1e9;
+    }
+    function initAiChat() {
+      if (acReady) return; acReady = true;
+      try { acHist = JSON.parse(sessionStorage.getItem('adminChatHist') || '[]'); } catch (e) { acHist = []; }
+      acSay('ai', 'Karibu Boss! 👋 Mimi ni AI wa website yako. Nakujulisha mauzo, bidhaa, wateja, kuponi na mipangilio, na ninajibu swali lolote. Anza kwa kuuliza au bonyeza mojawapo hapo chini.');
+      acHist.forEach(m => acSay(m.role === 'user' ? 'me' : 'ai', m.text));
+      const quick = ['Nipe muhtasari wa leo', 'Orders zinazosubiri uthibitisho', 'Games zinazouzwa zaidi', 'Nifanyeje kuongeza game yenye APK na Data?', 'Nipe wazo la kuongeza mauzo wiki hii', 'Kuna mipangilio gani haijakamilika?'];
+      document.getElementById('acQuick').innerHTML = quick.map(q => '<button type="button" class="btn-secondary" data-q="' + escAdmin(q) + '">' + escAdmin(q) + '</button>').join('');
+      document.getElementById('acQuick').addEventListener('click', e => { const b = e.target.closest('button[data-q]'); if (b) acAsk(b.dataset.q); });
+      document.getElementById('acSend').addEventListener('click', () => acAsk(document.getElementById('acIn').value));
+      document.getElementById('acIn').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); acAsk(e.target.value); } });
+      document.getElementById('acClear').addEventListener('click', () => { acHist = []; try { sessionStorage.removeItem('adminChatHist'); } catch (e) {} document.getElementById('acLog').innerHTML = ''; acReady = false; initAiChat(); });
+    }
 
     // 💸 WITHDRAW REQUESTS
     async function loadWithdrawals() {
@@ -1372,6 +1644,10 @@
         if (btn.dataset.tab === 'coupons') loadCoupons();
         if (btn.dataset.tab === 'webcontent') loadWebContent();
         if (btn.dataset.tab === 'withdrawals') loadWithdrawals();
+        if (btn.dataset.tab === 'news') newsEd.load();
+        if (btn.dataset.tab === 'contentposts') contentEd.load();
+        if (btn.dataset.tab === 'tvchannels') loadTv();
+        if (btn.dataset.tab === 'aichat') initAiChat();
         if (btn.dataset.tab === 'security') { loadSecurityStats(); loadSecurityEvents(); }
         if (btn.dataset.tab === 'payments') loadPaymentStatus();
         if (btn.dataset.tab === 'publicchat') loadPublicChatAdmin();

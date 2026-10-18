@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Content — LIFEISGAMETZ</title>
+  <meta name="description" content="Matangazo, ofa, mafunzo na habari za duka letu.">
+  <link rel="stylesheet" href="zoneplay-full.css">
+</head>
+<body>
+<div class="main">
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="film"></div>
+    <div><h1>Content</h1><p>Matangazo, ofa, mafunzo na habari za duka letu.</p></div>
+  </header>
+  <div id="posts"></div>
+</div>
+<script src="zoneplay-shell.js"></script>
+<script src="zp-catalog.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script src="zp-player.js"></script>
+<script src="zp-posts.js"></script>
+<script>
+  document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
+  ZP.posts.mount(document.getElementById('posts'), { section: 'content', empty: 'Maudhui mapya yatachapishwa hapa hivi karibuni.' });
+</script>
+</body>
+</html>
