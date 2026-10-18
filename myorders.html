@@ -39,11 +39,11 @@
   function safeUrl(u){ u=String(u||'').trim(); return /^(https?:\/\/|\/)/i.test(u)?u:''; }
 
   function itemRow(i,o,idx,oi){
-    var link=safeUrl(i.downloadLink), showDL=o.status==='successful'&&link, showAcct=o.status==='successful'&&i.accountUser;
+    var files=o.status==='successful'?ZPFiles(i):[], showDL=files.length>0, showAcct=o.status==='successful'&&i.accountUser;
     var key='c'+idx+'-'+oi;
     return '<div class="or-item"><div class="n"><b>'+esc(i.emoji||'🎮')+' '+esc(i.name)+'</b> × '+esc(i.qty||1)+
       (showAcct?' <button class="zp-btn ghost sm" type="button" data-cred="'+key+'" style="margin-left:8px">'+ZP.icon('shield')+'Taarifa za account</button><div class="mg-cred" id="cred'+key+'" hidden></div>':'')+'</div>'+
-      (showDL?'<a class="zp-btn sm" href="'+esc(link)+'" target="_blank" rel="noopener noreferrer">'+ZP.icon('download')+'Download</a>':'<span class="p">'+ZP.money((Number(i.num)||0)*(Number(i.qty)||1))+'</span>')+
+      (showDL?'<div class="or-files" style="display:grid;gap:6px;justify-items:stretch">'+files.map(function(f,n){ return '<a class="zp-btn sm" href="'+esc(f.url)+'" target="_blank" rel="noopener noreferrer">'+ZP.icon('download')+esc((files.length>1?(n+1)+'. ':'')+f.label)+'</a>'; }).join('')+'</div>':'<span class="p">'+ZP.money((Number(i.num)||0)*(Number(i.qty)||1))+'</span>')+
       '</div>';
   }
   function card(o,idx){

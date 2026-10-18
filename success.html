@@ -68,9 +68,10 @@
     <div class="success-box">
       <div class="success-icon">✅</div>
       <h1>MALIPO YAMEFIKA!</h1>
-      <p>Asante! Bidhaa zako zinatumwa automatic kwenye email yako.</p>
+      <p id="successMsg">Asante kwa kununua!</p>
       <div id="orderSummary" class="order-summary"></div>
-      <p class="success-note">💡 Hukupata email? Angalia spam, au wasiliana nasi kwa WhatsApp.</p>
+      <div id="dlBox" aria-live="polite"></div>
+      <p class="success-note">💡 Una tatizo la download? Wasiliana nasi kwa WhatsApp.</p>
       <a href="myorders.html" class="btn-primary">📦 My Orders</a>
       <a href="shop.html" class="btn-secondary">🛒 Endelea Kununua</a>
     </div>
@@ -125,6 +126,43 @@
     } else {
       summary.innerHTML = '<p>Hakuna order mpya.</p>';
     }
+
+    // 📦 Baada ya malipo: tunaonyesha download MOJA kuu; faili nyingine zote ziko My Orders
+    (function(){
+      const token = localStorage.getItem('gamehubToken');
+      if (!lastOrder || !lastOrder.tx_ref || !token) return;
+      const msgEl = document.getElementById('successMsg'), box = document.getElementById('dlBox');
+      const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      let tries = 0;
+      function show(o){
+        if (o.status === 'successful') {
+          msgEl.textContent = 'Malipo yamethibitishwa! Asante kwa kununua.';
+          const rows = (o.items || []).filter(i => !i.rentalMinutes).map(i => {
+            const files = ZPFiles(i), n = files.length;
+            if (!n && i.accountUser) return '<div class="order-summary" style="margin-top:10px"><p><b>' + esc(i.name) + '</b></p><p>🔐 Taarifa za akaunti yako ziko kwenye <a href="myorders.html">My Orders</a>.</p></div>';
+            if (!n) return '';
+            const others = files.slice(1).map(f => esc(f.label)).join(', ');
+            return '<div class="order-summary" style="margin-top:10px"><p><b>' + esc(i.name) + '</b></p>' +
+              '<a class="btn-primary" href="' + esc(files[0].url) + '" target="_blank" rel="noopener noreferrer">⬇️ Download sasa' + (n > 1 ? ' (' + esc(files[0].label) + ')' : '') + '</a>' +
+              (n > 1 ? '<p style="margin-top:10px;color:#ffd166">📦 Una faili ' + (n - 1) + ' nyingine (' + others + '). Zipo kwenye <a href="myorders.html"><b>My Orders</b></a> — nenda huko upate faili zote kabla ya kuanza kucheza.</p>' : '<p style="margin-top:8px;color:#9db0da">Unaweza kuipata tena wakati wowote kwenye <a href="myorders.html">My Orders</a>.</p>') + '</div>';
+          }).join('');
+          box.innerHTML = rows;
+        } else if (o.status === 'pending_manual') {
+          msgEl.textContent = 'Tumepokea ripoti ya malipo yako.';
+          box.innerHTML = '<div class="order-summary" style="margin-top:10px"><p>⏳ Admin akithibitisha malipo, download yako itaonekana kwenye <a href="myorders.html"><b>My Orders</b></a>.</p></div>';
+        } else if (/^pending/.test(o.status)) {
+          msgEl.textContent = 'Tunasubiri uthibitisho wa malipo yako…';
+          box.innerHTML = '<div class="order-summary" style="margin-top:10px"><p>⏳ Malipo yakithibitishwa, download itaonekana hapa na kwenye <a href="myorders.html"><b>My Orders</b></a>.</p></div>';
+          if (++tries < 12) setTimeout(load, 5000);
+        }
+      }
+      function load(){
+        fetch('/api/my-orders', { headers: { 'Authorization': token } }).then(r => r.json()).then(d => {
+          const o = (d.orders || []).find(x => x.tx_ref === lastOrder.tx_ref); if (o) show(o);
+        }).catch(() => {});
+      }
+      load();
+    })();
   </script>
 
   <script src="zoneplay-shell.js"></script>

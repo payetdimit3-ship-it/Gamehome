@@ -86,10 +86,10 @@
   function safeUrl(u){ u=String(u||'').trim(); return /^(https?:\/\/|\/)/i.test(u)?u:''; }
 
   function card(it,i){
-    var link=safeUrl(it.downloadLink), tag=link?'DOWNLOAD':(it.accountUser?'ACCOUNT':'IMENUNULIWA');
+    var files=ZPFiles(it), link=files.length?files[0].url:'', tag=files.length?'DOWNLOAD':(it.accountUser?'ACCOUNT':'IMENUNULIWA');
     return '<article class="mg-item"><div class="mg-face" style="--art:'+ZP.art(it.name)+'"><span class="e">'+esc(it.emoji||'🎮')+'</span><span class="ac-tag">'+tag+'</span></div>'+
       '<div class="mg-body"><h3>'+esc(it.name)+'</h3><small>'+esc(new Date(it.date).toLocaleDateString())+(it.qty>1?' • × '+it.qty:'')+'</small>'+
-      (link?'<a class="zp-btn sm" href="'+esc(link)+'" target="_blank" rel="noopener noreferrer">'+ZP.icon('download')+'Download</a>':'')+
+      (files.length?'<div style="display:grid;gap:6px;margin-top:6px">'+files.map(function(f,n){ return '<a class="zp-btn sm" href="'+esc(f.url)+'" target="_blank" rel="noopener noreferrer">'+ZP.icon('download')+esc((files.length>1?(n+1)+'. ':'')+f.label)+'</a>'; }).join('')+'</div>':'')+
       (it.accountUser?'<button class="zp-btn ghost sm" type="button" data-cred="'+i+'">'+ZP.icon('shield')+'Taarifa za account</button><div class="mg-cred" id="cred'+i+'" hidden></div>':'')+
       (!link&&!it.accountUser?'<a class="zp-btn ghost sm" href="myorders.html">Angalia oda</a>':'')+'</div></article>';
   }
@@ -119,9 +119,9 @@
       orders.filter(function(o){ return o.status==='successful'; }).forEach(function(o){
         (o.items||[]).forEach(function(i){
           if (i.rentalMinutes) return;                     // rentals live in "Muda wa Kucheza"
-          var k=(i.name||'')+'|'+(i.downloadLink||'')+'|'+(i.accountUser||'');
+          var k=(i.name||'')+'|'+(i.downloadLink||'')+'|'+((i.links||[]).map(function(l){return l.url;}).join(','))+'|'+(i.accountUser||'');
           if (seen[k]) return; seen[k]=1;
-          items.push({name:i.name||'Bidhaa',emoji:i.emoji,qty:Number(i.qty)||1,downloadLink:i.downloadLink,accountUser:i.accountUser,accountPassword:i.accountPassword,date:o.date});
+          items.push({name:i.name||'Bidhaa',emoji:i.emoji,qty:Number(i.qty)||1,downloadLink:i.downloadLink,downloadLabel:i.downloadLabel,links:i.links,accountUser:i.accountUser,accountPassword:i.accountPassword,date:o.date});
         });
       });
       note.textContent=pending?('Oda '+pending+' bado zinasubiri uthibitisho wa malipo — angalia My Orders.'):'';

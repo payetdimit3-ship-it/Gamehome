@@ -60,7 +60,7 @@
     ['Home','index.html','home'], ['Store','shop.html','bag'], ['Games','categories.html','grid'],
     ['PSP Gaming','shop.html?cat=psp','gamepad'], ['PS2 Gaming','shop.html?cat=ps2','gamepad'], ['PS3 Gaming','shop.html?cat=ps3','gamepad'],
     ['Nintendo Switch','shop.html?cat=switch','gamepad'], ['Android Gaming','shop.html?cat=android','phone'], ['PC Gaming','shop.html?cat=pc','monitor'],
-    ['Winlator & GameHub','winlator-gamehub.html','phone'], ['Free Games','free-games.html','download'],
+    ['Winlator & GameHub','winlator-gamehub.html','phone'], ['Free Games','free-games.html','download'], ['Sports News','sports-news.html','chat'], ['TV Channels','sports-tv.html','tv'], ['Content','content.html','film'],
     ['Movies','movies.html','film'], ['Live TV / Sports','live.html','tv'], ['Live Scores','livescores.html','trophy'],
     ['Academy / Courses','academy.html','cap'], ['Cloud Gaming','cloudgaming.html','cloud'], ['eFootball / Top Up','efootball.html','ball'],
     ['Gift Cards','giftcards.html','gift'], ['Community / Chat','chat.html','chat'], ['Health Assistant','health.html','pulse'],
@@ -72,7 +72,7 @@
     ['Payments','payments','wallet'], ['Public Chat','publicchat','chat'], ['Wateja','customers','users'],
     ['Bidhaa','products','gamepad'], ['Hero Studio','hero','film'], ['Requests','requests','search'],
     ['Marketplace','marketplace','shop'], ['Coupons','coupons','gift'], ['Usalama','security','shield'],
-    ['Web Content','webcontent','tv'], ['Withdraw','withdrawals','wallet'], ['Media & Live','media','tv'], ['AI','ai','bot']
+    ['Web Content','webcontent','tv'], ['Withdraw','withdrawals','wallet'], ['Habari','news','chat'], ['Content Posts','contentposts','film'], ['TV Channels','tvchannels','tv'], ['AI Chat','aichat','bot'], ['Media & Live','media','tv'], ['AI','ai','bot']
   ];
   var MORE = [
     ['Steam Accounts','steamaccounts.html','user'], ['eFootball Coins','topup.html','ball'], ['Tournaments','tournaments.html','trophy'],
@@ -84,7 +84,7 @@
   /* Pages that belong to a sidebar item without being one */
   var ALIAS = {'product.html':'shop.html','checkout.html':'cart.html','success.html':'mygames.html',
     'courses.html':'academy.html','refund.html':'terms.html'};
-  /*GEN-ALIAS*/Object.assign(ALIAS,{'ai-assistant.html':'ai.html','android-gaming.html':'shop.html','betting.html':'livescores.html','cloud-gaming.html':'cloudgaming.html','community-chat.html':'chat.html','contact-support.html':'contact.html','efootball-topup.html':'efootball.html','faq-help.html':'faq.html','game-trailer.html':'movies.html','games.html':'categories.html','gift-cards.html':'giftcards.html','health-assistant.html':'health.html','home.html':'index.html','live-football-watch.html':'live.html','live-movies-player.html':'movies.html','live-scores.html':'livescores.html','live-tv-esports.html':'live.html','my-games-library.html':'mygames.html','my-orders.html':'myorders.html','nintendo-switch.html':'shop.html','pc-gaming.html':'shop.html','product-details.html':'product.html','ps2-gaming.html':'shop.html','ps3-gaming.html':'shop.html','psp-gaming.html':'shop.html','requests-transactions.html':'myorders.html','sports-news.html':'livescores.html','sports-tv.html':'live.html','store.html':'shop.html','tournament.html':'tournaments.html'});/*END-GEN-ALIAS*/
+  /*GEN-ALIAS*/Object.assign(ALIAS,{'ai-assistant.html':'ai.html','android-gaming.html':'shop.html','betting.html':'livescores.html','cloud-gaming.html':'cloudgaming.html','community-chat.html':'chat.html','contact-support.html':'contact.html','efootball-topup.html':'efootball.html','faq-help.html':'faq.html','game-trailer.html':'movies.html','games.html':'categories.html','gift-cards.html':'giftcards.html','health-assistant.html':'health.html','home.html':'index.html','live-football-watch.html':'live.html','live-movies-player.html':'movies.html','live-scores.html':'livescores.html','live-tv-esports.html':'live.html','my-games-library.html':'mygames.html','my-orders.html':'myorders.html','nintendo-switch.html':'shop.html','pc-gaming.html':'shop.html','product-details.html':'product.html','ps2-gaming.html':'shop.html','ps3-gaming.html':'shop.html','psp-gaming.html':'shop.html','requests-transactions.html':'myorders.html','store.html':'shop.html','tournament.html':'tournaments.html'});/*END-GEN-ALIAS*/
   var here = (location.pathname.split('/').pop()||'index.html').toLowerCase();
   var qs = new URLSearchParams(location.search);
   function isActive(href, strict){
