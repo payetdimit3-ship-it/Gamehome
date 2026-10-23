@@ -142,16 +142,23 @@
         <h3>🧾 Historia ya Malipo</h3>
         <span id="recentCustomersStrip" class="dash-avatar-strip"></span>
       </div>
-      <div class="order-toolbar"><input id="orderSearch" placeholder="🔎 Tafuta customer, TX ref au bidhaa..." oninput="renderOrderFilters()"><select id="orderStatus" onchange="renderOrderFilters()"><option value="all">Status zote</option><option value="successful">Successful</option><option value="pending_azampay">Pending Auto</option><option value="pending_manual">Pending Manual</option><option value="failed">Failed</option></select><button class="btn-secondary" onclick="exportOrdersCSV()">⬇️ Export CSV</button></div><div id="ordersList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
+      <div class="order-toolbar"><input id="orderSearch" placeholder="🔎 Tafuta customer, TX ref au bidhaa..." oninput="renderOrderFilters()"><select id="orderStatus" onchange="renderOrderFilters()"><option value="all">Status zote</option><option value="successful">Successful</option><option value="pending_azampay">Pending Auto (ClickPesa)</option><option value="pending_manual">Pending Manual</option><option value="failed">Failed</option><option value="amount_mismatch">Tatizo la Kiasi</option><option value="rejected">Imekataliwa</option></select><button class="btn-secondary" onclick="exportOrdersCSV()">⬇️ Export CSV</button></div><div id="ordersList" class="admin-list"><p style="color:#8f8faa;">Inapakia...</p></div>
     </div>
 
     <div class="tab-content" id="tab-payments" style="display:none;">
-      <div class="hero-studio-head"><div><span class="eyebrow">PAYMENT CONTROL</span><h2>💳 Payment Center</h2><p>Angalia hali ya AzamPay, automatic checkout na manual payment. Hakuna secret key inayoonyeshwa hapa.</p></div><div class="studio-tip"><b id="paymentEnvBadge">CHECKING</b><br><small>Gateway environment</small></div></div>
-      <div class="overview-panels">
-        <div class="admin-form"><h3>⚡ Automatic Payments</h3><div id="paymentAutoStatus" class="storage-status">Inapima gateway...</div><div class="system-list" style="margin-top:12px"><div>Mobile Money Push <b id="paymentMnoStatus">CHECKING</b></div><div>Callback endpoint <b>READY</b></div><div>Manual fallback <b>ACTIVE</b></div></div></div>
-        <div class="admin-form"><h3>🧩 Render Environment</h3><p class="hint">Weka credentials hizi kwenye Render Environment Variables:</p><div class="system-list"><div>AZAMPAY_ENVIRONMENT <b>sandbox / production</b></div><div>AZAMPAY_APP_NAME <b>REQUIRED</b></div><div>AZAMPAY_CLIENT_ID <b>REQUIRED</b></div><div>AZAMPAY_CLIENT_SECRET <b>REQUIRED</b></div><div>AZAMPAY_API_KEY <b>IF PROVIDED</b></div><div>AZAMPAY_CALLBACK_TOKEN <b>OPTIONAL</b></div></div></div>
+      <div class="hero-studio-head"><div><span class="eyebrow">PAYMENT CONTROL</span><h2>💳 Payment Center</h2><p>Hali ya malipo ya <b>ClickPesa (Auto)</b> na <b>Manual</b>. Hakuna siri (keys) zinazoonyeshwa hapa.</p></div><div class="studio-tip"><b id="paymentEnvBadge">—</b><br><small>ClickPesa</small></div></div>
+      <div class="admin-form">
+        <h3>🩺 Chunguza malipo ya Auto</h3>
+        <p class="hint">Bonyeza kuona kama ClickPesa imeunganishwa vizuri, kama webhook inafika, na kwa nini order zinasubiri.</p>
+        <button class="btn-primary" type="button" id="payDiagBtn" onclick="loadPaymentStatus()">🔍 Chunguza sasa</button>
+        <div id="paymentAutoStatus" class="storage-status" style="margin-top:12px">Bonyeza "Chunguza sasa".</div>
+        <div id="payDiagList" class="system-list" style="margin-top:10px"></div>
       </div>
-      <div class="admin-form" style="margin-top:14px"><h3>📌 Flow ya Malipo</h3><p class="hint">Mteja anaweka namba + mtandao → AzamPay inaanzisha push → mteja anaingiza PIN → callback inathibitisha order → bidhaa inaonekana My Orders. Kama gateway haijasanidiwa, checkout inaonyesha Manual Payment badala ya kujifanya automatic imefanikiwa.</p><button class="btn-secondary" type="button" onclick="loadPaymentStatus()">↻ Check Gateway Again</button></div>
+      <div class="overview-panels" style="margin-top:14px">
+        <div class="admin-form"><h3>🧩 Render Environment</h3><p class="hint">Weka kwenye Render → Environment:</p><div class="system-list"><div>CLICKPESA_CLIENT_ID <b>INAHITAJIKA</b></div><div>CLICKPESA_API_KEY <b>INAHITAJIKA</b></div><div>CLICKPESA_CHECKSUM_KEY <b>HIARI (kama umewasha Checksum kwenye ClickPesa)</b></div></div></div>
+        <div class="admin-form"><h3>🔗 Webhook (muhimu)</h3><p class="hint">Kwenye ClickPesa Dashboard → Settings → Developers → <b>Application Webhooks</b>, weka URL hii kwa events <b>PAYMENT RECEIVED</b> na <b>PAYMENT FAILED</b>:</p><div class="system-list"><div><span id="whUrl" style="word-break:break-all">—</span> <button class="btn-secondary" type="button" onclick="copyWebhookUrl()">📋 Nakili</button></div></div><p class="hint">Hata webhook ikikosekana, mfumo unauliza ClickPesa wenyewe kila sekunde 40 na kuthibitisha malipo.</p></div>
+      </div>
+      <div class="admin-form" style="margin-top:14px"><h3>📌 Flow ya Malipo</h3><p class="hint"><b>Auto:</b> mteja analipa kwa USSD push → ClickPesa inathibitisha (webhook au uchunguzi wa mfumo) → order inakuwa Successful → download inaonekana kwenye Success na My Orders.<br><b>Manual:</b> mteja anatuma pesa kwenye namba ulizoweka (Web Content → Namba za malipo manual), anaandika Tx Ref na kiasi → wewe unahakiki kwenye Mauzo kisha unabonyeza Thibitisha.<br>Order ikikwama, tumia vitufe vya <b>🔄 Angalia ClickPesa</b> au <b>✅ Thibitisha kwa mkono</b> kwenye orodha ya Mauzo.</p></div>
     </div>
 
     <div class="tab-content" id="tab-publicchat" style="display:none;">
@@ -336,6 +343,12 @@
         <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="wcAnnOn" style="width:auto"> Onyesha tangazo</label>
         <input type="text" id="wcAnnText" maxlength="160" placeholder="Maandishi (mfano: Punguzo la 20% kwa games za PS2 — tumia GAME20)">
         <input type="text" id="wcAnnLink" placeholder="Link (hiari)">
+      </div>
+      <div class="admin-form">
+        <h3>💵 Namba za malipo manual</h3>
+        <p class="hint">Hizi ndizo namba ambazo wateja wataona kwenye checkout kutuma pesa. <b>Weka namba yako halisi</b> — bila hizi, malipo ya manual yamezimwa.</p>
+        <div id="payNumRows" style="display:grid;gap:8px"></div>
+        <button type="button" class="btn-secondary" id="addPayNumBtn" style="margin-top:8px">➕ Ongeza namba</button>
       </div>
       <div class="admin-form">
         <h3>📞 Mawasiliano</h3>
@@ -637,25 +650,19 @@
         </div>`).join('');
     }
 
-    async function confirmManualOrder(txRef) {
-      if (!confirm('Umehakikisha umepokea pesa hii kweli? Hii itamruhusu mteja kupata download link.')) return;
-      const res = await fetch('/api/admin/orders/confirm', {
-        method: 'POST',
-        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tx_ref: txRef })
-      });
+    async function confirmManualOrder(txRef, auto) {
+      const msg = auto ? 'Je, umehakikisha kwenye ClickPesa/simu yako kwamba pesa imeingia kweli? Hii itampa mteja download yake.' : 'Umehakikisha umepokea pesa hii kweli (kiasi sahihi, kwenye namba sahihi)? Hii itamruhusu mteja kupata download.';
+      if (!confirm(msg)) return;
+      const res = await fetch('/api/admin/orders/confirm', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ tx_ref: txRef }) });
       const data = await res.json();
       alert(data.message || data.error || 'Hitilafu');
       loadOrders(); loadStats();
     }
 
     async function rejectManualOrder(txRef) {
-      if (!confirm('Futa ripoti hii ya malipo (haikuthibitika)?')) return;
-      await fetch('/api/admin/orders/reject', {
-        method: 'POST',
-        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tx_ref: txRef })
-      });
+      const reason = prompt('Sababu ya kukataa (mteja ataiona):', 'Pesa haijaingia / kiasi si sahihi');
+      if (reason === null) return;
+      await fetch('/api/admin/orders/reject', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ tx_ref: txRef, reason }) });
       loadOrders(); loadStats();
     }
 
@@ -699,9 +706,24 @@
         const okQ=!q||text.includes(q); const okS=status==='all'||o.status===status||(status==='pending_azampay'&&o.status==='pending_clickpesa'); return okQ&&okS;
       });
       if(!list.length){box.innerHTML='<p class="hint">Hakuna orders zinazolingana na filter.</p>';return;}
-      const label={successful:'Imekamilika',pending_manual:'Inasubiri Manual',pending_azampay:'Inasubiri Auto',pending_clickpesa:'Inasubiri Auto',failed:'Imeshindwa',amount_mismatch:'Tatizo la Kiasi'};
-      const cls={successful:'success',pending_manual:'pending',pending_azampay:'pending',pending_clickpesa:'pending',failed:'failed',amount_mismatch:'failed'};
-      box.innerHTML=list.map(o=>`<div class="admin-row"><div><strong>${escAdmin(o.customer||'Mteja')}</strong> <span class="payment-status-pill ${cls[o.status]||'pending'}">${label[o.status]||escAdmin(o.status)}</span><br><small>${escAdmin(o.email||'')} ${o.customerPhone?'• '+escAdmin(o.customerPhone):''}</small><br><small>${new Date(o.date||Date.now()).toLocaleString()} • TX: ${escAdmin(o.tx_ref||'—')}</small><br><small>${escAdmin((o.items||[]).map(i=>i.name+' × '+(i.qty||i.quantity||1)).join(', ')||'—')}</small>${o.manualTxRef?'<br><small>Manual Ref: <b>'+escAdmin(o.manualTxRef)+'</b></small>':''}</div><div style="text-align:right"><div class="admin-amount">${Number(o.amount||0).toLocaleString()} TZS</div>${o.status==='pending_manual'?'<div style="display:flex;gap:6px;margin-top:7px"><button class="btn-vote" onclick="confirmManualOrder(\''+escAdmin(o.tx_ref||'')+'\')">✅ Thibitisha</button><button class="btn-remove" onclick="rejectManualOrder(\''+escAdmin(o.tx_ref||'')+'\')">✕</button></div>':''}</div></div>`).join('');
+      const label={successful:'Imekamilika',pending_manual:'Inasubiri Manual',pending_azampay:'Inasubiri ClickPesa',pending_clickpesa:'Inasubiri ClickPesa',failed:'Imeshindwa',amount_mismatch:'Tatizo la Kiasi',rejected:'Imekataliwa',failed_to_start:'Haikuanza'};
+      const cls={successful:'success',pending_manual:'pending',pending_azampay:'pending',pending_clickpesa:'pending',failed:'failed',amount_mismatch:'failed',rejected:'failed',failed_to_start:'failed'};
+      const q1=s=>escAdmin(s||'').replace(/'/g,'&#39;');
+      box.innerHTML=list.map(o=>{
+        const auto=o.provider==='ClickPesa'; const ageMin=Math.max(0,Math.round((Date.now()-new Date(o.date||Date.now()).getTime())/60000));
+        const ref=q1(o.tx_ref);
+        let notes='';
+        if(o.status==='pending_clickpesa') notes+='<br><small style="color:#ffd166">⏳ Inasubiri dakika '+ageMin+(o.providerStatus?' • ClickPesa: '+escAdmin(o.providerStatus):'')+(o.verifyNote?' • '+escAdmin(o.verifyNote):'')+'</small>';
+        if(o.status==='amount_mismatch'||o.status==='failed') if(o.verifyNote) notes+='<br><small style="color:#ff9fb4">'+escAdmin(o.verifyNote)+'</small>';
+        if(o.status==='rejected') notes+='<br><small style="color:#ff9fb4">Sababu: '+escAdmin(o.rejectReason||'—')+'</small>';
+        if(o.manualTxRef){ const short=o.claimedAmount&&o.claimedAmount<o.amount; notes+='<br><small>Tx Ref ya mteja: <b>'+escAdmin(o.manualTxRef)+'</b> • '+escAdmin(o.payNetwork||'')+' • simu '+escAdmin(o.customerPhone||'')+'<br>Mteja anadai kulipa: <b style="color:'+(short?'#ff6b8a':'#2be879')+'">'+Number(o.claimedAmount||o.amount).toLocaleString()+' TZS</b> • Inayotakiwa: <b>'+Number(o.amount||0).toLocaleString()+' TZS</b></small>'; }
+        if(o.confirmedVia&&o.status==='successful') notes+='<br><small style="color:#8f8faa">Imethibitishwa na: '+escAdmin(o.confirmedVia==='webhook'?'ClickPesa webhook':o.confirmedVia==='api'?'ClickPesa (uchunguzi wa mfumo)':'admin'+(o.confirmedBy?' ('+o.confirmedBy+')':''))+'</small>';
+        let btns='';
+        if(o.status==='pending_manual') btns='<button class="btn-vote" onclick="confirmManualOrder(\''+ref+'\')">✅ Thibitisha</button><button class="btn-remove" onclick="rejectManualOrder(\''+ref+'\')">❌ Kataa</button>';
+        else if(auto&&['pending_clickpesa','failed','amount_mismatch'].includes(o.status)) btns='<button class="btn-secondary" onclick="verifyOrder(\''+ref+'\')">🔄 Angalia ClickPesa</button><button class="btn-vote" onclick="confirmManualOrder(\''+ref+'\',true)">✅ Thibitisha kwa mkono</button>';
+        else if(o.status==='rejected') btns='<button class="btn-vote" onclick="confirmManualOrder(\''+ref+'\')">✅ Thibitisha (nimekosea)</button>';
+        return '<div class="admin-row"><div><strong>'+escAdmin(o.customer||'Mteja')+'</strong> <span class="payment-status-pill '+(cls[o.status]||'pending')+'">'+(label[o.status]||escAdmin(o.status))+'</span>'+(auto?' <small style="color:#8f8faa">• Auto</small>':o.manualTxRef?' <small style="color:#8f8faa">• Manual</small>':'')+'<br><small>'+escAdmin(o.email||'')+' '+(o.customerPhone?'• '+escAdmin(o.customerPhone):'')+'</small><br><small>'+new Date(o.date||Date.now()).toLocaleString()+' • TX: '+escAdmin(o.tx_ref||'—')+'</small><br><small>'+escAdmin((o.items||[]).map(i=>i.name+' × '+(i.qty||i.quantity||1)).join(', ')||'—')+'</small>'+notes+'</div><div style="text-align:right"><div class="admin-amount">'+Number(o.amount||0).toLocaleString()+' TZS</div>'+(btns?'<div style="display:flex;gap:6px;margin-top:7px;justify-content:flex-end;flex-wrap:wrap">'+btns+'</div>':'')+'</div></div>';
+      }).join('');
     }
     function exportOrdersCSV(){
       const rows=window.__orders||[]; const head=['date','customer','email','phone','tx_ref','status','amount','items'];
@@ -715,12 +737,35 @@
 
     async function loadPaymentStatus(){
       if(currentRole!=='admin')return;
-      try{const r=await fetch('/api/admin/payment-status',{headers:{'Authorization':token}});const d=await r.json();
-        const badge=document.getElementById('paymentEnvBadge'); if(badge) badge.textContent=d.environment||'UNKNOWN';
-        const box=document.getElementById('paymentAutoStatus'); const mno=document.getElementById('paymentMnoStatus');
-        if(box){box.className='storage-status '+(d.configured?'storage-ok':'storage-warn');box.innerHTML=d.configured?'✅ <b>AzamPay credentials zipo</b><br><small>Automatic checkout iko tayari kujaribiwa.</small>':'⚠️ <b>Automatic payment haijasanidiwa</b><br><small>Weka APP_NAME, CLIENT_ID na CLIENT_SECRET kwenye Render.</small>';}
-        if(mno)mno.textContent=d.configured?'READY':'SETUP';
-      }catch(e){const box=document.getElementById('paymentAutoStatus');if(box)box.innerHTML='⚠️ Imeshindwa kusoma payment status.';}
+      const box=document.getElementById('paymentAutoStatus'), list=document.getElementById('payDiagList'), badge=document.getElementById('paymentEnvBadge');
+      if(!box)return; box.className='storage-status'; box.textContent='⏳ Inachunguza...';
+      try{
+        const d=await (await fetch('/api/admin/payment-diagnostics',{headers:{'Authorization':token}})).json();
+        if(!d.success){box.innerHTML='❌ '+escAdmin(d.error||'Hitilafu');return;}
+        const c=d.config||{}, t=d.token||{}, w=d.webhook||{}, o=d.orders||{}, q=d.queryTest;
+        const row=(ok,label,detail)=>'<div>'+(ok===true?'✅':ok===false?'❌':'⚠️')+' '+label+(detail?' <b>'+escAdmin(detail)+'</b>':'')+'</div>';
+        const rows=[
+          row(c.clientId&&c.apiKey,'CLICKPESA_CLIENT_ID na CLICKPESA_API_KEY',c.clientId&&c.apiKey?'zipo':'hazijawekwa'),
+          row(t.ok,'Kuunganisha na ClickPesa (token)',t.ok?'sawa':(t.note||'imeshindwa')),
+          row(w.received>0?true:null,'Webhook kutoka ClickPesa',w.received>0?('imefika '+w.received+'× • mwisho '+new Date(w.lastAt).toLocaleString()):'haijawahi kufika — weka webhook URL kwenye ClickPesa (hapa chini), lakini mfumo unathibitisha kwa uchunguzi wenyewe'),
+          row(c.checksumKey?true:null,'Checksum key (usalama wa webhook)',c.checksumKey?'imewekwa':'haijawekwa (hiari)'),
+          q?row(!q.error&&q.http!==404?true:(q.error?false:null),'Kuuliza hali ya malipo ClickPesa (order '+q.ref+')',q.error?q.error:('HTTP '+q.http+(q.statuses&&q.statuses.length?' • '+q.statuses.join(', '):''))):row(null,'Kuuliza hali ya malipo ClickPesa','bado hakuna order ya kujaribu'),
+          row(o.pendingOver10Min===0?true:false,'Order za Auto zinazosubiri zaidi ya dakika 10',String(o.pendingOver10Min||0)),
+          '<div>📊 Orders za ClickPesa: jumla '+(o.total||0)+' • zimelipwa '+(o.successful||0)+' • zinasubiri '+(o.pending||0)+' • zimeshindwa '+(o.failed||0)+'</div>'
+        ];
+        const bad=!(c.clientId&&c.apiKey&&t.ok);
+        box.className='storage-status '+(bad?'storage-warn':'storage-ok');
+        box.innerHTML=bad?'⚠️ <b>Malipo ya Auto hayajaunganishwa vizuri</b><br><small>'+escAdmin(t.note||'Angalia credentials kwenye Render.')+'</small>':'✅ <b>ClickPesa imeunganishwa</b><br><small>Order zinazosubiri zinakaguliwa kiotomatiki kila sekunde 40.</small>';
+        list.innerHTML=rows.join(''); if(badge)badge.textContent=bad?'SETUP':'READY';
+        const wu=document.getElementById('whUrl'); if(wu)wu.textContent=w.url||'';
+      }catch(e){box.className='storage-status storage-warn';box.innerHTML='⚠️ Imeshindwa kusoma hali ya malipo.';}
+    }
+    function copyWebhookUrl(){const u=(document.getElementById('whUrl')||{}).textContent||''; if(u&&navigator.clipboard)navigator.clipboard.writeText(u).then(()=>alert('Imenakiliwa: '+u));}
+    async function verifyOrder(txRef){
+      const r=await (await fetch('/api/admin/orders/verify',{method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify({tx_ref:txRef})})).json();
+      if(!r.success){alert(r.error||'Hitilafu');return;}
+      alert('Hali ya order: '+r.status+(r.providerStatuses&&r.providerStatuses.length?'\nClickPesa inasema: '+r.providerStatuses.join(', '):'')+(r.queryError?'\nKosa la kuuliza ClickPesa: '+r.queryError:'')+(r.note?'\n'+r.note:''));
+      loadOrders(); loadStats();
     }
 
     async function loadPublicChatAdmin(){
@@ -1203,6 +1248,14 @@
     }
 
     // 🌐 WEB CONTENT
+    function addPayNumRow(n, num, name) {
+      const row = document.createElement('div'); row.className = 'pn-row'; row.style.cssText = 'display:grid;grid-template-columns:1fr 1.2fr 1.2fr auto;gap:6px';
+      row.innerHTML = '<select class="pn-net"><option>M-Pesa</option><option>Tigo Pesa</option><option>Airtel Money</option><option>HaloPesa</option><option>Benki</option></select><input class="pn-num" placeholder="Namba (mf. 0786 095 758)" inputmode="tel"><input class="pn-name" placeholder="Jina la akaunti" maxlength="40"><button type="button" class="btn-remove" aria-label="Ondoa">✖</button>';
+      row.querySelector('.pn-net').value = n || 'M-Pesa'; row.querySelector('.pn-num').value = num || ''; row.querySelector('.pn-name').value = name || '';
+      row.querySelector('button').addEventListener('click', () => row.remove());
+      document.getElementById('payNumRows').appendChild(row);
+    }
+    document.getElementById('addPayNumBtn').addEventListener('click', () => { if (document.querySelectorAll('#payNumRows .pn-row').length < 4) addPayNumRow(); });
     document.getElementById('wcImageFile').addEventListener('change', e => doUpload('image', e.target, 'wcBar', 'wcStatus', d => { document.getElementById('wcImage').value = d.url; }));
     async function loadWebContent() {
       if (currentRole !== 'admin') return;
@@ -1214,6 +1267,8 @@
         set('wcWa', (s.contact || {}).whatsapp); set('wcPhone', (s.contact || {}).phone); set('wcEmail', (s.contact || {}).email);
         const so = s.social || {}; set('wcInsta', so.instagram); set('wcFb', so.facebook); set('wcTiktok', so.tiktok); set('wcYt', so.youtube); set('wcX', so.x);
         set('wcFooter', s.footerText);
+        document.getElementById('payNumRows').innerHTML = '';
+        ((s.payment || {}).manual || []).forEach(m => addPayNumRow(m.network, m.number, m.name));
       } catch (e) {}
       loadBannersAdmin();
     }
@@ -1238,7 +1293,7 @@
     });
     document.getElementById('saveSiteBtn').addEventListener('click', async () => {
       const g = id => document.getElementById(id).value.trim(), msg = document.getElementById('siteMsg');
-      const body = { announcement: { enabled: document.getElementById('wcAnnOn').checked, text: g('wcAnnText'), link: g('wcAnnLink') }, contact: { whatsapp: g('wcWa'), phone: g('wcPhone'), email: g('wcEmail') }, social: { instagram: g('wcInsta'), facebook: g('wcFb'), tiktok: g('wcTiktok'), youtube: g('wcYt'), x: g('wcX') }, footerText: g('wcFooter') };
+      const body = { announcement: { enabled: document.getElementById('wcAnnOn').checked, text: g('wcAnnText'), link: g('wcAnnLink') }, contact: { whatsapp: g('wcWa'), phone: g('wcPhone'), email: g('wcEmail') }, social: { instagram: g('wcInsta'), facebook: g('wcFb'), tiktok: g('wcTiktok'), youtube: g('wcYt'), x: g('wcX') }, footerText: g('wcFooter'), payment: { manual: Array.from(document.querySelectorAll('#payNumRows .pn-row')).map(r => ({ network: r.querySelector('.pn-net').value, number: r.querySelector('.pn-num').value.trim(), name: r.querySelector('.pn-name').value.trim() })).filter(m => m.number) } };
       const res = await fetch('/api/admin/site-content', { method: 'PUT', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const d = await res.json();
       msg.textContent = d.success ? '✅ Imehifadhiwa! Mabadiliko yataonekana kwenye website (refresh ukurasa).' : '❌ ' + (d.error || 'Hitilafu');

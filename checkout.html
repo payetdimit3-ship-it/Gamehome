@@ -230,15 +230,17 @@
           <!-- Manual section (hidden by default) -->
           <div id="manualSection" hidden style="margin-top:16px;padding:16px;border-radius:12px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2)">
             <h3 style="margin:0 0 10px;font-size:15px">Lipa Moja kwa Moja</h3>
-            <p style="margin:0 0 12px;font-size:13px;color:var(--muted)">Tuma jumla ya <strong id="manualTotal" style="color:#fbbf24">Tsh 0</strong> kwenye namba hii:</p>
-            <div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;background:rgba(0,0,0,.3);margin-bottom:12px">
-              <strong style="flex:1;font-size:16px" id="payNum">0786 095 758</strong>
-              <button class="zp-btn ghost sm" id="copyNum" type="button">📋 Nakili</button>
+            <p style="margin:0 0 12px;font-size:13px;color:var(--muted)">Tuma <strong>kiasi kamili</strong> cha <strong id="manualTotal" style="color:#fbbf24">Tsh 0</strong> kwenye mojawapo ya namba hizi, kisha jaza taarifa za malipo hapa chini:</p>
+            <div id="payNums"></div>
+            <div id="manualForm">
+              <div class="ck2-f"><label>Jina Kamili</label><input type="text" id="manualName" placeholder="Juma Juma" autocomplete="name"></div>
+              <div class="ck2-f"><label>Mtandao uliotumia kulipa</label><select id="manualNet"></select></div>
+              <div class="ck2-f"><label>Namba ya simu uliyotumia kulipa</label><input type="tel" id="manualPhone" placeholder="0786095758" autocomplete="tel"></div>
+              <div class="ck2-f"><label>Kiasi ulicholipa (TZS)</label><input type="text" id="manualPaid" inputmode="numeric" placeholder="mfano: 10000"></div>
+              <div class="ck2-f"><label>Namba ya Muamala (Tx Ref) — kwenye SMS ya malipo</label><input type="text" id="manualTxRef" placeholder="mfano: MP240816.1234.A12345" autocomplete="off"></div>
+              <label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--muted);margin:8px 0"><input type="checkbox" id="manualOk" style="margin-top:3px"> Nimethibitisha nimetuma kiasi kamili kwenye namba iliyo juu, na taarifa nilizojaza ni sahihi.</label>
+              <p style="margin:0 0 10px;font-size:12px;color:var(--muted)">⏳ Admin atahakiki malipo yako (kwa kawaida ndani ya saa chache). Ukishathibitishwa, download yako itaonekana kwenye <b>My Orders</b>. Usilipe mara mbili.</p>
             </div>
-            <p style="margin:0 0 12px;font-size:12px;color:var(--muted)">Jina: <strong style="color:#fff">Amina Mwinyi</strong></p>
-            <div class="ck2-f"><label>Jina Kamili</label><input type="text" id="manualName" placeholder="Juma Juma"></div>
-            <div class="ck2-f"><label>Namba ya Simu</label><input type="tel" id="manualPhone" placeholder="2557XXXXXXXX"></div>
-            <div class="ck2-f"><label>Namba ya Muamala (Tx Ref)</label><input type="text" id="manualTxRef" placeholder="mfano: MP240816.1234.A12345"></div>
             <button class="ck2-paynow" id="manualPayBtn" type="button" style="background:linear-gradient(135deg,#f59e0b,#b45309)">
               <span>📤 Tuma Ripoti ya Malipo</span>
             </button>
@@ -432,64 +434,99 @@
         document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
         return;
       }
-      showStatus(pStatus, '📲 Umepokea ombi kwenye simu yako (' + phoneFull + '). Ingiza PIN yako kuthibitisha, kisha subiri hapa...', 'wait');
+      var txRef = data.tx_ref, startedAt = Date.now(), finished = false;
+      // Hifadhi order mara moja: hata mteja akifunga ukurasa, My Orders/Success zitaendelea kufuatilia
+      localStorage.setItem('gamehubLastOrder', JSON.stringify({ tx_ref: txRef, items: items, total: total, date: new Date().toISOString() }));
+      localStorage.setItem('gamehubPendingPay', JSON.stringify({ tx_ref: txRef, t: startedAt }));
       document.querySelector('#payBtn span').textContent = '⏳ Inasubiri uthibitisho...';
-
-      var attempts = 0;
-      poll = setInterval(function(){
-        attempts++;
-        fetch('/api/clickpesa-check/' + data.tx_ref, { headers: { 'Authorization': token } })
+      function resetPay(){ payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now'; }
+      function waitingMsg(){
+        var sec = Math.round((Date.now() - startedAt) / 1000);
+        if (sec < 60) return '📲 Umepokea ombi kwenye simu yako (' + phoneFull + '). Ingiza PIN yako kuthibitisha, kisha subiri hapa...';
+        if (sec < 180) return '⏳ Bado tunasubiri uthibitisho kutoka ClickPesa. Kama ulishaingiza PIN, subiri kidogo — usilipe tena.';
+        return '⏳ Inachukua muda kidogo. Kama pesa imekatwa, USILIPE TENA — download yako itaonekana kiotomatiki kwenye My Orders ikishathibitishwa. Unaweza kusubiri hapa au kuangalia My Orders.';
+      }
+      function paint(){ showStatus(pStatus, waitingMsg(), 'wait'); var x = document.getElementById('waitActions'); if (!x){ x = document.createElement('div'); x.id = 'waitActions'; x.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-top:8px'; x.innerHTML = '<button type="button" class="zp-btn ghost sm" id="checkNowBtn">🔄 Angalia hali sasa</button><a class="zp-btn ghost sm" href="myorders.html">📦 My Orders</a>'; pStatus.parentNode.insertBefore(x, pStatus.nextSibling); document.getElementById('checkNowBtn').addEventListener('click', check); } }
+      function clearWait(){ var x = document.getElementById('waitActions'); if (x) x.remove(); }
+      function stop(){ finished = true; clearTimeout(poll); clearWait(); localStorage.removeItem('gamehubPendingPay'); }
+      function check(){
+        if (finished) return;
+        fetch('/api/clickpesa-check/' + txRef, { headers: { 'Authorization': token } })
           .then(function(r){ return r.json(); })
           .then(function(v){
-            if (v.success && v.status === 'successful') {
-              clearInterval(poll);
-              localStorage.setItem('gamehubLastOrder', JSON.stringify({ tx_ref: data.tx_ref, items: items, total: total, date: new Date().toISOString() }));
-              clearOrder(); location.href = 'success.html';
-            } else if (v.status === 'amount_mismatch') {
-              clearInterval(poll); showStatus(pStatus, 'Kiasi kilicholipwa hakikamilika sahihi. Wasiliana WhatsApp na tx ref: ' + data.tx_ref, 'err');
-              payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
-            } else if (v.status === 'failed') {
-              clearInterval(poll); showStatus(pStatus, 'Malipo hayakufanikiwa (umekataa au muda umeisha). Jaribu tena.', 'err');
-              payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
-            } else if (attempts >= 36) {
-              clearInterval(poll); showStatus(pStatus, 'Muda umeisha. Kama umelipa, wasiliana nasi WhatsApp na tx ref: ' + data.tx_ref, 'err');
-              payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now';
-            }
+            if (finished) return;
+            if (v.success && v.status === 'successful') { stop(); clearOrder(); location.href = 'success.html'; }
+            else if (v.status === 'amount_mismatch') { stop(); showStatus(pStatus, 'Kiasi kilicholipwa hakikamilika sahihi. Wasiliana nasi WhatsApp na tx ref: ' + txRef, 'err'); resetPay(); }
+            else if (v.status === 'failed') { stop(); showStatus(pStatus, 'Malipo hayakufanikiwa (umekataa au muda umeisha). Hakuna pesa iliyokatwa. Jaribu tena.', 'err'); resetPay(); }
+            else paint();
           }).catch(function(){});
-      }, 5000);
+      }
+      function loop(){
+        if (finished) return;
+        var sec = (Date.now() - startedAt) / 1000;
+        if (sec > 600) { stop(); showStatus(pStatus, 'Bado hatujapata uthibitisho. Kama pesa imekatwa, USILIPE TENA — angalia My Orders baada ya dakika chache, au tuma ujumbe WhatsApp na tx ref: ' + txRef, 'err'); document.querySelector('#payBtn span').textContent = '🔒 Pay Now'; setTimeout(function(){ payBtn.disabled = false; }, 120000); return; }
+        check(); poll = setTimeout(loop, sec < 60 ? 3000 : 6000);
+      }
+      paint(); poll = setTimeout(loop, 2500);
     })
     .catch(function(){ showStatus(pStatus, 'Hitilafu ya mtandao. Jaribu tena.', 'err'); payBtn.disabled = false; document.querySelector('#payBtn span').textContent = '🔒 Pay Now'; });
   });
 
   /* ============ MANUAL PAYMENT ============ */
   var mStatus = document.getElementById('manualStatus');
+  var manualNums = [];
+  function renderManualNumbers(list){
+    manualNums = (list || []).filter(function(m){ return m && m.network && m.number; });
+    var box = document.getElementById('payNums'), sel = document.getElementById('manualNet'), form = document.getElementById('manualForm'), btn = document.getElementById('manualPayBtn');
+    if (!manualNums.length){
+      box.innerHTML = '<p style="margin:0 0 12px;padding:12px;border-radius:10px;background:rgba(239,68,68,.1);color:#fca5a5;font-size:13px">Muuzaji bado hajaweka namba za malipo ya manual. Tafadhali tumia <b>Pay Now</b> (malipo ya moja kwa moja) au tuwasiliane kwa WhatsApp.</p>';
+      form.hidden = true; btn.hidden = true; return;
+    }
+    form.hidden = false; btn.hidden = false;
+    box.innerHTML = manualNums.map(function(m, i){
+      return '<div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;background:rgba(0,0,0,.3);margin-bottom:8px"><div style="flex:1"><div style="font-size:12px;color:var(--muted)">' + ZP.esc(m.network) + (m.name ? ' • ' + ZP.esc(m.name) : '') + '</div><strong style="font-size:17px">' + ZP.esc(m.number) + '</strong></div><button class="zp-btn ghost sm" type="button" data-copy="' + i + '">📋 Nakili</button></div>';
+    }).join('');
+    sel.innerHTML = manualNums.map(function(m){ return '<option>' + ZP.esc(m.network) + '</option>'; }).join('');
+    document.getElementById('manualPaid').value = String(finalTotal());
+  }
+  document.getElementById('payNums').addEventListener('click', function(e){
+    var b = e.target.closest('[data-copy]'); if (!b) return;
+    var n = String((manualNums[+b.dataset.copy] || {}).number || '').replace(/\s/g, '');
+    if (navigator.clipboard) navigator.clipboard.writeText(n).then(function(){ b.textContent = '✓ Imenakiliwa'; setTimeout(function(){ b.textContent = '📋 Nakili'; }, 1500); });
+  });
+  fetch('/api/site-content').then(function(r){ return r.json(); }).then(function(d){ renderManualNumbers(((d.site || {}).payment || {}).manual); }).catch(function(){ renderManualNumbers([]); });
+
   document.getElementById('manualPayBtn').addEventListener('click', function(){
     if (!token) { showStatus(mStatus, 'Ingia kwanza kutuma ripoti ya malipo.', 'err'); setTimeout(function(){ location.href='login.html?return=checkout.html'; }, 1200); return; }
     var name = document.getElementById('manualName').value.trim();
     var phone = document.getElementById('manualPhone').value.trim();
     var txRef = document.getElementById('manualTxRef').value.trim();
-    if (!name || !phone || !txRef) { showStatus(mStatus, 'Jaza taarifa zote.', 'err'); return; }
+    var paid = document.getElementById('manualPaid').value.replace(/[^\d]/g, '');
+    var total = finalTotal();
+    if (!name || !phone || !txRef || !paid) { showStatus(mStatus, 'Jaza taarifa zote.', 'err'); return; }
+    if (!/^[A-Za-z0-9._-]{5,40}$/.test(txRef)) { showStatus(mStatus, 'Tx Ref si sahihi. Ichukue kwenye SMS ya malipo (herufi/namba 5–40, bila nafasi).', 'err'); return; }
+    if (+paid < total) { showStatus(mStatus, 'Kiasi ulicholipa kiwe angalau ' + money(total) + '.', 'err'); return; }
+    if (!document.getElementById('manualOk').checked) { showStatus(mStatus, 'Tafadhali thibitisha kwa kubonyeza kisanduku cha uthibitisho.', 'err'); return; }
 
     showStatus(mStatus, '');
-    this.disabled = true; this.querySelector('span').textContent = '⏳ Inatuma...';
-
+    var btn = this; btn.disabled = true; btn.querySelector('span').textContent = '⏳ Inatuma...';
     fetch('/api/manual-pay', {
       method: 'POST',
       headers: { 'Authorization': token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: items, total: finalTotal(), txRef: txRef, phone: phone, coupon: couponCode, shipping: wantsShipping })
+      body: JSON.stringify({ items: items, txRef: txRef, phone: phone, paidAmount: paid, payNetwork: document.getElementById('manualNet').value, coupon: couponCode, shipping: wantsShipping })
     })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.success) {
+        localStorage.setItem('gamehubLastOrder', JSON.stringify({ tx_ref: d.tx_ref, items: items, total: total, date: new Date().toISOString() }));
         clearOrder(); showStatus(mStatus, d.message || 'Ripoti imepokelewa.', 'ok');
-        setTimeout(function(){ location.href = 'myorders.html'; }, 2000);
+        setTimeout(function(){ location.href = 'success.html'; }, 1800);
       } else {
         showStatus(mStatus, d.error || 'Hitilafu', 'err');
-        document.getElementById('manualPayBtn').disabled = false;
-        document.querySelector('#manualPayBtn span').textContent = '📤 Tuma Ripoti ya Malipo';
+        btn.disabled = false; btn.querySelector('span').textContent = '📤 Tuma Ripoti ya Malipo';
       }
     })
-    .catch(function(){ showStatus(mStatus, 'Hitilafu ya mtandao. Jaribu tena.', 'err'); document.getElementById('manualPayBtn').disabled = false; });
+    .catch(function(){ showStatus(mStatus, 'Hitilafu ya mtandao. Jaribu tena.', 'err'); btn.disabled = false; btn.querySelector('span').textContent = '📤 Tuma Ripoti ya Malipo'; });
   });
 
   /* ============ HELPERS ============ */
@@ -502,14 +539,16 @@
     else localStorage.removeItem('gamehubCart');
   }
 
-  /* ============ COPY PHONE NUMBER ============ */
-  document.getElementById('copyNum').addEventListener('click', function(){
-    var n = document.getElementById('payNum').textContent.replace(/\s/g, '');
-    if (navigator.clipboard) navigator.clipboard.writeText(n).then(function(){
-      var b = document.getElementById('copyNum'); b.textContent = '✓ Imenakiliwa';
-      setTimeout(function(){ b.textContent = '📋 Nakili'; }, 1500);
-    });
-  });
+  /* ============ ONYO: MALIPO YANAYOSUBIRI (kuzuia kulipa mara mbili) ============ */
+  (function(){
+    var pend = null; try { pend = JSON.parse(localStorage.getItem('gamehubPendingPay') || 'null'); } catch(e) {}
+    if (!pend || Date.now() - pend.t > 600000) { localStorage.removeItem('gamehubPendingPay'); return; }
+    showStatus(pStatus, '⏳ Una malipo yanayosubiri uthibitisho (ref ' + pend.tx_ref + '). Kama tayari umelipa, USILIPE TENA — angalia My Orders.', 'wait');
+    var x = document.createElement('div'); x.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-top:8px';
+    x.innerHTML = '<a class="zp-btn ghost sm" href="success.html">🔄 Angalia hali ya malipo</a><a class="zp-btn ghost sm" href="myorders.html">📦 My Orders</a>';
+    pStatus.parentNode.insertBefore(x, pStatus.nextSibling);
+    payBtn.addEventListener('click', function(e){ if (!confirm('Una malipo yanayosubiri uthibitisho. Una uhakika unataka kulipa tena?')) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+  })();
 
 })();
 </script>
