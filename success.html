@@ -150,10 +150,13 @@
         } else if (o.status === 'pending_manual') {
           msgEl.textContent = 'Tumepokea ripoti ya malipo yako.';
           box.innerHTML = '<div class="order-summary" style="margin-top:10px"><p>⏳ Admin akithibitisha malipo, download yako itaonekana kwenye <a href="myorders.html"><b>My Orders</b></a>.</p></div>';
+        } else if (o.status === 'rejected') {
+          msgEl.textContent = 'Malipo hayakuthibitishwa.';
+          box.innerHTML = '<div class="order-summary" style="margin-top:10px"><p>❌ ' + esc(o.rejectReason || 'Malipo hayakuthibitika') + '. Wasiliana nasi WhatsApp ukiwa na tx ref: <b>' + esc(o.tx_ref) + '</b>.</p></div>';
         } else if (/^pending/.test(o.status)) {
           msgEl.textContent = 'Tunasubiri uthibitisho wa malipo yako…';
-          box.innerHTML = '<div class="order-summary" style="margin-top:10px"><p>⏳ Malipo yakithibitishwa, download itaonekana hapa na kwenye <a href="myorders.html"><b>My Orders</b></a>.</p></div>';
-          if (++tries < 12) setTimeout(load, 5000);
+          box.innerHTML = '<div class="order-summary" style="margin-top:10px"><p>⏳ Malipo yakithibitishwa, download itaonekana hapa na kwenye <a href="myorders.html"><b>My Orders</b></a>. Kama pesa imekatwa, <b>usilipe tena</b>.</p></div>';
+          if (++tries < 60) setTimeout(load, 5000);
         }
       }
       function load(){

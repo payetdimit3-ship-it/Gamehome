@@ -27,20 +27,7 @@
 
   /* Seeded products (used when the API is empty or unreachable) */
   var D = function(id,name,type,price,emoji,kind){ return {id:id,name:name,type:type,price:price,emoji:emoji,kind:kind,platform:(kind==='key'||kind==='account')?'pc':''}; };
-  ZP.DEFAULTS = [
-    D('fifa25','FIFA 25','Game Key • PC',45000,'⚽','key'),
-    D('gta5','GTA V','Game Key • PC',35000,'🚗','key'),
-    D('minecraft','Minecraft','Game Key • PC',30000,'🧱','key'),
-    D('codmw3','Call of Duty: MW3','Game Key • PC',55000,'💥','key'),
-    D('codpoints','COD Points 1100','Top-Up • Call of Duty',40000,'🪙','topup'),
-    D('gtamoney','GTA V — GTA$ 8M','Top-Up • GTA Online',25000,'💰','topup'),
-    D('futpoints','FIFA Ultimate Team 12K','Top-Up • FUT Points',50000,'⚡','topup'),
-    D('steam10','Steam Gift Card $10','Gift Card • Steam',30000,'🎁','gift'),
-    D('steam20','Steam Gift Card $20','Gift Card • Steam',58000,'🎁','gift'),
-    D('psn10','PlayStation Card $10','Gift Card • PSN',32000,'🎁','gift'),
-    D('accountfifa','Steam Account (FIFA 25)','Account • Full Access',60000,'👤','account'),
-    D('accountgta','Steam Account (GTA V)','Account • Full Access',50000,'👤','account')
-  ];
+  ZP.DEFAULTS = [];   // Hakuna bidhaa za demo — bidhaa zote zinatoka kwenye admin (database)
 
   function detectKind(p){
     var t=[p.category,p.type,p.name].join(' ').toLowerCase();
@@ -79,13 +66,13 @@
     if (pending) return pending;
     pending = new Promise(function(resolve){
       var done=false, finish=function(list){ if(done) return; done=true; ZP.products=list; resolve(list); };
-      var t=setTimeout(function(){ finish(ZP.DEFAULTS.slice()); }, 4500);
+      var t=setTimeout(function(){ finish([]); }, 8000);
       fetch('/api/products').then(function(r){ return r.json(); }).then(function(d){
         clearTimeout(t);
         var api=(d&&d.success&&Array.isArray(d.products)?d.products:[]).filter(function(p){ return !p.section || p.section==='shop'; }).map(norm);
         var ids={}; api.forEach(function(p){ ids[p.id]=1; });
-        finish(api.concat(ZP.DEFAULTS.filter(function(p){ return !ids[p.id]; })));
-      }).catch(function(){ clearTimeout(t); finish(ZP.DEFAULTS.slice()); });
+        finish(api);
+      }).catch(function(){ clearTimeout(t); finish([]); });
     });
     return pending;
   };

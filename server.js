@@ -240,15 +240,7 @@ async function restoreFromSupabase() {
   }
 }
 
-function ensureTournamentSeed() {
-  const current = readJson('tournaments.json', null);
-  if (!Array.isArray(current)) {
-    writeJson('tournaments.json', [
-      { id: 't1', name: 'GameHub eFootball Cup', game: 'eFootball', date: 'Tarehe itawekwa', status: 'OPEN', description: 'Mashindano ya eFootball kwa community ya GameHub.', registrations: [] },
-      { id: 't2', name: 'GameHub FC Challenge', game: 'EA SPORTS FC', date: 'Tarehe itawekwa', status: 'OPEN', description: 'Challenge ya football gaming.', registrations: [] }
-    ]);
-  }
-}
+// (Hakuna tena mashindano ya demo yanayowekwa kiotomatiki)
 
 // 💬 PUBLIC COMMUNITY CHAT
 const publicChatRate = new Map();
@@ -1064,16 +1056,17 @@ app.get('/api/security/report', (req, res) => {
 const CLICKPESA_BASE = 'https://api.clickpesa.com/third-parties';
 let clickpesaTokenCache = { token: null, expiresAt: 0 };
 
-async function getClickPesaToken() {
-  if (clickpesaTokenCache.token && Date.now() < clickpesaTokenCache.expiresAt - 60_000) {
+async function getClickPesaToken(force) {
+  if (!force && clickpesaTokenCache.token && Date.now() < clickpesaTokenCache.expiresAt - 60_000) {
     return clickpesaTokenCache.token;
   }
+  if (!process.env.CLICKPESA_CLIENT_ID || !process.env.CLICKPESA_API_KEY) throw new Error('ClickPesa haijawekwa (CLICKPESA_CLIENT_ID / CLICKPESA_API_KEY)');
   const r = await fetch(CLICKPESA_BASE + '/generate-token', {
     method: 'POST',
     headers: { 'client-id': process.env.CLICKPESA_CLIENT_ID, 'api-key': process.env.CLICKPESA_API_KEY }
   });
-  const data = await r.json();
-  if (!r.ok || !data.token) throw new Error('ClickPesa: imeshindwa kupata token — ' + (data.message || 'Unknown error'));
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok || !data.token) throw new Error('ClickPesa: imeshindwa kupata token — ' + (data.message || ('HTTP ' + r.status)));
   clickpesaTokenCache = { token: data.token, expiresAt: Date.now() + 55 * 60 * 1000 };
   return clickpesaTokenCache.token;
 }
@@ -1173,36 +1166,102 @@ async function useCoupon(code) {
   if (coupons[code]) { coupons[code].uses = (coupons[code].uses || 0) + 1; await writeJson('coupons.json', coupons); }
 }
 
-// ⚡ Thibitisha malipo moja kwa moja kwa ClickPesa (webhook peke yake haiaminiki)
+// ⚡ UTHIBITISHO WA MALIPO YA CLICKPESA (tabaka 3: webhook iliyosainiwa → kuuliza ClickPesa → admin kwa mkono)
+// Hali za ClickPesa: PROCESSING → SUCCESS/SETTLED au FAILED. Kuuliza kwa orderReference kunarudisha ORODHA ya majaribio.
 const CP_OK = ['SUCCESS', 'SETTLED', 'COMPLETED', 'PAID'];
 const CP_FAIL = ['FAILED', 'CANCELLED', 'CANCELED', 'REJECTED', 'EXPIRED'];
-async function verifyClickPesaPayment(orderRef) {
-  try {
-    const token = await getClickPesaToken();
-    const r = await fetch(CLICKPESA_BASE + '/payments/' + encodeURIComponent(orderRef), { headers: { 'Authorization': token } });
-    const data = await r.json().catch(() => null);
-    if (!r.ok || !data) return null;
-    const rec = Array.isArray(data) ? data[0] : (data.data || data);
-    if (!rec) return null;
-    return { status: String(rec.status || '').toUpperCase(), amount: Number(rec.collectedAmount ?? rec.amount ?? 0) };
-  } catch (e) { console.error('ClickPesa verify error:', e.message); return null; }
+const cpState = { lastQueryAt: 0, lastQueryError: '' };
+const cpAuth = t => (/^Bearer\s/i.test(String(t)) ? String(t) : 'Bearer ' + t);
+
+async function queryClickPesa(orderRef) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    let token;
+    try { token = await getClickPesaToken(attempt > 0); } catch (e) { return { error: e.message }; }
+    let r;
+    try { r = await fetch(CLICKPESA_BASE + '/payments/' + encodeURIComponent(orderRef), { headers: { 'Authorization': cpAuth(token) } }); }
+    catch (e) { return { error: 'Mtandao: ' + e.message }; }
+    if ((r.status === 401 || r.status === 403) && attempt === 0) continue;       // token mpya kisha jaribu tena
+    const text = await r.text(); let data = null; try { data = JSON.parse(text); } catch (e) {}
+    if (r.status === 404) return { attempts: [], http: 404 };
+    if (!r.ok) return { error: 'ClickPesa HTTP ' + r.status + ': ' + String(text).slice(0, 120), http: r.status };
+    const arr = Array.isArray(data) ? data : (data && Array.isArray(data.data) ? data.data : (data && data.data && typeof data.data === 'object' ? [data.data] : (data && typeof data === 'object' ? [data] : [])));
+    const attempts = arr.filter(x => x && typeof x === 'object' && x.status).map(x => ({ status: String(x.status).toUpperCase(), amount: x.collectedAmount != null ? Number(x.collectedAmount) : (x.amount != null ? Number(x.amount) : NaN), ref: x.paymentReference || x.id || '' }));
+    return { attempts, http: r.status };
+  }
+  return { error: 'ClickPesa: token imekataliwa' };
 }
-async function settleClickPesaOrder(orderRef, ip) {
-  const orders = readJson('orders.json', []);
-  const order = orders.find(o => o.tx_ref === orderRef && o.provider === 'ClickPesa');
+function classifyPayment(attempts, order) {
+  if (!attempts.length) return { state: 'pending', note: 'ClickPesa bado haijaona malipo.' };
+  const need = Number(order.amount) || 0;
+  const okA = attempts.filter(a => CP_OK.includes(a.status));
+  if (okA.length) {
+    const good = okA.find(a => Number.isNaN(a.amount) || a.amount >= need - 5);
+    if (good) return { state: 'success', note: '', ref: good.ref };
+    return { state: 'mismatch', note: 'Kiasi kilicholipwa (' + okA[0].amount + ' TZS) ni kidogo kuliko ' + need + ' TZS.' };
+  }
+  if (attempts.every(a => CP_FAIL.includes(a.status))) return { state: 'failed', note: 'ClickPesa: ' + attempts[attempts.length - 1].status };
+  return { state: 'pending', note: 'ClickPesa: ' + attempts.map(a => a.status).join(', ') };
+}
+// trusted = { status, amount } kutoka webhook iliyothibitishwa kwa checksum; force = admin anaangalia upya hata order iliyoshindwa
+async function settleClickPesaOrder(orderRef, ip, trusted, force) {
+  let order = readJson('orders.json', []).find(o => o.tx_ref === orderRef && o.provider === 'ClickPesa');
   if (!order || order.status === 'successful') return order || null;
-  const v = await verifyClickPesaPayment(orderRef);
-  if (!v) { logSecurity('CLICKPESA_UNVERIFIED', 'Imeshindwa kuthibitisha: ' + orderRef + ' (admin athibitishe kwa mkono)', 'MEDIUM', ip); return order; }
-  const fresh = readJson('orders.json', []);
-  const o = fresh.find(x => x.tx_ref === orderRef);
+  if (!force && order.status !== 'pending_clickpesa') return order;
+  let result, via;
+  if (trusted) { result = classifyPayment([{ status: String(trusted.status || '').toUpperCase(), amount: Number(trusted.amount) }], order); via = 'webhook'; }
+  else {
+    const q = await queryClickPesa(orderRef); via = 'api';
+    cpState.lastQueryAt = Date.now(); cpState.lastQueryError = q.error || '';
+    result = q.error ? { state: 'unknown', note: q.error } : classifyPayment(q.attempts, order);
+    result.attempts = q.attempts || [];
+  }
+  const all = readJson('orders.json', []); const o = all.find(x => x.tx_ref === orderRef);
   if (!o || o.status === 'successful') return o || null;
-  if (CP_OK.includes(v.status)) {
-    if (v.amount >= o.amount - 5) { o.status = 'successful'; o.confirmedAt = new Date().toISOString(); logSecurity('CLICKPESA_PAYMENT_CONFIRMED', 'Malipo yamethibitishwa: ' + orderRef, 'LOW', ip); }
-    else { o.status = 'amount_mismatch'; }
-    await writeJson('orders.json', fresh);
-  } else if (CP_FAIL.includes(v.status)) { o.status = 'failed'; await writeJson('orders.json', fresh); }
+  o.lastCheckedAt = new Date().toISOString(); o.checkCount = (o.checkCount || 0) + 1; o.verifyNote = result.note || ''; o.providerStatus = (result.attempts || []).map(a => a.status).join(',');
+  if (result.state === 'success') { o.status = 'successful'; o.confirmedAt = new Date().toISOString(); o.confirmedVia = via; o.clickpesaRef = result.ref || o.clickpesaRef || null; logSecurity('CLICKPESA_PAYMENT_CONFIRMED', 'Malipo yamethibitishwa (' + via + '): ' + orderRef, 'LOW', ip); }
+  else if (result.state === 'mismatch') o.status = 'amount_mismatch';
+  else if (result.state === 'failed') o.status = 'failed';
+  else if (result.state === 'unknown') logSecurity('CLICKPESA_UNVERIFIED', 'Imeshindwa kuthibitisha ' + orderRef + ': ' + result.note, 'MEDIUM', ip);
+  await writeJson('orders.json', all);
   return o;
 }
+
+// 🔏 Checksum ya webhook (nyaraka za ClickPesa): ondoa checksum/checksumMethod, panga keys kwa alfabeti (recursive), JSON compact, HMAC-SHA256 hex
+function cpCanonical(o) {
+  if (o === null || typeof o !== 'object') return o;
+  if (Array.isArray(o)) return o.map(cpCanonical);
+  return Object.keys(o).sort().reduce((a, k) => { a[k] = cpCanonical(o[k]); return a; }, {});
+}
+function verifyCpChecksum(body) {   // true = sahihi, false = si sahihi, null = haikuweza kukaguliwa
+  const key = process.env.CLICKPESA_CHECKSUM_KEY;
+  if (!key || !body || typeof body.checksum !== 'string') return null;
+  if (body.checksumMethod && body.checksumMethod !== 'canonical') return null;
+  const { checksum, checksumMethod, ...rest } = body;
+  const expect = Buffer.from(crypto.createHmac('sha256', key).update(JSON.stringify(cpCanonical(rest))).digest('hex'));
+  const got = Buffer.from(String(checksum));
+  return expect.length === got.length && crypto.timingSafeEqual(expect, got);
+}
+
+// 🔄 Reconciler: kila sekunde 30 inakagua orders za ClickPesa zinazosubiri (hata mteja akifunga ukurasa au webhook isipofika)
+let cpReconciling = false;
+async function reconcileClickPesa() {
+  if (cpReconciling || !process.env.CLICKPESA_CLIENT_ID || !process.env.CLICKPESA_API_KEY) return;
+  cpReconciling = true;
+  try {
+    const now = Date.now(); let n = 0;
+    for (const o of readJson('orders.json', []).filter(x => x.provider === 'ClickPesa' && x.status === 'pending_clickpesa')) {
+      const age = now - new Date(o.date).getTime(); if (age > 7 * 86400e3) continue;
+      const last = o.lastCheckedAt ? new Date(o.lastCheckedAt).getTime() : 0;
+      const every = age < 2 * 3600e3 ? 40e3 : (age < 24 * 3600e3 ? 10 * 60e3 : 60 * 60e3);
+      if (now - last < every) continue;
+      if (++n > 15) break;
+      await settleClickPesaOrder(o.tx_ref, 'reconciler');
+    }
+  } catch (e) { console.error('ClickPesa reconcile error:', e.message); }
+  finally { cpReconciling = false; }
+}
+setInterval(() => { reconcileClickPesa(); }, 30000).unref();
+if (process.env.NODE_ENV === 'test') global.__zpTest = { reconcileClickPesa };
 
 app.post('/api/clickpesa-pay', async (req, res) => {
   const user = getUserByToken(req);
@@ -1217,6 +1276,8 @@ app.post('/api/clickpesa-pay', async (req, res) => {
     if (phoneFull.length !== 12) return res.status(400).json({ error: 'Namba ya simu si sahihi. Mfano: 0786095758' });
     const orderReference = 'GH' + Date.now().toString(36).toUpperCase() + crypto.randomBytes(4).toString('hex').toUpperCase();
     const orders = readJson('orders.json', []);
+    const inFlight = orders.find(o => o.customer === user.email && o.provider === 'ClickPesa' && o.status === 'pending_clickpesa' && Date.now() - new Date(o.date).getTime() < 120000);
+    if (inFlight) return res.status(409).json({ error: 'Una malipo yanayoendelea. Ingiza PIN kwenye simu yako, au subiri dakika 2 kabla ya kujaribu tena — usilipe mara mbili.', tx_ref: inFlight.tx_ref });
     orders.push({ tx_ref: orderReference, customer: user.email, customerPhone: phoneFull, customerName: cleanPublicText(name || user.name, 80), amount: calc.total, subtotal: calc.subtotal, discount: calc.discount, coupon: calc.couponCode, shipping: calc.shipping, items: calc.items, provider: 'ClickPesa', status: 'pending_clickpesa', date: new Date().toISOString() });
     await writeJson('orders.json', orders);
     await useCoupon(calc.couponCode);
@@ -1239,13 +1300,17 @@ app.post('/api/clickpesa-pay', async (req, res) => {
   } catch (err) { console.error('ClickPesa error:', err); res.status(500).json({ error: 'Server error: ' + err.message }); }
 });
 
-// Webhook: haiamini payload — inatumia tu kuamsha ukaguzi, kisha inauliza ClickPesa moja kwa moja
+// Webhook ya ClickPesa. Ikiwa na checksum sahihi (CLICKPESA_CHECKSUM_KEY) inaaminiwa; vinginevyo inatumika kuamsha ukaguzi wa moja kwa moja kwa ClickPesa.
 app.post('/api/clickpesa-webhook', async (req, res) => {
   try {
-    const body = req.body || {};
-    const orderRef = String((body.data || {}).orderReference || '').slice(0, 60);
-    console.log('ClickPesa webhook:', body.event || body.eventType, orderRef);
-    if (orderRef) await settleClickPesaOrder(orderRef, getIP(req));
+    const body = req.body || {}, d = body.data || {};
+    const ref = String(d.orderReference || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 60);
+    const check = verifyCpChecksum(body);
+    logSecurity('CLICKPESA_WEBHOOK', String(body.event || '?').slice(0, 30) + ' ' + ref + ' checksum=' + (check === null ? 'n/a' : check ? 'ok' : 'BAD'), check === false ? 'HIGH' : 'LOW', getIP(req));
+    if (ref && (body.event === 'PAYMENT RECEIVED' || body.event === 'PAYMENT FAILED')) {
+      const trusted = check === true ? { status: d.status, amount: d.collectedAmount } : null;
+      await settleClickPesaOrder(ref, getIP(req), trusted);
+    }
     res.json({ success: true });
   } catch (err) { console.error('ClickPesa webhook error:', err); res.status(500).json({ error: 'Server error' }); }
 });
@@ -1253,31 +1318,70 @@ app.post('/api/clickpesa-webhook', async (req, res) => {
 app.get('/api/clickpesa-check/:ref', async (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza' });
-  let orders = readJson('orders.json', []);
-  let o = orders.find(x => x.tx_ref === req.params.ref && x.customer === user.email);
+  const find = () => readJson('orders.json', []).find(x => x.tx_ref === req.params.ref && x.customer === user.email);
+  let o = find();
   if (!o) return res.status(404).json({ error: 'Order haipatikani' });
-  if (o.status === 'pending_clickpesa') { await settleClickPesaOrder(o.tx_ref, getIP(req)); o = readJson('orders.json', []).find(x => x.tx_ref === req.params.ref) || o; }
-  res.json({ success: true, status: o.status === 'successful' ? 'successful' : (o.status === 'failed' || o.status === 'failed_to_start' ? 'failed' : o.status === 'amount_mismatch' ? 'amount_mismatch' : 'pending') });
+  if (o.status === 'pending_clickpesa' && (!o.lastCheckedAt || Date.now() - new Date(o.lastCheckedAt).getTime() > 4000)) { await settleClickPesaOrder(o.tx_ref, getIP(req)); o = find() || o; }
+  const st = o.status === 'successful' ? 'successful' : (o.status === 'failed' || o.status === 'failed_to_start' ? 'failed' : o.status === 'amount_mismatch' ? 'amount_mismatch' : 'pending');
+  res.json({ success: true, status: st, waitingSeconds: Math.round((Date.now() - new Date(o.date).getTime()) / 1000) });
 });
 
-// 💵 MALIPO YA MANUAL
+// 🔎 Admin: angalia upya order ya ClickPesa (inaonyesha ClickPesa inasema nini hasa)
+app.post('/api/admin/orders/verify', async (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
+  const ref = String(req.body && req.body.tx_ref || '');
+  const order = readJson('orders.json', []).find(o => o.tx_ref === ref);
+  if (!order || order.provider !== 'ClickPesa') return res.status(404).json({ error: 'Order ya ClickPesa haipatikani' });
+  const q = await queryClickPesa(ref);
+  const o = await settleClickPesaOrder(ref, getIP(req), null, true);
+  res.json({ success: true, status: o ? o.status : order.status, queryError: q.error || '', http: q.http || null, providerStatuses: (q.attempts || []).map(a => a.status + (Number.isNaN(a.amount) ? '' : ' ' + a.amount)), note: o ? o.verifyNote || '' : '' });
+});
+
+// 🩺 Admin: hali ya mfumo wa malipo ya auto (kwa nini order zinasubiri?)
+app.get('/api/admin/payment-diagnostics', async (req, res) => {
+  const user = getUserByToken(req);
+  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
+  const cfg = { clientId: !!process.env.CLICKPESA_CLIENT_ID, apiKey: !!process.env.CLICKPESA_API_KEY, checksumKey: !!process.env.CLICKPESA_CHECKSUM_KEY };
+  const token = { ok: false, note: '' };
+  if (cfg.clientId && cfg.apiKey) { try { await getClickPesaToken(true); token.ok = true; } catch (e) { token.note = e.message; } } else token.note = 'CLICKPESA_CLIENT_ID / CLICKPESA_API_KEY hazijawekwa kwenye Render';
+  const cp = readJson('orders.json', []).filter(o => o.provider === 'ClickPesa');
+  let queryTest = null; const sample = cp.slice(-1)[0];
+  if (sample && token.ok) { const q = await queryClickPesa(sample.tx_ref); queryTest = { ref: sample.tx_ref, http: q.http || null, error: q.error || '', statuses: (q.attempts || []).map(a => a.status) }; }
+  const events = (readJson(securityFile, { events: [] }).events || []).filter(e => e.type === 'CLICKPESA_WEBHOOK');
+  const lastWh = events[events.length - 1] || null;
+  const host = req.headers['x-forwarded-host'] || req.headers.host || '';
+  res.json({ success: true, config: cfg, token, queryTest,
+    webhook: { url: (req.headers['x-forwarded-proto'] || 'https') + '://' + host + '/api/clickpesa-webhook', lastAt: lastWh ? lastWh.time : null, lastInfo: lastWh ? lastWh.details : null, received: events.length },
+    orders: { total: cp.length, successful: cp.filter(o => o.status === 'successful').length, pending: cp.filter(o => o.status === 'pending_clickpesa').length, pendingOver10Min: cp.filter(o => o.status === 'pending_clickpesa' && Date.now() - new Date(o.date).getTime() > 600000).length, failed: cp.filter(o => o.status === 'failed' || o.status === 'failed_to_start').length },
+    lastQueryError: cpState.lastQueryError || '' });
+});
+
+// 💵 MALIPO YA MANUAL — mteja anatuma pesa, anaandika Tx Ref + kiasi, admin anathibitisha
 app.post('/api/manual-pay', async (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza kutuma ripoti ya malipo' });
-  const { items, txRef, phone, coupon, shipping } = req.body;
+  const { items, txRef, phone, coupon, shipping, paidAmount, payNetwork } = req.body;
   const calc = priceCart(items, coupon, shipping);
   if (calc.error) return res.status(400).json({ error: calc.error });
-  const ref = cleanPublicText(txRef, 60);
-  if (!ref) return res.status(400).json({ error: 'Andika namba ya muamala (tx ref) uliyopewa baada ya kutuma pesa' });
+  const ref = cleanPublicText(txRef, 40);
+  if (!/^[A-Za-z0-9._-]{5,40}$/.test(ref)) return res.status(400).json({ error: 'Namba ya muamala (Tx Ref) si sahihi. Ichukue kwenye SMS ya malipo (herufi/namba 5–40, bila nafasi).' });
+  let ph = String(phone || '').replace(/\D/g, ''); if (!ph.startsWith('255')) ph = '255' + ph.replace(/^0/, '');
+  if (ph.length !== 12) return res.status(400).json({ error: 'Namba ya simu uliyotumia kulipa si sahihi. Mfano: 0786095758' });
+  let claimed = calc.total;
+  if (paidAmount !== undefined && paidAmount !== '') {
+    claimed = Math.floor(Number(paidAmount));
+    if (!(claimed >= calc.total)) return res.status(400).json({ error: 'Kiasi ulicholipa kiwe angalau ' + calc.total.toLocaleString() + ' TZS (jumla ya order hii).' });
+  }
   const orders = readJson('orders.json', []);
-  if (orders.some(o => o.manualTxRef && o.manualTxRef.toLowerCase() === ref.toLowerCase())) return res.status(409).json({ error: 'Namba hii ya muamala tayari imetumika.' });
+  if (orders.some(o => o.manualTxRef && o.manualTxRef.toLowerCase() === ref.toLowerCase())) return res.status(409).json({ error: 'Namba hii ya muamala tayari imetumika kwenye order nyingine.' });
   if (orders.filter(o => o.customer === user.email && o.status === 'pending_manual').length >= 5) return res.status(429).json({ error: 'Una ripoti 5 zinazosubiri uthibitisho. Subiri admin azithibitishe.' });
-  const orderRef = 'MANUAL-' + Date.now();
-  orders.push({ tx_ref: orderRef, customer: user.email, customerPhone: cleanPublicText(phone, 30), manualTxRef: ref, amount: calc.total, subtotal: calc.subtotal, discount: calc.discount, coupon: calc.couponCode, shipping: calc.shipping, items: calc.items, status: 'pending_manual', date: new Date().toISOString() });
+  const orderRef = 'MANUAL-' + Date.now() + crypto.randomBytes(2).toString('hex');
+  orders.push({ tx_ref: orderRef, customer: user.email, customerName: user.name, customerPhone: ph, manualTxRef: ref, claimedAmount: claimed, payNetwork: cleanPublicText(payNetwork, 30), amount: calc.total, subtotal: calc.subtotal, discount: calc.discount, coupon: calc.couponCode, shipping: calc.shipping, items: calc.items, status: 'pending_manual', date: new Date().toISOString() });
   await writeJson('orders.json', orders);
   await useCoupon(calc.couponCode);
   logSecurity('MANUAL_PAYMENT_SUBMITTED', 'Ripoti ya malipo manual kutoka ' + user.email, 'LOW', getIP(req));
-  res.json({ success: true, message: '✅ Ripoti imepokelewa! Admin atathibitisha malipo yako hivi karibuni. Angalia "My Orders" baadaye.', tx_ref: orderRef, amount: calc.total });
+  res.json({ success: true, message: '✅ Ripoti imepokelewa! Admin atahakiki malipo (kwa kawaida ndani ya saa chache). Download yako itaonekana kwenye "My Orders" ikishathibitishwa.', tx_ref: orderRef, amount: calc.total });
 });
 
 app.post('/api/admin/orders/confirm', async (req, res) => {
@@ -1287,26 +1391,34 @@ app.post('/api/admin/orders/confirm', async (req, res) => {
   const orders = readJson('orders.json', []);
   const order = orders.find(o => o.tx_ref === tx_ref);
   if (!order) return res.status(404).json({ error: 'Order haipatikani' });
+  if (order.status === 'successful') return res.json({ success: true, message: 'Order hii tayari imethibitishwa.' });
   order.status = 'successful';
-  order.confirmedAt = new Date().toISOString();
+  order.confirmedAt = new Date().toISOString(); order.confirmedBy = user.email; order.confirmedVia = order.confirmedVia || 'admin';
+  delete order.rejectReason;
   await writeJson('orders.json', orders);
-  logSecurity('MANUAL_PAYMENT_CONFIRMED', 'Admin amethibitisha malipo: ' + tx_ref, 'LOW', getIP(req));
-  res.json({ success: true, message: '✅ Malipo yamethibitishwa. Mteja ataona bidhaa yake kwenye My Orders.' });
+  logSecurity('MANUAL_PAYMENT_CONFIRMED', 'Admin ' + user.email + ' amethibitisha: ' + tx_ref, 'LOW', getIP(req));
+  res.json({ success: true, message: '✅ Malipo yamethibitishwa. Mteja ataona download yake kwenye My Orders.' });
 });
 
 app.post('/api/admin/orders/reject', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
-  const { tx_ref } = req.body;
+  const { tx_ref, reason } = req.body;
   const orders = readJson('orders.json', []);
-  const filtered = orders.filter(o => o.tx_ref !== tx_ref);
-  await writeJson('orders.json', filtered);
+  const order = orders.find(o => o.tx_ref === tx_ref);
+  if (!order) return res.status(404).json({ error: 'Order haipatikani' });
+  if (order.status === 'successful') return res.status(400).json({ error: 'Order iliyothibitishwa haiwezi kukataliwa.' });
+  order.status = 'rejected'; order.rejectReason = cleanPublicText(reason, 160) || 'Malipo hayakuthibitika'; order.rejectedAt = new Date().toISOString(); order.rejectedBy = user.email;   // order inabaki kwenye rekodi ili mteja aone sababu
+  await writeJson('orders.json', orders);
   res.json({ success: true });
 });
 
-app.get('/api/my-orders', (req, res) => {
+app.get('/api/my-orders', async (req, res) => {
   const user = getUserByToken(req);
   if (!user) return res.status(401).json({ error: 'Ingia kwanza' });
+  // Order za ClickPesa zinazosubiri: ziulize ClickPesa sasa hivi (My Orders inajirekebisha yenyewe)
+  const stale = readJson('orders.json', []).filter(o => o.customer === user.email && o.provider === 'ClickPesa' && o.status === 'pending_clickpesa' && Date.now() - new Date(o.date).getTime() < 6 * 3600e3 && (!o.lastCheckedAt || Date.now() - new Date(o.lastCheckedAt).getTime() > 15000)).slice(0, 3);
+  for (const o of stale) { await Promise.race([settleClickPesaOrder(o.tx_ref, getIP(req)).catch(() => {}), new Promise(r => setTimeout(r, 6000))]); }
   const orders = readJson('orders.json', []);
   const products = readJson('products.json', {});
   const mine = orders.filter(o => o.customer === user.email).slice().reverse().map(o => {
@@ -2138,7 +2250,7 @@ app.post('/api/admin/ai-chat', async (req, res) => {
 });
 
 // ═══════════ 🌐 WEB CONTENT (maudhui ya website) ═══════════
-const SITE_DEFAULTS = { announcement: { enabled: false, text: '', link: '' }, contact: { whatsapp: '', phone: '', email: '' }, social: { instagram: '', facebook: '', tiktok: '', youtube: '', x: '' }, footerText: '' };
+const SITE_DEFAULTS = { payment: { manual: [] }, announcement: { enabled: false, text: '', link: '' }, contact: { whatsapp: '', phone: '', email: '' }, social: { instagram: '', facebook: '', tiktok: '', youtube: '', x: '' }, footerText: '' };
 function cleanSiteUrl(v) {
   const t = String(v || '').trim().slice(0, 300);
   if (!t) return '';
@@ -2150,6 +2262,7 @@ function readSite() {
     announcement: { ...SITE_DEFAULTS.announcement, ...(s.announcement || {}) },
     contact: { ...SITE_DEFAULTS.contact, ...(s.contact || {}) },
     social: { ...SITE_DEFAULTS.social, ...(s.social || {}) },
+    payment: { manual: Array.isArray((s.payment || {}).manual) ? s.payment.manual.slice(0, 4) : [] },
     footerText: String(s.footerText || '')
   };
 }
@@ -2164,7 +2277,8 @@ app.put('/api/admin/site-content', async (req, res) => {
   const site = {
     announcement: { enabled: !!(b.announcement || {}).enabled, text: t((b.announcement || {}).text, 160), link: cleanSiteUrl((b.announcement || {}).link) },
     contact: { whatsapp: wa, phone: t((b.contact || {}).phone, 30), email: t((b.contact || {}).email, 80) },
-    social: {}, footerText: t(b.footerText, 200)
+    social: {}, footerText: t(b.footerText, 200),
+    payment: { manual: (Array.isArray((b.payment || {}).manual) ? b.payment.manual : []).slice(0, 4).map(m => ({ network: t(m && m.network, 24), number: String((m && m.number) || '').replace(/[^\d+ ]/g, '').trim().slice(0, 20), name: t(m && m.name, 40) })).filter(m => m.network && m.number.replace(/\D/g, '').length >= 9) }
   };
   for (const k of Object.keys(SITE_DEFAULTS.social)) site.social[k] = cleanSiteUrl((b.social || {})[k]);
   const settings = readJson('settings.json', {}) || {};
@@ -2376,7 +2490,7 @@ app.post('/api/admin/ai-builder', async (req,res)=>{
 
 // ═══════════ TOURNAMENTS ═══════════
 app.get('/api/tournaments', (req, res) => {
-  const data = readJson('tournaments.json', []);
+  const data = readJson('tournaments.json', []).filter(t => !(t.date === 'Tarehe itawekwa' && /^GameHub (eFootball Cup|FC Challenge)$/.test(String(t.name))));   // ondoa demo za zamani
   const staff = isStaffUser(req);
   // Wateja wa kawaida wanaona idadi tu — majina/namba za simu za waliosajiliwa ni siri
   res.json({ success: true, tournaments: staff ? data : data.map(t => { const { registrations, ...rest } = t; return { ...rest, registrationsCount: (registrations || []).length }; }) });
@@ -2395,7 +2509,6 @@ app.post('/api/tournaments/register', (req, res) => {
   res.json({ success: true, message: 'Umefanikiwa kusajiliwa kwenye tournament.' });
 });
 
-ensureTournamentSeed();
 
 // ═══════════ UPLOAD/API ERROR HANDLER ═══════════
 app.use((err, req, res, next) => {

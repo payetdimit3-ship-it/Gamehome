@@ -30,8 +30,8 @@
   var token=localStorage.getItem('gamehubToken'), box=document.getElementById('orders'), tabsEl=document.getElementById('statusTabs');
   var all=[], filter='all';
 
-  var GROUPS={ successful:'ok', pending_manual:'wait', pending_clickpesa:'wait', failed:'bad', amount_mismatch:'bad' };
-  var LABEL={ successful:'Imethibitishwa', pending_manual:'Inasubiri Uthibitisho', pending_clickpesa:'Inasubiri Malipo', failed:'Imeshindwa', amount_mismatch:'Tatizo la Kiasi' };
+  var GROUPS={ successful:'ok', pending_manual:'wait', pending_clickpesa:'wait', failed:'bad', amount_mismatch:'bad', rejected:'bad', failed_to_start:'bad' };
+  var LABEL={ successful:'Imethibitishwa', pending_manual:'Inasubiri Uthibitisho', pending_clickpesa:'Inasubiri Malipo', failed:'Imeshindwa', amount_mismatch:'Tatizo la Kiasi', rejected:'Imekataliwa', failed_to_start:'Haikuanza' };
   var TABS=[['all','Zote'],['ok','Zilizothibitishwa'],['wait','Zinazosubiri'],['bad','Zenye Tatizo']];
 
   function groupOf(o){ return GROUPS[o.status]||'wait'; }
@@ -48,8 +48,9 @@
   }
   function card(o,idx){
     var g=groupOf(o), items=(o.items||[]).map(function(i,oi){ return itemRow(i,o,idx,oi); }).join('');
-    var note = o.status==='pending_manual' ? 'Admin bado hajathibitisha malipo yako. Ukishalipa, subiri kidogo au wasiliana WhatsApp.'
-             : o.status==='pending_clickpesa' ? 'Tunathibitisha malipo yako...'
+    var note = o.status==='pending_manual' ? 'Admin anahakiki malipo yako (kwa kawaida ndani ya saa chache). Ukishathibitishwa, download itaonekana hapa kiotomatiki. Usilipe mara mbili.'
+             : o.status==='rejected' ? 'Malipo hayakuthibitishwa: '+(o.rejectReason||'sababu haijatolewa')+'. Kama umeshalipa, wasiliana nasi WhatsApp ukiwa na tx ref hii.'
+             : o.status==='pending_clickpesa' ? 'Tunathibitisha malipo yako — ukurasa huu unajisasisha wenyewe. Kama pesa imekatwa, USILIPE TENA; download itaonekana hapa ikishathibitishwa.'
              : o.status==='amount_mismatch' ? 'Kiasi kilicholipwa hakikamilika sahihi. Wasiliana nasi WhatsApp na tx ref hii.'
              : o.status==='failed' ? 'Malipo hayakufanikiwa. Unaweza kujaribu tena kwenye Store.' : '';
     return '<article class="or-card '+g+'" data-idx="'+idx+'"><div class="or-head"><b>'+esc(o.tx_ref||'—')+'</b><time>'+esc(new Date(o.date).toLocaleString())+'</time>'+
@@ -90,6 +91,7 @@
   function empty(h,p,btn){ box.innerHTML='<div class="zp-empty"><h3>'+h+'</h3><p>'+p+'</p>'+(btn||'')+'</div>'; }
   if (!token){ empty('Ingia kwanza kuona oda zako','Bidhaa ulizonunua na hali ya malipo zinaonekana hapa baada ya kuingia.','<a class="zp-btn" href="login.html?return=myorders.html">'+ZP.icon('user')+'Ingia</a>'); return; }
 
+  var polls=0;
   function load(){
     fetch('/api/my-orders',{headers:{'Authorization':token}}).then(function(r){ return r.json(); }).then(function(d){
       if (!d.success){ empty('Session imeisha','Ingia tena kuona oda zako.','<a class="zp-btn" href="login.html?return=myorders.html">'+ZP.icon('user')+'Ingia</a>'); return; }
@@ -99,7 +101,7 @@
       if (pending.length){
         Promise.all(pending.map(function(o){
           return fetch('/api/clickpesa-check/'+encodeURIComponent(o.tx_ref),{headers:{'Authorization':token}}).then(function(r){ return r.json(); }).then(function(v){ return v.success&&v.status==='successful'; }).catch(function(){ return false; });
-        })).then(function(results){ if (results.some(Boolean)) load(); });
+        })).then(function(results){ if (results.some(Boolean)) { load(); return; } if (++polls < 75) setTimeout(load, 8000); });
       }
     }).catch(function(){ empty('Imeshindikana kupakia oda','Angalia mtandao kisha jaribu tena.','<button class="zp-btn" type="button" onclick="location.reload()">Jaribu tena</button>'); });
   }

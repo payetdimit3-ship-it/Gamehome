@@ -119,7 +119,7 @@
   ZP.loadSection('*').then(function(api){
     var mine=(api||[]).filter(function(p){ return p.kind==='topup'; });
     var ids={}; mine.forEach(function(p){ ids[p.id]=1; });
-    all=mine.concat(ZP.DEFAULTS.filter(function(p){ return p.kind==='topup' && !ids[p.id]; }));
+    all=mine;
     var st=document.getElementById('stats');
     if (all.length){ st.hidden=false; st.innerHTML='<div class="ac-stat"><b>'+all.length+'</b><span>Packages</span></div>'; }
     render();

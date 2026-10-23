@@ -206,19 +206,17 @@
         }).join('') + '</div>'
       : '<div class="p2-thumbs"><span class="th on">' + esc(p.emoji || '🎮') + '</span></div>';
 
-    const features = (p.features && p.features.length) ? p.features : [
-      'Authentic teams, leagues na players',
-      'Improved gameplay na new features',
-      'Ultimate Team, Career Mode, Clubs na more',
-      'Cross-play na online multiplayer'
-    ];
+    const features = (p.features && p.features.length) ? p.features : [];
 
+    // Taarifa halisi tu — hakuna majina/tarehe za kubuni
     const details = [
-      { ico: '🎮', label: 'Genre', value: p.genre || p.type || 'Sports' },
-      { ico: '🏢', label: 'Developer', value: p.developer || 'GameHub Studios' },
-      { ico: '📅', label: 'Release Date', value: p.releaseDate || 'Sep 26, 2025' },
-      { ico: '🌍', label: 'Languages', value: p.languages || 'English, French, Spanish, German, Italian + more' }
-    ];
+      { ico: '🎮', label: 'Aina', value: p.type || '' },
+      { ico: '🗂️', label: 'Category', value: (p.category && p.category !== 'Zote') ? p.category : '' },
+      { ico: '🖥️', label: 'Platform', value: (ZP.platformOf && ZP.platformOf(advPlat)) ? ZP.platformOf(advPlat).label : '' },
+      { ico: '🏢', label: 'Developer', value: p.developer || '' },
+      { ico: '📅', label: 'Release Date', value: p.releaseDate || '' },
+      { ico: '🌍', label: 'Lugha', value: p.languages || '' }
+    ].filter(function(d){ return d.value; });
 
     const platforms = [(ZP.platformOf && ZP.platformOf(advPlat)) ? ZP.platformOf(advPlat).label : 'PC'];
 
@@ -227,7 +225,7 @@
         <div class="p2-gallery">
           ${thumbs}
           <div class="p2-main">
-            <span class="p2-badge">${isFree ? 'FREE' : 'Best Seller'}</span>
+            ${(isFree || (ZP.platformOf && ZP.platformOf(advPlat))) ? '<span class="p2-badge">' + (isFree ? 'FREE' : esc(ZP.platformOf(advPlat).label)) + '</span>' : ''}
             ${mainMedia}
           </div>
         </div>
@@ -245,7 +243,7 @@
           <div class="p2-price">
             ${isFree
               ? '<span class="now" style="color:#2be879">FREE</span>'
-              : '<span class="now">' + money(priceNum) + '</span><span class="old">' + money(oldPrice) + '</span><span class="off">-' + off + '%</span>'}
+              : '<span class="now">' + money(priceNum) + '</span>'}
           </div>
 
           ${isFree ? `
@@ -312,9 +310,7 @@
 
       <div class="p2-tab-content" id="tabFeatures" hidden>
         <h3>Features</h3>
-        <ul class="p2-feat-list">
-          ${features.map(function(f){ return '<li>✅ ' + esc(f) + '</li>'; }).join('')}
-        </ul>
+        ${features.length ? '<ul class="p2-feat-list">' + features.map(function(f){ return '<li>✅ ' + esc(f) + '</li>'; }).join('') + '</ul>' : '<p style="color:var(--muted)">Hakuna orodha ya vipengele bado. Angalia maelezo ya game kwenye tab ya Overview.</p>'}
       </div>
 
       <div class="p2-tab-content" id="tabReq" hidden>
