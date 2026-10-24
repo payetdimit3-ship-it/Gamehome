@@ -207,6 +207,9 @@
       : '<div class="p2-thumbs"><span class="th on">' + esc(p.emoji || '🎮') + '</span></div>';
 
     const features = (p.features && p.features.length) ? p.features : [];
+    const reqMin = (p.requirements && p.requirements.minimum) || [], reqRec = (p.requirements && p.requirements.recommended) || [];
+    const hasReq = reqMin.length || reqRec.length || !!p.specs;
+    const para = function(txt){ return String(txt || '').split(/\n{2,}/).map(function(x){ return '<p style="margin:0 0 12px;line-height:1.7">' + esc(x.trim()).replace(/\n/g, '<br>') + '</p>'; }).join(''); };
 
     // Taarifa halisi tu — hakuna majina/tarehe za kubuni
     const details = [
@@ -232,7 +235,7 @@
 
         <div class="p2-info">
           <div class="p2-tags">
-            ${[p.type, (p.category && p.category !== 'Zote' ? p.category : ''), (ZP.platformOf && ZP.platformOf(advPlat) ? ZP.platformOf(advPlat).label : '')].filter(Boolean).map(function(t){ return '<span>' + esc(t) + '</span>'; }).join('')}
+            ${[p.type, (p.category && p.category !== 'Zote' ? p.category : '')].filter(Boolean).map(function(t){ return '<span>' + esc(t) + '</span>'; }).join('')}
           </div>
           <h1>${esc(p.name)}</h1>
 
@@ -285,8 +288,8 @@
 
       <div class="p2-tabs" id="tabs">
         <button class="p2-tab on" data-t="overview">Overview</button>
-        <button class="p2-tab" data-t="features">Features</button>
-        <button class="p2-tab" data-t="req">System Requirements</button>
+        <button class="p2-tab" data-t="features"${features.length ? '' : ' hidden'}>Features</button>
+        <button class="p2-tab" data-t="req"${hasReq ? '' : ' hidden'}>System Requirements</button>
         <button class="p2-tab" data-t="advisor">🤖 AI Advisor</button>
         <button class="p2-tab" data-t="reviews">Reviews</button>
       </div>
@@ -294,11 +297,9 @@
       <div class="p2-tab-content" id="tabOverview">
         <div style="display:grid; grid-template-columns:1.3fr 1fr; gap:24px;" class="p2-details-grid">
           <div>
-            <h3>About This Game</h3>
-            <p>${esc(p.desc || 'Bidhaa ya GameHub.')}</p>
-            <ul class="p2-feat-list" style="margin-top:14px">
-              ${features.map(function(f){ return '<li>✅ ' + esc(f) + '</li>'; }).join('')}
-            </ul>
+            <h3>Kuhusu ${esc(p.name)}</h3>
+            ${p.desc ? para(p.desc) : '<p style="color:var(--muted)">Maelezo ya bidhaa hii bado hayajawekwa.</p>'}
+            ${features.length ? '<p style="margin-top:6px"><a href="#" id="seeFeatures" style="color:#a78bfa;text-decoration:none;font-size:13px">Tazama vipengele vyote (' + features.length + ') →</a></p>' : ''}
           </div>
           <div>
             ${details.map(function(d){
@@ -315,9 +316,13 @@
 
       <div class="p2-tab-content" id="tabReq" hidden>
         <h3>System Requirements</h3>
-        ${p.specs
-          ? '<p style="white-space:pre-line">' + esc(p.specs) + '</p>'
-          : '<p style="color:var(--muted)">Requirements za game hii bado hazijawekwa. Fungua tab ya <b>🤖 AI Advisor</b> ujue kama itacheza kwenye simu/PC yako.</p>'}
+        ${(reqMin.length || reqRec.length)
+          ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">' +
+              '<div style="background:rgba(0,0,0,.25);border:1px solid var(--line2);border-radius:14px;padding:14px 16px"><b style="display:block;margin-bottom:8px;color:#fff">Minimum</b>' + (reqMin.length ? '<ul style="list-style:none;margin:0;padding:0;display:grid;gap:8px;color:#dbe6ff;font-size:14px;line-height:1.5">' + reqMin.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '<span style="color:var(--muted)">—</span>') + '</div>' +
+              '<div style="background:rgba(0,0,0,.25);border:1px solid var(--line2);border-radius:14px;padding:14px 16px"><b style="display:block;margin-bottom:8px;color:#fff">Recommended</b>' + (reqRec.length ? '<ul style="list-style:none;margin:0;padding:0;display:grid;gap:8px;color:#dbe6ff;font-size:14px;line-height:1.5">' + reqRec.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '<span style="color:var(--muted)">Haijawekwa</span>') + '</div>' +
+            '</div>'
+          : '<p style="white-space:pre-line">' + esc(p.specs || '') + '</p>'}
+        <p style="margin-top:12px;color:var(--muted);font-size:13px">Huna uhakika kama kifaa chako kinatosha? Fungua tab ya <b>🤖 AI Advisor</b>.</p>
       </div>
 
       <div class="p2-tab-content" id="tabAdvisor" hidden>
@@ -329,16 +334,7 @@
         <div id="reviewsContent"><p style="color:var(--muted)">Inapakia maoni...</p></div>
       </div>
 
-      <div class="p2-trailer" style="margin-top:24px">
-        <h3>🎬 Game Trailer</h3>
-        ${trailerId
-          ? '<iframe src="https://www.youtube.com/embed/' + trailerId + '" allowfullscreen title="Trailer"></iframe>'
-          : '<div class="thumb" style="background:linear-gradient(135deg,#7c3aed,#4c1d95)"><span class="play">▶️</span></div>'}
-        <div class="caption">
-          <span>${esc(p.name)} Official Trailer</span>
-          <span>2:48</span>
-        </div>
-      </div>
+      ${trailerId ? '<div class="p2-trailer" style="margin-top:24px"><h3>🎬 Game Trailer</h3><iframe src="https://www.youtube.com/embed/' + trailerId + '" allowfullscreen title="Trailer"></iframe><div class="caption"><span>' + esc(p.name) + ' — Trailer</span></div></div>' : ''}
 
       <div class="p2-related">
         <div class="p2-related-h">
@@ -421,6 +417,7 @@
 
     /* === Tabs === */
     const tabs = container.querySelectorAll('.p2-tab');
+    const sf = container.querySelector('#seeFeatures'); if (sf) sf.addEventListener('click', function(e){ e.preventDefault(); const b = container.querySelector('.p2-tab[data-t="features"]'); if (b) b.click(); });
     tabs.forEach(function(t){
       t.addEventListener('click', function(){
         tabs.forEach(function(x){ x.classList.remove('on'); });

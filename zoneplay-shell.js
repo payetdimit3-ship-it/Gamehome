@@ -76,7 +76,7 @@
   ];
   var MORE = [
     ['Steam Accounts','steamaccounts.html','user'], ['eFootball Coins','topup.html','ball'], ['Tournaments','tournaments.html','trophy'],
-    ['Cloud Rental','rental.html','cloud'], ['Youth Opportunities','opportunities.html','briefcase'], ['Community Help','community.html','users'],
+    ['Youth Opportunities','opportunities.html','briefcase'], ['Community Help','community.html','users'],
     ['Community Fund','community-fund.html','heart'], ['Recovery Support','recovery.html','life'], ['Health Network','professionals.html','pulse'],
     ['My Orders','myorders.html','box'], ['Game Requests','requests.html','file'], ['Recommendations','recommendations.html','star'],
     ['Contact','contact.html','mail'], ['FAQ','faq.html','help'], ['Terms & Refund','terms.html','file'], ['Settings','settings.html','settings']

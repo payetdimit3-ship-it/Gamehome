@@ -17,6 +17,7 @@
     {key:'ps3',   label:'PS3',             title:'PS3 Gaming',       sub:'Titles za PlayStation 3',            icon:'gamepad', emoji:'🎮', art:'linear-gradient(140deg,#0e7490,#1e1b4b)', re:/\bps3\b|playstation ?3/},
     {key:'switch',label:'Nintendo Switch', title:'Nintendo Switch',  sub:'Games za Switch',                    icon:'gamepad', emoji:'🔴', art:'linear-gradient(140deg,#dc2626,#7f1d1d)', re:/switch|nintendo/},
     {key:'android',label:'Android',        title:'Android Gaming',   sub:'Games na top-up za simu',            icon:'phone',   emoji:'📱', art:'linear-gradient(140deg,#16a34a,#14532d)', re:/android|mobile|simu/},
+    {key:'cloud', label:'Cloud Gaming', title:'Cloud Gaming', sub:'Cheza games nzito kwenye simu yoyote — bila download', icon:'monitor', emoji:'☁️', art:'linear-gradient(140deg,#0ea5c6,#312e81)', re:/cloud|geforce|xcloud|game ?pass|\bluna\b|shadow pc/},
     {key:'pc',    label:'PC',              title:'PC Gaming',        sub:'Game keys na Steam accounts',        icon:'monitor', emoji:'💻', art:'linear-gradient(140deg,#0284c7,#1e3a8a)', re:/\bpc\b|steam|windows/},
     {key:'winlator',label:'Winlator',      title:'Winlator & GameHub', sub:'Michezo ya Windows kwenye Android', icon:'phone',   emoji:'🪟', art:'linear-gradient(140deg,#0f766e,#1e1b4b)', re:/winlator|gamehub/}
   ];
@@ -40,13 +41,14 @@
     if (p.platform){ var k=String(p.platform).toLowerCase(); if (ZP.PLATFORMS.some(function(x){return x.key===k;})) return k; }
     var t=[p.category,p.type,p.name,p.platform].join(' ').toLowerCase();
     if (/winlator|gamehub/.test(t)) return 'winlator';
+    if (/cloud|geforce|xcloud|game ?pass/.test(t)) return 'cloud';
     for (var i=0;i<ZP.PLATFORMS.length;i++) if (ZP.PLATFORMS[i].re.test(t)) return ZP.PLATFORMS[i].key;
     return '';
   }
   function norm(p){
     return {id:p.id, name:p.name||'Bidhaa', type:p.type||'Bidhaa', price:Number(p.price)||0, emoji:p.emoji||'🎮', imageUrl:p.imageUrl||'',
       trailerUrl:p.trailerUrl||'', desc:p.desc||'', kind:detectKind(p), platform:detectPlatform(p), admin:true,
-      free:!!p.free, specs:p.specs||'', downloadLink:p.downloadLink||'', links:Array.isArray(p.links)?p.links:[]};
+      free:!!p.free, specs:p.specs||'', features:Array.isArray(p.features)?p.features:[], requirements:(p.requirements&&typeof p.requirements==='object')?p.requirements:{minimum:[],recommended:[]}, downloadLink:p.downloadLink||'', links:Array.isArray(p.links)?p.links:[]};
   }
 
   /* Products of one admin section (e.g. 'efootball' squads). Resolves to null when the request fails. */
