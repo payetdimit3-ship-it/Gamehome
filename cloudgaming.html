@@ -4,65 +4,74 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Cloud Gaming — LIFEISGAMETZ</title>
+  <meta name="description" content="Cloud games za kununua — cheza games nzito kwenye simu yoyote bila kupakua.">
   <link rel="stylesheet" href="zoneplay-full.css">
+  <style>
+    .cg-hero{display:grid;gap:12px;padding:22px;border-radius:18px;border:1px solid #1f6f9a;background:linear-gradient(120deg,#0a3a55,#171255 70%);margin-bottom:16px}
+    .cg-hero h2{margin:0;font:700 26px var(--font-d)}.cg-hero p{margin:0;color:#c8e3f2;font-size:14px;line-height:1.6}
+    .cg-steps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:18px}
+    .cg-step{background:linear-gradient(180deg,#0e1a3f,#0a1330);border:1px solid var(--line2);border-radius:14px;padding:14px 16px}
+    .cg-step b{display:block;font:700 16px var(--font-d);margin:4px 0}.cg-step small{color:var(--muted);line-height:1.5;display:block}
+    .cg-need{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.cg-need span{padding:8px 12px;border-radius:99px;background:#0b1a44;border:1px solid #1d3570;color:#c4d0ee;font-size:13px;font-weight:600}
+  </style>
 </head>
 <body>
 <div class="main">
+  <header class="zp-page-head">
+    <div class="zp-ph-ic" data-ic="cloud"></div>
+    <div><h1>Cloud Gaming</h1><p>Games nzito kwenye simu yoyote — bila kupakua, bila kompyuta kali.</p></div>
+    <div class="zp-ph-side opt"><a class="zp-btn ghost" href="game-advisor.html?cat=cloud" id="advBtn"></a></div>
+  </header>
 
-  <section class="ac-hero">
-    <div>
-      <span class="zp-slide-tag">CLOUD GAMING • GEFORCE NOW</span>
-      <h1>Cheza Kwa Cloud, Bila Hardware Kubwa</h1>
-      <p>Kodisha muda wa kucheza, lipa kwa mobile money, na timer inaanza mara baada ya malipo. Chagua dakika au masaa kulingana na unavyohitaji.</p>
-      <div class="ac-cta">
-        <a class="zp-btn" href="rental.html"><span data-ic="cloud"></span>Kodisha Muda</a>
-        <a class="zp-btn ghost" href="contact.html"><span data-ic="headset"></span>Uliza Support</a>
-      </div>
-    </div>
-    <div class="ac-stats"><div class="ac-stat"><b id="fromPrice">300</b><span>TZS kuanzia</span></div></div>
+  <section class="cg-hero">
+    <h2>☁️ Cheza popote, kwenye kifaa chochote</h2>
+    <p>Cloud gaming inaendesha game kwenye kompyuta kubwa ya mbali na kukutumia picha moja kwa moja. Huhitaji simu yenye nguvu wala nafasi ya kupakua. Chagua bidhaa hapa chini, lipia, kisha upate maelekezo kwenye <b>My Orders</b>.</p>
   </section>
 
-  <div class="zp-sec"><h2>Jinsi Inavyofanya Kazi</h2></div>
-  <section class="cg-steps">
-    <div class="cg-step"><span class="ic-box" data-ic="cloud"></span><b>Chagua muda</b><span>Package ya dakika au masaa, au weka dakika zako mwenyewe.</span></div>
-    <div class="cg-step"><span class="ic-box" data-ic="cart"></span><b>Ongeza kwenye kikapu</b><span>Kodi inaingia kwenye kikapu chako pamoja na bidhaa nyingine.</span></div>
-    <div class="cg-step"><span class="ic-box" data-ic="wallet"></span><b>Lipa</b><span>M-Pesa, Tigo Pesa, Airtel Money au Halotel.</span></div>
-    <div class="cg-step"><span class="ic-box" data-ic="gamepad"></span><b>Cheza</b><span>Timer inaanza automatic. Angalia maelekezo kwenye My Games.</span></div>
-  </section>
+  <div class="cg-steps">
+    <div class="cg-step"><span aria-hidden="true">1️⃣</span><b>Chagua</b><small>Chagua bidhaa ya cloud unayotaka na usome Overview, Features na System Requirements.</small></div>
+    <div class="cg-step"><span aria-hidden="true">2️⃣</span><b>Lipia</b><small>Lipa kwa M-Pesa, Tigo Pesa, Airtel Money au HaloPesa — salama.</small></div>
+    <div class="cg-step"><span aria-hidden="true">3️⃣</span><b>Cheza</b><small>Utapata maelekezo/akaunti kwenye My Orders. Fungua na ucheze kwa internet thabiti.</small></div>
+  </div>
+  <div class="cg-need" aria-label="Unachohitaji"><span>🌐 Internet 15 Mbps+</span><span>📱 Simu au PC yoyote ya kisasa</span><span>🎮 Controller (hiari)</span></div>
 
-  <div class="zp-sec"><h2>Packages</h2><a href="rental.html">Kodisha sasa <span data-ic="chevr"></span></a></div>
-  <section class="cg-pkgs" id="pkgs"></section>
+  <div class="zp-toolbar">
+    <label class="zp-search"><span id="srchIc"></span><input type="search" id="searchBox" placeholder="Tafuta cloud game…" autocomplete="off" aria-label="Tafuta cloud game"></label>
+    <select id="sortBox" class="zp-sort" aria-label="Panga"><option value="new">Mpya kwanza</option><option value="low">Bei: ndogo → kubwa</option><option value="high">Bei: kubwa → ndogo</option></select>
+  </div>
+  <p class="zp-count" id="countLine" aria-live="polite"></p>
+  <section class="zp-grid" id="grid"><div class="zp-empty"><p>Inapakia...</p></div></section>
 
-  <div class="zp-sec"><h2>Kabla Hujaanza</h2></div>
-  <section class="cg-why">
-    <div><span data-ic="cloud"></span><p style="margin:0"><b>Cloud Play</b><span>Chagua muda wa kucheza na fuata maelekezo ya huduma.</span></p></div>
-    <div><span data-ic="bolt"></span><p style="margin:0"><b>Flexible Time</b><span>Packages za dakika na saa zinapatikana kwenye Rental.</span></p></div>
-    <div><span data-ic="wifi"></span><p style="margin:0"><b>Internet Nzuri</b><span>Cloud gaming inahitaji internet yenye kasi na stability nzuri.</span></p></div>
-  </section>
-
-  <section class="zp-ai" style="margin-top:30px">
-    <div>
-      <h2 style="font-size:26px">Una swali kuhusu Cloud Gaming?</h2>
-      <p style="margin:0">Tuulize kuhusu muda, malipo au kifaa chako — tutakusaidia kuchagua package sahihi.</p>
-    </div>
-    <a class="zp-btn" href="contact.html"><span data-ic="headset"></span>Wasiliana Nasi</a>
-  </section>
+  <h2 style="font:700 24px var(--font-d);margin:30px 0 6px">🤖 Itacheza kwangu?</h2>
+  <p style="margin:0 0 12px;color:var(--muted)">Weka kasi ya internet na kifaa chako — AI Advisor akuambie kama cloud gaming itakufaa kabla ya kununua.</p>
+  <div id="advisor"></div>
 </div>
 
 <script src="zoneplay-shell.js"></script>
 <script src="zp-catalog.js"></script>
 <script src="app.js"></script>
 <script src="chat.js"></script>
+<script src="game-advisor.js"></script>
 <script>
 (function(){
+  var esc = ZP.esc, all = [], q = '', sort = 'new';
   document.querySelectorAll('[data-ic]').forEach(function(el){ el.insertAdjacentHTML('afterbegin', ZP.icon(el.dataset.ic)); });
-  document.getElementById('fromPrice').textContent=ZP.money(Math.min.apply(null,ZP.RENTAL.map(function(p){return p.price;})));
-  document.getElementById('pkgs').innerHTML=ZP.RENTAL.map(function(p){
-    var per=(p.price/p.min).toFixed(1).replace(/\.0$/,'');
-    return '<a class="cg-pkg'+(p.popular?' popular':'')+'" href="rental.html">'+(p.popular?'<span class="cg-tag">POPULAR</span>':'')+
-      '<h3>'+ZP.esc(p.label)+'</h3><div class="p">'+ZP.money(p.price)+'<small>TZS</small></div><div class="per">≈ '+per+' TZS kwa dakika</div><span class="zp-btn">'+ZP.icon('cart')+'Chagua</span></a>';
-  }).join('')+
-  '<a class="cg-pkg" href="rental.html#custom"><h3>Muda Mwingine</h3><div class="p" style="font-size:26px;line-height:1.1">Chagua dakika zako</div><div class="per">Bei inakokotolewa kulingana na muda — kadiri unavyoongeza, bei kwa dakika inashuka.</div><span class="zp-btn ghost">'+ZP.icon('bolt')+'Kokotoa Bei</span></a>';
+  document.getElementById('advBtn').innerHTML = ZP.icon('bot') + 'AI Advisor';
+  document.getElementById('srchIc').innerHTML = ZP.icon('search');
+  var grid = document.getElementById('grid'), count = document.getElementById('countLine');
+  function render(){
+    var term = q.trim().toLowerCase();
+    var list = all.filter(function(p){ return !term || (p.name + ' ' + (p.type||'') + ' ' + (p.desc||'')).toLowerCase().indexOf(term) > -1; });
+    if (sort === 'low') list.sort(function(a,b){ return a.price - b.price; });
+    else if (sort === 'high') list.sort(function(a,b){ return b.price - a.price; });
+    count.textContent = list.length + ' bidhaa';
+    grid.innerHTML = list.length ? list.map(ZP.card).join('') :
+      '<div class="zp-empty"><h3>' + (term ? 'Hakuna kilichopatikana' : 'Bado hakuna bidhaa za Cloud Gaming') + '</h3><p>' + (term ? 'Jaribu neno lingine.' : 'Bidhaa mpya zitaongezwa hivi karibuni. Unaweza pia kuomba game unayotaka.') + '</p><a class="zp-btn" href="requests.html">Omba Game</a></div>';
+  }
+  document.getElementById('searchBox').addEventListener('input', function(e){ q = e.target.value; render(); });
+  document.getElementById('sortBox').addEventListener('change', function(e){ sort = e.target.value; render(); });
+  ZP.advisor.mount(document.getElementById('advisor'), { category: 'cloud', compact: true });
+  ZP.loadProducts().then(function(list){ all = list.filter(function(p){ return p.platform === 'cloud' && !p.free; }); render(); });
 })();
 </script>
 </body>

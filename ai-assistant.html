@@ -12,7 +12,7 @@
 
   <header class="zp-page-head">
     <div class="zp-ph-ic" data-ic="bot"></div>
-    <div><h1>AI Assistant</h1><p>Uliza kuhusu bidhaa, bei, malipo, rental na oda zako — kwa Kiswahili au Kiingereza.</p></div>
+    <div><h1>AI Assistant</h1><p>Uliza kuhusu bidhaa, bei, malipo, cloud gaming na oda zako — kwa Kiswahili au Kiingereza.</p></div>
   </header>
 
   <div class="cm-layout">
@@ -46,7 +46,7 @@
       <div class="cm-box"><h3>Naweza Kusaidia Na</h3>
         <div class="cm-links">
           <a href="shop.html"><span data-ic="bag"></span>Bidhaa na bei</a>
-          <a href="rental.html"><span data-ic="cloud"></span>Kukodi muda wa kucheza</a>
+          <a href="cloudgaming.html"><span data-ic="cloud"></span>Kukodi muda wa kucheza</a>
           <a href="cart.html"><span data-ic="wallet"></span>Malipo</a>
           <a href="myorders.html"><span data-ic="box"></span>Oda zako</a>
         </div>
@@ -108,7 +108,7 @@
   document.getElementById('speakBtn').addEventListener('click',function(){ if(lastReply&&'speechSynthesis' in window){ speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(lastReply)); } });
   document.getElementById('stopBtn').addEventListener('click',function(){ if('speechSynthesis' in window) speechSynthesis.cancel(); });
 
-  var P=[['bag','FIFA 25 bei gani?'],['cloud','Naomba muda wa masaa 3 wa GeForce, bei ni ngapi?'],['wallet','Nalipaje kwa M-Pesa?'],['box','Sijapata bidhaa yangu'],['gamepad','Nataka kucheza game bila kudownload, nifanyeje?'],['file','Nawezaje kuomba game isiyopo dukani?']];
+  var P=[['bag','FIFA 25 bei gani?'],['cloud','Cloud gaming ni nini na nahitaji internet ya kasi gani?'],['wallet','Nalipaje kwa M-Pesa?'],['box','Sijapata bidhaa yangu'],['gamepad','Nataka kucheza game bila kudownload, nifanyeje?'],['file','Nawezaje kuomba game isiyopo dukani?']];
   var pr=document.getElementById('prompts');
   pr.innerHTML=P.map(function(p,i){ return '<button type="button" data-i="'+i+'">'+ZP.icon(p[0])+'<span></span></button>'; }).join('');
   pr.querySelectorAll('button').forEach(function(b){ b.querySelector('span').textContent=P[b.dataset.i][1]; });

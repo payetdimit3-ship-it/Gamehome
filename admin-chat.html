@@ -202,7 +202,6 @@
         <div id="fieldsShop">
           <input type="text" id="pType" placeholder="Aina (mfano: Game Key • PC)">
           <input type="text" id="pEmoji" placeholder="Emoji (mfano: ⚽)">
-          <input type="text" id="pDesc" placeholder="Maelezo mafupi">
           <input type="text" id="pTrailer" placeholder="Trailer URL (link ya YouTube - hiari)">
           <select id="pCategory">
             <option value="Zote">Category: Zote</option>
@@ -230,7 +229,7 @@
           <select id="pPlatform">
             <option value="">Platform: (chagua)</option>
             <option value="psp">PSP</option><option value="ps2">PS2</option><option value="ps3">PS3</option>
-            <option value="switch">Nintendo Switch</option><option value="android">Android</option>
+            <option value="switch">Nintendo Switch</option><option value="android">Android</option><option value="cloud">Cloud Gaming</option>
             <option value="pc">PC</option><option value="winlator">Winlator &amp; GameHub</option>
           </select>
           <div class="up-box" id="aiFillWrap">
@@ -240,7 +239,21 @@
             <button type="button" class="btn-secondary" id="aiFillBtn">🤖 Chambua &amp; Jaza sasa</button>
             <div id="aiFillBox" style="margin-top:10px" aria-live="polite"></div>
           </div>
-          <textarea id="pSpecs" rows="3" placeholder="Specs/requirements za game (hiari) — mf: Min RAM 4GB, Snapdragon 730+, 2GB storage. AI itazitumia kushauri wateja." style="width:100%"></textarea>
+          <div class="up-box" id="detailsBox">
+            <strong>📝 Maelezo ya game — yanaonekana kwenye ukurasa wa bidhaa</strong>
+            <small style="color:#8f8faa;display:block;margin-bottom:6px">AI inajaza sehemu hizi 3 kwa mpangilio sahihi. Unaweza kuhariri kabla ya kuhifadhi.</small>
+            <label class="field-label">① Overview — kuhusu game</label>
+            <textarea id="pDesc" rows="5" maxlength="3000" placeholder="Aya 1–3 zinazoelezea game (aina, uchezaji, nini mteja atapata)…" style="width:100%"></textarea>
+            <label class="field-label">② Features — kipengele kimoja kwa kila mstari</label>
+            <textarea id="pFeatures" rows="5" placeholder="Mfano:&#10;Michezo ya mtandaoni na marafiki&#10;Graphics nzuri&#10;Hali nyingi za kucheza" style="width:100%"></textarea>
+            <label class="field-label">③ System Requirements</label>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">
+              <div><small style="color:#8f8faa">Minimum (mstari mmoja kwa kila kitu)</small><textarea id="pReqMin" rows="6" placeholder="📱 Simu: RAM 4GB+, Snapdragon 730G&#10;🖥️ PC: CPU i5, GPU GTX 1050, RAM 8GB+" style="width:100%"></textarea></div>
+              <div><small style="color:#8f8faa">Recommended (hiari)</small><textarea id="pReqRec" rows="6" placeholder="📱 Simu: RAM 6GB+&#10;🖥️ PC: GPU GTX 1660, RAM 16GB+" style="width:100%"></textarea></div>
+            </div>
+            <details style="margin-top:8px"><summary style="cursor:pointer;color:#a78bfa">Muhtasari wa specs (unaotumiwa na AI Advisor)</summary>
+              <textarea id="pSpecs" rows="3" placeholder="Muhtasari mfupi wa requirements — unajazwa na AI." style="width:100%;margin-top:6px"></textarea></details>
+          </div>
 
           <div style="margin-top:10px">
             <strong>🔗 Links za ziada (game moja, links nyingi)</strong>
@@ -854,6 +867,8 @@
         </div>`).join('');
     }
 
+    function lines(id) { return (document.getElementById(id).value || '').split('\n').map(x => x.trim()).filter(Boolean); }
+
     // ===== LINKS NYINGI KWA GAME MOJA =====
     function addLinkRow(label, url) {
       const box = document.getElementById('pLinksBox');
@@ -903,6 +918,9 @@
       document.getElementById('pFree').checked = !!p.free;
       document.getElementById('pPlatform').value = p.platform || '';
       document.getElementById('pSpecs').value = p.specs || '';
+      document.getElementById('pFeatures').value = (p.features || []).join('\n');
+      document.getElementById('pReqMin').value = ((p.requirements || {}).minimum || []).join('\n');
+      document.getElementById('pReqRec').value = ((p.requirements || {}).recommended || []).join('\n');
       document.getElementById('pLinksBox').innerHTML = '';
       (p.links || []).forEach(l => addLinkRow(l.label, l.url));
       document.getElementById('pAccUserSteam').value = p.section === 'steam' ? (p.accountUser || '') : '';
@@ -925,6 +943,7 @@
       document.getElementById('pDownloadLabel').value = '';
       document.getElementById('pPlatform').value = '';
       document.getElementById('pSpecs').value = '';
+      ['pFeatures', 'pReqMin', 'pReqRec'].forEach(i => document.getElementById(i).value = '');
       document.getElementById('pLinksBox').innerHTML = '';
       resetUploadUI();
       updateFormFields();
@@ -969,6 +988,8 @@
         free: section === 'shop' && document.getElementById('pFree').checked,
         platform: section === 'shop' ? document.getElementById('pPlatform').value : '',
         specs: section === 'shop' ? document.getElementById('pSpecs').value.trim() : '',
+        features: section === 'shop' ? lines('pFeatures') : [],
+        requirements: section === 'shop' ? { minimum: lines('pReqMin'), recommended: lines('pReqRec') } : { minimum: [], recommended: [] },
         links: section === 'shop' ? readLinkRows() : [],
         accountUser, accountPassword
       };
@@ -1084,7 +1105,7 @@
 
     // 🤖 AI AUTO-FILL (jina + platform -> maelezo, aina, emoji, specs za simu/PC)
     let aiTimer = null, aiBusy = false, aiLastKey = '';
-    ['pDesc', 'pType', 'pEmoji', 'pSpecs'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', () => { el.dataset.ai = ''; }); });
+    ['pDesc', 'pType', 'pEmoji', 'pSpecs', 'pFeatures', 'pReqMin', 'pReqRec'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', () => { el.dataset.ai = ''; }); });
     document.getElementById('pCategory').addEventListener('change', e => { e.target.dataset.ai = ''; });
     function aiSetIfEmpty(id, val) {
       const el = document.getElementById(id); if (!el || !val) return false;
@@ -1094,7 +1115,7 @@
     }
     function resetAiFill() {
       aiLastKey = ''; clearTimeout(aiTimer);
-      ['pDesc', 'pType', 'pEmoji', 'pSpecs', 'pCategory'].forEach(id => { const el = document.getElementById(id); if (el) el.dataset.ai = ''; });
+      ['pDesc', 'pType', 'pEmoji', 'pSpecs', 'pCategory', 'pFeatures', 'pReqMin', 'pReqRec'].forEach(id => { const el = document.getElementById(id); if (el) el.dataset.ai = ''; });
       const b = document.getElementById('aiFillBox'); if (b) b.innerHTML = '';
     }
     async function runAiFill(manual) {
@@ -1115,14 +1136,19 @@
         let filled = [];
         if (f.genre && Array.from(catEl.options).some(o => o.value === f.genre) && (catEl.value === 'Zote' || catEl.dataset.ai === '1')) { catEl.value = f.genre; catEl.dataset.ai = '1'; filled.push('aina'); }
         if (aiSetIfEmpty('pEmoji', f.emoji)) filled.push('emoji');
-        if (aiSetIfEmpty('pDesc', f.description)) filled.push('maelezo');
+        if (aiSetIfEmpty('pDesc', f.description)) filled.push('overview');
         if (aiSetIfEmpty('pType', f.type)) filled.push('aina ya bidhaa');
+        if (aiSetIfEmpty('pFeatures', (f.features || []).join('\n'))) filled.push('features');
+        if (aiSetIfEmpty('pReqMin', (f.reqMin || []).join('\n'))) filled.push('requirements (minimum)');
+        if (aiSetIfEmpty('pReqRec', (f.reqRec || []).join('\n'))) filled.push('requirements (recommended)');
         if (aiSetIfEmpty('pSpecs', f.specs)) filled.push('specs');
         const confMap = { high: ['#2be879', 'Uhakika mkubwa'], medium: ['#ffd166', 'Uhakika wa kati'], low: ['#ff9fb4', 'Uhakika mdogo'] };
         const cm = confMap[d.confidence] || confMap.low;
         box.innerHTML = '<div style="border:1px solid #2a3a7a;border-radius:10px;padding:10px;background:#08122c">' +
           '<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>✅ Uchambuzi tayari</b><span style="color:' + cm[0] + ';font-weight:700;font-size:12px">' + cm[1] + (d.source !== 'ai' ? ' • makadirio ya category' : (d.known ? '' : ' • game haifahamiki vizuri')) + '</span></div>' +
-          '<pre style="white-space:pre-wrap;margin:8px 0 6px;font:13px/1.55 inherit;color:#dbe6ff">' + escAdmin((f.specs || '')) + '</pre>' +
+          (f.description ? '<p style="margin:8px 0 4px;color:#dbe6ff;font-size:13px;line-height:1.5">' + escAdmin(f.description) + '</p>' : '') +
+          ((f.features || []).length ? '<div style="margin:6px 0;color:#dbe6ff;font-size:13px">' + f.features.map(x => '✅ ' + escAdmin(x)).join('<br>') + '</div>' : '') +
+          '<pre style="white-space:pre-wrap;margin:8px 0 6px;font:13px/1.55 inherit;color:#dbe6ff">' + escAdmin(((f.reqMin || []).length ? 'Minimum:\n' + f.reqMin.join('\n') : '') + ((f.reqRec || []).length ? '\n\nRecommended:\n' + f.reqRec.join('\n') : '')) + '</pre>' +
           '<small style="color:#9db0da">' + (filled.length ? 'Nimejaza: ' + filled.join(', ') + '. ' : 'Hakuna sehemu mpya ya kujaza (ulishajaza mwenyewe). ') + escAdmin(d.notes || '') + ' Hakiki kabla ya kuhifadhi.</small></div>';
       } catch (e) { box.innerHTML = '<span style="color:#ff6b8a">❌ Hitilafu ya mtandao.</span>'; }
       finally { aiBusy = false; }
@@ -1188,7 +1214,7 @@
     }));
 
     // 🎟️ COUPONS (punguzo la gaming)
-    const COUPON_PLATFORMS = [['psp', 'PSP'], ['ps2', 'PS2'], ['ps3', 'PS3'], ['switch', 'Nintendo Switch'], ['android', 'Android'], ['pc', 'PC'], ['winlator', 'Winlator']];
+    const COUPON_PLATFORMS = [['psp', 'PSP'], ['ps2', 'PS2'], ['ps3', 'PS3'], ['switch', 'Nintendo Switch'], ['android', 'Android'], ['cloud', 'Cloud Gaming'], ['pc', 'PC'], ['winlator', 'Winlator']];
     document.getElementById('couponPlatforms').innerHTML = COUPON_PLATFORMS.map(p => '<label><input type="checkbox" value="' + p[0] + '"> ' + p[1] + '</label>').join('');
     function syncCouponForm() {
       const t = document.getElementById('couponType').value, sc = document.getElementById('couponScope').value;
