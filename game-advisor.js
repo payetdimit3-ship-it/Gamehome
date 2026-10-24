@@ -11,6 +11,7 @@
     {key:'ps3',     label:'PS3',             hint:'RPCS3 (PC)',            phone:true,  pc:true},
     {key:'switch',  label:'Nintendo Switch', hint:'Emulator',              phone:true,  pc:true},
     {key:'android', label:'Android',         hint:'Native games',          phone:true,  pc:false},
+    {key:'cloud',   label:'Cloud Gaming',    hint:'GeForce NOW / Xbox Cloud', phone:true, pc:true},
     {key:'pc',      label:'PC',              hint:'Windows games',         phone:false, pc:true},
     {key:'winlator',label:'Winlator',        hint:'Windows kwenye simu',   phone:true,  pc:false}
   ];
@@ -19,13 +20,20 @@
   var CPU_PHONE = [['0','Dhaifu — Snapdragon 4xx/6xx, Helio G35–G85, Unisoc'],['1','Kati — Snapdragon 7xx/695/680, Dimensity 700–900, Helio G95+'],['2','Nguvu — Snapdragon 8xx/8 Gen, Dimensity 1000+/9000']];
   var CPU_PC = [['0','Dhaifu — dual-core / Celeron / Pentium / zamani sana'],['1','Kati — Core i3/i5 (gen 4–9), Ryzen 3'],['2','Nguvu — Core i5/i7 gen 10+, Ryzen 5 3600+'],['3','Juu sana — Core i7/i9 gen 12+, Ryzen 7/9']];
   var GPU_PC = [['0','Hakuna / Intel UHD / Vega iGPU'],['1','GTX 1050–1650 / RX 560–580'],['2','GTX 1660 / RTX 2060–3060'],['3','RTX 3070 au zaidi / RX 6700+']];
+  var NET = [['0','Chini ya 5 Mbps (haitoshi)'],['1','5–15 Mbps (picha ndogo)'],['2','15–30 Mbps (nzuri)'],['3','30 Mbps au zaidi (bora)']];
   var RAM_PHONE = [2,3,4,6,8,12];
   var RAM_PC = [4,8,12,16,32];
 
   /* ---------- Hukumu ya haraka (bila AI) ---------- */
   function verdict(cat, d){
-    var phone = d.kind==='phone', r=+d.ram||0, c=+d.cpu||0, g=+d.gpu||0;
+    var phone = d.kind==='phone', r=+d.ram||0, c=+d.cpu||0, g=+d.gpu||0, n=(d.net===undefined||d.net==='')?2:+d.net;
     function V(level, text){ return {level:level, text:text}; }
+    if (cat==='cloud'){
+      if (n===0) return V('bad','Cloud gaming inahitaji internet ya angalau 15 Mbps. Kwa kasi ya chini ya 5 Mbps utapata lag na picha mbaya.');
+      if (n===1) return V('ok','Itacheza kwa picha ndogo (480–720p) na inaweza kuwa na lag kidogo. Kwa uzoefu bora tafuta WiFi ya 15 Mbps+.');
+      if (phone && r<2) return V('ok','Internet yako inatosha, lakini simu yenye RAM chini ya 2GB inaweza kusuasua kwenye app ya cloud.');
+      return V('good', 'Kifaa chako na internet vinatosha cloud gaming'+(n>=3?' — hata 1080p/60fps.':' (720p–1080p).')+' Nguvu ya simu/PC haihitajiki.');
+    }
     if (phone){
       switch(cat){
         case 'psp':     return r<2 ? V('bad','RAM ni ndogo mno (chini ya 2GB) — michezo mingi ya PSP itasuasua.') : (r>=3&&c>=1 ? V('good','Simu yako inatosha PSP vizuri (resolution 2x inawezekana).') : V('ok','PSP itacheza, hasa michezo myepesi; tumia resolution 1x na frameskip.'));
@@ -122,7 +130,7 @@
           '<h3>🔍 Angalia kifaa chako</h3><p class="sub">'+esc(c.label)+' • '+esc(c.hint)+' — jaza uwezo wa '+(phone?'simu':'PC')+' yako ujue kama game itacheza.</p>'+seg+
           '<div class="ga-form">'+
             '<label>RAM'+'<select id="gaRam">'+opt(phone?RAM_PHONE:RAM_PC, dev.ram, function(n){return n+' GB';})+'</select></label>'+
-            '<label>Storage bure (GB)<input id="gaStorage" inputmode="numeric" placeholder="mf. 32" value="'+esc(dev.storage)+'"></label>'+
+            (cat==='cloud' ? '<label>Kasi ya internet yako<select id="gaNet">'+opt(NET, dev.net===undefined?'2':dev.net)+'</select></label>' : '<label>Storage bure (GB)<input id="gaStorage" inputmode="numeric" placeholder="mf. 32" value="'+esc(dev.storage)+'"></label>')+
             '<label class="wide">'+(phone?'Chipset / Processor':'CPU')+' (kundi)<select id="gaCpu">'+opt(phone?CPU_PHONE:CPU_PC, dev.cpu)+'</select></label>'+
             (phone?'':'<label class="wide">GPU (kadi ya michoro)<select id="gaGpu">'+opt(GPU_PC, dev.gpu)+'</select></label>')+
             '<label class="wide">'+(phone?'Model ya simu / jina la chipset (hiari — AI itatumia)':'Jina la CPU/GPU (hiari — AI itatumia)')+'<input id="gaModel" placeholder="'+(phone?'mf. Tecno Spark 10 Pro, Helio G88':'mf. i5-8250U, GTX 1050')+'" value="'+esc(dev.model)+'"></label>'+
@@ -160,7 +168,8 @@
       function deviceForAI(){
         var phone = dev.kind==='phone';
         var cpuL = (phone?CPU_PHONE:CPU_PC).filter(function(o){return o[0]===String(dev.cpu);})[0];
-        return { kind: dev.kind, ram: dev.ram+' GB', storage: dev.storage? dev.storage+' GB':'', model: dev.model,
+        var netL = (NET.filter(function(o){return o[0]===String(dev.net===undefined?'2':dev.net);})[0]||[])[1]||'';
+        return { kind: dev.kind, ram: dev.ram+' GB', storage: dev.storage? dev.storage+' GB':'', internet: cat==='cloud'?netL:'', model: dev.model,
                  cpu: cpuL?cpuL[1]:'', gpu: phone?'':((GPU_PC.filter(function(o){return o[0]===String(dev.gpu);})[0]||[])[1]||'') };
       }
 
@@ -186,7 +195,8 @@
       function readDevice(){
         var g=function(id){ var n=el.querySelector(id); return n?n.value:''; };
         dev.ram=g('#gaRam')||dev.ram; dev.cpu=g('#gaCpu'); if(el.querySelector('#gaGpu')) dev.gpu=g('#gaGpu');
-        dev.storage=g('#gaStorage').replace(/[^\d.]/g,''); dev.model=g('#gaModel').trim(); saveDev(dev);
+        if (el.querySelector('#gaNet')) dev.net=g('#gaNet'); else dev.storage=g('#gaStorage').replace(/[^\d.]/g,'');
+        dev.model=g('#gaModel').trim(); saveDev(dev);
       }
 
       el.addEventListener('click', function(e){
