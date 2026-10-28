@@ -222,6 +222,8 @@
             <div class="up-bar"><i id="gameBar"></i></div>
             <div class="up-status" id="gameStatus"></div>
             <div class="up-status" id="storageInfo" style="margin-top:8px"></div>
+            <button type="button" class="btn-secondary" id="storageTestBtn" style="margin-top:6px">🔍 Chunguza hifadhi</button>
+            <div id="storageTestOut" style="margin-top:8px;display:grid;gap:6px" aria-live="polite"></div>
           </div>
 
           <label style="display:flex;align-items:center;gap:8px;margin:10px 0;color:#2be879;font-weight:600">
@@ -1187,7 +1189,7 @@
         // Ulinzi wa upload iliyokwama: sekunde 60 bila maendeleo (au 180 baada ya kufika 100%) → inakatwa na kujaribiwa tena
         timer = setInterval(() => { if (Date.now() - last > (full ? 180000 : 60000)) { stop(); x.abort(); reject(new Error('Upload imekwama (hakuna maendeleo) — mtandao umeshindwa.')); } }, 5000);
         x.onload = () => { stop(); (x.status >= 200 && x.status < 300) ? resolve() : reject(Object.assign(new Error('Hifadhi imekataa upload (HTTP ' + x.status + '). Hakiki funguo za S3_* na muda wa kompyuta yako.'), { fatal: true })); };
-        x.onerror = () => { stop(); reject(new Error('Upload imeshindwa — mtandao umekatika au CORS haijawekwa kwenye bucket (ruhusu PUT kutoka ' + location.origin + ').')); };
+        x.onerror = () => { stop(); reject(new Error('Upload imeshindwa — mtandao umekatika au CORS haijawekwa kwenye bucket (ruhusu PUT kutoka ' + location.origin + '). Bonyeza "🔍 Chunguza hifadhi" kuona tatizo hasa.')); };
         x.send(file);
       });
     }
@@ -1215,6 +1217,17 @@
       } catch (e) { bar.style.width = '0%'; st.className = 'up-status err'; st.textContent = '❌ ' + e.message; }
       finally { setUploading(-1); input.value = ''; }
     }
+    async function runStorageTest() {
+      const out = document.getElementById('storageTestOut'), btn = document.getElementById('storageTestBtn');
+      out.innerHTML = '<span style="color:#9db0da">⏳ Inachunguza funguo, bucket na CORS…</span>'; btn.disabled = true;
+      try {
+        const d = await (await fetch('/api/admin/storage-test', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: '{}' })).json();
+        if (!d.success) { out.innerHTML = '<span style="color:#ff6b8a">❌ ' + escAdmin(d.error || 'Hitilafu') + '</span>'; return; }
+        out.innerHTML = '<div style="font-weight:700;color:' + (d.ok ? '#2be879' : '#ff6b8a') + '">' + (d.ok ? '✅ Hifadhi iko tayari — unaweza kupakia files kubwa' : '❌ Kuna kinachokosekana — rekebisha mistari nyekundu') + '</div>' +
+          d.checks.map(c => '<div style="border:1px solid ' + (c.ok === true ? '#1f7a47' : c.ok === false ? '#8a1f3a' : '#2a3a7a') + ';border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.5"><b>' + (c.ok === true ? '✅' : c.ok === false ? '❌' : 'ℹ️') + ' ' + escAdmin(c.name) + '</b><br><span style="color:#c4d0ee">' + escAdmin(c.detail) + '</span>' + (c.fix ? '<br><span style="color:#ffd166">➜ ' + escAdmin(c.fix) + '</span>' : '') + '</div>').join('');
+      } catch (e) { out.innerHTML = '<span style="color:#ff6b8a">❌ Hitilafu ya mtandao.</span>'; }
+      finally { btn.disabled = false; }
+    }
     async function loadStorageInfo() {
       const box = document.getElementById('storageInfo'); if (!box) return;
       try {
@@ -1240,6 +1253,7 @@
     }));
     document.getElementById('pImage').addEventListener('input', refreshImgPreview);
     loadStorageInfo();
+    (function(){ const b = document.getElementById('storageTestBtn'); if (b) b.addEventListener('click', runStorageTest); })();
     document.getElementById('pImageFile').addEventListener('change', e => doUpload('image', e.target, 'imgBar', 'imgStatus', d => { document.getElementById('pImage').value = d.url; refreshImgPreview(); }));
     function fileLabel(name) {
       const ext = String(name || '').split('.').pop().toLowerCase();
