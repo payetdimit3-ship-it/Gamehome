@@ -5,9 +5,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const multer = require('multer');
-let s3sign = null;   // faili la kusaini upload za hifadhi kubwa — likikosekana, website inaendelea kufanya kazi bila hifadhi kubwa
-try { s3sign = require('./s3sign'); } catch (e) { console.warn('⚠️ s3sign.js haipo kwenye mradi — hifadhi kubwa (S3/R2) imezimwa. Pakia s3sign.js pamoja na server.js.'); }
-const https = require('https');
+const s3sign = require('./s3sign');
 
 const app = express();
 app.set('trust proxy', 1);   // Render ina proxy 1 — req.ip inakuwa IP halisi ya mteja
@@ -669,7 +667,6 @@ app.post('/api/matches/:id/complete', async (req, res) => {
 // Browser inapakia file MOJA KWA MOJA kwenye bucket kwa presigned URL (haipiti Render — hakuna kikomo cha disk/RAM/muda).
 // Files za game ni PRIVATE: zinahifadhiwa kama 's3:<key>' na wateja waliolipa wanapewa link ya muda mfupi (masaa 6).
 function s3Cfg() {
-  if (!s3sign) return null;
   const e = process.env;
   if (!(e.S3_ENDPOINT && e.S3_BUCKET && e.S3_ACCESS_KEY_ID && e.S3_SECRET_ACCESS_KEY)) return null;
   let u; try { u = new URL(e.S3_ENDPOINT); } catch (x) { return null; }
@@ -702,75 +699,6 @@ app.get('/api/admin/storage-info', (req, res) => {
   if (c) return res.json({ success: true, provider: 's3', directUpload: true, gameMaxMb: S3_MAX_MB, publicImages: !!c.publicBase, message: '☁️ Hifadhi kubwa (S3/R2) imewashwa — files za game hadi ' + (S3_MAX_MB >= 1024 ? (S3_MAX_MB / 1024).toFixed(0) + 'GB' : S3_MAX_MB + 'MB') + ' zinapakiwa moja kwa moja, na ni za faragha (wateja waliolipa tu).' + (c.publicBase ? '' : ' Picha/video za habari zinapitia server (weka S3_PUBLIC_BASE_URL ili ziende moja kwa moja pia).') });
   res.json({ success: true, provider: supabase ? 'supabase' : 'local', directUpload: false, gameMaxMb: GAME_MAX_MB, message: supabase ? '⚠️ Unatumia Supabase Storage: plan ya bure inakubali ~50MB tu kwa file. Kwa games za GB, weka Cloudflare R2/S3 (S3_* kwenye Render) au upgrade Supabase na uongeze file size limit.' : '⚠️ Hifadhi ya server tu (inapotea Render ikiwashwa upya). Weka Cloudflare R2/S3 ili files ziwe za kudumu na ziweze kuwa kubwa.' });
 });
-// 🔍 UCHUNGUZI WA HIFADHI (S3/R2): inajaribu funguo, bucket na CORS na kueleza kinachokosekana
-function s3Raw(method, url, headers, body, timeoutMs) {
-  return new Promise(resolve => {
-    let u; try { u = new URL(url); } catch (e) { return resolve({ error: 'URL si sahihi' }); }
-    const r = https.request({ method, hostname: u.hostname, port: u.port || 443, path: u.pathname + u.search, headers: Object.assign({}, headers || {}, body != null ? { 'Content-Length': Buffer.byteLength(body) } : {}), timeout: timeoutMs || 10000 }, resp => {
-      let data = ''; resp.setEncoding('utf8'); resp.on('data', d => { if (data.length < 4000) data += d; });
-      resp.on('end', () => resolve({ status: resp.statusCode, headers: resp.headers, body: data }));
-    });
-    r.on('timeout', () => { r.destroy(); resolve({ error: 'Muda umeisha (hakuna jibu kutoka kwenye endpoint)' }); });
-    r.on('error', e => resolve({ error: e.code === 'ENOTFOUND' ? 'Endpoint haipatikani (' + u.hostname + ') — angalia S3_ENDPOINT' : (e.message || 'Hitilafu ya mtandao') }));
-    if (body != null) r.write(body);
-    r.end();
-  });
-}
-const xmlTag = (xml, tag) => { const m = new RegExp('<' + tag + '>([^<]*)</' + tag + '>').exec(String(xml || '')); return m ? m[1] : ''; };
-function s3Explain(r, what) {
-  if (r.error) return { ok: false, detail: r.error, fix: 'Hakiki S3_ENDPOINT (mf. https://ACCOUNT_ID.r2.cloudflarestorage.com) na kwamba hauna nafasi/herufi za ziada.' };
-  const code = xmlTag(r.body, 'Code'), msg = xmlTag(r.body, 'Message');
-  if (r.status >= 200 && r.status < 300) return { ok: true, detail: what + ' imefanikiwa' };
-  const fixes = {
-    InvalidAccessKeyId: 'S3_ACCESS_KEY_ID si sahihi. Nakili tena Access Key ID ya token (siyo Account ID wala Token value).',
-    SignatureDoesNotMatch: 'S3_SECRET_ACCESS_KEY si sahihi (au S3_ENDPOINT/S3_REGION si sahihi). Weka region = auto kwa R2, na nakili Secret yote bila nafasi.',
-    NoSuchBucket: 'Bucket "' + (s3Cfg() || {}).bucket + '" haipo kwenye akaunti hii. Hakiki jina la S3_BUCKET (herufi ndogo, kama ulivyoitengeneza).',
-    AccessDenied: 'Token haina ruhusa ya kutosha. Tengeneza token mpya yenye "Object Read & Write" kwa bucket hii.',
-    RequestTimeTooSkewed: 'Saa ya server haiko sahihi.'
-  };
-  return { ok: false, detail: what + ' imekataliwa: HTTP ' + r.status + (code ? ' ' + code : '') + (msg ? ' — ' + msg : ''), fix: fixes[code] || (r.status === 403 ? 'Funguo au ruhusa si sahihi. Tengeneza token mpya ya R2 yenye Object Read & Write.' : r.status === 404 ? 'Bucket au endpoint si sahihi.' : 'Angalia mipangilio ya S3_* kwenye Render.') };
-}
-app.post('/api/admin/storage-test', async (req, res) => {
-  const user = getUserByToken(req);
-  if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
-  const checks = []; const add = (name, ok, detail, fix) => checks.push({ name, ok, detail: detail || '', fix: fix || '' });
-  if (!s3sign) { add('Faili la s3sign.js', false, 'Halipo kwenye mradi wako', 'Pakia faili s3sign.js (liko kwenye zip) kwenye folda moja na server.js, kisha deploy upya.'); return res.json({ success: true, ok: false, checks }); }
-  const e = process.env;
-  const missing = ['S3_ENDPOINT', 'S3_BUCKET', 'S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY'].filter(k => !e[k]);
-  if (missing.length) {
-    add('Mipangilio kwenye Render', false, 'Haipo: ' + missing.join(', '), 'Weka vigezo hivi kwenye Render → Environment, kisha ubonyeze Manual Deploy (Environment mpya haisomwi bila kuwasha upya).');
-    return res.json({ success: true, ok: false, checks });
-  }
-  let ep; try { ep = new URL(e.S3_ENDPOINT); } catch (x) { ep = null; }
-  if (!ep) { add('S3_ENDPOINT', false, 'Si URL sahihi: ' + String(e.S3_ENDPOINT).slice(0, 80), 'Mfano sahihi: https://ACCOUNT_ID.r2.cloudflarestorage.com (anza na https://).'); return res.json({ success: true, ok: false, checks }); }
-  const epWarn = /r2\.dev$/i.test(ep.hostname) ? 'Hii ni anwani ya public (r2.dev), siyo S3 endpoint.' : (ep.pathname && ep.pathname !== '/' ? 'Endpoint isiwe na jina la bucket au njia (' + ep.pathname + ').' : '');
-  add('S3_ENDPOINT', !epWarn, epWarn ? ep.hostname + ' — ' + epWarn : ep.hostname, epWarn ? 'Tumia: https://ACCOUNT_ID.r2.cloudflarestorage.com' : '');
-  add('Vigezo vya Render', true, 'S3_BUCKET=' + e.S3_BUCKET + ' • region=' + (e.S3_REGION || 'auto') + ' • funguo zimewekwa');
-  const c = s3Cfg(); const key = 'files/_healthcheck-' + Date.now() + '.txt';
-  // 1. PUT (funguo + bucket + sahihi)
-  const put = await s3Raw('PUT', s3Url('PUT', key, 300), { 'Content-Type': 'text/plain' }, 'ok');
-  const pe = s3Explain(put, 'Kuandika (PUT) faili la majaribio'); add('Funguo na bucket (kuandika)', pe.ok, pe.detail, pe.fix);
-  if (pe.ok) {
-    const get = await s3Raw('GET', s3Url('GET', key, 300));
-    const ge = s3Explain(get, 'Kusoma (GET)'); add('Kusoma file', ge.ok && get.body === 'ok', ge.ok ? (get.body === 'ok' ? 'imesomwa sawa' : 'maudhui hayalingani') : ge.detail, ge.fix);
-    const del = await s3Raw('DELETE', s3Url('DELETE', key, 300));
-    add('Kufuta file la majaribio', del.status >= 200 && del.status < 300, del.error || ('HTTP ' + del.status), del.status === 403 ? 'Si lazima, lakini ruhusa ya kufuta inasaidia kusafisha. Tumia token yenye Object Read & Write.' : '');
-  }
-  // 2. CORS preflight (hii ndiyo sababu ya kawaida ya "mtandao umekatika")
-  const origin = req.headers.origin || ((req.headers['x-forwarded-proto'] || 'https') + '://' + (req.headers['x-forwarded-host'] || req.headers.host || ''));
-  const pre = await s3Raw('OPTIONS', s3Url('PUT', 'games/_cors-check.bin', 300), { 'Origin': origin, 'Access-Control-Request-Method': 'PUT', 'Access-Control-Request-Headers': 'content-type' });
-  if (pre.error) add('CORS (ruhusa ya browser)', false, pre.error, 'Hakiki S3_ENDPOINT.');
-  else {
-    const h = pre.headers || {}, allowO = String(h['access-control-allow-origin'] || ''), allowM = String(h['access-control-allow-methods'] || ''), allowH = String(h['access-control-allow-headers'] || '').toLowerCase();
-    const oOk = allowO === '*' || allowO === origin, mOk = !allowM || /PUT/i.test(allowM) || allowM === '*', hOk = !allowH || allowH.includes('*') || allowH.includes('content-type');
-    const good = pre.status >= 200 && pre.status < 300 && oOk && mOk && hOk;
-    add('CORS (ruhusa ya browser)', good, good ? 'Browser inaruhusiwa kupakia kutoka ' + origin : (!allowO ? 'Bucket haikubali maombi kutoka ' + origin + ' (hakuna CORS policy)' : !oOk ? 'CORS inaruhusu "' + allowO + '" lakini admin yako iko "' + origin + '"' : !mOk ? 'CORS hairuhusu PUT' : 'CORS hairuhusu header ya Content-Type'),
-      good ? '' : 'R2 → bucket → Settings → CORS Policy, weka: [{"AllowedOrigins":["' + origin + '"],"AllowedMethods":["PUT"],"AllowedHeaders":["*"],"ExposeHeaders":["ETag"],"MaxAgeSeconds":3600}] — origin iwe sawa kabisa na anwani ya admin (bila "/" mwishoni).');
-  }
-  add('Picha/video za habari', !!c.publicBase, c.publicBase ? 'Zitaenda moja kwa moja: ' + c.publicBase : 'S3_PUBLIC_BASE_URL haijawekwa — picha na video zinapitia server (si lazima kwa files za game).', '');
-  res.json({ success: true, ok: checks.filter(x => x.name !== 'Picha/video za habari' && x.name !== 'Kufuta file la majaribio').every(x => x.ok), checks });
-});
-
 // Hatua ya 1 ya upload: server inakagua file na kutoa presigned URL (au inaelekeza njia ya kawaida kupitia server)
 app.post('/api/admin/upload/init', (req, res) => {
   const user = getUserByToken(req);
