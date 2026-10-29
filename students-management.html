@@ -217,11 +217,10 @@
           <input type="text" id="pDownloadLabel" maxlength="40" placeholder="Jina la download kuu (mfano: APK) — mteja ataliona kwenye My Orders">
           <div class="up-box">
             <strong>⬆️ AU upload file la game moja kwa moja</strong>
-            <small style="color:#8f8faa">zip, rar, 7z, iso, cso, apk, xapk, obb, exe, msi, pkg… Ukubwa unategemea hifadhi uliyoweka (angalia ujumbe hapo chini). Likipakiwa, link yake inawekwa hapo juu kiotomatiki.</small>
+            <small style="color:#8f8faa">zip, rar, 7z, iso, cso, apk, xapk, obb, exe, msi, pkg… (hadi 1GB). Likipakiwa, link yake inawekwa hapo juu kiotomatiki.</small>
             <input type="file" id="pGameFile" accept=".zip,.rar,.7z,.iso,.cso,.bin,.apk,.xapk,.obb,.exe,.msi,.pkg,.gz,.tar,.001,.nsp,.xci,.rpx">
             <div class="up-bar"><i id="gameBar"></i></div>
             <div class="up-status" id="gameStatus"></div>
-            <div class="up-status" id="storageInfo" style="margin-top:8px"></div>
           </div>
 
           <label style="display:flex;align-items:center;gap:8px;margin:10px 0;color:#2be879;font-weight:600">
@@ -886,7 +885,7 @@
       return Array.from(document.querySelectorAll('#pLinksBox .p-link-row')).map(r => ({
         label: r.querySelector('.lk-label').value.trim() || 'Download',
         url: r.querySelector('.lk-url').value.trim()
-      })).filter(l => /^(https?:\/\/|\/uploads\/|s3:(games|files)\/)/i.test(l.url));
+      })).filter(l => /^(https?:\/\/|\/uploads\/)/i.test(l.url));
     }
     document.getElementById('addLinkBtn').addEventListener('click', () => addLinkRow('', ''));
 
@@ -1175,52 +1174,17 @@
     let activeUploads = 0;
     function setUploading(delta) { activeUploads += delta; ['addProductBtn', 'addBannerBtn'].forEach(id => { const b = document.getElementById(id); if (b) b.disabled = activeUploads > 0; }); document.querySelectorAll('.up-lock').forEach(b => { b.disabled = activeUploads > 0; }); }
     function fmtSize(n) { n = Number(n) || 0; return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
-    // PUT moja kwa moja kwenye hifadhi (presigned URL) — hakuna Authorization header, haipiti server
-    function xhrPut(url, file, onProgress) {
-      return new Promise((resolve, reject) => {
-        const x = new XMLHttpRequest();
-        x.open('PUT', url);
-        if (file.type) x.setRequestHeader('Content-Type', file.type);
-        let last = Date.now(), full = false, timer = null;
-        const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
-        x.upload.onprogress = e => { last = Date.now(); if (e.lengthComputable) { full = e.loaded >= e.total; onProgress(Math.round(e.loaded * 100 / e.total)); } };
-        // Ulinzi wa upload iliyokwama: sekunde 60 bila maendeleo (au 180 baada ya kufika 100%) → inakatwa na kujaribiwa tena
-        timer = setInterval(() => { if (Date.now() - last > (full ? 180000 : 60000)) { stop(); x.abort(); reject(new Error('Upload imekwama (hakuna maendeleo) — mtandao umeshindwa.')); } }, 5000);
-        x.onload = () => { stop(); (x.status >= 200 && x.status < 300) ? resolve() : reject(Object.assign(new Error('Hifadhi imekataa upload (HTTP ' + x.status + '). Hakiki funguo za S3_* na muda wa kompyuta yako.'), { fatal: true })); };
-        x.onerror = () => { stop(); reject(new Error('Upload imeshindwa — mtandao umekatika au CORS haijawekwa kwenye bucket (ruhusu PUT kutoka ' + location.origin + ').')); };
-        x.send(file);
-      });
-    }
     async function doUpload(kind, input, barId, statusId, onDone) {
       const f = input.files && input.files[0]; if (!f) return;
       const bar = document.getElementById(barId), st = document.getElementById(statusId);
-      bar.style.width = '0%'; st.className = 'up-status'; st.textContent = '⏳ Inaandaa upload ya ' + f.name + ' (' + fmtSize(f.size) + ')…';
+      bar.style.width = '0%'; st.className = 'up-status'; st.textContent = '⏳ Inapakia ' + f.name + ' (' + fmtSize(f.size) + ')…';
       setUploading(1);
       try {
-        const ir = await fetch('/api/admin/upload/init', { method: 'POST', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ kind, filename: f.name, size: f.size, contentType: f.type }) });
-        const init = await ir.json();
-        if (!ir.ok || !init.success) throw new Error(init.error || 'Upload imekataliwa');
-        if (init.warning && !confirm(init.warning)) throw new Error('Upload imeghairiwa.');
-        const prog = p => { bar.style.width = p + '%'; st.textContent = '⏳ ' + p + '% — ' + f.name + ' (' + fmtSize(f.size) + ')'; };
-        let d;
-        if (init.mode === 's3') {
-          for (let attempt = 1; ; attempt++) {
-            try { await xhrPut(init.uploadUrl, f, prog); break; }
-            catch (e) { if (e.fatal || attempt >= 3) throw e; st.textContent = '⚠️ ' + e.message.slice(0, 60) + ' — inajaribu tena (' + (attempt + 1) + '/3)…'; await new Promise(r => setTimeout(r, 1500)); }
-          }
-          d = { url: init.url, size: f.size, name: f.name };
-        } else d = await xhrUpload(kind, f, prog);
-        bar.style.width = '100%'; st.className = 'up-status ok'; st.textContent = '✅ Imepakiwa: ' + f.name + ' (' + fmtSize(d.size || f.size) + ')';
+        const d = await xhrUpload(kind, f, p => { bar.style.width = p + '%'; st.textContent = '⏳ ' + p + '% — ' + f.name; });
+        bar.style.width = '100%'; st.className = 'up-status ok'; st.textContent = '✅ Imepakiwa: ' + f.name + ' (' + fmtSize(d.size) + ')';
         onDone(d);
       } catch (e) { bar.style.width = '0%'; st.className = 'up-status err'; st.textContent = '❌ ' + e.message; }
       finally { setUploading(-1); input.value = ''; }
-    }
-    async function loadStorageInfo() {
-      const box = document.getElementById('storageInfo'); if (!box) return;
-      try {
-        const d = await (await fetch('/api/admin/storage-info', { headers: { 'Authorization': token } })).json();
-        if (d.success) { box.textContent = d.message; box.style.color = d.provider === 's3' ? '#2be879' : '#ffd166'; }
-      } catch (e) {}
     }
     function refreshImgPreview() {
       const v = document.getElementById('pImage').value.trim(), im = document.getElementById('imgPreview');
@@ -1239,7 +1203,6 @@
       document.getElementById('imgUploadRow').style.display = up ? 'block' : 'none';
     }));
     document.getElementById('pImage').addEventListener('input', refreshImgPreview);
-    loadStorageInfo();
     document.getElementById('pImageFile').addEventListener('change', e => doUpload('image', e.target, 'imgBar', 'imgStatus', d => { document.getElementById('pImage').value = d.url; refreshImgPreview(); }));
     function fileLabel(name) {
       const ext = String(name || '').split('.').pop().toLowerCase();
@@ -1766,7 +1729,6 @@
         if (btn.dataset.tab === 'coupons') loadCoupons();
         if (btn.dataset.tab === 'webcontent') loadWebContent();
         if (btn.dataset.tab === 'withdrawals') loadWithdrawals();
-        if (btn.dataset.tab === 'products') loadStorageInfo();
         if (btn.dataset.tab === 'news') newsEd.load();
         if (btn.dataset.tab === 'contentposts') contentEd.load();
         if (btn.dataset.tab === 'tvchannels') loadTv();
