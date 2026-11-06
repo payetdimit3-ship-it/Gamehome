@@ -813,9 +813,10 @@ app.post('/api/admin/storage-test', async (req, res) => {
     add('Muunganisho wa TLS na Cloudflare', false, 'Cloudflare imekataa muunganisho (handshake failure) kwa ' + ep.hostname, '');
     const acct = m ? m[1] : '';
     const euHost = acct && !m[2] ? acct + '.eu.r2.cloudflarestorage.com' : '';
-    const [eu, generic] = await Promise.all([euHost ? probe(euHost) : Promise.resolve(null), probe('r2.cloudflarestorage.com')]);
+    const [eu, generic] = await Promise.all([euHost ? probe(euHost) : Promise.resolve(null), probe('www.cloudflare.com')]);
+    if (acct && acct.toLowerCase() === String(e.S3_ACCESS_KEY_ID || '').trim().toLowerCase()) { add('Account ID', false, 'S3_ENDPOINT ina Access Key ID badala ya Account ID ya Cloudflare', 'Nakili Account ID (siyo Access Key ID) kutoka Cloudflare → R2 → Overview (au bucket → Settings → S3 API). Kisha S3_ENDPOINT = https://ACCOUNT_ID.r2.cloudflarestorage.com na Manual Deploy.'); return res.json({ success: true, ok: false, provider: 'r2', checks }); }
     if (eu && eu.reachable) add('Eneo la bucket (EU)', false, 'Anwani ya EU inajibu: ' + euHost + ' (' + eu.detail + ')', 'Bucket yako iko jurisdiction ya EU. Weka S3_ENDPOINT = https://' + euHost + ' kisha Manual Deploy.');
-    else if (generic.reachable) add('Account ID', false, 'Muunganisho wa jumla wa R2 unafanya kazi (' + generic.detail + '), lakini anwani ya akaunti "' + acct + '" haikubaliki na Cloudflare', 'Account ID si sahihi — au umeweka Access Key ID badala yake (zote ni herufi 32). Nakili Account ID kutoka Cloudflare → R2 → Overview, au kutoka bucket → Settings → "S3 API" (sehemu kabla ya /jina-la-bucket). Kisha S3_ENDPOINT = https://ACCOUNT_ID.r2.cloudflarestorage.com');
+    else if (generic.reachable) add('Account ID', false, 'Server inafika Cloudflare vizuri (' + generic.detail + '), lakini anwani ya akaunti "' + acct + '" haikubaliki na Cloudflare', 'Account ID si sahihi — au umeweka Access Key ID badala yake (zote ni herufi 32). Nakili Account ID kutoka Cloudflare → R2 → Overview, au kutoka bucket → Settings → "S3 API" (sehemu kabla ya /jina-la-bucket). Kisha S3_ENDPOINT = https://ACCOUNT_ID.r2.cloudflarestorage.com');
     else add('Mtandao wa server', false, 'Server haifiki Cloudflare R2 (' + generic.detail + ')', 'Jaribu tena baada ya dakika chache.');
     return res.json({ success: true, ok: false, provider: 'r2', checks });
   }
