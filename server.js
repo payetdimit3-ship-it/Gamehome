@@ -695,26 +695,12 @@ const UPLOAD_KINDS = {
   image: { exts: ['.png', '.jpg', '.jpeg', '.webp', '.gif'], folder: 'images', priv: false, maxMb: () => 8, serverMaxMb: () => 8 },
   video: { exts: ['.mp4', '.webm', '.mov', '.m4v'], folder: 'news', priv: false, maxMb: () => Math.min(S3_MAX_MB, 2048), serverMaxMb: () => 1024 }
 };
-// Hifadhi mbili za kuchagua: Supabase (bure ~50MB, link ya umma) au Cloudflare R2 (GB, faragha, link ya muda mfupi)
-function storageProviders() {
-  const c = s3Cfg();
-  const mbText = mb => mb >= 1024 ? (mb / 1024).toFixed(0) + 'GB' : mb + 'MB';
-  return {
-    supabase: { id: 'supabase', label: 'Supabase', available: !!supabase, maxMbHint: 50, serverMaxMb: GAME_MAX_MB, private: false,
-      note: supabase ? 'Plan ya bure inakubali ~50MB kwa file (plan ya kulipia inaweza kuongezwa). Link ni ya umma. Upload inapitia server.' : 'Haijawekwa — weka SUPABASE_URL na SUPABASE_SERVICE_ROLE_KEY kwenye Render.' },
-    r2: { id: 'r2', label: 'Cloudflare R2', available: !!c, maxMb: S3_MAX_MB, publicImages: !!(c && c.publicBase), private: true,
-      note: c ? 'Hadi ' + mbText(S3_MAX_MB) + ' kwa file • upload moja kwa moja • ya faragha (wateja waliolipa tu, link ya muda mfupi).' + (c.publicBase ? '' : ' Picha/video za habari zinapitia hifadhi ya server.') : (s3sign ? 'Haijawekwa — weka S3_ENDPOINT, S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY kwenye Render.' : 'Faili la s3sign.js halipo — pakia pamoja na server.js.') }
-  };
-}
 app.get('/api/admin/storage-info', (req, res) => {
   const user = getUserByToken(req);
   if (!user || (!user.isAdmin && !user.isStaff)) return res.status(403).json({ error: 'Huna ruhusa' });
-  const p = storageProviders();
-  const def = p.r2.available ? 'r2' : (p.supabase.available ? 'supabase' : 'local');
-  res.json({ success: true, default: def, providers: p, serverOnly: def === 'local',
-    // sehemu za zamani (zinaendelea kufanya kazi)
-    provider: p.r2.available ? 's3' : (supabase ? 'supabase' : 'local'), directUpload: p.r2.available, gameMaxMb: p.r2.available ? S3_MAX_MB : GAME_MAX_MB,
-    message: def === 'local' ? '⚠️ Hakuna hifadhi ya nje iliyowekwa — files zinahifadhiwa kwenye server tu (zinapotea Render ikiwashwa upya). Weka Supabase au Cloudflare R2.' : '' });
+  const c = s3Cfg();
+  if (c) return res.json({ success: true, provider: 's3', directUpload: true, gameMaxMb: S3_MAX_MB, publicImages: !!c.publicBase, message: '☁️ Hifadhi kubwa (S3/R2) imewashwa — files za game hadi ' + (S3_MAX_MB >= 1024 ? (S3_MAX_MB / 1024).toFixed(0) + 'GB' : S3_MAX_MB + 'MB') + ' zinapakiwa moja kwa moja, na ni za faragha (wateja waliolipa tu).' + (c.publicBase ? '' : ' Picha/video za habari zinapitia server (weka S3_PUBLIC_BASE_URL ili ziende moja kwa moja pia).') });
+  res.json({ success: true, provider: supabase ? 'supabase' : 'local', directUpload: false, gameMaxMb: GAME_MAX_MB, message: supabase ? '⚠️ Unatumia Supabase Storage: plan ya bure inakubali ~50MB tu kwa file. Kwa games za GB, weka Cloudflare R2/S3 (S3_* kwenye Render) au upgrade Supabase na uongeze file size limit.' : '⚠️ Hifadhi ya server tu (inapotea Render ikiwashwa upya). Weka Cloudflare R2/S3 ili files ziwe za kudumu na ziweze kuwa kubwa.' });
 });
 // 🔍 UCHUNGUZI WA HIFADHI (S3/R2): inajaribu funguo, bucket na CORS na kueleza kinachokosekana
 function s3Raw(method, url, headers, body, timeoutMs) {
@@ -725,7 +711,7 @@ function s3Raw(method, url, headers, body, timeoutMs) {
       resp.on('end', () => resolve({ status: resp.statusCode, headers: resp.headers, body: data }));
     });
     r.on('timeout', () => { r.destroy(); resolve({ error: 'Muda umeisha (hakuna jibu kutoka kwenye endpoint)' }); });
-    r.on('error', e => resolve({ code: e.code || '', error: e.code === 'ENOTFOUND' ? 'Endpoint haipatikani (' + u.hostname + ') — angalia S3_ENDPOINT' : (e.message || 'Hitilafu ya mtandao') }));
+    r.on('error', e => resolve({ error: e.code === 'ENOTFOUND' ? 'Endpoint haipatikani (' + u.hostname + ') — angalia S3_ENDPOINT' : (e.message || 'Hitilafu ya mtandao') }));
     if (body != null) r.write(body);
     r.end();
   });
@@ -744,81 +730,25 @@ function s3Explain(r, what) {
   };
   return { ok: false, detail: what + ' imekataliwa: HTTP ' + r.status + (code ? ' ' + code : '') + (msg ? ' — ' + msg : ''), fix: fixes[code] || (r.status === 403 ? 'Funguo au ruhusa si sahihi. Tengeneza token mpya ya R2 yenye Object Read & Write.' : r.status === 404 ? 'Bucket au endpoint si sahihi.' : 'Angalia mipangilio ya S3_* kwenye Render.') };
 }
-// 🔍 Uchunguzi wa Supabase Storage: funguo, bucket, kuandika/kusoma/kufuta faili la majaribio
-async function supabaseStorageTest(res) {
-  const checks = []; const add = (name, ok, detail, fix) => checks.push({ name, ok, detail: detail || '', fix: fix || '' });
-  const e = process.env;
-  const url = e.SUPABASE_URL || e.NEXT_PUBLIC_SUPABASE_URL, key = e.SUPABASE_SERVICE_KEY || e.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) {
-    add('Mipangilio kwenye Render', false, 'Haipo: ' + [!url && 'SUPABASE_URL', !key && 'SUPABASE_SERVICE_ROLE_KEY'].filter(Boolean).join(', '), 'Weka kwenye Render → Environment (Supabase → Project Settings → API: URL na service_role key), kisha Manual Deploy.');
-    return res.json({ success: true, ok: false, provider: 'supabase', checks });
-  }
-  let host = ''; try { host = new URL(url).hostname; } catch (x) {}
-  add('SUPABASE_URL', !!host && /^https:/i.test(url), host || 'Si URL sahihi', host ? '' : 'Mfano sahihi: https://xxxx.supabase.co');
-  if (!supabase) { add('Muunganisho wa Supabase', false, 'Client haikuanzishwa', 'Hakiki SUPABASE_URL na funguo kisha Manual Deploy.'); return res.json({ success: true, ok: false, provider: 'supabase', checks }); }
-  const explain = (err, what) => {
-    const m = String((err && err.message) || err || '');
-    const fixes = [[/Bucket not found|not found/i, 'Bucket "' + MEDIA_BUCKET + '" haipo. Tengeneza bucket (public) yenye jina hilo kwenye Supabase → Storage, au weka SUPABASE_STORAGE_BUCKET.'],
-      [/row-level security|policy|not authorized|unauthorized|403/i, 'Funguo si sahihi au ni "anon". Tumia **service_role** key (siyo anon) kwenye SUPABASE_SERVICE_ROLE_KEY.'],
-      [/Invalid (Compact )?JWS|JWT|invalid api key|Invalid API/i, 'Funguo si sahihi. Nakili tena service_role key kamili kutoka Supabase → Project Settings → API.'],
-      [/exceeded the maximum allowed size|too large|413|Payload/i, 'Ukubwa wa file umezidi kikomo cha Supabase (plan ya bure ~50MB). Ongeza kikomo kwenye Storage → Settings, au tumia Cloudflare R2 kwa files kubwa.'],
-      [/fetch failed|ENOTFOUND|ECONNREFUSED|network/i, 'Server haifiki Supabase. Hakiki SUPABASE_URL.']];
-    const f = fixes.find(x => x[0].test(m));
-    return { detail: what + ' imekataliwa: ' + m.slice(0, 140), fix: f ? f[1] : 'Angalia mipangilio ya Supabase Storage.' };
-  };
-  try {
-    const gb = await supabase.storage.getBucket(MEDIA_BUCKET);
-    if (gb.error || !gb.data) { const x = explain(gb.error || 'Bucket not found', 'Kutafuta bucket'); add('Bucket "' + MEDIA_BUCKET + '"', false, x.detail, x.fix); }
-    else add('Bucket "' + MEDIA_BUCKET + '"', true, 'ipo' + (gb.data.public ? ' (public)' : ' (si public — links za download hazitafunguka kwa wateja)'), gb.data.public ? '' : 'Weka bucket iwe Public kwenye Supabase → Storage.');
-    const path = 'files/_healthcheck-' + Date.now() + '.txt';
-    const up = await supabase.storage.from(MEDIA_BUCKET).upload(path, Buffer.from('ok'), { contentType: 'text/plain', upsert: true });
-    if (up.error) { const x = explain(up.error, 'Kuandika (upload)'); add('Funguo na ruhusa (kuandika)', false, x.detail, x.fix); }
-    else {
-      add('Funguo na ruhusa (kuandika)', true, 'Kuandika faili la majaribio kumefanikiwa');
-      const pub = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path);
-      let readOk = false, readDetail = '';
-      try { const r = await fetch(pub.data.publicUrl); readOk = r.ok && (await r.text()) === 'ok'; readDetail = 'HTTP ' + r.status; } catch (x) { readDetail = String(x.message || x).slice(0, 80); }
-      add('Kusoma kwa link ya umma', readOk, readOk ? 'imesomwa sawa' : readDetail, readOk ? '' : 'Bucket iwe Public ili wateja wafungue links.');
-      await supabase.storage.from(MEDIA_BUCKET).remove([path]).catch(() => {});
-    }
-  } catch (err) { const x = explain(err, 'Supabase'); add('Muunganisho wa Supabase', false, x.detail, x.fix); }
-  add('Ukubwa wa file', null, 'Plan ya bure inakubali takriban 50MB kwa file. Kwa games za GB tumia Cloudflare R2 (chagua "Cloudflare R2" hapo juu).', '');
-  res.json({ success: true, ok: checks.filter(c => c.ok === false).length === 0, provider: 'supabase', checks });
-}
 app.post('/api/admin/storage-test', async (req, res) => {
   const user = getUserByToken(req);
   if (!user || !user.isAdmin) return res.status(403).json({ error: 'Wewe si admin' });
-  if (req.body && req.body.provider === 'supabase') return supabaseStorageTest(res);
   const checks = []; const add = (name, ok, detail, fix) => checks.push({ name, ok, detail: detail || '', fix: fix || '' });
-  if (!s3sign) { add('Faili la s3sign.js', false, 'Halipo kwenye mradi wako', 'Pakia faili s3sign.js (liko kwenye zip) kwenye folda moja na server.js, kisha deploy upya.'); return res.json({ success: true, ok: false, provider: 'r2', checks }); }
+  if (!s3sign) { add('Faili la s3sign.js', false, 'Halipo kwenye mradi wako', 'Pakia faili s3sign.js (liko kwenye zip) kwenye folda moja na server.js, kisha deploy upya.'); return res.json({ success: true, ok: false, checks }); }
   const e = process.env;
   const missing = ['S3_ENDPOINT', 'S3_BUCKET', 'S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY'].filter(k => !e[k]);
   if (missing.length) {
     add('Mipangilio kwenye Render', false, 'Haipo: ' + missing.join(', '), 'Weka vigezo hivi kwenye Render → Environment, kisha ubonyeze Manual Deploy (Environment mpya haisomwi bila kuwasha upya).');
-    return res.json({ success: true, ok: false, provider: 'r2', checks });
+    return res.json({ success: true, ok: false, checks });
   }
   let ep; try { ep = new URL(e.S3_ENDPOINT); } catch (x) { ep = null; }
-  if (!ep) { add('S3_ENDPOINT', false, 'Si URL sahihi: ' + String(e.S3_ENDPOINT).slice(0, 80), 'Mfano sahihi: https://ACCOUNT_ID.r2.cloudflarestorage.com (anza na https://).'); return res.json({ success: true, ok: false, provider: 'r2', checks }); }
+  if (!ep) { add('S3_ENDPOINT', false, 'Si URL sahihi: ' + String(e.S3_ENDPOINT).slice(0, 80), 'Mfano sahihi: https://ACCOUNT_ID.r2.cloudflarestorage.com (anza na https://).'); return res.json({ success: true, ok: false, checks }); }
   const epWarn = /r2\.dev$/i.test(ep.hostname) ? 'Hii ni anwani ya public (r2.dev), siyo S3 endpoint.' : (ep.pathname && ep.pathname !== '/' ? 'Endpoint isiwe na jina la bucket au njia (' + ep.pathname + ').' : '');
   add('S3_ENDPOINT', !epWarn, epWarn ? ep.hostname + ' — ' + epWarn : ep.hostname, epWarn ? 'Tumia: https://ACCOUNT_ID.r2.cloudflarestorage.com' : '');
   add('Vigezo vya Render', true, 'S3_BUCKET=' + e.S3_BUCKET + ' • region=' + (e.S3_REGION || 'auto') + ' • funguo zimewekwa');
   const c = s3Cfg(); const key = 'files/_healthcheck-' + Date.now() + '.txt';
   // 1. PUT (funguo + bucket + sahihi)
   const put = await s3Raw('PUT', s3Url('PUT', key, 300), { 'Content-Type': 'text/plain' }, 'ok');
-  const tlsFail = !!put.error && (/EPROTO|handshake|SSL|TLS/i.test(put.error) || put.code === 'EPROTO');
-  if (tlsFail) {
-    // Cloudflare inakataa TLS kwa anwani ya akaunti: ama Account ID si sahihi, au bucket iko jurisdiction ya EU. Tunatofautisha kwa kujaribu anwani mbadala.
-    const m = /^([A-Za-z0-9]+)\.(eu\.|fedramp\.)?r2\.cloudflarestorage\.com$/i.exec(ep.hostname);
-    const probe = async host => { const r = await s3Raw('GET', 'https://' + host + '/', {}, null, 8000); return { reachable: !r.error, detail: r.error ? String(r.error).slice(0, 90) : 'HTTP ' + r.status }; };
-    add('Muunganisho wa TLS na Cloudflare', false, 'Cloudflare imekataa muunganisho (handshake failure) kwa ' + ep.hostname, '');
-    const acct = m ? m[1] : '';
-    const euHost = acct && !m[2] ? acct + '.eu.r2.cloudflarestorage.com' : '';
-    const [eu, generic] = await Promise.all([euHost ? probe(euHost) : Promise.resolve(null), probe('r2.cloudflarestorage.com')]);
-    if (eu && eu.reachable) add('Eneo la bucket (EU)', false, 'Anwani ya EU inajibu: ' + euHost + ' (' + eu.detail + ')', 'Bucket yako iko jurisdiction ya EU. Weka S3_ENDPOINT = https://' + euHost + ' kisha Manual Deploy.');
-    else if (generic.reachable) add('Account ID', false, 'Muunganisho wa jumla wa R2 unafanya kazi (' + generic.detail + '), lakini anwani ya akaunti "' + acct + '" haikubaliki na Cloudflare', 'Account ID si sahihi — au umeweka Access Key ID badala yake (zote ni herufi 32). Nakili Account ID kutoka Cloudflare → R2 → Overview, au kutoka bucket → Settings → "S3 API" (sehemu kabla ya /jina-la-bucket). Kisha S3_ENDPOINT = https://ACCOUNT_ID.r2.cloudflarestorage.com');
-    else add('Mtandao wa server', false, 'Server haifiki Cloudflare R2 (' + generic.detail + ')', 'Jaribu tena baada ya dakika chache.');
-    return res.json({ success: true, ok: false, provider: 'r2', checks });
-  }
   const pe = s3Explain(put, 'Kuandika (PUT) faili la majaribio'); add('Funguo na bucket (kuandika)', pe.ok, pe.detail, pe.fix);
   if (pe.ok) {
     const get = await s3Raw('GET', s3Url('GET', key, 300));
@@ -838,10 +768,10 @@ app.post('/api/admin/storage-test', async (req, res) => {
       good ? '' : 'R2 → bucket → Settings → CORS Policy, weka: [{"AllowedOrigins":["' + origin + '"],"AllowedMethods":["PUT"],"AllowedHeaders":["*"],"ExposeHeaders":["ETag"],"MaxAgeSeconds":3600}] — origin iwe sawa kabisa na anwani ya admin (bila "/" mwishoni).');
   }
   add('Picha/video za habari', !!c.publicBase, c.publicBase ? 'Zitaenda moja kwa moja: ' + c.publicBase : 'S3_PUBLIC_BASE_URL haijawekwa — picha na video zinapitia server (si lazima kwa files za game).', '');
-  res.json({ success: true, ok: checks.filter(x => x.name !== 'Picha/video za habari' && x.name !== 'Kufuta file la majaribio').every(x => x.ok), provider: 'r2', checks });
+  res.json({ success: true, ok: checks.filter(x => x.name !== 'Picha/video za habari' && x.name !== 'Kufuta file la majaribio').every(x => x.ok), checks });
 });
 
-// Hatua ya 1 ya upload: admin anachagua hifadhi (provider): 'r2' = Cloudflare R2 (moja kwa moja, faragha) au 'supabase' = Supabase (kupitia server)
+// Hatua ya 1 ya upload: server inakagua file na kutoa presigned URL (au inaelekeza njia ya kawaida kupitia server)
 app.post('/api/admin/upload/init', (req, res) => {
   const user = getUserByToken(req);
   if (!user || (!user.isAdmin && !user.isStaff)) return res.status(403).json({ error: 'Huna ruhusa' });
@@ -854,26 +784,17 @@ app.post('/api/admin/upload/init', (req, res) => {
   const size = Number(b.size);
   if (!(size > 0)) return res.status(400).json({ error: 'Ukubwa wa file si sahihi' });
   const c = s3Cfg();
-  let provider = ['r2', 'supabase', 'local'].includes(b.provider) ? b.provider : 'auto';
-  if (provider === 'auto') provider = c ? 'r2' : (supabase ? 'supabase' : 'local');       // upload za zamani (bila kuchagua) zinaendelea kufanya kazi
-  if (provider === 'r2' && !c) return res.status(400).json({ error: 'Cloudflare R2 haijawekwa (S3_ENDPOINT, S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY kwenye Render). Chagua Supabase au weka R2, kisha bonyeza "Chunguza".' });
-  if (provider === 'supabase' && !supabase) return res.status(400).json({ error: 'Supabase haijawekwa (SUPABASE_URL na SUPABASE_SERVICE_ROLE_KEY kwenye Render). Chagua Cloudflare R2 au weka Supabase.' });
-  let notice = '';
-  if (provider === 'r2' && !k.priv && !c.publicBase) {      // picha/video za umma zinahitaji public URL ya bucket
-    provider = supabase ? 'supabase' : 'local';
-    notice = 'Picha/video hazina public URL kwenye R2 (S3_PUBLIC_BASE_URL haijawekwa) — imetumika ' + (supabase ? 'Supabase' : 'hifadhi ya server') + ' badala yake.';
+  if (!c || (!k.priv && !c.publicBase)) {
+    const max = k.serverMaxMb();
+    if (size > max * 1048576) return res.status(413).json({ error: 'File ni kubwa kuliko ' + max + 'MB inayoruhusiwa kupitia server.' + (b.kind === 'game' ? ' Weka hifadhi kubwa (Cloudflare R2/S3) kupakia files za GB.' : '') });
+    const warning = (supabase && !c && size > 50 * 1048576) ? 'Faili hili ni kubwa kuliko 50MB. Supabase ya bure itakataa upload hii (baada ya kupakia kwenye server). Endelea?' : '';
+    return res.json({ success: true, mode: 'server', maxMb: max, warning });
   }
-  if (provider === 'r2') {
-    const max = k.maxMb();
-    if (size > max * 1048576) return res.status(413).json({ error: 'File ni kubwa kuliko ' + max + 'MB inayoruhusiwa kwenye R2.' });
-    const base = path.basename(filename, ext).replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 60) || 'file';
-    const key = k.folder + '/' + Date.now() + '-' + crypto.randomBytes(4).toString('hex') + '-' + base + ext;
-    return res.json({ success: true, mode: 's3', provider: 'r2', uploadUrl: s3Url('PUT', key, 3600), url: k.priv ? 's3:' + key : c.publicBase + '/' + key, maxMb: max, name: filename, size });
-  }
-  const max = k.serverMaxMb();
-  if (size > max * 1048576) return res.status(413).json({ error: 'File ni kubwa kuliko ' + max + 'MB inayoruhusiwa kupitia server.' + (b.kind === 'game' ? ' Chagua Cloudflare R2 kupakia files za GB.' : '') });
-  const warning = (provider === 'supabase' && size > 50 * 1048576) ? 'Faili hili ni kubwa kuliko 50MB. Supabase ya bure itakataa upload hii (baada ya kupakia kwenye server). Endelea?' : '';
-  res.json({ success: true, mode: 'server', provider, maxMb: max, warning, notice });
+  const max = k.maxMb();
+  if (size > max * 1048576) return res.status(413).json({ error: 'File ni kubwa kuliko ' + max + 'MB inayoruhusiwa.' });
+  const base = path.basename(filename, ext).replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 60) || 'file';
+  const key = k.folder + '/' + Date.now() + '-' + crypto.randomBytes(4).toString('hex') + '-' + base + ext;
+  res.json({ success: true, mode: 's3', uploadUrl: s3Url('PUT', key, 3600), url: k.priv ? 's3:' + key : c.publicBase + '/' + key, maxMb: max, name: filename, size });
 });
 
 // 📤 UPLOAD: picha na file la game
