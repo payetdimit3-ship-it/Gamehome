@@ -677,7 +677,9 @@ function s3Cfg() {
 }
 function s3Url(method, key, expires, query) {
   const c = s3Cfg();
-  return s3sign.presign({ method, host: c.host, path: '/' + c.bucket + '/' + key, region: c.region, accessKey: c.accessKey, secretKey: c.secretKey, expires, query });
+  // Tigris (t3.storage.dev) inahitaji anwani ya 'virtual-hosted' (bucket kwenye hostname). R2/B2/AWS zinaendelea kama zamani (path-style).
+  const virt = /(^|\.)(storage\.dev|tigris\.dev)$/i.test(c.host) || String(process.env.S3_ADDRESSING || '').toLowerCase() === 'virtual';
+  return s3sign.presign({ method, host: virt ? c.bucket + '.' + c.host : c.host, path: virt ? '/' + key : '/' + c.bucket + '/' + key, region: c.region, accessKey: c.accessKey, secretKey: c.secretKey, expires, query });
 }
 const S3_PRIVATE_KEY = /^(games|files)\/[A-Za-z0-9._\/-]{3,200}$/;
 // 's3:games/…' -> link ya kupakua ya muda mfupi (inatolewa tu kwa wateja waliolipa au kwa games za FREE)
