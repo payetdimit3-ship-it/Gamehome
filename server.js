@@ -673,7 +673,7 @@ function s3Cfg() {
   const e = process.env;
   if (!(e.S3_ENDPOINT && e.S3_BUCKET && e.S3_ACCESS_KEY_ID && e.S3_SECRET_ACCESS_KEY)) return null;
   let u; try { u = new URL(e.S3_ENDPOINT); } catch (x) { return null; }
-  return { host: u.host, bucket: e.S3_BUCKET, region: e.S3_REGION || 'auto', accessKey: e.S3_ACCESS_KEY_ID, secretKey: e.S3_SECRET_ACCESS_KEY, publicBase: String(e.S3_PUBLIC_BASE_URL || '').replace(/\/+$/, '') };
+  return { host: u.host, bucket: String(e.S3_BUCKET).trim(), region: String(e.S3_REGION || 'auto').trim(), accessKey: String(e.S3_ACCESS_KEY_ID).trim(), secretKey: String(e.S3_SECRET_ACCESS_KEY).trim(), publicBase: String(e.S3_PUBLIC_BASE_URL || '').replace(/\/+$/, '') };
 }
 function s3Url(method, key, expires, query) {
   const c = s3Cfg();
@@ -803,6 +803,10 @@ app.post('/api/admin/storage-test', async (req, res) => {
   if (!ep) { add('S3_ENDPOINT', false, 'Si URL sahihi: ' + String(e.S3_ENDPOINT).slice(0, 80), 'Mfano sahihi: https://ACCOUNT_ID.r2.cloudflarestorage.com (anza na https://).'); return res.json({ success: true, ok: false, provider: 'r2', checks }); }
   const epWarn = /r2\.dev$/i.test(ep.hostname) ? 'Hii ni anwani ya public (r2.dev), siyo S3 endpoint.' : (ep.pathname && ep.pathname !== '/' ? 'Endpoint isiwe na jina la bucket au njia (' + ep.pathname + ').' : '');
   add('S3_ENDPOINT', !epWarn, epWarn ? ep.hostname + ' — ' + epWarn : ep.hostname, epWarn ? 'Tumia: https://ACCOUNT_ID.r2.cloudflarestorage.com' : '');
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(String(e.S3_BUCKET).trim())) {
+    add('S3_BUCKET', false, 'Jina la bucket "' + String(e.S3_BUCKET).slice(0, 60) + '" lina nafasi au herufi zisizoruhusiwa', 'Jina la bucket halina nafasi (spaces); linatumia herufi, namba na "-" tu (mf. game-media). Nakili jina kamili kutoka kwenye console ya bucket yako, liweke kwenye S3_BUCKET kwenye Render, kisha Manual Deploy.');
+    return res.json({ success: true, ok: false, provider: 'r2', checks });
+  }
   add('Vigezo vya Render', true, 'S3_BUCKET=' + e.S3_BUCKET + ' • region=' + (e.S3_REGION || 'auto') + ' • funguo zimewekwa');
   const c = s3Cfg(); const key = 'files/_healthcheck-' + Date.now() + '.txt';
   // 1. PUT (funguo + bucket + sahihi)
